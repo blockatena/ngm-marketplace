@@ -5,11 +5,10 @@ import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div className="bg-fixed bg-cover bg-gradient-to-r from-dark_mild to-dark_heavy">
+    <div className="bg-fixed bg-cover flex justify-center bg-gradient-to-r from-dark_mild to-dark_heavy">
       <div
-        className="bg-fixed bg-cover bg-gradient-to-r from-dark_mild to-dark_heavy"
+        className="screen-container w-full bg-fixed bg-cover"
         style={{
-          height: '100vh',
           backgroundImage: "url('/img/background.png')",
         }}
       >
