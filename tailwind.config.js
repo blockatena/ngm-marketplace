@@ -11,6 +11,7 @@ module.exports = {
         dark_heavy: '#0F1112',
         custom_grey: '#464748',
         custom_yellow: '#F9D017',
+        custom_yellow_dark: '#3F3A11',
         custom_purple: '#100811',
         custom_gray_light: '#1E1E1E',
         custom_gray_dark: '#41454B',

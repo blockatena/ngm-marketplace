@@ -1,6 +1,6 @@
 import type { AppProps } from 'next/app'
 
-import Header from '../components/Header'
+import Layout from '../components/Layout'
 import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -12,8 +12,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           backgroundImage: "url('/img/background.png')",
         }}
       >
-        <Header />
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </div>
     </div>
   )

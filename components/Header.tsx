@@ -1,7 +1,12 @@
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { FC } from 'react'
 
 const Header: FC = () => {
+  const router = useRouter()
+  const handleClick = () => {
+    router.push('/connect-wallet')
+  }
   return (
     <nav className="p-4 pt-6 lg:px-16">
       <div className="grid grid-cols-12 gap-1">
@@ -13,6 +18,7 @@ const Header: FC = () => {
               width="100px"
               height="46px"
               className="cursor-pointer"
+              onClick={() => router.push('/')}
             />
           </div>
           <div className="hidden md:block">
@@ -22,6 +28,7 @@ const Header: FC = () => {
               width="188px"
               height="64px"
               className="cursor-pointer"
+              onClick={() => router.push('/')}
             />
           </div>
         </div>
@@ -49,6 +56,7 @@ const Header: FC = () => {
             className="btn-clip bg-custom_yellow text-black text-xs p-1
              block font-nunito font-bold transition-all lg:text-lg md:w-36 md:h-10 md:p-0 hover:translate-y-2 
              hover:text-white hover:font-black"
+            onClick={handleClick}
           >
             Connect Wallet
           </button>
