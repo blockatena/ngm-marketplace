@@ -1,9 +1,12 @@
+import { Web3Provider } from '@ethersproject/providers'
+import { useWeb3React } from '@web3-react/core'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
 
 const Header: FC = () => {
   const router = useRouter()
+  const { active } = useWeb3React<Web3Provider>()
   const handleClick = () => {
     router.push('/connect-wallet')
   }
@@ -52,14 +55,24 @@ const Header: FC = () => {
               X
             </span>
           </div>
-          <button
-            className="btn-clip bg-custom_yellow text-black text-xs p-1
+          {!active && (
+            <button
+              className="btn-clip bg-custom_yellow text-black text-xs p-1
              block font-nunito font-bold transition-all lg:text-lg md:w-36 md:h-10 md:p-0 hover:translate-y-2 
              hover:text-white hover:font-black"
-            onClick={handleClick}
-          >
-            Connect Wallet
-          </button>
+              onClick={handleClick}
+            >
+              Connect Wallet
+            </button>
+          )}
+          {active && (
+            <div
+              className="btn-clip grid place-items-center bg-custom_yellow text-black text-xs p-1
+            font-nunito font-bold lg:text-lg md:w-36 md:h-10 md:p-0"
+            >
+              <span>Connected</span>
+            </div>
+          )}
         </div>
       </div>
     </nav>
