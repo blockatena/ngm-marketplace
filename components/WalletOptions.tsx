@@ -2,7 +2,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import Image from 'next/image'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
 type WalletOptionType = {
   img: string
@@ -100,35 +100,48 @@ const WalletOptions: FC = () => {
     supportedChainIds: [1, 3, 4, 5, 42],
   })
   const { activate, active, deactivate } = useWeb3React<Web3Provider>()
+  const [message, setMessage] = useState('')
+
   const handleConnect = async (wallet: WalletType, active?: boolean) => {
-    if (!active) {
-      try {
-        wallet === 'metamask' && (await activate(injectedConnector))
-      } catch (e) {
-        console.error(e)
+    if (window.ethereum && wallet === 'metamask') {
+      if (!active) {
+        try {
+          await activate(injectedConnector)
+        } catch (e) {
+          console.error(e)
+        }
+      } else {
+        try {
+          deactivate()
+        } catch (e) {
+          console.error(e)
+        }
       }
-    } else {
-      try {
-        wallet === 'metamask' && deactivate()
-      } catch (e) {
-        console.error(e)
-      }
+    } else if (wallet === 'metamask') {
+      setMessage('Please Install Metamask')
     }
   }
   return (
-    <div className="flex flex-col flex-wrap pb-28 gap-4 md:justify-start md:flex-row lg:justify-between">
-      {walletOptions?.map(({ content, img, title, isInactive }) => (
-        <Card
-          key={title}
-          content={content}
-          img={img}
-          title={title}
-          isInactive={isInactive}
-          handleConnect={handleConnect}
-          active={active}
-        />
-      ))}
-    </div>
+    <>
+      {message && (
+        <p className="text-custom_yellow text-lg py-2 text-center font-poppins">
+          {message}
+        </p>
+      )}
+      <div className="flex flex-col flex-wrap pb-28 gap-4 md:justify-start md:flex-row lg:justify-between">
+        {walletOptions?.map(({ content, img, title, isInactive }) => (
+          <Card
+            key={title}
+            content={content}
+            img={img}
+            title={title}
+            isInactive={isInactive}
+            handleConnect={handleConnect}
+            active={active}
+          />
+        ))}
+      </div>
+    </>
   )
 }
 
