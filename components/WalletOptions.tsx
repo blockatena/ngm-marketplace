@@ -9,6 +9,7 @@ type WalletOptionType = {
   title: WalletType
   content: string
   isInactive?: boolean
+  active?: boolean
 }
 
 type WalletType =
@@ -19,7 +20,7 @@ type WalletType =
   | 'phantom'
 
 interface CardProps extends WalletOptionType {
-  handleConnect: (_wallet: WalletType) => void
+  handleConnect: (_wallet: WalletType, _active?: boolean) => void
 }
 
 const walletOptions: WalletOptionType[] = [
@@ -65,31 +66,54 @@ const Card: FC<CardProps> = ({
   content,
   isInactive,
   handleConnect,
-}) => (
-  <div
-    style={isInactive ? { backgroundColor: '#464748', cursor: 'default' } : {}}
-    className="overflow-ellipsis cursor-pointer h-72 p-2 w-full bg-dark_mild shadow-inner shadow-gray-400 md:w-52 rounded-lg"
-    onClick={() => handleConnect(title)}
-  >
-    <div className="h-36 grid place-items-center rounded-lg bg-gradient-to-r from-custom_gray_light to-custom_gray_dark">
-      <Image src={img} alt="wallet_option" width="131px" height="126px" />
+  active,
+}) => {
+  let shadow
+  if (active && title === 'metamask') {
+    shadow = 'shadow-lg shadow-custom_yellow'
+  } else {
+    shadow = 'shadow-inner shadow-gray-400'
+  }
+  return (
+    <div
+      style={
+        isInactive ? { backgroundColor: '#464748', cursor: 'default' } : {}
+      }
+      className={`${shadow} overflow-ellipsis cursor-pointer h-72 p-2 w-full bg-dark_mild  md:w-52 rounded-lg`}
+      onClick={() => handleConnect(title, active)}
+    >
+      <div className="h-36 grid place-items-center rounded-lg bg-gradient-to-r from-custom_gray_light to-custom_gray_dark">
+        <Image src={img} alt="wallet_option" width="131px" height="126px" />
+      </div>
+      <p className="capitalize font-inter font-medium text-white text-center my-4 md:text-lg lg:text-xl">
+        {title}
+      </p>
+      <p className="font-inter font-light text-white text-center md:text-xs">
+        {content}
+      </p>
     </div>
-    <p className="capitalize font-inter font-medium text-white text-center my-4 md:text-lg lg:text-xl">
-      {title}
-    </p>
-    <p className="font-inter font-light text-white text-center md:text-xs">
-      {content}
-    </p>
-  </div>
-)
+  )
+}
 
 const WalletOptions: FC = () => {
   const injectedConnector = new InjectedConnector({
     supportedChainIds: [1, 3, 4, 5, 42],
   })
-  const { activate } = useWeb3React<Web3Provider>()
-  const handleConnect = (wallet: WalletType) => {
-    wallet === 'metamask' && activate(injectedConnector)
+  const { activate, active, deactivate } = useWeb3React<Web3Provider>()
+  const handleConnect = async (wallet: WalletType, active?: boolean) => {
+    if (!active) {
+      try {
+        wallet === 'metamask' && (await activate(injectedConnector))
+      } catch (e) {
+        console.error(e)
+      }
+    } else {
+      try {
+        wallet === 'metamask' && deactivate()
+      } catch (e) {
+        console.error(e)
+      }
+    }
   }
   return (
     <div className="flex flex-col flex-wrap pb-28 gap-4 md:justify-start md:flex-row lg:justify-between">
@@ -101,6 +125,7 @@ const WalletOptions: FC = () => {
           title={title}
           isInactive={isInactive}
           handleConnect={handleConnect}
+          active={active}
         />
       ))}
     </div>

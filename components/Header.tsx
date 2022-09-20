@@ -6,10 +6,11 @@ import { FC } from 'react'
 
 const Header: FC = () => {
   const router = useRouter()
-  const { active } = useWeb3React<Web3Provider>()
+  const { active, account } = useWeb3React<Web3Provider>()
   const handleClick = () => {
     router.push('/connect-wallet')
   }
+
   return (
     <nav className="p-4 pt-6 lg:px-16">
       <div className="grid grid-cols-12 gap-1">
@@ -58,7 +59,7 @@ const Header: FC = () => {
           {!active && (
             <button
               className="btn-clip bg-custom_yellow text-black text-xs p-1
-             block font-nunito font-bold transition-all lg:text-lg md:w-36 md:h-10 md:p-0 hover:translate-y-2 
+             block font-nunito font-bold transition-all lg:text-lg md:w-36 md:h-10 md:p-0 
              hover:text-white hover:font-black"
               onClick={handleClick}
             >
@@ -68,9 +69,16 @@ const Header: FC = () => {
           {active && (
             <div
               className="btn-clip grid place-items-center bg-custom_yellow text-black text-xs p-1
-            font-nunito font-bold lg:text-lg md:w-36 md:h-10 md:p-0"
+            font-nunito font-bold lg:text-sm md:w-36 md:h-10 md:p-0 cursor-pointer"
+              onClick={handleClick}
             >
-              <span>Connected</span>
+              <span>
+                Connected{' '}
+                <span className="lg:text-xs">
+                  {account?.substring(0, 4)}...
+                  {account?.substring(account.length - 2)}
+                </span>
+              </span>
             </div>
           )}
         </div>
