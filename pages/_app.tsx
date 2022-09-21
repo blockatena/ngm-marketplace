@@ -1,5 +1,6 @@
 import { Web3Provider } from '@ethersproject/providers'
 import { Web3ReactProvider } from '@web3-react/core'
+import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 
 import Layout from '../components/Layout'
@@ -11,21 +12,24 @@ const getLibrary = (provider: any): Web3Provider => {
   return library
 }
 
-function MyApp({ Component, pageProps }: AppProps) {
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  Layout?: 'home'
+}
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout
+}
+
+function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <div className="bg-fixed bg-cover flex justify-center bg-gradient-to-r from-dark_mild to-dark_heavy">
-        <div
-          className="screen-container w-full bg-fixed bg-cover"
-          style={{
-            backgroundImage: "url('/img/background.png')",
-          }}
-        >
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </div>
-      </div>
+      {Component.Layout === 'home' ? (
+        <Component {...pageProps} />
+      ) : (
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      )}
     </Web3ReactProvider>
   )
 }
