@@ -1,7 +1,8 @@
+import { motion } from 'framer-motion'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import NFTZoneLogo from '../NFTZoneLogo'
 
-import { motion } from 'framer-motion'
 import nft_hero_character from '../../public/images/hero/hero_image.svg'
 import {
   fromLeftAnimation,
@@ -10,12 +11,14 @@ import {
 } from '../../utils/animations'
 
 const HeroSection: React.FC = () => {
+  const router = useRouter()
   //Btn logic
   const joinCommunityOnClick = () => {
     console.log('JOIN COMMUNITY')
   }
 
   const letsExploreOnClick = () => {
+    router.push('/connect-wallet')
     console.log('LETS EXPLORE')
   }
 

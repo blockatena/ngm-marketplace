@@ -1,8 +1,15 @@
 import { Web3Provider } from '@ethersproject/providers'
 import { useWeb3React } from '@web3-react/core'
+import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
+
+import {
+  fromLeftAnimation,
+  fromRightAnimation,
+  fromTopAnimation,
+} from '../utils/animations'
 
 const Header: FC = () => {
   const router = useRouter()
@@ -14,7 +21,17 @@ const Header: FC = () => {
   return (
     <nav className="p-4 pt-6 lg:px-16">
       <div className="grid grid-cols-12 gap-1">
-        <div className="col-span-3 md:col-span-6 ">
+        <motion.div
+          className="col-span-3 md:col-span-6 "
+          variants={fromLeftAnimation}
+          initial="initial"
+          animate="final"
+          transition={{
+            ease: 'easeInOut',
+            duration: 0.6,
+            delay: 0.4,
+          }}
+        >
           <div className="md:hidden">
             <Image
               src="/img/icons/logo.svg"
@@ -35,9 +52,19 @@ const Header: FC = () => {
               onClick={() => router.push('/')}
             />
           </div>
-        </div>
+        </motion.div>
         <div className="col-span-9 md:col-span-6 flex justify-evenly gap-2">
-          <div className="relative h-9 md:w-56">
+          <motion.div
+            className="relative h-9 md:w-56"
+            variants={fromTopAnimation}
+            initial="initial"
+            animate="final"
+            transition={{
+              ease: 'easeInOut',
+              duration: 0.4,
+              delay: 1,
+            }}
+          >
             <span className="absolute left-1 top-2 w-fit z-20 text-primary font-bold md:top-3">
               <Image
                 src="/img/icons/search.svg"
@@ -55,23 +82,23 @@ const Header: FC = () => {
             <span className="absolute right-3 top-2 w-fit z-20 text-white text-sm cursor-pointer md:top-3">
               X
             </span>
-          </div>
-          {!active && (
-            <button
-              className="btn-clip bg-custom_yellow text-black text-xs p-1
-             block font-nunito font-bold transition-all lg:text-lg md:w-36 md:h-10 md:p-0 
-             hover:text-white hover:font-black"
-              onClick={handleClick}
-            >
-              Connect Wallet
-            </button>
-          )}
-          {active && (
-            <div
-              className="btn-clip grid place-items-center bg-custom_yellow text-black text-xs p-1
-            font-nunito font-bold lg:text-sm md:w-36 md:h-10 md:p-0 cursor-pointer"
-              onClick={handleClick}
-            >
+          </motion.div>
+
+          <motion.button
+            className="btn-primary w-[150px] md:w-[158px] lg:w-[173px] h-[40px] md:h-[33px] lg:h-[39px] text-[12px] md:text-[16px] lg:text-[18px] cut-corners"
+            onClick={handleClick}
+            variants={fromRightAnimation}
+            initial="initial"
+            animate="final"
+            transition={{
+              ease: 'easeIn',
+              duration: 0.2,
+              delay: 1.4,
+            }}
+          >
+            {!active ? (
+              'Connect Wallet'
+            ) : (
               <span>
                 Connected{' '}
                 <span className="lg:text-xs">
@@ -79,8 +106,8 @@ const Header: FC = () => {
                   {account?.substring(account.length - 2)}
                 </span>
               </span>
-            </div>
-          )}
+            )}
+          </motion.button>
         </div>
       </div>
     </nav>
