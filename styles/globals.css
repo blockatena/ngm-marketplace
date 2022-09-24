@@ -14,8 +14,22 @@
   .screen-container {
     max-width: 2000px;
   }
-}
+  .btn-primary {
+    @apply font-btn bg-gradient-to-b from-custom-yellow to-custom-orange text-black font-bold hover:from-custom-yellow-hover hover:to-custom-orange-hover active:from-custom-yellow-active active:to-custom-orange-active transition-all ease-in-out duration-1000;
+  }
 
+  .cut-corners {
+    clip-path: polygon(6% 0, 100% 0, 100% 74%, 94% 100%, 0 100%, 0 27%);
+  }
+
+  .cut-card {
+    clip-path: polygon(16% 0, 100% 0, 100% 100%, 0 100%, 0 16%);
+  }
+
+  .trapezoid {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 11% 100%);
+  }
+}
 html,
 body {
   padding: 0;

@@ -9,7 +9,7 @@ interface LayoutProps {
 
 const Layout: FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="bg-fixed bg-cover flex justify-center bg-gradient-to-r from-dark_mild to-dark_heavy">
+    <div className="flex justify-center bg-gradient-to-r from-dark_mild to-dark_heavy">
       <div
         className="screen-container w-full bg-fixed bg-cover"
         style={{
