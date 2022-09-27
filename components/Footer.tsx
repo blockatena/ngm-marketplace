@@ -3,7 +3,10 @@ import { FC } from 'react'
 
 const Footer: FC = () => {
   return (
-    <footer className="p-4 pt-6 lg:px-16 bg-gradient-to-t from-custom_yellow_dark to-dark_mild">
+    <footer
+      className="p-4 pt-6 lg:px-16 bg-cover bg-gradient-to-t from-custom_yellow_dark to-dark_mild relative z-30"
+      style={{ backgroundImage: "url('/images/footer/bottom_footer.svg')" }}
+    >
       <div className="flex justify-between">
         <div>
           <Image
