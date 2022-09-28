@@ -90,10 +90,13 @@ const ProductPage: FC = () => {
           </div>
           <div
             className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 
-          gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] overflow-y-scroll"
+          gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-track-[#1F2021] overflow-y-scroll"
           >
             {avatars?.map((cardData, index) => (
               <AvatarCard key={index} {...cardData} />
+            ))}
+            {avatars?.map((cardData, index) => (
+              <AvatarCard key={index + 10} {...cardData} />
             ))}
           </div>
         </div>
