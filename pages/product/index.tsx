@@ -89,7 +89,7 @@ const ProductPage: FC = () => {
       </div>
       <div className="grid grid-cols-12 gap-4">
         <motion.div
-          className="col-span-3 h-[928px] p-10 bg-[#1F2021] rounded-lg"
+          className="hidden lg:block lg:col-span-3 h-[928px] p-10 bg-[#1F2021] rounded-lg"
           variants={fromLeftAnimation}
           initial="initial"
           whileInView="final"
@@ -105,7 +105,7 @@ const ProductPage: FC = () => {
           ))}
         </motion.div>
         <motion.div
-          className="col-span-9"
+          className="col-span-12 lg:col-span-9"
           variants={fromRightAnimation}
           initial="initial"
           whileInView="final"
@@ -134,7 +134,7 @@ const ProductPage: FC = () => {
             </span>
           </div>
           <div
-            className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 
+            className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 
           gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-track-[#1F2021] overflow-y-scroll"
           >
             {avatars?.map((cardData, index) => (
