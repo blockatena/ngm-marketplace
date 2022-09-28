@@ -3,17 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "^14 || ^16",
-    "yarn": ">=1.22.0",
-    "npm": "please-use-yarn"
+    "node": "^14 || ^16"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prettier": "prettier --write .",
-    "prepare": "husky install"
+    "prettier": "prettier --write ."
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.1",
