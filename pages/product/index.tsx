@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
@@ -5,10 +6,16 @@ import AvatarCard from '../../components/AvatarCard'
 import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 import historyIcon from '../../public/images/icons/Activity.svg'
 import categoryIcon from '../../public/images/icons/Category.svg'
+import editIcon from '../../public/images/icons/edit.svg'
 import collectionIcon from '../../public/images/icons/Folder.svg'
 import messageIcon from '../../public/images/icons/Message.svg'
 import settingsIcon from '../../public/images/icons/Setting.svg'
 import walletIcon from '../../public/images/icons/Wallet.svg'
+import {
+  fromLeftAnimation,
+  fromRightAnimation,
+  opacityAnimation,
+} from '../../utils/animations'
 
 const routes = [
   { name: 'category', route: '/', icon: categoryIcon },
@@ -57,23 +64,61 @@ const ProductPage: FC = () => {
         className="w-full h-[351px] bg-cover rounded-t-lg relative flex justify-center mb-40"
         style={{ backgroundImage: "url('/images/hero/product_page_hero.png')" }}
       >
-        <div className="h-[126px] w-[151px] absolute -bottom-[63px]">
+        <div
+          className="text-[#E5E5E5] font-inter lg:text-[19px] absolute bottom-4 right-6 
+        bg-[#2B3137] opacity-80 p-2 cursor-pointer rounded-lg flex items-end gap-2"
+        >
+          <Image src={editIcon} alt="edit" /> Edit
+        </div>
+        <motion.div
+          className="h-[126px] w-[151px] absolute -bottom-[63px]"
+          variants={opacityAnimation}
+          initial="initial"
+          animate="final"
+          transition={{
+            ease: 'easeInOut',
+            duration: 1,
+            delay: 0.4,
+          }}
+        >
           <Image src={heroIcon} alt="" />
           <p className="text-white text-center font-poppins text-[21px] font-medium">
             Oliver Torsney
           </p>
-        </div>
+        </motion.div>
       </div>
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-3 h-[928px] p-10 bg-[#1F2021] rounded-lg">
+        <motion.div
+          className="col-span-3 h-[928px] p-10 bg-[#1F2021] rounded-lg"
+          variants={fromLeftAnimation}
+          initial="initial"
+          whileInView="final"
+          viewport={{ once: true }}
+          transition={{
+            ease: 'easeInOut',
+            duration: 0.4,
+            delay: 0.6,
+          }}
+        >
           {routes?.map(({ icon, name, route }) => (
             <NavRoute key={name} icon={icon} name={name} route={route} />
           ))}
-        </div>
-        <div className="col-span-9">
+        </motion.div>
+        <motion.div
+          className="col-span-9"
+          variants={fromRightAnimation}
+          initial="initial"
+          whileInView="final"
+          viewport={{ once: true }}
+          transition={{
+            ease: 'easeInOut',
+            duration: 0.4,
+            delay: 0.8,
+          }}
+        >
           <div className="text-white font-poppins text-[20px] pl-[25%] p-6">
             <span
-              className="border-b-4 border-custom_yellow cursor-pointer transition-all"
+              className="border-b-2 border-custom_yellow cursor-pointer transition-all"
               style={!isCollections ? { border: 'none' } : {}}
               onClick={() => setIsCollections(true)}
             >
@@ -81,7 +126,7 @@ const ProductPage: FC = () => {
             </span>{' '}
             <span className="text-gray-500">|</span>{' '}
             <span
-              className="border-b-4 border-custom_yellow cursor-pointer transition-all"
+              className="border-b-2 border-custom_yellow cursor-pointer transition-all"
               style={isCollections ? { border: 'none' } : {}}
               onClick={() => setIsCollections(false)}
             >
@@ -99,7 +144,7 @@ const ProductPage: FC = () => {
               <AvatarCard key={index + 10} {...cardData} />
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </main>
   )
