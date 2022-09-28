@@ -21,6 +21,7 @@ module.exports = {
         custom_purple: '#100811',
         custom_gray_light: '#1E1E1E',
         custom_gray_dark: '#41454B',
+        custom_gray_outline: '#727272',
 
         'custom-yellow': '#FFDB1B',
         'custom-yellow-hover': '#e6c518',

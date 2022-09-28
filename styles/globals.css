@@ -29,6 +29,21 @@
   .trapezoid {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 11% 100%);
   }
+  .btn-clip {
+    clip-path: polygon(15% 0, 100% 0, 100% 75%, 75% 100%, 0 100%, 0 25%);
+  }
+  .avatar-card-clip {
+    clip-path: polygon(25% 0, 100% 0, 100% 100%, 0 100%, 0 25%);
+  }
+  .avatar-clip-container {
+    clip-path: polygon(25% 0, 100% 0, 100% 100%, 0 100%, 0 25%);
+  }
+  .avatar-btn-right {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 5% 100%);
+  }
+  .avatar-btn-left {
+    clip-path: polygon(0 0, 95% 0, 100% 100%, 0 100%);
+  }
 }
 html,
 body {
