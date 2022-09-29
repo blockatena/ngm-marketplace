@@ -34,6 +34,12 @@ const avatars = [
   { name: 'Fuse', img: '/images/auction/auction_img_4.svg' },
   { name: 'Fortune', img: '/images/auction/auction_img_5.svg' },
   { name: 'Crypto', img: '/images/auction/auction_img_6.svg' },
+  { name: 'Wraith', img: '/images/auction/auction_img_1.svg' },
+  { name: 'Horizon', img: '/images/auction/auction_img_2.svg' },
+  { name: 'Lifeline', img: '/images/auction/auction_img_3.svg' },
+  { name: 'Fuse', img: '/images/auction/auction_img_4.svg' },
+  { name: 'Fortune', img: '/images/auction/auction_img_5.svg' },
+  { name: 'Crypto', img: '/images/auction/auction_img_6.svg' },
 ]
 
 const NavRoute: FC<{
@@ -171,10 +177,20 @@ const ProductPage: FC = () => {
           gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
           >
             {avatars?.map((cardData, index) => (
-              <AvatarCard key={index} {...cardData} />
-            ))}
-            {avatars?.map((cardData, index) => (
-              <AvatarCard key={index + 10} {...cardData} />
+              <motion.div
+                key={index}
+                variants={opacityAnimation}
+                initial="initial"
+                whileInView="final"
+                viewport={{ once: true }}
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 0.6,
+                  delay: index < 3 ? 1.2 + index * 0.2 : index * 0.2,
+                }}
+              >
+                <AvatarCard {...cardData} />
+              </motion.div>
             ))}
           </div>
         </motion.div>
