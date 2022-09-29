@@ -5,14 +5,13 @@ const AvatarCard: FC<{ name: string; img: string }> = ({ name, img }) => {
   const [isSelected, setIsSelected] = useState(false)
   const [shadow, setShadow] = useState('')
   useEffect(() => {
-    if (isSelected) setShadow('shadow-xl shadow-custom_yellow')
+    if (isSelected) setShadow('avatar-shadow')
     else setShadow('')
   }, [isSelected])
   return (
     <div onClick={() => setIsSelected((prev) => !prev)}>
       <div
-        className={`${shadow} relative w-min mt-16 hover:shadow-lg active:shadow-lg hover:shadow-custom_yellow
-         active:shadow-custom_yellow cursor-pointer
+        className={`${shadow} relative w-min mt-16 hover:avatar-shadow cursor-pointer
     before:absolute before:-right-2 before:-top-2 before:w-[82px] before:h-[88px] before:bg-custom_yellow before:rounded-xl 
     `}
       >

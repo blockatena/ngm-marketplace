@@ -44,6 +44,9 @@
   .avatar-btn-left {
     clip-path: polygon(0 0, 95% 0, 100% 100%, 0 100%);
   }
+  .avatar-shadow {
+    box-shadow: 0 0 10px 5px #f9d017;
+  }
 }
 html,
 body {
