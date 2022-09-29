@@ -1,7 +1,8 @@
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { FC, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useState } from 'react'
+import { FaHamburger } from 'react-icons/fa'
 import AvatarCard from '../../components/AvatarCard'
 import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 import historyIcon from '../../public/images/icons/Activity.svg'
@@ -35,14 +36,15 @@ const avatars = [
   { name: 'Crypto', img: '/images/auction/auction_img_6.svg' },
 ]
 
-const NavRoute: FC<{ icon: string; name: string; route: string }> = ({
-  icon,
-  name,
-  route,
-}) => {
+const NavRoute: FC<{
+  icon: string
+  name: string
+  route: string
+  isDrawer?: boolean
+}> = ({ icon, name, route, isDrawer }) => {
   const router = useRouter()
-
   const handleClick = () => {
+    if (isDrawer) return
     router.push(route)
   }
   return (
@@ -56,8 +58,33 @@ const NavRoute: FC<{ icon: string; name: string; route: string }> = ({
   )
 }
 
+const Drawer: FC<{
+  isOpen: boolean
+  setIsOpen: Dispatch<SetStateAction<boolean>>
+}> = ({ setIsOpen }) => {
+  const handleClick = () => {
+    //Route to new route
+    setIsOpen(false)
+  }
+  return (
+    <div className="md:lg min-h-screen absolute top-0 right-4 left-4 p-4 bg-[#1F2021] rounded-lg">
+      <div className="text-right font-light">
+        <span className="cursor-pointer" onClick={() => setIsOpen(false)}>
+          X
+        </span>
+      </div>
+      {routes?.map(({ icon, name, route }) => (
+        <div key={name} onClick={handleClick}>
+          <NavRoute icon={icon} name={name} route={route} isDrawer={true} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 const ProductPage: FC = () => {
   const [isCollections, setIsCollections] = useState(true)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   return (
     <main className="p-4 pt-6 pb-0 lg:px-8 relative -bottom-8">
       <div
@@ -134,6 +161,12 @@ const ProductPage: FC = () => {
             </span>
           </div>
           <div
+            onClick={() => setIsDrawerOpen(true)}
+            className="text-white p-4 lg:hidden"
+          >
+            <FaHamburger className=" text-lg hover:text-custom_yellow text-[#E5E5E5]" />
+          </div>
+          <div
             className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 
           gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
           >
@@ -146,6 +179,23 @@ const ProductPage: FC = () => {
           </div>
         </motion.div>
       </div>
+      <AnimatePresence>
+        {isDrawerOpen && (
+          <motion.div
+            className="text-[#E5E5E5] absolute top-0 bottom-0 left-0 right-0"
+            variants={fromLeftAnimation}
+            initial="initial"
+            animate="final"
+            exit="initial"
+            transition={{
+              ease: 'easeInOut',
+              duration: 0.25,
+            }}
+          >
+            <Drawer isOpen={isDrawerOpen} setIsOpen={setIsDrawerOpen} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   )
 }
