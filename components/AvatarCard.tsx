@@ -36,7 +36,7 @@ const AvatarCard: FC<{ name: string; img: string }> = ({ name, img }) => {
             <div className="text-custom_yellow text-lg font-josefin">
               {name}
             </div>
-            <div className="text-white">
+            <div className="text-white text-xs">
               <span className="rounded bg-gray-600 p-1 font-bold font-lora">
                 12
               </span>

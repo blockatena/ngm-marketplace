@@ -75,8 +75,7 @@ const Header: FC = () => {
             </span>
             <input
               type="text"
-              placeholder="|"
-              className="w-full h-full px-7 rounded placeholder:text-custom_yellow font-light text-white 
+              className="w-full h-full px-7 rounded caret-custom_yellow placeholder:text-custom_yellow font-light text-white 
               focus:border focus:border-custom_yellow focus:outline-none bg-custom_grey md:h-11"
             />
             <span className="absolute right-3 top-2 w-fit z-20 text-white text-sm cursor-pointer md:top-3">
