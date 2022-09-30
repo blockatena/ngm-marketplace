@@ -120,80 +120,83 @@ const ProductPage: FC = () => {
           </p>
         </motion.div>
       </div>
-      <div className="grid grid-cols-12 gap-4">
-        <motion.div
-          className="hidden lg:block lg:col-span-3 h-[928px] p-10 bg-[#1F2021] rounded-lg"
-          variants={fromLeftAnimation}
-          initial="initial"
-          whileInView="final"
-          viewport={{ once: true }}
-          transition={{
-            ease: 'easeInOut',
-            duration: 0.4,
-            delay: 0.6,
-          }}
-        >
-          {routes?.map(({ icon, name, route }) => (
-            <NavRoute key={name} icon={icon} name={name} route={route} />
-          ))}
-        </motion.div>
-        <motion.div
-          className="col-span-12 lg:col-span-9"
-          variants={fromRightAnimation}
-          initial="initial"
-          whileInView="final"
-          viewport={{ once: true }}
-          transition={{
-            ease: 'easeInOut',
-            duration: 0.4,
-            delay: 0.8,
-          }}
-        >
-          <div className="text-white font-poppins text-[20px] pl-[25%] p-6">
-            <span
-              className="border-b-2 border-custom_yellow cursor-pointer transition-all"
-              style={!isCollections ? { border: 'none' } : {}}
-              onClick={() => setIsCollections(true)}
-            >
-              Collections
-            </span>{' '}
-            <span className="text-gray-500">|</span>{' '}
-            <span
-              className="border-b-2 border-custom_yellow cursor-pointer transition-all"
-              style={isCollections ? { border: 'none' } : {}}
-              onClick={() => setIsCollections(false)}
-            >
-              Activity
-            </span>
-          </div>
-          <div
-            onClick={() => setIsDrawerOpen(true)}
-            className="text-white p-4 lg:hidden"
+      <div className="grid place-items-center">
+        <div className="grid grid-cols-12 gap-4 w-max">
+          <motion.div
+            className="hidden lg:block lg:col-span-3 h-[928px] p-10 bg-[#1F2021] rounded-lg"
+            variants={fromLeftAnimation}
+            initial="initial"
+            whileInView="final"
+            viewport={{ once: true }}
+            transition={{
+              ease: 'easeInOut',
+              duration: 0.4,
+              delay: 0.6,
+            }}
           >
-            <FaHamburger className=" text-lg hover:text-custom_yellow text-[#E5E5E5]" />
-          </div>
-          <div
-            className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 
-          gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
-          >
-            {avatars?.map((cardData, index) => (
-              <motion.div
-                key={index}
-                variants={opacityAnimation}
-                initial="initial"
-                whileInView="final"
-                viewport={{ once: true }}
-                transition={{
-                  ease: 'easeInOut',
-                  duration: 0.6,
-                  delay: index < 3 ? 1.2 + index * 0.2 : index * 0.2,
-                }}
-              >
-                <AvatarCard {...cardData} />
-              </motion.div>
+            {routes?.map(({ icon, name, route }) => (
+              <NavRoute key={name} icon={icon} name={name} route={route} />
             ))}
-          </div>
-        </motion.div>
+          </motion.div>
+          <motion.div
+            className="col-span-12 lg:col-span-9"
+            variants={fromRightAnimation}
+            initial="initial"
+            whileInView="final"
+            viewport={{ once: true }}
+            transition={{
+              ease: 'easeInOut',
+              duration: 0.4,
+              delay: 0.8,
+            }}
+          >
+            <div className="text-white font-poppins text-[20px] pl-[25%] p-6">
+              <span
+                className="border-b-2 border-custom_yellow cursor-pointer transition-all"
+                style={!isCollections ? { border: 'none' } : {}}
+                onClick={() => setIsCollections(true)}
+              >
+                Collections
+              </span>{' '}
+              <span className="text-gray-500">|</span>{' '}
+              <span
+                className="border-b-2 border-custom_yellow cursor-pointer transition-all"
+                style={isCollections ? { border: 'none' } : {}}
+                onClick={() => setIsCollections(false)}
+              >
+                Activity
+              </span>
+            </div>
+            <div
+              onClick={() => setIsDrawerOpen(true)}
+              className="text-white p-4 lg:hidden"
+            >
+              <FaHamburger className=" text-lg hover:text-custom_yellow text-[#E5E5E5]" />
+            </div>
+            <div
+              className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 
+          gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
+            >
+              {avatars?.map((cardData, index) => (
+                <motion.div
+                  className="flex justify-center"
+                  key={index}
+                  variants={opacityAnimation}
+                  initial="initial"
+                  whileInView="final"
+                  viewport={{ once: true }}
+                  transition={{
+                    ease: 'easeInOut',
+                    duration: 0.6,
+                    delay: index < 3 ? 1.2 + index * 0.2 : index * 0.2,
+                  }}
+                >
+                  <AvatarCard {...cardData} />
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </div>
       <AnimatePresence>
         {isDrawerOpen && (

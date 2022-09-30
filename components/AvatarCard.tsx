@@ -20,7 +20,7 @@ const AvatarCard: FC<{ name: string; img: string }> = ({ name, img }) => {
         </div>
         <div
           className="
-      avatar-card-clip relative w-[250px] h-[330px] rounded-tr-lg 
+      avatar-card-clip relative w-[250px] h-[330px] rounded-tr-lg rounded-b-lg 
       bg-gradient-to-b from-custom_gray_outline via-[#373737] to-[#1C1C1C]"
         >
           <div
@@ -52,7 +52,7 @@ const AvatarCard: FC<{ name: string; img: string }> = ({ name, img }) => {
             </div>
           </div>
 
-          <div className="flex  absolute top-10 -bottom-3 right-0 left-0 ">
+          <div className="flex  absolute top-10 -bottom-0 right-0 left-0 ">
             <div className="text-center grid place-items-center avatar-btn-left w-full  h-full bg-black text-gray-400 rounded-l-lg">
               <p className="text-xs font-poppins my-0">Current Bid:</p>
               <p className="text-sm font-poppins font-medium my-0">$20,000</p>
@@ -61,7 +61,7 @@ const AvatarCard: FC<{ name: string; img: string }> = ({ name, img }) => {
             <div
               role="button"
               className="avatar-btn-right cursor-pointer w-full h-full bg-custom_yellow opacity-100
-        grid place-items-center text-black font-poppins font-semibold text-xl capitalize rounded-r-lg 
+        grid place-items-center text-black font-poppins font-semibold text-base capitalize rounded-r-lg 
         hover:bg-[#e6c518]"
             >
               Buy Now
