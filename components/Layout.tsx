@@ -10,12 +10,7 @@ interface LayoutProps {
 const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex justify-center bg-gradient-to-r from-dark_mild to-dark_heavy">
-      <div
-        className="screen-container w-full bg-fixed bg-cover"
-        style={{
-          backgroundImage: "url('/img/background.png')",
-        }}
-      >
+      <div className=" w-full max-w-[2000px] bg-fixed bg-cover bg-market">
         <Header />
         {children}
         <Footer />

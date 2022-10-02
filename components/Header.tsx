@@ -34,7 +34,7 @@ const Header: FC = () => {
         >
           <div className="md:hidden">
             <Image
-              src="/img/icons/logo.svg"
+              src="/images/icons/logo.svg"
               alt="nftzone_logo"
               width="100px"
               height="46px"
@@ -44,7 +44,7 @@ const Header: FC = () => {
           </div>
           <div className="hidden md:block">
             <Image
-              src="/img/icons/logo.svg"
+              src="/images/icons/logo.svg"
               alt="nftzone_logo"
               width="188px"
               height="64px"
@@ -67,7 +67,7 @@ const Header: FC = () => {
           >
             <span className="absolute left-1 top-2 w-fit z-20 text-primary font-bold md:top-3">
               <Image
-                src="/img/icons/search.svg"
+                src="/images/icons/search.svg"
                 alt="search"
                 width="25px"
                 height="15px"

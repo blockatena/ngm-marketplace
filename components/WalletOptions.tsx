@@ -29,34 +29,34 @@ interface CardProps extends WalletOptionType {
 
 const walletOptions: WalletOptionType[] = [
   {
-    img: '/img/icons/portis.png',
+    img: '/images/icons/portis.png',
     title: 'portis',
     content:
       'Offer your user a familiar experience by signing in with just an email and password.',
     isInactive: true,
   },
   {
-    img: '/img/icons/metamask.png',
+    img: '/images/icons/metamask.png',
     title: 'metamask',
     content:
       'Available as a browser extension and as a mobile app. Metamask equips you with a key vault.',
   },
   {
-    img: '/img/icons/coinbase.png',
+    img: '/images/icons/coinbase.png',
     title: 'coinbase wallet',
     content:
       'Offer your user a familiar experience by signing in with just an email and password.',
     isInactive: true,
   },
   {
-    img: '/img/icons/osmosis.png',
+    img: '/images/icons/osmosis.png',
     title: 'osmosis',
     content:
       'Offer your user a familiar experience by signing in with just an email and password.',
     isInactive: true,
   },
   {
-    img: '/img/icons/phantom.png',
+    img: '/images/icons/phantom.png',
     title: 'phantom',
     content:
       'Offer your user a familiar experience by signing in with just an email and password.',

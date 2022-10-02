@@ -27,7 +27,7 @@ const AvatarCard: FC<{ name: string; img: string }> = ({ name, img }) => {
             className="avatar-card-clip rounded-b-lg rounded-tr-lg bg-dark_mild bg-scroll bg-cover
            absolute top-3 bottom-3 left-3 right-3"
             style={{
-              backgroundImage: "url('/img/bag.png')",
+              backgroundImage: "url('/images/others/avatar_bg.png')",
             }}
           ></div>
         </div>

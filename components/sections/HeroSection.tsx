@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import NFTZoneLogo from '../NFTZoneLogo'
 
-import nft_hero_character from '../../public/images/hero/hero_image.svg'
+import nft_hero_character from '../../public/images/hero/hero_image.png'
 import {
   fromLeftAnimation,
   fromRightAnimation,

@@ -11,9 +11,9 @@
   .btn-clip {
     clip-path: polygon(15% 0, 100% 0, 100% 75%, 75% 100%, 0 100%, 0 25%);
   }
-  .screen-container {
+  /* .screen-container {
     max-width: 2000px;
-  }
+  } */
   .btn-primary {
     @apply font-btn bg-gradient-to-b from-custom-yellow to-custom-orange text-black font-bold hover:from-custom-yellow-hover hover:to-custom-orange-hover active:from-custom-yellow-active active:to-custom-orange-active transition-all ease-in-out duration-1000;
   }
@@ -35,9 +35,6 @@
   .avatar-card-clip {
     clip-path: polygon(25% 0, 100% 0, 100% 100%, 0 100%, 0 25%);
   }
-  /* .avatar-clip-container {
-    clip-path: polygon(25% 0, 100% 0, 100% 100%, 0 100%, 0 25%);
-  } */
   .avatar-btn-right {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 5% 100%);
   }

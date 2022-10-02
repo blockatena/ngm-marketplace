@@ -29,12 +29,7 @@ const ConnectPage: NextPage = () => {
           <span className="text-custom_yellow">|</span>{' '}
           <span className="text-white font-medium">connect wallet</span>
         </h6>
-        <div
-          className="placeholder:bg-fixed bg-cover mb-8  h-80 w-full text-white flex items-center px-8 lg:mb-14"
-          style={{
-            backgroundImage: "url('/img/connect_hero.png')",
-          }}
-        >
+        <div className="bg-connectHero placeholder:bg-fixed bg-cover mb-8  h-80 w-full text-white flex items-center px-8 lg:mb-14">
           <div className="h-56 rounded-lg bg-custom_purple opacity-70 w-full lg:w-2/5 grid place-items-center">
             <div className="border-l-4 border-custom_yellow px-2">
               <p className="text-custom_yellow font-inter font-light md:text-2xl lg:text-4xl">
