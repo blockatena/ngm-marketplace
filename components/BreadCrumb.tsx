@@ -9,7 +9,7 @@ interface BreadCrumbProps {
 const BreadCrumb: FC<BreadCrumbProps> = ({ crumbs }) => {
   const router = useRouter()
   return (
-    <div className="flex gap-2 lg:gap-4 text-base lg:text-[19px] font-poppins capitalize">
+    <div className="flex gap-2 lg:gap-4 text-[14px] md:text-base lg:text-[19px] font-poppins capitalize">
       {crumbs.map(({ name, route }, index) => {
         if (index + 1 === crumbs.length) {
           return (

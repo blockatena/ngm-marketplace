@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { NextPage } from 'next'
 import { useState } from 'react'
 import BreadCrumb from '../../components/BreadCrumb'
@@ -5,7 +6,13 @@ import CollectionCard from '../../components/CollectionCard'
 import CustomSelect from '../../components/CustomSelect'
 import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
-import { CollectionCardType, CrumbType, selectDataType } from '../../interfaces'
+import type {
+  CollectionCardType,
+  CrumbType,
+  selectDataType,
+} from '../../interfaces'
+import { opacityAnimation } from '../../utils/animations'
+import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 
 const crumbData: CrumbType[] = [
   { name: 'home', route: '/' },
@@ -60,8 +67,25 @@ const collectionsData: CollectionCardType[] = [
 const CollectionsPage: NextPage = () => {
   const [selectedItem, setSelectedItem] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const { width } = useWindowDimensions()
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+
+  const handleDelay = (index: number): number => {
+    if (width >= 1536) {
+      if (index < 8) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else if (width >= 1024) {
+      if (index < 3) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else if (width >= 768) {
+      if (index < 4) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else {
+      if (index < 1) return 1.2 + index * 0.2
+      else return index * 0.2
+    }
+  }
 
   return (
     <div className="min-h-screen p-4 pt-6 lg:px-16 mb-6">
@@ -69,19 +93,33 @@ const CollectionsPage: NextPage = () => {
       <div className="flex justify-center mt-10">
         <PageHeading name="collections" />
       </div>
-      <div className="flex justify-end mt-8 mb-32 relative">
-        <CustomSelect
-          selectedItem={selectedItem}
-          setSelectedItem={setSelectedItem}
-          selectData={selectData}
-          label="Sorted by"
-        />
+      <div className="h-48 flex justify-end mt-8 mb-5 lg:mb-10">
+        <div className="absolute z-20">
+          <CustomSelect
+            selectedItem={selectedItem}
+            setSelectedItem={setSelectedItem}
+            selectData={selectData}
+            label="Sorted by"
+          />
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-y-8 lg:gap-y-16 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         {collectionsData.map((data, index) => (
-          <div key={index} className="flex justify-center">
+          <motion.div
+            key={index}
+            className="flex justify-center"
+            variants={opacityAnimation}
+            initial="initial"
+            whileInView="final"
+            viewport={{ once: true }}
+            transition={{
+              ease: 'easeInOut',
+              duration: 0.6,
+              delay: handleDelay(index),
+            }}
+          >
             <CollectionCard {...data} />
-          </div>
+          </motion.div>
         ))}
       </div>
       <div className="my-12 lg:my-20 flex justify-end">
