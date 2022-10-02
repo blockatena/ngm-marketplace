@@ -17,6 +17,7 @@ import {
   fromRightAnimation,
   opacityAnimation,
 } from '../../utils/animations'
+import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 
 const routes = [
   { name: 'category', route: '/', icon: categoryIcon },
@@ -53,6 +54,7 @@ const NavRoute: FC<{
     if (isDrawer) return
     router.push(route)
   }
+
   return (
     <div
       className="p-1 flex gap-8 cursor-pointer my-5 hover:bg-[#41391C] text-white hover:text-[#FFC400]"
@@ -69,9 +71,10 @@ const Drawer: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
 }> = ({ setIsOpen }) => {
   const handleClick = () => {
-    //Route to new route
+    //route to new route
     setIsOpen(false)
   }
+
   return (
     <div className="md:lg min-h-screen absolute top-0 right-4 left-4 p-4 bg-[#1F2021] rounded-lg">
       <div className="text-right font-light">
@@ -91,6 +94,24 @@ const Drawer: FC<{
 const ProductPage: FC = () => {
   const [isCollections, setIsCollections] = useState(true)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const { width } = useWindowDimensions()
+
+  const handleDelay = (index: number): number => {
+    if (width >= 1536) {
+      if (index < 8) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else if (width >= 1280) {
+      if (index < 3) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else if (width >= 768) {
+      if (index < 4) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else {
+      if (index < 1) return 1.2 + index * 0.2
+      else return index * 0.2
+    }
+  }
+
   return (
     <main className="p-4 pt-6 pb-0 lg:px-8 relative -bottom-8">
       <div
@@ -174,7 +195,7 @@ const ProductPage: FC = () => {
               <FaHamburger className=" text-lg hover:text-custom_yellow text-[#E5E5E5]" />
             </div>
             <div
-              className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 
+              className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
           gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
             >
               {avatars?.map((cardData, index) => (
@@ -188,7 +209,7 @@ const ProductPage: FC = () => {
                   transition={{
                     ease: 'easeInOut',
                     duration: 0.6,
-                    delay: index < 3 ? 1.2 + index * 0.2 : index * 0.2,
+                    delay: handleDelay(index),
                   }}
                 >
                   <AvatarCard {...cardData} />

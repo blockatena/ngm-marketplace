@@ -3,6 +3,7 @@ import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 
 import { fromLeftAnimation, fromRightAnimation } from '../utils/animations'
@@ -100,6 +101,7 @@ const Card: FC<CardProps> = ({
 }
 
 const WalletOptions: FC = () => {
+  const router = useRouter()
   const injectedConnector = new InjectedConnector({
     supportedChainIds: [1, 3, 4, 5, 42],
   })
@@ -111,6 +113,7 @@ const WalletOptions: FC = () => {
       if (!active) {
         try {
           await activate(injectedConnector)
+          router.push('/collections')
         } catch (e) {
           console.error(e)
         }
