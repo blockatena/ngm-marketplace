@@ -10,7 +10,7 @@ module.exports = {
     extend: {
       backgroundImage: {
         hero: 'url(/images/hero/hero_background.png)',
-        mainHomePage: 'url(/images/others/main_bg_homepage.svg)',
+        mainHomePage: 'url(/images/others/main_bg_homepage.png)',
         collectionCard: 'url(/images/collections/collection_card_bg.jpg)',
         collectionCardActive: 'url(/images/collections/active_bg.jpg)',
         market: 'url(/images/others/background.png)',
