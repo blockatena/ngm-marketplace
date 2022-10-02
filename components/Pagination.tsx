@@ -1,0 +1,48 @@
+import { FC, useEffect, useState } from 'react'
+
+interface PaginationProps {
+  itemsPerPage: number
+  totalItems: number
+  paginate: (_pageNumber: number) => void
+  currentPage: number
+}
+
+const Pagination: FC<PaginationProps> = ({
+  itemsPerPage,
+  totalItems,
+  paginate,
+  currentPage,
+}) => {
+  const [pageNumbers, setPageNumbers] = useState<number[]>([])
+
+  useEffect(() => {
+    let pages: number[] = []
+    for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
+      pages.push(i)
+    }
+    setPageNumbers(pages)
+  }, [itemsPerPage, totalItems])
+
+  return (
+    <nav className="text-white">
+      <ul className="flex gap-1">
+        {pageNumbers.length &&
+          pageNumbers.map((number) => (
+            <li
+              key={number}
+              onClick={() => paginate(number)}
+              className={` bg-[#333335] cursor-pointer py-1 px-2 rounded-sm font-inter text-sm lg:text-lg ${
+                currentPage === number
+                  ? ' text-[#F4F4F4] shadow-inner shadow-[#f4f4f4]'
+                  : 'text-[#949191]'
+              }`}
+            >
+              {number}
+            </li>
+          ))}
+      </ul>
+    </nav>
+  )
+}
+
+export default Pagination

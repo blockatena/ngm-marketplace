@@ -11,6 +11,8 @@ module.exports = {
       backgroundImage: {
         hero: 'url(/images/hero/hero_background.svg)',
         mainHomePage: 'url(/images/others/main_bg_homepage.svg)',
+        collectionCard: 'url(/images/collections/collection_card_bg.jpg)',
+        collectionCardActive: 'url(/images/collections/active_bg.jpg)',
       },
       colors: {
         dark_mild: '#141619',
