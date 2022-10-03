@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 import { CollectionCardType } from '../interfaces'
 
@@ -10,13 +11,16 @@ const CollectionCard: FC<CollectionCardProps> = ({
   imageMiddle,
   imageBack,
 }) => {
+  const router = useRouter()
   const [isHovered, setIsHovered] = useState(false)
+
   return (
     <div
       className="w-[352px] h-[430px]  relative flex justify-center cursor-pointer 
     hover:-translate-y-8 transition-all"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => router.push('/product/1')}
     >
       <div
         className={`bg-transparent  w-[80%] absolute z-10 top-6 bottom-6 skew-y-6 -skew-x-6 ml-[10%]

@@ -41,6 +41,8 @@ module.exports = {
       lora: ['Lora', 'serif'],
       nunito: ['Nunito Sans', 'sans-serif'],
       poppins: ['Poppins', 'sans-serif'],
+      play: ['Play', 'sans-serif'],
+      josefin: ['Josefin Sans', 'sans-serif'],
     },
   },
   plugins: [require('tailwind-scrollbar')({ nocompatible: true })],

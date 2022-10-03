@@ -2,6 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -11,11 +13,11 @@
   .btn-clip {
     clip-path: polygon(15% 0, 100% 0, 100% 75%, 75% 100%, 0 100%, 0 25%);
   }
-  /* .screen-container {
-    max-width: 2000px;
-  } */
   .btn-primary {
     @apply font-btn bg-gradient-to-b from-custom-yellow to-custom-orange text-black font-bold hover:from-custom-yellow-hover hover:to-custom-orange-hover active:from-custom-yellow-active active:to-custom-orange-active transition-all ease-in-out duration-1000;
+  }
+  .btn-secondary {
+    @apply border-2 rounded-lg border-[#05C14D] text-white font-poppins hover:border-custom_yellow hover:text-custom_yellow;
   }
 
   .cut-corners {
