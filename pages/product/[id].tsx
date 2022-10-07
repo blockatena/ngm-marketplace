@@ -2,9 +2,10 @@ import { NextPage } from 'next'
 import Image from 'next/image'
 import BreadCrumb from '../../components/BreadCrumb'
 import PageHeading from '../../components/PageHeading'
+import DescriptionBidHistorySection from '../../components/sections/DescriptionBidHistorySection'
+import ExploreSection from '../../components/sections/ExploreSection'
 import ProductOverviewSection from '../../components/sections/ProductOverviewSection'
 import type { CrumbType } from '../../interfaces'
-// import topVector from '../../public/images/others/top_vector.png'
 import leftVector from '../../public/images/others/left_vector.png'
 import rightVector from '../../public/images/others/right_vector.png'
 
@@ -16,10 +17,10 @@ const crumbData: CrumbType[] = [
 
 const ViewProductPage: NextPage = () => {
   return (
-    <div className="min-h-screen p-4 pt-6 lg:px-16 mb-6">
+    <main className="min-h-screen p-4 pt-6 lg:px-16 mb-6">
       <BreadCrumb crumbs={crumbData} />
       <PageHeading name="apex legend" />
-      <div className="mt-16">
+      <div className="mt-16 mb-8">
         <div className="w-full h-[40px] flex mb-4">
           <Image
             src="/images/others/top_vector.png"
@@ -42,7 +43,9 @@ const ViewProductPage: NextPage = () => {
           </div>
         </div>
       </div>
-    </div>
+      <DescriptionBidHistorySection />
+      <ExploreSection />
+    </main>
   )
 }
 

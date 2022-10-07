@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { NextPage } from 'next'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { Dispatch, FC, SetStateAction, useState } from 'react'
@@ -91,7 +92,7 @@ const Drawer: FC<{
   )
 }
 
-const ProductPage: FC = () => {
+const ProductPage: NextPage = () => {
   const [isCollections, setIsCollections] = useState(true)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { width } = useWindowDimensions()

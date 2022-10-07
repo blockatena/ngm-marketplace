@@ -15,7 +15,7 @@ const ProductOverviewSection: FC = () => {
   }, [width])
 
   return (
-    <div className="flex flex-col xl:flex-row gap-4 lg:gap-0 2xl:gap-20 xl:justify-between p-0">
+    <section className="flex flex-col xl:flex-row gap-4 lg:gap-0 2xl:gap-20 xl:justify-between p-0">
       <motion.div
         className="flex justify-center"
         variants={fromLeftAnimation}
@@ -103,7 +103,7 @@ const ProductOverviewSection: FC = () => {
           </button>
         </div>
       </motion.div>
-    </div>
+    </section>
   )
 }
 

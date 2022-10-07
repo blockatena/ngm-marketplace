@@ -90,9 +90,7 @@ const CollectionsPage: NextPage = () => {
   return (
     <div className="min-h-screen p-4 pt-6 lg:px-16 mb-6">
       <BreadCrumb crumbs={crumbData} />
-      {/* <div className="flex justify-center mt-10"> */}
       <PageHeading name="collections" />
-      {/* </div> */}
       <div className="h-16 flex justify-end mt-2 mb-5 lg:mb-[90px]">
         <div className="absolute z-40">
           <CustomSelect
