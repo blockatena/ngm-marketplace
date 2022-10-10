@@ -17,11 +17,13 @@ const crumbData: CrumbType[] = [
 
 const ViewProductPage: NextPage = () => {
   return (
-    <main className="min-h-screen p-4 pt-6 lg:px-16 mb-6">
-      <BreadCrumb crumbs={crumbData} />
+    <main className="min-h-screen p-2 pt-6 lg:px-16 mb-6">
+      <div className="px-2 md:px-4 lg:px-0">
+        <BreadCrumb crumbs={crumbData} />
+      </div>
       <PageHeading name="apex legend" />
       <div className="mt-16 mb-8">
-        <div className="w-full h-[40px] flex mb-4">
+        <div className="w-full h-[20px] md:h-[40px] flex mb-4">
           <Image
             src="/images/others/top_vector.png"
             alt=""
@@ -30,21 +32,23 @@ const ViewProductPage: NextPage = () => {
           />
         </div>
         <div className="grid grid-cols-12 ">
-          <div className="col-span-1 w-7 flex">
+          <div className="col-span-1 w-3 lg:w-7 flex">
             {<Image src={leftVector} alt="" />}
           </div>
           <div className="col-span-10 flex justify-center">
             <ProductOverviewSection />
           </div>
           <div className="col-span-1 flex justify-end ">
-            <div className="w-7 flex">
+            <div className="w-3 lg:w-7 flex">
               <Image src={rightVector} alt="" />
             </div>
           </div>
         </div>
       </div>
-      <DescriptionBidHistorySection />
-      <ExploreSection />
+      <div className="px-3 md:px-4 lg:px-0">
+        <DescriptionBidHistorySection />
+        <ExploreSection />
+      </div>
     </main>
   )
 }

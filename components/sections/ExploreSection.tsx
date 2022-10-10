@@ -15,7 +15,7 @@ const ExploreSection = () => {
         You may also like
       </h3>
       <div
-        className="pb-20 md:px-4  grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3
+        className="pb-20 md:px-4  grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3
       gap-20 w-full  max-w-full mx-auto px-6 py-9"
       >
         {avatars?.map((cardData, index) => (

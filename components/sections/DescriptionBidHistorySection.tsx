@@ -137,7 +137,7 @@ const BidHistory = () => {
   }
 
   return (
-    <div className="lg:w-[800px] bg-[#121212] rouned-lg p-4">
+    <div className="lg:w-[800px] 2xl:w-[75%] bg-[#121212] rounded-lg p-4">
       <LineChart chartData={avatarData} />
     </div>
   )

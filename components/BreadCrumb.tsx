@@ -1,6 +1,8 @@
+import { motion } from 'framer-motion'
 import { useRouter } from 'next/router'
 import { FC, Fragment } from 'react'
 import { CrumbType } from '../interfaces'
+import { fromLeftAnimation } from '../utils/animations'
 
 interface BreadCrumbProps {
   crumbs: CrumbType[]
@@ -13,19 +15,40 @@ const BreadCrumb: FC<BreadCrumbProps> = ({ crumbs }) => {
       {crumbs.map(({ name, route }, index) => {
         if (index + 1 === crumbs.length) {
           return (
-            <p className="text-white" key={index}>
+            <motion.p
+              className="text-white"
+              key={index}
+              variants={fromLeftAnimation}
+              initial="initial"
+              whileInView="final"
+              viewport={{ once: true }}
+              transition={{
+                ease: 'easeInOut',
+                duration: 0.6,
+                delay: (index + 1) * 0.2,
+              }}
+            >
               {name}
-            </p>
+            </motion.p>
           )
         }
         return (
           <Fragment key={index}>
-            <p
+            <motion.p
               className="text-[#929191] hover:text-white cursor-pointer"
               onClick={() => router.push(route)}
+              variants={fromLeftAnimation}
+              initial="initial"
+              whileInView="final"
+              viewport={{ once: true }}
+              transition={{
+                ease: 'easeInOut',
+                duration: 0.6,
+                delay: index * 0.2,
+              }}
             >
               {name}
-            </p>
+            </motion.p>
             <p className="text-custom_yellow font-thin">|</p>
           </Fragment>
         )
