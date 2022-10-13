@@ -14,7 +14,7 @@ const HomeHeader: FC = () => {
         <div>
           <div className="md:hidden">
             <Image
-              src="/img/icons/logo.svg"
+              src="/images/icons/logo.svg"
               alt="nftzone_logo"
               width="100px"
               height="46px"
@@ -24,7 +24,7 @@ const HomeHeader: FC = () => {
           </div>
           <div className="hidden md:block">
             <Image
-              src="/img/icons/logo.svg"
+              src="/images/icons/logo.svg"
               alt="nftzone_logo"
               width="188px"
               height="64px"
