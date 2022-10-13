@@ -43,6 +43,7 @@ module.exports = {
       poppins: ['Poppins', 'sans-serif'],
       play: ['Play', 'sans-serif'],
       josefin: ['Josefin Sans', 'sans-serif'],
+      oxygen: ['Oxygen', 'sans-serif'],
     },
   },
   plugins: [require('tailwind-scrollbar')({ nocompatible: true })],
