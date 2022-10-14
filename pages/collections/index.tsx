@@ -11,6 +11,7 @@ import type {
   CrumbType,
   selectDataType,
 } from '../../interfaces'
+import { handleAnimationDelay } from '../../utils'
 import { opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 
@@ -71,22 +72,6 @@ const CollectionsPage: NextPage = () => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
-  const handleDelay = (index: number): number => {
-    if (width >= 1536) {
-      if (index < 8) return 1.2 + index * 0.2
-      else return index * 0.2
-    } else if (width >= 1024) {
-      if (index < 3) return 1.2 + index * 0.2
-      else return index * 0.2
-    } else if (width >= 768) {
-      if (index < 4) return 1.2 + index * 0.2
-      else return index * 0.2
-    } else {
-      if (index < 1) return 1.2 + index * 0.2
-      else return index * 0.2
-    }
-  }
-
   return (
     <div className="min-h-screen p-4 pt-6 lg:px-16 mb-6">
       <BreadCrumb crumbs={crumbData} />
@@ -113,7 +98,7 @@ const CollectionsPage: NextPage = () => {
             transition={{
               ease: 'easeInOut',
               duration: 0.6,
-              delay: handleDelay(index),
+              delay: handleAnimationDelay(index, width),
             }}
           >
             <CollectionCard {...data} />
