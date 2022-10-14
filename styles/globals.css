@@ -50,6 +50,9 @@
   .triangle {
     clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   }
+  .heading-clip {
+    clip-path: polygon(0 0, 80% 0, 100% 100%, 0 100%);
+  }
 }
 html,
 body {

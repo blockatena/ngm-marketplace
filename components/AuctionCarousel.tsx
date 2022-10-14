@@ -6,7 +6,8 @@ import {
   ReactNode,
   useState,
 } from 'react'
-import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
+import { fromRightAnimation } from '../utils/animations'
+import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
 const carouselData: { img: string; title: string }[] = [
   { img: '/images/live-auction/all_character.png', title: 'all character' },
@@ -100,7 +101,17 @@ const AuctionCarousel: FC = () => {
         <CustomButton onClick={() => handleClick(true)}>{'>'}</CustomButton>
       </div>
       <div className="h-[165px] md:h-[265px]">
-        <div className="flex items-center gap-4 md:gap-8 overflow-hidden absolute max-w-full">
+        <motion.div
+          className="flex items-center gap-4 md:gap-8 overflow-hidden absolute max-w-full"
+          variants={fromRightAnimation}
+          initial="initial"
+          animate="final"
+          transition={{
+            ease: 'easeInOut',
+            duration: 0.6,
+            delay: 1,
+          }}
+        >
           {carouselData.map(({ img, title }, index) => (
             <CarouselItem
               key={index}
@@ -110,7 +121,7 @@ const AuctionCarousel: FC = () => {
               title={title}
             />
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   )

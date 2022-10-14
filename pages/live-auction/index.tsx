@@ -1,15 +1,15 @@
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
-import { FC, ReactNode, useState } from 'react'
+import { Dispatch, FC, ReactNode, SetStateAction, useState } from 'react'
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa'
+import AuctionCarousel from '../../components/AuctionCarousel'
 import AvatarCard from '../../components/AvatarCard'
 import BreadCrumb from '../../components/BreadCrumb'
 import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
-import AuctionCarousel from '../../components/sections/AuctionCarousel'
 import { CrumbType } from '../../interfaces'
 import { handleAnimationDelay } from '../../utils'
-import { opacityAnimation } from '../../utils/animations'
+import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 
 const crumbData: CrumbType[] = [
@@ -68,9 +68,15 @@ const NavAccordion: FC<{ children?: ReactNode; heading: string }> = ({
   )
 }
 
-const SideNav: FC = () => {
+const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
+  setIsOpen,
+}) => {
+  const handleClick = () => {
+    setIsOpen && setIsOpen(false)
+  }
+
   return (
-    <div className="bg-[#1A1D1F] h-[1068px] max-w-[244px]">
+    <div className="bg-[#1A1D1F] h-[1068px] md:max-w-[244px]">
       <h3 className=" text-center py-2 md:py-4">
         <span
           className="pb-1 px-4 md:px-8 text-white 
@@ -83,9 +89,15 @@ const SideNav: FC = () => {
         </div>
       </h3>
       <NavAccordion heading="Sorted by">
-        <button className="w-fit">Recently Added</button>
-        <button className="w-fit">Latest</button>
-        <button className="w-fit">Popular</button>
+        <button className="w-fit" onClick={handleClick}>
+          Recently Added
+        </button>
+        <button className="w-fit" onClick={handleClick}>
+          Latest
+        </button>
+        <button className="w-fit" onClick={handleClick}>
+          Popular
+        </button>
       </NavAccordion>
       <NavAccordion heading="NFT State">
         <div className="font-oxygen">
@@ -137,28 +149,58 @@ const SideNav: FC = () => {
   )
 }
 
+const Drawer: FC<{
+  isOpen: boolean
+  setIsOpen: Dispatch<SetStateAction<boolean>>
+  children?: ReactNode
+}> = ({ setIsOpen, children }) => {
+  return (
+    <div className="min-h-screen absolute top-0 right-4 left-4 p-4 bg-[#1F2021] rounded-lg">
+      <div className="text-right font-light">
+        <span className="cursor-pointer" onClick={() => setIsOpen(false)}>
+          X
+        </span>
+      </div>
+      {children}
+    </div>
+  )
+}
+
 const LiveAuctionPage: NextPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { width } = useWindowDimensions()
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
   return (
-    <div className="min-h-screen">
-      <div className=" p-4 pt-6 lg:px-16 mb-6">
+    <main className="min-h-screen">
+      <div className="px-4 py-1  md:p-4 pt-6 lg:px-16">
         <BreadCrumb crumbs={crumbData} />
         <PageHeading name="live auction" />
       </div>
-      <div className="mt-8">
+      <div className="mt-4 md:mt-14">
         <AuctionCarousel />
       </div>
-      <div className="mt-20 pr-20">
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-3">
-            <SideNav />
+      <div className="mt-8 md:mt-20 lg:pr-20">
+        <div className="grid grid-cols-12 md:gap-4">
+          <div className="hidden md:block md:col-span-3">
+            <motion.div
+              variants={fromLeftAnimation}
+              initial="initial"
+              whileInView="final"
+              viewport={{ once: true }}
+              transition={{
+                ease: 'easeInOut',
+                delay: 0.6,
+                duration: 0.4,
+              }}
+            >
+              <SideNav />
+            </motion.div>
           </div>
-          <div className="col-span-9">
-            <div>
+          <div className="col-span-12 md:col-span-9">
+            <div className="hidden md:block">
               <div className=" bg-[#353535] flex flex-row gap-4 p-1 rounded font-poppins w-fit">
                 <button className="text-white text-[14px]">Buy now</button>{' '}
                 <button className="text-[#B8B8B8] text-[9px] cursor-pointer font-thin">
@@ -167,8 +209,16 @@ const LiveAuctionPage: NextPage = () => {
               </div>
             </div>
             <div
-              className="py-10 md:px-4 bg-transparent rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
-          gap-20 w-full  max-w-full mx-auto px-6"
+              className="heading-clip text-white font-oxygen text-[19px] md:hidden bg-[#1A1D1F] w-[172px] h-[42px]
+            grid place-items-center uppercase border-b border-gray-700"
+              role="button"
+              onClick={() => setIsDrawerOpen((prev) => !prev)}
+            >
+              Filter
+            </div>
+            <div
+              className="py-10 md:px-4 bg-transparent rounded-lg grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
+          gap-20 w-full  max-w-full mx-auto px-10"
             >
               {avatars?.map((cardData, index) => (
                 <motion.div
@@ -199,7 +249,26 @@ const LiveAuctionPage: NextPage = () => {
           />
         </div>
       </div>
-    </div>
+      <AnimatePresence>
+        {isDrawerOpen && (
+          <motion.div
+            className="text-[#E5E5E5] absolute top-0 bottom-0 left-0 right-0 z-30"
+            variants={fromLeftAnimation}
+            initial="initial"
+            animate="final"
+            exit="initial"
+            transition={{
+              ease: 'easeInOut',
+              duration: 0.25,
+            }}
+          >
+            <Drawer isOpen={isDrawerOpen} setIsOpen={setIsDrawerOpen}>
+              <SideNav setIsOpen={setIsDrawerOpen} />
+            </Drawer>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
   )
 }
 
