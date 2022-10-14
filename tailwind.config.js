@@ -9,8 +9,13 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        hero: 'url(/images/hero/hero_background.svg)',
-        mainHomePage: 'url(/images/others/main_bg_homepage.svg)',
+        hero: 'url(/images/hero/hero_background.png)',
+        mainHomePage: 'url(/images/others/main_bg_homepage.png)',
+        collectionCard: 'url(/images/collections/collection_card_bg.jpg)',
+        collectionCardActive: 'url(/images/collections/active_bg.jpg)',
+        market: 'url(/images/others/background.png)',
+        connectHero: 'url(/images/others/connect_hero.png)',
+        footer: "url('/images/footer/bottom_footer.svg')",
       },
       colors: {
         dark_mild: '#141619',
@@ -21,7 +26,7 @@ module.exports = {
         custom_purple: '#100811',
         custom_gray_light: '#1E1E1E',
         custom_gray_dark: '#41454B',
-
+        custom_gray_outline: '#727272',
         'custom-yellow': '#FFDB1B',
         'custom-yellow-hover': '#e6c518',
         'custom-yellow-active': '#ccaf16',
@@ -32,12 +37,13 @@ module.exports = {
     },
     fontFamily: {
       btn: ['Nunito Sans', ...defaultTheme.fontFamily.sans],
-
       inter: ['Inter', 'sans-serif'],
       lora: ['Lora', 'serif'],
       nunito: ['Nunito Sans', 'sans-serif'],
       poppins: ['Poppins', 'sans-serif'],
+      play: ['Play', 'sans-serif'],
+      josefin: ['Josefin Sans', 'sans-serif'],
     },
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar')({ nocompatible: true })],
 }

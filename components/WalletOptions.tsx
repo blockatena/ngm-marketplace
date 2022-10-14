@@ -3,6 +3,7 @@ import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 
 import { fromLeftAnimation, fromRightAnimation } from '../utils/animations'
@@ -28,34 +29,34 @@ interface CardProps extends WalletOptionType {
 
 const walletOptions: WalletOptionType[] = [
   {
-    img: '/img/icons/portis.png',
+    img: '/images/icons/portis.png',
     title: 'portis',
     content:
       'Offer your user a familiar experience by signing in with just an email and password.',
     isInactive: true,
   },
   {
-    img: '/img/icons/metamask.png',
+    img: '/images/icons/metamask.png',
     title: 'metamask',
     content:
       'Available as a browser extension and as a mobile app. Metamask equips you with a key vault.',
   },
   {
-    img: '/img/icons/coinbase.png',
+    img: '/images/icons/coinbase.png',
     title: 'coinbase wallet',
     content:
       'Offer your user a familiar experience by signing in with just an email and password.',
     isInactive: true,
   },
   {
-    img: '/img/icons/osmosis.png',
+    img: '/images/icons/osmosis.png',
     title: 'osmosis',
     content:
       'Offer your user a familiar experience by signing in with just an email and password.',
     isInactive: true,
   },
   {
-    img: '/img/icons/phantom.png',
+    img: '/images/icons/phantom.png',
     title: 'phantom',
     content:
       'Offer your user a familiar experience by signing in with just an email and password.',
@@ -100,6 +101,7 @@ const Card: FC<CardProps> = ({
 }
 
 const WalletOptions: FC = () => {
+  const router = useRouter()
   const injectedConnector = new InjectedConnector({
     supportedChainIds: [1, 3, 4, 5, 42],
   })
@@ -111,6 +113,7 @@ const WalletOptions: FC = () => {
       if (!active) {
         try {
           await activate(injectedConnector)
+          router.push('/collections')
         } catch (e) {
           console.error(e)
         }
