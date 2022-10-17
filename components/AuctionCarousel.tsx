@@ -6,7 +6,7 @@ import {
   ReactNode,
   useState,
 } from 'react'
-import { fromRightAnimation } from '../utils/animations'
+import { fromRightAnimation, opacityAnimation } from '../utils/animations'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
 const carouselData: { img: string; title: string }[] = [
@@ -96,10 +96,21 @@ const AuctionCarousel: FC = () => {
 
   return (
     <div>
-      <div className="flex justify-end gap-2 mb-10 mt-0 pr-4 lg:pr-20">
+      <motion.div
+        variants={opacityAnimation}
+        initial="initial"
+        animate="final"
+        viewport={{ once: true }}
+        transition={{
+          ease: 'easeInOut',
+          duration: 1,
+          delay: 0.6,
+        }}
+        className="flex justify-end gap-2 mb-10 mt-0 pr-4 lg:pr-20"
+      >
         <CustomButton onClick={() => handleClick(false)}>{'<'}</CustomButton>
         <CustomButton onClick={() => handleClick(true)}>{'>'}</CustomButton>
-      </div>
+      </motion.div>
       <div className="h-[165px] md:h-[265px]">
         <motion.div
           className="flex items-center gap-4 md:gap-8 overflow-hidden absolute max-w-full"

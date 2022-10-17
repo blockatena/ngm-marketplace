@@ -2,12 +2,44 @@ import Image from 'next/image'
 import { FC, useEffect, useState } from 'react'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
-const AvatarCard: FC<{
+interface AvatarCardProps {
   name: string
   img: string
   variant?: 'sm' | 'lg'
   noCta?: boolean
-}> = ({ name, img, variant = 'sm', noCta }) => {
+  isOnAuction?: boolean
+}
+
+const TimerSection: FC<{ hours: number; minutes: number; seconds: number }> = ({
+  hours,
+  minutes,
+  seconds,
+}) => {
+  return (
+    <div className="text-white  text-[9px] lg:text-xs pt-1">
+      <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
+        {hours}
+      </span>
+      h{' '}
+      <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
+        {minutes}
+      </span>
+      m{' '}
+      <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
+        {seconds}
+      </span>
+      s
+    </div>
+  )
+}
+
+const AvatarCard: FC<AvatarCardProps> = ({
+  name,
+  img,
+  variant = 'sm',
+  noCta,
+  isOnAuction,
+}) => {
   const [isSelected, setIsSelected] = useState(false)
   const [shadow, setShadow] = useState('')
   const [cardProperties, setCardProperties] = useState({
@@ -51,7 +83,6 @@ const AvatarCard: FC<{
           <Image
             src={img}
             width={variant === 'lg' ? '442px' : '250px'}
-            // height={variant === 'lg' ? '641px' : '382px'}
             height={
               variant === 'lg' && clientWidth > 768
                 ? '641px'
@@ -81,20 +112,9 @@ const AvatarCard: FC<{
               <div className="text-custom_yellow  text-base lg:text-lg font-josefin">
                 {name}
               </div>
-              <div className="text-white  text-[9px] lg:text-xs pt-1">
-                <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
-                  12
-                </span>
-                h{' '}
-                <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
-                  30
-                </span>
-                m{' '}
-                <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
-                  20
-                </span>
-                s
-              </div>
+              {isOnAuction && (
+                <TimerSection hours={12} minutes={30} seconds={20} />
+              )}
             </div>
             <div className="flex  absolute top-10 -bottom-0 right-0 left-0 ">
               <div className="text-center grid place-items-center avatar-btn-left w-full  h-full bg-black text-gray-400 rounded-l-lg">
@@ -112,7 +132,7 @@ const AvatarCard: FC<{
         grid place-items-center text-black font-poppins font-semibold text-[13px] lg:text-base capitalize rounded-r-lg 
         hover:bg-[#e6c518]"
               >
-                Buy Now
+                {isOnAuction ? 'Buy Now' : 'Place Bid'}
               </div>
             </div>
           </div>
