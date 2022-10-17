@@ -20,6 +20,9 @@
   .btn-secondary {
     @apply border-2 rounded-lg border-[#05C14D] text-white font-poppins hover:border-custom_yellow hover:text-custom_yellow;
   }
+  .btn-tertiary {
+    @apply border-2 rounded-lg border-[#444444] bg-[#1C1C1C] text-white font-poppins hover:border-custom_yellow hover:text-custom_yellow;
+  }
 
   .cut-corners {
     clip-path: polygon(6% 0, 100% 0, 100% 74%, 94% 100%, 0 100%, 0 27%);

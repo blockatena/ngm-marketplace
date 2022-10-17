@@ -5,7 +5,7 @@ import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 interface AvatarCardProps {
   name: string
   img: string
-  variant?: 'sm' | 'lg'
+  variant?: 'xs' | 'sm' | 'lg'
   noCta?: boolean
   isOnAuction?: boolean
 }
@@ -58,16 +58,22 @@ const AvatarCard: FC<AvatarCardProps> = ({
   }, [isSelected])
 
   useEffect(() => {
-    if (variant == 'sm') {
+    if (variant === 'sm') {
       setCardProperties((prev) => ({
         ...prev,
         dimensions: 'lg:w-[250px] lg:h-[330px]',
       }))
     }
-    if (variant == 'lg') {
+    if (variant === 'lg') {
       setCardProperties((prev) => ({
         ...prev,
         dimensions: 'lg:w-[442px] lg:h-[589px]',
+      }))
+    }
+    if (variant === 'xs') {
+      setCardProperties((prev) => ({
+        ...prev,
+        dimensions: 'lg:w-[213px] lg:h-[274px]',
       }))
     }
   }, [variant])

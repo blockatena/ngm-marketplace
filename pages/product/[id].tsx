@@ -1,5 +1,6 @@
 import { NextPage } from 'next'
 import Image from 'next/image'
+
 import BreadCrumb from '../../components/BreadCrumb'
 import PageHeading from '../../components/PageHeading'
 import DescriptionBidHistorySection from '../../components/sections/DescriptionBidHistorySection'
@@ -33,7 +34,7 @@ const ViewProductPage: NextPage = () => {
         </div>
         <div className="grid grid-cols-12 ">
           <div className="col-span-1 w-3 lg:w-7 flex">
-            {<Image src={leftVector} alt="" />}
+            <Image src={leftVector} alt="" />
           </div>
           <div className="col-span-10 flex justify-center">
             <ProductOverviewSection />
