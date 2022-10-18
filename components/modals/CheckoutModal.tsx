@@ -12,7 +12,7 @@ const CheckoutModal: FC<{
   return (
     <ModalBase>
       <motion.div
-        className="w-full max-w-[1017px] lg:h-[646px] bg-[#2f2f2f] py-4 lg:px-10 
+        className="w-full max-w-[1017px] lg:h-[646px] bg-[#2f2f2f] py-4 px-4 lg:px-10 
     rounded-lg skew-y-1 -skew-x-1"
         variants={fromTopAnimation}
         initial="initial"
@@ -24,7 +24,7 @@ const CheckoutModal: FC<{
         }}
       >
         <h2 className="text-white flex justify-between">
-          <span className="font-poppins font-semibold text-[50px]">
+          <span className="font-poppins font-semibold text-[35px] lg:text-[50px]">
             Checkout
           </span>{' '}
           <span
@@ -35,7 +35,7 @@ const CheckoutModal: FC<{
           </span>
         </h2>
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-4">
+          <div className="col-span-12 md:col-span-4 flex justify-center md:block">
             <AvatarCard
               name="Wraith"
               img="/images/auction/auction_img_1.svg"
@@ -43,7 +43,7 @@ const CheckoutModal: FC<{
               noCta
             />
           </div>
-          <div className="col-span-8">
+          <div className="col-span-12 md:col-span-8">
             <div className=" capitalize border-l-[4px] border-custom_yellow pl-2">
               <p className="text-custom_yellow lg:text-[36px] font-play mb-2">
                 Apex Legend
