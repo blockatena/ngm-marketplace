@@ -125,7 +125,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
             <div className="flex  absolute top-10 -bottom-0 right-0 left-0 ">
               <div className="text-center grid place-items-center avatar-btn-left w-full  h-full bg-black text-gray-400 rounded-l-lg">
                 <p className="text-[10px] lg:text-xs font-poppins my-0">
-                  Current Bid:
+                  {isOnAuction ? 'Current Bid' : 'Price'}
                 </p>
                 <p className="text-[8px] lg:text-sm font-poppins font-medium my-0">
                   $20,000
@@ -138,7 +138,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
         grid place-items-center text-black font-poppins font-semibold text-[13px] lg:text-base capitalize rounded-r-lg 
         hover:bg-[#e6c518]"
               >
-                {isOnAuction ? 'Buy Now' : 'Place Bid'}
+                {isOnAuction ? 'Place Bid' : 'View'}
               </div>
             </div>
           </div>
