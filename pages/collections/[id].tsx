@@ -2,12 +2,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
 import Image from 'next/image'
 import {
-    Dispatch,
-    FC,
-    Fragment,
-    ReactNode,
-    SetStateAction,
-    useState
+  Dispatch,
+  FC,
+  Fragment,
+  ReactNode,
+  SetStateAction,
+  useState,
 } from 'react'
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa'
 import AvatarCard from '../../components/AvatarCard'
@@ -289,10 +289,19 @@ const Drawer: FC<{
 
 const CollectionHeroSection: FC = () => {
   return (
-    <section
+    <motion.section
       className="w-full h-[279px] bg-cover p-2 flex justify-between items-end lg:px-4 lg:py-2"
       style={{
         backgroundImage: "url('/images/collections/collection_hero.png')",
+      }}
+      variants={opacityAnimation}
+      initial="initial"
+      whileInView="final"
+      viewport={{ once: true }}
+      transition={{
+        ease: 'easeInOut',
+        duration: 0.5,
+        delay: 0.6,
       }}
     >
       <div className="flex justify-between w-full">
@@ -331,13 +340,23 @@ const CollectionHeroSection: FC = () => {
           />
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }
 
 const CollectionInfoSection: FC = () => {
   return (
-    <section>
+    <motion.section
+      variants={opacityAnimation}
+      initial="initial"
+      whileInView="final"
+      viewport={{ once: true }}
+      transition={{
+        ease: 'easeInOut',
+        duration: 0.5,
+        delay: 0.8,
+      }}
+    >
       <p className="font-oxygen text-[#A0A0A0] text-sm lg:text-lg font-bold max-w-[930px] py-5 lg:py-10">
         We believe that people with imagination can change the world for better
         and those that are crazy enough to think they can bring their wildest
@@ -376,14 +395,25 @@ const CollectionInfoSection: FC = () => {
           </p>
         </div>
       </div>
-    </section>
+    </motion.section>
   )
 }
 
 const CollectionSearchSection: FC = () => {
   const { width } = useWindowDimensions()
   return (
-    <section className="grid grid-cols-12 mt-5 lg:mt-10 gap-2 lg:gap-4">
+    <motion.section
+      className="grid grid-cols-12 mt-5 lg:mt-10 gap-2 lg:gap-4"
+      variants={opacityAnimation}
+      initial="initial"
+      whileInView="final"
+      viewport={{ once: true }}
+      transition={{
+        ease: 'easeInOut',
+        duration: 1,
+        delay: 0.9,
+      }}
+    >
       <div className="grid col-span-1 md:col-span-1">
         <div className="cursor-pointer w-6 h-6 md:w-8 md:h-8 lg:w-[52px] lg:h-[52px] rounded-full grid place-items-center border border-[#6A6363]">
           <Image
@@ -426,7 +456,7 @@ const CollectionSearchSection: FC = () => {
           <option value={1}>Option Three</option>
         </select>
       </div>
-    </section>
+    </motion.section>
   )
 }
 
