@@ -41,6 +41,7 @@ const CheckoutModal: FC<{
               img="/images/auction/auction_img_1.svg"
               variant="xs"
               noCta
+              id={1}
             />
           </div>
           <div className="col-span-12 md:col-span-8">
