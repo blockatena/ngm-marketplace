@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
@@ -8,6 +9,7 @@ interface AvatarCardProps {
   variant?: 'xs' | 'sm' | 'lg'
   noCta?: boolean
   isOnAuction?: boolean
+  id: number
 }
 
 const TimerSection: FC<{ hours: number; minutes: number; seconds: number }> = ({
@@ -39,7 +41,9 @@ const AvatarCard: FC<AvatarCardProps> = ({
   variant = 'sm',
   noCta,
   isOnAuction,
+  id,
 }) => {
+  const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
   const [shadow, setShadow] = useState('')
   const [cardProperties, setCardProperties] = useState({
@@ -77,6 +81,13 @@ const AvatarCard: FC<AvatarCardProps> = ({
       }))
     }
   }, [variant])
+
+  const handleClick = () => {
+    if (isOnAuction) {
+      return
+    }
+    router.push(`/product/${id}`)
+  }
 
   return (
     <div onClick={() => setIsSelected((prev) => !prev)}>
@@ -137,6 +148,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
                 className="avatar-btn-right cursor-pointer w-full h-full bg-custom_yellow opacity-100
         grid place-items-center text-black font-poppins font-semibold text-[13px] lg:text-base capitalize rounded-r-lg 
         hover:bg-[#e6c518]"
+                onClick={handleClick}
               >
                 {isOnAuction ? 'Place Bid' : 'View'}
               </div>

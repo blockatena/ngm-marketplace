@@ -30,6 +30,7 @@ const ProductOverviewSection: FC = () => {
           img="/images/auction/auction_img_1.svg"
           variant="lg"
           noCta
+          id={1}
         />
         <div className="lg:hidden grid place-items-center">
           <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
@@ -104,17 +105,17 @@ const ProductOverviewSection: FC = () => {
         </div>
 
         <div className="flex flex-col md:flex-row justify-between gap-2 lg:gap-4">
-          <button
+          {/* <button
             className="btn-secondary w-full md:w-1/2 h-[42px] md:h-16 text-sm lg:text-[21px]"
             onClick={() => setIsCheckoutModalOpen(true)}
           >
             Purchase Now
-          </button>
+          </button> */}
           <button
-            className="w-full md:w-1/2 btn-primary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
+            className="w-full btn-primary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
             onClick={() => setIsOfferModalOpen(true)}
           >
-            Place Bid
+            {'Make Offer' || 'Place Bid'}
           </button>
         </div>
       </motion.div>

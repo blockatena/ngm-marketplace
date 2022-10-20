@@ -21,7 +21,7 @@ const CollectionCard: FC<CollectionCardProps> = ({
     hover:-translate-y-8 transition-all"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => router.push(`/product/${id}`)}
+      onClick={() => router.push(`/collections/${id}`)}
     >
       <div
         className={`bg-transparent  w-[80%] absolute z-10 top-6 bottom-6 skew-y-6 -skew-x-6 ml-[10%]
