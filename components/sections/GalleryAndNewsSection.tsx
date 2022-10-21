@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import behind_1 from '../../public/images/gallery/behind_img_1.svg'
@@ -19,25 +20,30 @@ import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 interface GalleryCardProps {
   title: string
   imgUrl: any
+  contractAddress:string
   behindImgUrl: any
 }
+
 
 const galleryData: GalleryCardProps[] = [
   {
     title: 'Apex Legends',
+    contractAddress:"0x0",
     behindImgUrl: behind_1,
     imgUrl: img_1,
   },
   {
     title: 'Free Fire',
+    contractAddress:"0x0",
     behindImgUrl: behind_1,
     imgUrl: img_2,
   },
   {
     title: 'PUBG',
+    contractAddress:"0x0",
     behindImgUrl: behind_1,
     imgUrl: img_3,
-  },
+  }
 ]
 
 const cardVariants = {
@@ -54,6 +60,7 @@ const cardVariants = {
     transform: 'translateY(0%)',
   }),
 }
+
 
 const GalleryCard: React.FC<
   GalleryCardProps & { onClick: () => void; index: number }
@@ -241,7 +248,7 @@ const ArrowGoldenBtns: React.FC<ArrowGoldenBtnsProps> = ({ icon, onClick }) => {
       <div className="flex justify-center items-center">{icon}</div>
     </button>
   )
-}
+} 
 
 const GalleryAndNewsSection: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -255,7 +262,9 @@ const GalleryAndNewsSection: React.FC = () => {
     maxNum = newsData.length - 3
   }
 
+  const router = useRouter()
   const viewMoreClick = () => {
+    router.push('/collections')
     console.log('VIEW MORE')
   }
 

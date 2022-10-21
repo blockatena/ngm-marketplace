@@ -72,6 +72,7 @@ const AuctionCard: React.FC<AuctionCardProps & { onClick: () => void }> = ({
   characterName,
   onClick,
 }) => {
+  const [daysLeft, setDaysLeft] = useState('10')
   const [hoursLeft, setHoursLeft] = useState('10')
   const [minsLeft, setMinsLeft] = useState('10')
   const [secsLeft, setSecsLeft] = useState('10')
@@ -81,22 +82,25 @@ const AuctionCard: React.FC<AuctionCardProps & { onClick: () => void }> = ({
       return
     }
     const interval = setInterval(() => {
-      const datesDifferenceSeconds = differenceInSeconds(expireDate, new Date())
+      let datesDifferenceSeconds = differenceInSeconds(expireDate, new Date())
       if (datesDifferenceSeconds <= 0) {
+        setDaysLeft('00')
         setHoursLeft('00')
         setMinsLeft('00')
         setSecsLeft('00')
         return
       }
-      const hours = Math.floor(datesDifferenceSeconds / 3600)
-      const mins = Math.floor(datesDifferenceSeconds / 60 - hours * 60)
-      const secs = Math.floor(datesDifferenceSeconds - mins * 60 - hours * 3600)
+      const days = Math.floor(datesDifferenceSeconds / 86400)
+      const hours = Math.floor((datesDifferenceSeconds - days * 86400) / 3600)
+      const mins = Math.floor((datesDifferenceSeconds - days * 86400 - hours *3600) / 60)
+      const secs = Math.floor(datesDifferenceSeconds -days*86400 - mins * 60 - hours * 3600)
+      setDaysLeft(transformTimeLeft(days))
       setHoursLeft(transformTimeLeft(hours))
       setMinsLeft(transformTimeLeft(mins))
       setSecsLeft(transformTimeLeft(secs))
     }, 1000)
     return () => clearInterval(interval)
-  }, [expireDate, hoursLeft, minsLeft, secsLeft])
+  }, [expireDate, daysLeft, hoursLeft, minsLeft, secsLeft])
 
   return (
     <div className="relative before:absolute before:-right-2 before:top-16 before:w-[82px] before:h-[88px] before:bg-custom-yellow before:rounded-xl mx-auto h-[490px] flex items-end">
@@ -118,6 +122,7 @@ const AuctionCard: React.FC<AuctionCardProps & { onClick: () => void }> = ({
             {characterName}
           </p>
           <div className="flex flex-row items-center h-[22px] space-x-2">
+            <TimerSquare time={daysLeft} title="d" />
             <TimerSquare time={hoursLeft} title="h" />
             <TimerSquare time={minsLeft} title="m" />
             <TimerSquare time={secsLeft} title="s" />
@@ -136,7 +141,7 @@ const AuctionCard: React.FC<AuctionCardProps & { onClick: () => void }> = ({
             className="w-[65%] h-[48px] btn-primary trapezoid font-popins font-semibold text-[#161616] text-[20px] rounded-br-md"
             onClick={onClick}
           >
-            Buy Now
+            Bid Now
           </button>
         </div>
       </div>

@@ -6,14 +6,19 @@ import img_4 from '../../public/images/auction/auction_img_4.svg'
 import img_5 from '../../public/images/auction/auction_img_5.svg'
 import img_6 from '../../public/images/auction/auction_img_6.svg'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
+import { useRouter } from 'next/router'
+
 // import getCommast from '../../utils/getCommas'
 // import transformTimeLeft from '../../utils/transformTimeLeft'
 import AuctionCard from '../AuctionCard'
+
 
 interface AuctionCardProps {
   imgUrl: any
   expireDate: Date
   currentPrice: number
+  contractAddress:string
+  tokenId:number
   characterName: string
 }
 
@@ -21,38 +26,50 @@ export const auctionData: AuctionCardProps[] = [
   {
     imgUrl: img_1,
     characterName: 'Fuse',
-    currentPrice: 20000,
-    expireDate: new Date(2021, 8, 23),
+    currentPrice: 200,
+    contractAddress:"0x0",
+    tokenId:1,
+    expireDate: new Date(2022, 11, 23),
   },
   {
     imgUrl: img_2,
     characterName: 'Nick Fury',
-    currentPrice: 20000,
-    expireDate: new Date(2022, 8, 23, 3, 4, 5),
+    currentPrice: 200,
+    contractAddress:"0x0",
+    tokenId:2,
+    expireDate: new Date(2022, 11, 28, 3, 4, 5),
   },
   {
     imgUrl: img_3,
     characterName: 'Nico',
-    currentPrice: 20000,
-    expireDate: new Date(2022, 8, 22, 6, 7, 8),
+    currentPrice: 230,
+    contractAddress:"0x0",
+    tokenId:3,
+    expireDate: new Date(2022, 12, 22, 6, 7, 8),
   },
   {
     imgUrl: img_4,
     characterName: 'Taric',
-    currentPrice: 20000,
-    expireDate: new Date(2022, 8, 21, 2, 2, 2),
+    currentPrice: 250,
+    contractAddress:"0x0",
+    tokenId:4,
+    expireDate: new Date(2022, 12, 21, 2, 2, 2),
   },
   {
     imgUrl: img_5,
     characterName: 'Wraith',
-    currentPrice: 20000,
-    expireDate: new Date(2022, 8, 20, 1, 1, 1),
+    currentPrice: 206,
+    contractAddress:"0x0",
+    tokenId:5,
+    expireDate: new Date(2022, 11, 20, 1, 1, 1),
   },
   {
     imgUrl: img_6,
     characterName: 'Harth Stonebrew',
-    currentPrice: 20000,
-    expireDate: new Date(2022, 7, 24),
+    currentPrice: 200,
+    contractAddress:"0x0",
+    tokenId:6,
+    expireDate: new Date(2022, 11, 24),
   },
 ]
 
@@ -141,9 +158,15 @@ export const auctionData: AuctionCardProps[] = [
 //       </div>
 //     </div>
 //   )
-// }
+// } 
 
 const LiveAuctionSection: React.FC = () => {
+ const router = useRouter()
+  const viewMoreClick = () => {
+    router.push("./live-auction")
+    console.log('VIEW MORE')
+  }
+
   return (
     <section className="w-full min-h-screen pt-10">
       <div className="w-[90%] md:w-[750px] lg:w-[950px] xl:w-[1200px] flex justify-start items-center mx-auto pb-12">
@@ -157,11 +180,19 @@ const LiveAuctionSection: React.FC = () => {
             duration: 0.5,
             delay: 0.4,
           }}
-          className="z-10 text-white leading-none font-popins font-medium text-[32px] md:text-[38px] lg:text-[50px] relative before:absolute before:w-[4px] before:h-[30px] before:md:h-[35px] before:lg:h-[48px] before:bg-[#FFDC20] before:-translate-x-2 before:md:-translate-x-3 before:lg:-translate-x-4 pt-10"
+          className="z-10 text-white leading-none font-popins font-medium text-[32px] md:text-[38px] lg:text-[50px] relative before:absolute before:w-[4px] before:h-[30px] before:md:h-[35px] before:lg:h-[48px] before:bg-[#FFDC20] before:-translate-x-2 before:md:-translate-x-3 before:lg:-translate-x-4 pt-10 w-[90%] md:w-[750px] lg:w-[950px] xl:w-[1200px] flex items-end justify-between mx-auto"
         >
           Live Auction
+          
+          <button
+          className="z-10 font-roboto text-white text-[16px] md:text-[18px] lg:text-[20px] w-[110px] md:w-[120px] lg:w-[135px]  h-[28px] md:h-[32px] lg:h-[35px] bg-zinc-700 hover:bg-zinc-800 active:bg-zinc-900 transition-all ease-in-out duration-200"
+          onClick={viewMoreClick}
+        >
+          view more
+        </button>
         </motion.h2>
       </div>
+      
       <motion.div
         variants={opacityAnimation}
         initial="initial"
@@ -172,7 +203,9 @@ const LiveAuctionSection: React.FC = () => {
           duration: 0.5,
           delay: 0.9,
         }}
-        className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-20 w-full md:w-[500px] lg:w-[900px] xl:w-[1240px] bg-black mx-auto px-6 py-9 rounded-xl"
+
+        
+        className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-20 w-full md:w-[500px] lg:w-[900px] xl:w-[1240px]  mx-auto px-6 py-9 rounded-xl" // removed black background ( bg-black )
       >
         {auctionData.map((auction, index) => {
           return (
@@ -183,6 +216,8 @@ const LiveAuctionSection: React.FC = () => {
             />
           )
         })}
+
+        
       </motion.div>
     </section>
   )
