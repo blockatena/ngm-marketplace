@@ -86,7 +86,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
     if (isOnAuction) {
       return
     }
-    router.push(`/product/${id}`)
+    router.push(`/assets/${id}`)
   }
 
   return (

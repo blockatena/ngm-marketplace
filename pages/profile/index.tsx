@@ -153,7 +153,7 @@ const Drawer: FC<{
   )
 }
 
-const ProductPage: NextPage = () => {
+const ProfilePage: NextPage = () => {
   const [isCollections, setIsCollections] = useState(true)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { width } = useWindowDimensions()
@@ -302,4 +302,4 @@ const ProductPage: NextPage = () => {
   )
 }
 
-export default ProductPage
+export default ProfilePage

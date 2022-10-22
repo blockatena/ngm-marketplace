@@ -16,7 +16,7 @@ const crumbData: CrumbType[] = [
   { name: 'fuse', route: '/product/1' },
 ]
 
-const ViewProductPage: NextPage = () => {
+const ViewAssetPage: NextPage = () => {
   return (
     <main className="min-h-screen p-2 pt-6 lg:px-16 mb-6">
       <div className="px-2 md:px-4 lg:px-0">
@@ -54,4 +54,4 @@ const ViewProductPage: NextPage = () => {
   )
 }
 
-export default ViewProductPage
+export default ViewAssetPage
