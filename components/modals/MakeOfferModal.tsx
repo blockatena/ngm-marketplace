@@ -62,7 +62,7 @@ const MakeOfferModal: FC<{
             The next bid must be 5% more than the current bid
           </p>
 
-          {/* <div className="mt-10 ">
+          <div className="mt-10 ">
             <label
               htmlFor="expiration"
               className="font-poppins lg:text-[20px] text-white"
@@ -84,7 +84,7 @@ const MakeOfferModal: FC<{
                 className="w-full bg-[#585858] outline-none rounded-lg text-white font-poppins px-2"
               />
             </div>
-          </div> */}
+          </div>
 
           <div className="mt-10 flex gap-4 lg:pl-10">
             <input
