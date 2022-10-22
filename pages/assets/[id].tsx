@@ -12,8 +12,8 @@ import rightVector from '../../public/images/others/right_vector.png'
 
 const crumbData: CrumbType[] = [
   { name: 'home', route: '/' },
-  { name: 'apex legends', route: '/collections' },
-  { name: 'fuse', route: '/product/1' },
+  { name: 'apex legends', route: '/collections/3' },
+  { name: 'fuse', route: '/assets/1' },
 ]
 
 const ViewAssetPage: NextPage = () => {

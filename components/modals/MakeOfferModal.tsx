@@ -11,7 +11,7 @@ const MakeOfferModal: FC<{
   return (
     <ModalBase>
       <motion.div
-        className="w-full max-w-[866px] lg:h-[482px] py-4 px-4 lg:px-10 
+        className="w-full max-w-[866px] lg:h-[582px] py-4 px-4 lg:px-10 
     rounded-lg skew-y-1 -skew-x-1 bg-gradient-to-b from-[#494A4A] via-[#222324] to-[#030507]"
         variants={fromTopAnimation}
         initial="initial"
