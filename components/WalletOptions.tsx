@@ -128,6 +128,7 @@ const WalletOptions: FC = () => {
       setMessage('Please Install Metamask')
     }
   }
+
   return (
     <>
       <AnimatePresence>

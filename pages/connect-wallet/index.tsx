@@ -39,7 +39,7 @@ const ConnectPage: NextPage = () => {
                 Connect Wallet
               </p>
             </div>
-          </div>
+          </div>        
         </div>
       </motion.div>
       <WalletOptions />

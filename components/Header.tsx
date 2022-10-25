@@ -4,7 +4,6 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
-
 import {
   fromLeftAnimation,
   fromRightAnimation,
@@ -12,14 +11,14 @@ import {
 } from '../utils/animations'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
-const ConnectButton: FC = () => {
+const ConnectButtons: FC = () => {
   const { active, account } = useWeb3React<Web3Provider>()
   const router = useRouter()
 
   const handleClick = () => {
     router.push('/connect-wallet')
   }
-
+  
   return (
     <motion.button
       className="btn-primary w-[120px] md:w-[158px] lg:w-[173px] h-[29px] md:h-[33px] lg:h-[39px] text-[12px] md:text-[16px] lg:text-[18px] cut-corners"
@@ -139,7 +138,7 @@ const Header: FC = () => {
               focus:border focus:border-custom_yellow focus:outline-none bg-custom_grey md:h-11`}
             />
           </div>
-          <ConnectButton />
+          <ConnectButtons />
         </div>
       </div>
     </nav>
