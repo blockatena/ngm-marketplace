@@ -1,5 +1,6 @@
 import { NextPage } from 'next'
 import Image from 'next/image'
+
 import BreadCrumb from '../../components/BreadCrumb'
 import PageHeading from '../../components/PageHeading'
 import DescriptionBidHistorySection from '../../components/sections/DescriptionBidHistorySection'
@@ -11,11 +12,11 @@ import rightVector from '../../public/images/others/right_vector.png'
 
 const crumbData: CrumbType[] = [
   { name: 'home', route: '/' },
-  { name: 'apex legends', route: '/collections' },
-  { name: 'fuse', route: '/product/1' },
+  { name: 'apex legends', route: '/collections/3' },
+  { name: 'fuse', route: '/assets/1' },
 ]
 
-const ViewProductPage: NextPage = () => {
+const ViewAssetPage: NextPage = () => {
   return (
     <main className="min-h-screen p-2 pt-6 lg:px-16 mb-6">
       <div className="px-2 md:px-4 lg:px-0">
@@ -33,7 +34,7 @@ const ViewProductPage: NextPage = () => {
         </div>
         <div className="grid grid-cols-12 ">
           <div className="col-span-1 w-3 lg:w-7 flex">
-            {<Image src={leftVector} alt="" />}
+            <Image src={leftVector} alt="" />
           </div>
           <div className="col-span-10 flex justify-center">
             <ProductOverviewSection />
@@ -53,4 +54,4 @@ const ViewProductPage: NextPage = () => {
   )
 }
 
-export default ViewProductPage
+export default ViewAssetPage

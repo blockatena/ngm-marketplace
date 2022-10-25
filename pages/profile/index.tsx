@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { Dispatch, FC, SetStateAction, useState } from 'react'
 import { FaHamburger } from 'react-icons/fa'
 import AvatarCard from '../../components/AvatarCard'
+import { AvatarType } from '../../interfaces'
 import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 import historyIcon from '../../public/images/icons/Activity.svg'
 import categoryIcon from '../../public/images/icons/Category.svg'
@@ -29,19 +30,79 @@ const routes = [
   { name: 'settings', route: '/', icon: settingsIcon },
 ]
 
-const avatars = [
-  { name: 'Wraith', img: '/images/auction/auction_img_1.svg' },
-  { name: 'Horizon', img: '/images/auction/auction_img_2.svg' },
-  { name: 'Lifeline', img: '/images/auction/auction_img_3.svg' },
-  { name: 'Fuse', img: '/images/auction/auction_img_4.svg' },
-  { name: 'Fortune', img: '/images/auction/auction_img_5.svg' },
-  { name: 'Crypto', img: '/images/auction/auction_img_6.svg' },
-  { name: 'Wraith', img: '/images/auction/auction_img_1.svg' },
-  { name: 'Horizon', img: '/images/auction/auction_img_2.svg' },
-  { name: 'Lifeline', img: '/images/auction/auction_img_3.svg' },
-  { name: 'Fuse', img: '/images/auction/auction_img_4.svg' },
-  { name: 'Fortune', img: '/images/auction/auction_img_5.svg' },
-  { name: 'Crypto', img: '/images/auction/auction_img_6.svg' },
+const avatars: AvatarType[] = [
+  {
+    id: 1,
+    name: 'Wraith',
+    img: '/images/auction/auction_img_1.svg',
+    isOnAuction: true,
+  },
+  {
+    id: 2,
+    name: 'Horizon',
+    img: '/images/auction/auction_img_2.svg',
+    isOnAuction: true,
+  },
+  {
+    id: 3,
+    name: 'Lifeline',
+    img: '/images/auction/auction_img_3.svg',
+    isOnAuction: false,
+  },
+  {
+    id: 4,
+    name: 'Fuse',
+    img: '/images/auction/auction_img_4.svg',
+    isOnAuction: true,
+  },
+  {
+    id: 5,
+    name: 'Fortune',
+    img: '/images/auction/auction_img_5.svg',
+    isOnAuction: true,
+  },
+  {
+    id: 6,
+    name: 'Crypto',
+    img: '/images/auction/auction_img_6.svg',
+    isOnAuction: false,
+  },
+  {
+    id: 7,
+    name: 'Wraith',
+    img: '/images/auction/auction_img_1.svg',
+    isOnAuction: true,
+  },
+  {
+    id: 8,
+    name: 'Horizon',
+    img: '/images/auction/auction_img_2.svg',
+    isOnAuction: false,
+  },
+  {
+    id: 9,
+    name: 'Lifeline',
+    img: '/images/auction/auction_img_3.svg',
+    isOnAuction: true,
+  },
+  {
+    id: 10,
+    name: 'Fuse',
+    img: '/images/auction/auction_img_4.svg',
+    isOnAuction: false,
+  },
+  {
+    id: 11,
+    name: 'Fortune',
+    img: '/images/auction/auction_img_5.svg',
+    isOnAuction: true,
+  },
+  {
+    id: 12,
+    name: 'Crypto',
+    img: '/images/auction/auction_img_6.svg',
+    isOnAuction: false,
+  },
 ]
 
 const NavRoute: FC<{
@@ -92,7 +153,7 @@ const Drawer: FC<{
   )
 }
 
-const ProductPage: NextPage = () => {
+const ProfilePage: NextPage = () => {
   const [isCollections, setIsCollections] = useState(true)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { width } = useWindowDimensions()
@@ -241,4 +302,4 @@ const ProductPage: NextPage = () => {
   )
 }
 
-export default ProductPage
+export default ProfilePage

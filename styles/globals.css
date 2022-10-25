@@ -4,6 +4,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -18,6 +19,9 @@
   }
   .btn-secondary {
     @apply border-2 rounded-lg border-[#05C14D] text-white font-poppins hover:border-custom_yellow hover:text-custom_yellow;
+  }
+  .btn-tertiary {
+    @apply border-2 rounded-lg border-[#444444] bg-[#1C1C1C] text-white font-poppins hover:border-custom_yellow hover:text-custom_yellow;
   }
 
   .cut-corners {
@@ -48,6 +52,9 @@
   }
   .triangle {
     clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  }
+  .heading-clip {
+    clip-path: polygon(0 0, 80% 0, 100% 100%, 0 100%);
   }
 }
 html,

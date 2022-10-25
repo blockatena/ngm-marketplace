@@ -18,8 +18,7 @@ const HeroSection: React.FC = () => {
   }
 
   const letsExploreOnClick = () => {
-    router.push('/connect-wallet')
-    console.log('LETS EXPLORE')
+    router.push('/collections')
   }
 
   return (

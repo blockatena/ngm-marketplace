@@ -1,11 +1,27 @@
 import { motion } from 'framer-motion'
+import { AvatarType } from '../../interfaces'
 import { opacityAnimation } from '../../utils/animations'
 import AvatarCard from '../AvatarCard'
 
-const avatars = [
-  { name: 'Fuse', img: '/images/auction/auction_img_4.svg' },
-  { name: 'Horizon', img: '/images/auction/auction_img_2.svg' },
-  { name: 'Lifeline', img: '/images/auction/auction_img_3.svg' },
+const avatars: AvatarType[] = [
+  {
+    name: 'Fuse',
+    img: '/images/auction/auction_img_4.svg',
+    id: 1,
+    isOnAuction: false,
+  },
+  {
+    name: 'Horizon',
+    img: '/images/auction/auction_img_2.svg',
+    id: 2,
+    isOnAuction: true,
+  },
+  {
+    name: 'Lifeline',
+    img: '/images/auction/auction_img_3.svg',
+    id: 3,
+    isOnAuction: false,
+  },
 ]
 
 const ExploreSection = () => {

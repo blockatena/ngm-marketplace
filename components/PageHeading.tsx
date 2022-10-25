@@ -5,7 +5,7 @@ import { opacityAnimation } from '../utils/animations'
 const PageHeading: FC<{ name: string }> = ({ name }) => {
   return (
     <motion.div
-      className="flex justify-center my-6"
+      className="flex justify-center my-4"
       variants={opacityAnimation}
       initial="initial"
       whileInView="final"
@@ -18,7 +18,7 @@ const PageHeading: FC<{ name: string }> = ({ name }) => {
     >
       <h1
         className="font-poppins text-2xl md:text-4xl lg:text-[50px] border-0 border-l-4 border-l-custom_yellow
-  lg:pl-6 pl-4 text-white font-semibold capitalize"
+  lg:pl-6 pl-4 text-white font-semibold capitalize m-0"
       >
         {name}
       </h1>
