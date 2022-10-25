@@ -166,66 +166,8 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
           Apply
         </button>
       </NavAccordion>
-      <NavAccordion heading="Currency">
-        {/* <button className="w-fit" onClick={handleClick}>
-          Recently Added
-        </button>
-        <button className="w-fit" onClick={handleClick}>
-          Latest
-        </button>
-        <button className="w-fit" onClick={handleClick}>
-          Popular
-        </button> */}
-        <div>
-          {currencyData.map((currency, index) => {
-            return (
-              <Fragment key={index}>
-                <input
-                  className="mr-2 bg-[#1D2530] accent-custom_yellow"
-                  type="radio"
-                  id={currency}
-                  name="currency"
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                />
-                <label
-                  htmlFor={currency}
-                  className="uppercase font-oxygen text-sm lg:text-[15px]"
-                >
-                  {currency}
-                </label>
-                <br />
-              </Fragment>
-            )
-          })}
-          {/* <input
-            type="radio"
-            id="html"
-            name="fav_language"
-            value="HTML"
-            onChange={(e) => setCurrency(e.target.value)}
-          />
-          <label htmlFor="html">HTML</label>
-          <br />
-          <input
-            type="radio"
-            id="css"
-            name="fav_language"
-            value="CSS"
-            onChange={(e) => setCurrency(e.target.value)}
-          />
-          <label htmlFor="css">CSS</label>
-          <br />
-          <input
-            type="radio"
-            id="javascript"
-            name="fav_language"
-            value="JavaScript"
-            onChange={(e) => setCurrency(e.target.value)}
-          />
-          <label htmlFor="javascript">JavaScript</label> */}
-        </div>
-      </NavAccordion>
+      
+      
     </div>
   )
 }

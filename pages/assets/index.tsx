@@ -186,7 +186,7 @@ const LiveAuctionPage: NextPage = () => {
     <main className="min-h-screen">
       <div className="px-4 py-1  md:p-4 pt-6 lg:px-16">
         <BreadCrumb crumbs={crumbData} />
-        <PageHeading name="Assets" />
+        <PageHeading name="hot bid" />
       </div>
       <div className="mt-4 md:mt-14">
         <AuctionCarousel />
