@@ -94,8 +94,6 @@ const avatars: AvatarType[] = [
   },
 ]
 
-const currencyData: string[] = ['eth', 'weth', 'ape', 'usdc']
-
 const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
   setIsOpen,
 }) => {
