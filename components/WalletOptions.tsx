@@ -28,40 +28,40 @@ interface CardProps extends WalletOptionType {
 }
 
 const walletOptions: WalletOptionType[] = [
-  {
-    img: '/images/icons/portis.png',
-    title: 'portis',
-    content:
-      'Offer your user a familiar experience by signing in with just an email and password.',
-    isInactive: true,
-  },
+  // {
+  //   img: '/images/icons/portis.png',
+  //   title: 'portis',
+  //   content:
+  //     'Offer your user a familiar experience by signing in with just an email and password.',
+  //   isInactive: true,
+  // },
   {
     img: '/images/icons/metamask.png',
     title: 'metamask',
     content:
       'Available as a browser extension and as a mobile app. Metamask equips you with a key vault.',
   },
-  {
-    img: '/images/icons/coinbase.png',
-    title: 'coinbase wallet',
-    content:
-      'Offer your user a familiar experience by signing in with just an email and password.',
-    isInactive: true,
-  },
-  {
-    img: '/images/icons/osmosis.png',
-    title: 'osmosis',
-    content:
-      'Offer your user a familiar experience by signing in with just an email and password.',
-    isInactive: true,
-  },
-  {
-    img: '/images/icons/phantom.png',
-    title: 'phantom',
-    content:
-      'Offer your user a familiar experience by signing in with just an email and password.',
-    isInactive: true,
-  },
+  // {
+  //   img: '/images/icons/coinbase.png',
+  //   title: 'coinbase wallet',
+  //   content:
+  //     'Offer your user a familiar experience by signing in with just an email and password.',
+  //   isInactive: true,
+  // },
+  // {
+  //   img: '/images/icons/osmosis.png',
+  //   title: 'osmosis',
+  //   content:
+  //     'Offer your user a familiar experience by signing in with just an email and password.',
+  //   isInactive: true,
+  // },
+  // {
+  //   img: '/images/icons/phantom.png',
+  //   title: 'phantom',
+  //   content:
+  //     'Offer your user a familiar experience by signing in with just an email and password.',
+  //   isInactive: true,
+  // },
 ]
 
 const Card: FC<CardProps> = ({
@@ -113,7 +113,7 @@ const WalletOptions: FC = () => {
       if (!active) {
         try {
           await activate(injectedConnector)
-          router.push('/collections')
+          router.back()
         } catch (e) {
           console.error(e)
         }
@@ -128,6 +128,7 @@ const WalletOptions: FC = () => {
       setMessage('Please Install Metamask')
     }
   }
+
   return (
     <>
       <AnimatePresence>
@@ -147,7 +148,7 @@ const WalletOptions: FC = () => {
           </motion.p>
         )}
       </AnimatePresence>
-      <div className="flex flex-col flex-wrap pb-28 gap-4 md:justify-start md:flex-row lg:justify-between">
+      <div className="flex flex-col flex-wrap pb-28 gap-4 md:justify-start md:flex-row lg:justify-center">
         {walletOptions?.map(({ content, img, title, isInactive }, index) => (
           <motion.div
             key={title}

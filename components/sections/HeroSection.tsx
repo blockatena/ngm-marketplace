@@ -4,7 +4,6 @@ import { useRouter } from 'next/router'
 
 import nft_hero_character from '../../public/images/hero/hero_image.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
-import Header from '../Header'
 
 const HeroSection: React.FC = () => {
   const router = useRouter()
@@ -19,7 +18,7 @@ const HeroSection: React.FC = () => {
 
   return (
     <section className="bg-hero bg-cover bg-no-repeat bg-center min-h-screen">
-      <Header />
+      {/* <Header /> */}
 
       <div className="w-[90%] md:w-[850px] l:w-[1150px] xl:w-[1229px] mx-auto ">
         {/* <motion.div

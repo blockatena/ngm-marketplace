@@ -10,7 +10,7 @@ export default function useWalletConnect() {
   })
   const { activate, deactivate, active } = useWeb3React<Web3Provider>()
 
-  const handleConnect = async (route?: string) => {
+  const handleConnect = async () => {
     if (!window.ethereum) {
       console.log('Please Install Metamask')
       return
@@ -18,7 +18,7 @@ export default function useWalletConnect() {
     if (!active) {
       try {
         await activate(injectedConnector)
-        route && router.push(route)
+        router.push('/collections')
       } catch (e) {
         console.error(e)
       }

@@ -9,22 +9,21 @@ import {
   fromRightAnimation,
   fromTopAnimation,
 } from '../utils/animations'
-import useWalletConnect from '../utils/hooks/useWalletConnect'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
 const ConnectButton: FC = () => {
   const router = useRouter()
   const { active, account } = useWeb3React<Web3Provider>()
-  const handleConnect = useWalletConnect()
   const [isHovered, setIsHovered] = useState(false)
 
   const handleClick = () => {
-    handleConnect('/collections')
+    !active && router.push('/connect-wallet')
   }
 
   return (
     <motion.button
-      className="btn-primary w-[120px] md:w-[158px] lg:w-[173px] h-[29px] md:h-[33px] lg:h-[39px] text-[12px] md:text-[16px] lg:text-[18px] cut-corners"
+      className="btn-primary cut-corners w-[120px] md:w-[158px] lg:w-[173px] h-[29px] md:h-[33px] lg:h-[39px] 
+      text-[12px] md:text-[16px] lg:text-[18px] disabled:bg-gray-500"
       onClick={handleClick}
       variants={fromRightAnimation}
       initial="initial"
@@ -36,6 +35,7 @@ const ConnectButton: FC = () => {
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      disabled={active}
     >
       {!active && router.asPath === '/' ? (
         'Join Community'
@@ -157,7 +157,7 @@ const Header: FC = () => {
   const router = useRouter()
 
   return (
-    <header className="p-4 pt-6 lg:px-16">
+    <header className="p-4 pt-6 lg:px-16 bg-transparent absolute top-0 left-0 right-0">
       <div className="grid grid-cols-12 gap-1">
         <div className="col-span-3 md:col-span-6">
           <Logo />
