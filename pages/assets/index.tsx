@@ -21,76 +21,88 @@ const crumbData: CrumbType[] = [
 
 const avatars: AvatarType[] = [
   {
-    id: 1,
+    tokenId: 1,
     name: 'Wraith',
     img: '/images/auction/auction_img_1.svg',
     isOnAuction: false,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 2,
+    tokenId: 2,
     name: 'Horizon',
     img: '/images/auction/auction_img_2.svg',
     isOnAuction: true,
+    contractAddress: '0xfd2b4561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 3,
+    tokenId: 3,
     name: 'Lifeline',
     img: '/images/auction/auction_img_3.svg',
     isOnAuction: false,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 4,
+    tokenId: 4,
     name: 'Fuse',
     img: '/images/auction/auction_img_4.svg',
     isOnAuction: true,
+    contractAddress: '0xfe2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 5,
+    tokenId: 5,
     name: 'Fortune',
     img: '/images/auction/auction_img_5.svg',
     isOnAuction: true,
+    contractAddress: '0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 6,
+    tokenId: 6,
     name: 'Crypto',
     img: '/images/auction/auction_img_6.svg',
     isOnAuction: false,
+    contractAddress: '0xfd6b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 7,
+    tokenId: 7,
     name: 'Wraith',
     img: '/images/auction/auction_img_1.svg',
     isOnAuction: true,
+    contractAddress: '0xfa2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 8,
+    tokenId: 8,
     name: 'Horizon',
     img: '/images/auction/auction_img_2.svg',
     isOnAuction: false,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ca',
   },
   {
-    id: 9,
+    tokenId: 9,
     name: 'Lifeline',
     img: '/images/auction/auction_img_3.svg',
     isOnAuction: true,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cb',
   },
   {
-    id: 10,
+    tokenId: 10,
     name: 'Fuse',
     img: '/images/auction/auction_img_4.svg',
     isOnAuction: false,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cc',
   },
   {
-    id: 11,
+    tokenId: 11,
     name: 'Fortune',
     img: '/images/auction/auction_img_5.svg',
     isOnAuction: true,
+    contractAddress: '0xfd2b3161630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 12,
+    tokenId: 12,
     name: 'Crypto',
     img: '/images/auction/auction_img_6.svg',
     isOnAuction: false,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
 ]
 
@@ -126,7 +138,7 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
         </button>
       </NavAccordion>
       <NavAccordion heading="NFT State">
-        <div className="font-oxygen">
+        {/* <div className="font-oxygen">
           <input
             type="checkbox"
             id="buy_checkbox"
@@ -135,7 +147,7 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
           <label htmlFor="buy_checkbox" className="text-xs md:text-[15px]">
             Buy now
           </label>
-        </div>
+        </div> */}
         <div className="font-oxygen">
           <input
             type="checkbox"
@@ -186,7 +198,7 @@ const LiveAuctionPage: NextPage = () => {
     <main className="min-h-screen">
       <div className="px-4 py-1  md:p-4 pt-6 lg:px-16">
         <BreadCrumb crumbs={crumbData} />
-        <PageHeading name="hot bid" />
+        <PageHeading name="Assets" />
       </div>
       <div className="mt-4 md:mt-14">
         <AuctionCarousel />
@@ -210,12 +222,23 @@ const LiveAuctionPage: NextPage = () => {
           </div>
           <div className="col-span-12 md:col-span-9">
             <div className="hidden md:block">
-              <div className=" bg-[#353535] flex flex-row gap-4 p-1 rounded font-poppins w-fit">
+              <motion.div
+                className=" bg-[#353535] flex flex-row gap-4 p-1 rounded font-poppins w-fit"
+                variants={opacityAnimation}
+                initial="initial"
+                whileInView="final"
+                viewport={{ once: true }}
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 0.6,
+                  delay: 0.5,
+                }}
+              >
                 <button className="text-white text-[14px]">Buy now</button>{' '}
                 <button className="text-[#B8B8B8] text-[9px] cursor-pointer font-thin">
                   X
                 </button>
-              </div>
+              </motion.div>
             </div>
             <div
               className="heading-clip text-white font-oxygen text-[19px] md:hidden bg-[#1A1D1F] w-[172px] h-[42px]

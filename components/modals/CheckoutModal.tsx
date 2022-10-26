@@ -41,7 +41,8 @@ const CheckoutModal: FC<{
               img="/images/auction/auction_img_1.svg"
               variant="xs"
               noCta
-              id={1}
+              tokenId={1}
+              contractAddress="0xfd3b3575630c02b8047B911c22d3f3bfF3ad64Ce"
             />
           </div>
           <div className="col-span-12 md:col-span-8">
@@ -64,7 +65,7 @@ const CheckoutModal: FC<{
                   height="21px"
                   alt="eth_logo"
                 />{' '}
-                10.89 ETH
+                10.89 WETH
               </p>
             </div>
           </div>
@@ -80,7 +81,7 @@ const CheckoutModal: FC<{
               height="15px"
               alt="eth_logo"
             />{' '}
-            1.89 ETH
+            1.89 WETH
           </p>
         </div>
         <div className="flex justify-between mt-2">
@@ -94,7 +95,7 @@ const CheckoutModal: FC<{
               height="23px"
               alt="eth_logo"
             />{' '}
-            11.89 ETH
+            11.89 WETH
           </p>
         </div>
 

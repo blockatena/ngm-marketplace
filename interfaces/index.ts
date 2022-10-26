@@ -16,6 +16,7 @@ export type selectDataType = {
 export type AvatarType = {
   name: string
   img: string
-  id: number
+  tokenId: number
+  contractAddress: string
   isOnAuction: boolean
 }

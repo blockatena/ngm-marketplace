@@ -14,33 +14,9 @@ import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
 const ConnectButton: FC = () => {
   const router = useRouter()
-  // const injectedConnector = new InjectedConnector({
-  //   supportedChainIds: [1, 3, 4, 5, 42],
-  // })
   const { active, account } = useWeb3React<Web3Provider>()
   const handleConnect = useWalletConnect()
   const [isHovered, setIsHovered] = useState(false)
-
-  // const handleConnect = async (active?: boolean) => {
-  //   if (!window.ethereum) {
-  //     console.log('Please Install Metamask')
-  //     return
-  //   }
-  //   if (!active) {
-  //     try {
-  //       await activate(injectedConnector)
-  //       router.push('/collections')
-  //     } catch (e) {
-  //       console.error(e)
-  //     }
-  //   } else {
-  //     try {
-  //       deactivate()
-  //     } catch (e) {
-  //       console.error(e)
-  //     }
-  //   }
-  // }
 
   const handleClick = () => {
     handleConnect('/collections')

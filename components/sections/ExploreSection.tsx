@@ -5,22 +5,25 @@ import AvatarCard from '../AvatarCard'
 
 const avatars: AvatarType[] = [
   {
-    name: 'Fuse',
-    img: '/images/auction/auction_img_4.svg',
-    id: 1,
+    tokenId: 1,
+    name: 'Wraith',
+    img: '/images/auction/auction_img_1.svg',
     isOnAuction: false,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
+    tokenId: 2,
     name: 'Horizon',
     img: '/images/auction/auction_img_2.svg',
-    id: 2,
     isOnAuction: true,
+    contractAddress: '0xfd2b4561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
+    tokenId: 3,
     name: 'Lifeline',
     img: '/images/auction/auction_img_3.svg',
-    id: 3,
     isOnAuction: false,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
 ]
 
