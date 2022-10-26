@@ -40,7 +40,7 @@ const MakeOfferModal: FC<{
             <label htmlFor="offer_amount" className="text-white">
               Offer Amount
             </label>
-            <span className="text-[#AEA8A8]">Balance : 0.00ETH </span>
+            <span className="text-[#AEA8A8]">Balance : 0.00WETH </span>
           </div>
           <div className="h-[47px] relative rounded-lg">
             <input
@@ -55,7 +55,7 @@ const MakeOfferModal: FC<{
                 height="23px"
                 alt="eth_logo"
               />{' '}
-              <span>ETH</span>
+              <span>WETH</span>
             </p>
           </div>
           <p className="font-poppins text-xs lg:text-[17px] text-[#7C7C7C] mt-2">
