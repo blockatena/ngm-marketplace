@@ -1,12 +1,11 @@
 import { Web3Provider } from '@ethersproject/providers'
 import { useWeb3React } from '@web3-react/core'
-import { InjectedConnector } from '@web3-react/injected-connector'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
-import { FC, useState } from 'react'
+import { FC } from 'react'
 
 import { fromLeftAnimation, fromRightAnimation } from '../utils/animations'
+import useWalletConnect from '../utils/hooks/useWalletConnect'
 
 type WalletOptionType = {
   img: string
@@ -24,44 +23,16 @@ type WalletType =
   | 'phantom'
 
 interface CardProps extends WalletOptionType {
-  handleConnect: (_wallet: WalletType, _active?: boolean) => void
+  handleConnect: (_goBack?: boolean) => Promise<void>
 }
 
 const walletOptions: WalletOptionType[] = [
-  // {
-  //   img: '/images/icons/portis.png',
-  //   title: 'portis',
-  //   content:
-  //     'Offer your user a familiar experience by signing in with just an email and password.',
-  //   isInactive: true,
-  // },
   {
     img: '/images/icons/metamask.png',
     title: 'metamask',
     content:
       'Available as a browser extension and as a mobile app. Metamask equips you with a key vault.',
   },
-  // {
-  //   img: '/images/icons/coinbase.png',
-  //   title: 'coinbase wallet',
-  //   content:
-  //     'Offer your user a familiar experience by signing in with just an email and password.',
-  //   isInactive: true,
-  // },
-  // {
-  //   img: '/images/icons/osmosis.png',
-  //   title: 'osmosis',
-  //   content:
-  //     'Offer your user a familiar experience by signing in with just an email and password.',
-  //   isInactive: true,
-  // },
-  // {
-  //   img: '/images/icons/phantom.png',
-  //   title: 'phantom',
-  //   content:
-  //     'Offer your user a familiar experience by signing in with just an email and password.',
-  //   isInactive: true,
-  // },
 ]
 
 const Card: FC<CardProps> = ({
@@ -83,8 +54,8 @@ const Card: FC<CardProps> = ({
       style={
         isInactive ? { backgroundColor: '#464748', cursor: 'default' } : {}
       }
-      className={`${shadow} overflow-ellipsis cursor-pointer h-72 p-2 w-full bg-dark_mild  md:w-52 rounded-lg`}
-      onClick={() => handleConnect(title, active)}
+      className={`${shadow} overflow-ellipsis cursor-pointer h-72 p-2 w-full bg-dark_mild  md:w-52 lg:w-96 rounded-lg`}
+      onClick={() => handleConnect(true)}
       whileHover={{ scale: 1.1 }}
     >
       <div className="h-36 grid place-items-center rounded-lg bg-gradient-to-r from-custom_gray_light to-custom_gray_dark">
@@ -101,33 +72,8 @@ const Card: FC<CardProps> = ({
 }
 
 const WalletOptions: FC = () => {
-  const router = useRouter()
-  const injectedConnector = new InjectedConnector({
-    supportedChainIds: [1, 3, 4, 5, 42],
-  })
-  const { activate, active, deactivate } = useWeb3React<Web3Provider>()
-  const [message, setMessage] = useState('')
-
-  const handleConnect = async (wallet: WalletType, active?: boolean) => {
-    if (window.ethereum && wallet === 'metamask') {
-      if (!active) {
-        try {
-          await activate(injectedConnector)
-          router.back()
-        } catch (e) {
-          console.error(e)
-        }
-      } else {
-        try {
-          deactivate()
-        } catch (e) {
-          console.error(e)
-        }
-      }
-    } else if (wallet === 'metamask') {
-      setMessage('Please Install Metamask')
-    }
-  }
+  const { active } = useWeb3React<Web3Provider>()
+  const { handleConnect, message } = useWalletConnect()
 
   return (
     <>
