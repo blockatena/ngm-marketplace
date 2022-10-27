@@ -9,7 +9,8 @@ interface AvatarCardProps {
   variant?: 'xs' | 'sm' | 'lg'
   noCta?: boolean
   isOnAuction?: boolean
-  id: number
+  tokenId: number
+  contractAddress: string
 }
 
 const TimerSection: FC<{ hours: number; minutes: number; seconds: number }> = ({
@@ -41,7 +42,8 @@ const AvatarCard: FC<AvatarCardProps> = ({
   variant = 'sm',
   noCta,
   isOnAuction,
-  id,
+  tokenId,
+  contractAddress,
 }) => {
   const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
@@ -86,7 +88,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
     if (isOnAuction) {
       return
     }
-    router.push(`/assets/${id}`)
+    router.push(`/assets/${contractAddress}/${tokenId}`)
   }
 
   return (

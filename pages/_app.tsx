@@ -23,13 +23,9 @@ type AppPropsWithLayout = AppProps & {
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      {Component.Layout === 'home' ? (
+      <Layout>
         <Component {...pageProps} />
-      ) : (
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      )}
+      </Layout>
     </Web3ReactProvider>
   )
 }

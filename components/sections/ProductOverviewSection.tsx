@@ -30,7 +30,8 @@ const ProductOverviewSection: FC = () => {
           img="/images/auction/auction_img_1.svg"
           variant="lg"
           noCta
-          id={1}
+          tokenId={1}
+          contractAddress="0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce"
         />
         <div className="lg:hidden grid place-items-center">
           <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">

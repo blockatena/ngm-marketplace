@@ -1,19 +1,22 @@
 import { NextPage } from 'next'
 import Image from 'next/image'
 
-import BreadCrumb from '../../components/BreadCrumb'
-import PageHeading from '../../components/PageHeading'
-import DescriptionBidHistorySection from '../../components/sections/DescriptionBidHistorySection'
-import ExploreSection from '../../components/sections/ExploreSection'
-import ProductOverviewSection from '../../components/sections/ProductOverviewSection'
-import type { CrumbType } from '../../interfaces'
-import leftVector from '../../public/images/others/left_vector.png'
-import rightVector from '../../public/images/others/right_vector.png'
+import BreadCrumb from '../../../components/BreadCrumb'
+import PageHeading from '../../../components/PageHeading'
+import DescriptionBidHistorySection from '../../../components/sections/DescriptionBidHistorySection'
+import ExploreSection from '../../../components/sections/ExploreSection'
+import ProductOverviewSection from '../../../components/sections/ProductOverviewSection'
+import type { CrumbType } from '../../../interfaces'
+import leftVector from '../../../public/images/others/left_vector.png'
+import rightVector from '../../../public/images/others/right_vector.png'
 
 const crumbData: CrumbType[] = [
   { name: 'home', route: '/' },
   { name: 'apex legends', route: '/collections/3' },
-  { name: 'fuse', route: '/assets/1' },
+  {
+    name: 'fuse',
+    route: '/assets/0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce/1',
+  },
 ]
 
 const ViewAssetPage: NextPage = () => {

@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
 import Image from 'next/image'
-import { Dispatch, FC, Fragment, SetStateAction, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useState } from 'react'
 import AvatarCard from '../../components/AvatarCard'
 import BreadCrumb from '../../components/BreadCrumb'
 import Drawer from '../../components/Drawer'
@@ -21,80 +21,71 @@ const crumbData: CrumbType[] = [
 
 const avatars: AvatarType[] = [
   {
-    id: 1,
+    tokenId: 1,
     name: 'Wraith',
     img: '/images/auction/auction_img_1.svg',
     isOnAuction: false,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 2,
+    tokenId: 2,
     name: 'Horizon',
     img: '/images/auction/auction_img_2.svg',
     isOnAuction: true,
+    contractAddress: '0xfd2b4561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 3,
+    tokenId: 3,
     name: 'Lifeline',
     img: '/images/auction/auction_img_3.svg',
     isOnAuction: false,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 4,
+    tokenId: 4,
     name: 'Fuse',
     img: '/images/auction/auction_img_4.svg',
     isOnAuction: true,
+    contractAddress: '0xfe2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 5,
+    tokenId: 5,
     name: 'Fortune',
     img: '/images/auction/auction_img_5.svg',
     isOnAuction: true,
+    contractAddress: '0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 6,
+    tokenId: 6,
     name: 'Crypto',
     img: '/images/auction/auction_img_6.svg',
     isOnAuction: false,
+    contractAddress: '0xfd6b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 7,
+    tokenId: 7,
     name: 'Wraith',
     img: '/images/auction/auction_img_1.svg',
     isOnAuction: true,
+    contractAddress: '0xfa2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
   },
   {
-    id: 8,
+    tokenId: 8,
     name: 'Horizon',
     img: '/images/auction/auction_img_2.svg',
     isOnAuction: false,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ca',
   },
   {
-    id: 9,
+    tokenId: 9,
     name: 'Lifeline',
     img: '/images/auction/auction_img_3.svg',
     isOnAuction: true,
-  },
-  {
-    id: 10,
-    name: 'Fuse',
-    img: '/images/auction/auction_img_4.svg',
-    isOnAuction: false,
-  },
-  {
-    id: 11,
-    name: 'Fortune',
-    img: '/images/auction/auction_img_5.svg',
-    isOnAuction: true,
-  },
-  {
-    id: 12,
-    name: 'Crypto',
-    img: '/images/auction/auction_img_6.svg',
-    isOnAuction: false,
+    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cb',
   },
 ]
 
-const currencyData: string[] = ['eth', 'weth', 'ape', 'usdc']
+// const currencyData: string[] = ['eth', 'weth', 'ape', 'usdc']
 
 const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
   setIsOpen,
@@ -120,7 +111,7 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
         </div>
       </h3>
       <NavAccordion heading="NFT State">
-        <div className="font-oxygen">
+        {/* <div className="font-oxygen">
           <input
             type="checkbox"
             id="buy_checkbox"
@@ -129,7 +120,7 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
           <label htmlFor="buy_checkbox" className="text-xs md:text-[15px]">
             Buy now
           </label>
-        </div>
+        </div> */}
         <div className="font-oxygen">
           <input
             type="checkbox"
@@ -166,8 +157,8 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
           Apply
         </button>
       </NavAccordion>
-      <NavAccordion heading="Currency">
-        {/* <button className="w-fit" onClick={handleClick}>
+      {/* <NavAccordion heading="Currency"> */}
+      {/* <button className="w-fit" onClick={handleClick}>
           Recently Added
         </button>
         <button className="w-fit" onClick={handleClick}>
@@ -176,7 +167,7 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
         <button className="w-fit" onClick={handleClick}>
           Popular
         </button> */}
-        <div>
+      {/* <div>
           {currencyData.map((currency, index) => {
             return (
               <Fragment key={index}>
@@ -198,34 +189,8 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
               </Fragment>
             )
           })}
-          {/* <input
-            type="radio"
-            id="html"
-            name="fav_language"
-            value="HTML"
-            onChange={(e) => setCurrency(e.target.value)}
-          />
-          <label htmlFor="html">HTML</label>
-          <br />
-          <input
-            type="radio"
-            id="css"
-            name="fav_language"
-            value="CSS"
-            onChange={(e) => setCurrency(e.target.value)}
-          />
-          <label htmlFor="css">CSS</label>
-          <br />
-          <input
-            type="radio"
-            id="javascript"
-            name="fav_language"
-            value="JavaScript"
-            onChange={(e) => setCurrency(e.target.value)}
-          />
-          <label htmlFor="javascript">JavaScript</label> */}
-        </div>
-      </NavAccordion>
+        </div> */}
+      {/* </NavAccordion> */}
     </div>
   )
 }
