@@ -1,14 +1,22 @@
 import { motion } from 'framer-motion'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-
+import { useLayoutEffect } from 'react'
+import { useAccount } from 'wagmi'
 import WalletOptions from '../../components/WalletOptions'
 import { opacityAnimation } from '../../utils/animations'
 
 const ConnectPage: NextPage = () => {
   const router = useRouter()
+  const { isConnected } = useAccount()
+
+  useLayoutEffect(() => {
+    isConnected && router.back()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected])
+
   return (
-    <main className="p-4 pt-6 lg:px-16">
+    <main className="p-4 pt-6 lg:px-16 min-h-screen">
       <motion.div
         variants={opacityAnimation}
         initial="initial"
