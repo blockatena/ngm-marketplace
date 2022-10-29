@@ -30,6 +30,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
 
   useEffect(() => {
     if (sessionStorage.getItem('isConnected') === 'yes') handleConnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
