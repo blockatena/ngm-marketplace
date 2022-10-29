@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router'
-import { FC, ReactNode, useEffect } from 'react'
-import useWalletConnect from '../utils/hooks/useWalletConnect'
+import { FC, ReactNode } from 'react'
 import Footer from './Footer'
 
 import Header from './Header'
@@ -26,13 +25,6 @@ const CurrentFooter = () => {
 }
 
 const Layout: FC<LayoutProps> = ({ children }) => {
-  const { handleConnect } = useWalletConnect()
-
-  useEffect(() => {
-    if (sessionStorage.getItem('isConnected') === 'yes') handleConnect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return (
     <div className="flex justify-center bg-gradient-to-r from-dark_mild to-dark_heavy">
       <div className=" w-full max-w-[2000px] bg-fixed bg-cover bg-market">

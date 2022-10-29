@@ -1,9 +1,8 @@
-import { Web3Provider } from '@ethersproject/providers'
-import { useWeb3React } from '@web3-react/core'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
+import { useAccount } from 'wagmi'
 import {
   fromLeftAnimation,
   fromRightAnimation,
@@ -13,13 +12,12 @@ import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
 const ConnectButton: FC = () => {
   const router = useRouter()
-  const { active, account } = useWeb3React<Web3Provider>()
+  const { address, isConnected } = useAccount()
   const [isHovered, setIsHovered] = useState(false)
 
   const handleClick = () => {
-    !active && router.push('/connect-wallet')
+    !isConnected && router.push('/connect-wallet')
   }
-
   return (
     <motion.button
       className="btn-primary cut-corners w-[120px] md:w-[158px] lg:w-[173px] h-[29px] md:h-[33px] lg:h-[39px] 
@@ -35,18 +33,18 @@ const ConnectButton: FC = () => {
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      disabled={active}
+      disabled={isConnected}
     >
-      {!active && router.asPath === '/' ? (
+      {!isConnected && router.asPath === '/' ? (
         'Join Community'
-      ) : !active ? (
+      ) : !isConnected ? (
         'Connect Wallet'
       ) : (
         <span>
           {isHovered ? 'Disconnect' : 'Connected'}{' '}
           <span className="lg:text-xs">
-            {account?.substring(0, 4)}...
-            {account?.substring(account.length - 2)}
+            {address?.substring(0, 4)}...
+            {address?.substring(address.length - 2)}
           </span>
         </span>
       )}

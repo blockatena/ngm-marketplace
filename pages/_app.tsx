@@ -1,16 +1,29 @@
-import { Web3Provider } from '@ethersproject/providers'
-import { Web3ReactProvider } from '@web3-react/core'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
-
+import {
+  configureChains,
+  createClient,
+  defaultChains,
+  WagmiConfig,
+} from 'wagmi'
 import Layout from '../components/Layout'
 import '../styles/globals.css'
 
-const getLibrary = (provider: any): Web3Provider => {
-  const library = new Web3Provider(provider)
-  library.pollingInterval = 12000
-  return library
-}
+// import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import { publicProvider } from 'wagmi/providers/public'
+
+const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
+  // alchemyProvider({ apiKey: 'yourAlchemyApiKey' }),
+  publicProvider(),
+])
+
+const client = createClient({
+  autoConnect: true,
+  connectors: [new MetaMaskConnector({ chains })],
+  provider,
+  webSocketProvider,
+})
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   Layout?: 'home'
@@ -22,11 +35,11 @@ type AppPropsWithLayout = AppProps & {
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
+    <WagmiConfig client={client}>
       <Layout>
         <Component {...pageProps} />
       </Layout>
-    </Web3ReactProvider>
+    </WagmiConfig>
   )
 }
 
