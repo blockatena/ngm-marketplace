@@ -6,16 +6,10 @@ import { CollectionCardType } from '../interfaces'
 interface CollectionCardProps extends CollectionCardType {}
 
 const CollectionCard: FC<CollectionCardProps> = ({
-  chain,
   collectionName,
   contractaddress,
-  ownerAddress,
-  symbol,
-  transactionhash,
-  type,
   __v,
   _id,
-  baseuri,
   imageuri,
 }) => {
   const router = useRouter()

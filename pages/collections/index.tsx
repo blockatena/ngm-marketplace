@@ -12,6 +12,7 @@ import type {
   CrumbType,
   selectDataType,
 } from '../../interfaces'
+import { QUERIES } from '../../react-query/constants'
 import { getCollections } from '../../react-query/queries'
 import { handleAnimationDelay } from '../../utils'
 import { opacityAnimation } from '../../utils/animations'
@@ -74,17 +75,20 @@ const selectData: selectDataType[] = [
 // ]
 
 const CollectionsPage: NextPage = () => {
+  const { width } = useWindowDimensions()
+  const { data, isSuccess } = useQuery(QUERIES.getCollections, () =>
+    getCollections()
+  )
   const [selectedItem, setSelectedItem] = useState('recently')
   const [currentPage, setCurrentPage] = useState(1)
-  const { width } = useWindowDimensions()
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
-  const { data } = useQuery('getCollections', () => getCollections())
   const [collections, setCollections] = useState<CollectionCardType[]>([])
   const [dataAscending, setDataAscending] = useState<CollectionCardType[]>([])
   const [dataDescending, setDataDescending] = useState<CollectionCardType[]>([])
   const [dataUnsorted, setDataUnsorted] = useState<CollectionCardType[]>([])
 
   // const collectionsData: CollectionCardType[] = data?.data
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
   const compareAscending = (
     a: { collectionName: string },
@@ -160,6 +164,11 @@ const CollectionsPage: NextPage = () => {
               <CollectionCard {...collection} />
             </motion.div>
           ))}
+        {isSuccess && collections?.length === 0 && (
+          <p className="font-inter text-white text-lg text-center p-8">
+            No Collections found
+          </p>
+        )}
       </div>
       <div className="my-12 lg:my-20 flex justify-end">
         <Pagination

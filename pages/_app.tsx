@@ -2,6 +2,8 @@ import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import { QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import {
   configureChains,
   createClient,
@@ -25,18 +27,6 @@ const client = createClient({
   webSocketProvider,
 })
 
-// const queryClientConfig = {
-//   defaultOptions: {
-//     queries: {
-//       retry: 3,
-//       refetchOnMount: true,
-//       refetchOnWindowFocus: false,
-//     },
-//   },
-// }
-
-// const queryClient = new QueryClient(queryClientConfig)
-
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   Layout?: 'home'
 }
@@ -51,6 +41,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
       <WagmiConfig client={client}>
         <Layout>
           <Component {...pageProps} />
+          <ToastContainer />
         </Layout>
       </WagmiConfig>
       <ReactQueryDevtools initialIsOpen={false} />
