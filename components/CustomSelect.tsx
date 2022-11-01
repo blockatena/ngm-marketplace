@@ -51,7 +51,7 @@ const CustomSelect: FC<CustomSelectProps> = ({
           id="dropdown"
         >
           <ul className="py-1 bg-[#1B1B1E] " aria-labelledby="dropdown">
-            {selectData.map(({ name, value }, index) => {
+            {selectData?.map(({ name, value }, index) => {
               return (
                 <li key={index}>
                   <a
