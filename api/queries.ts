@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const baseURL = 'https://ngm-api-tpnng.ondigitalocean.app'
+
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL,
 })
 
 export const getCollections = () => {
