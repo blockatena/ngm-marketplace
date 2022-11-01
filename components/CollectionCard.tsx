@@ -5,6 +5,8 @@ import { CollectionCardType } from '../interfaces'
 
 interface CollectionCardProps extends CollectionCardType {}
 
+const placeholderImg = '/images/collections/placeholder.jpg'
+
 const CollectionCard: FC<CollectionCardProps> = ({
   collectionName,
   contractaddress,
@@ -37,11 +39,7 @@ const CollectionCard: FC<CollectionCardProps> = ({
             layout="fill"
           />
         ) : (
-          <Image
-            src={'/images/collections/apex_legend.jpg'}
-            alt="collection_img"
-            layout="fill"
-          />
+          <Image src={placeholderImg} alt="collection_img" layout="fill" />
         )}
       </div>
       <div
@@ -58,11 +56,7 @@ const CollectionCard: FC<CollectionCardProps> = ({
             layout="fill"
           />
         ) : (
-          <Image
-            src={'/images/collections/apex_legend.jpg'}
-            alt="collection_img"
-            layout="fill"
-          />
+          <Image src={placeholderImg} alt="collection_img" layout="fill" />
         )}
       </div>
       <div
@@ -79,11 +73,7 @@ const CollectionCard: FC<CollectionCardProps> = ({
             layout="fill"
           />
         ) : (
-          <Image
-            src={'/images/collections/apex_legend.jpg'}
-            alt="collection_img"
-            layout="fill"
-          />
+          <Image src={placeholderImg} alt="collection_img" layout="fill" />
         )}
       </div>
       <div
