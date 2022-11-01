@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import {
   configureChains,
@@ -11,6 +11,7 @@ import {
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { publicProvider } from 'wagmi/providers/public'
 import Layout from '../components/Layout'
+import { queryClient } from '../react-query/queryClient'
 import '../styles/globals.css'
 
 const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
@@ -24,18 +25,17 @@ const client = createClient({
   webSocketProvider,
 })
 
-const queryClientConfig = {
-  defaultOptions: {
-    queries: {
-      retry: 3,
-      refetchOnMount: true,
-      refetchOnWindowFocus: false,
-      // refetchOnReconnect: false
-    },
-  },
-}
+// const queryClientConfig = {
+//   defaultOptions: {
+//     queries: {
+//       retry: 3,
+//       refetchOnMount: true,
+//       refetchOnWindowFocus: false,
+//     },
+//   },
+// }
 
-const queryClient = new QueryClient(queryClientConfig)
+// const queryClient = new QueryClient(queryClientConfig)
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   Layout?: 'home'

@@ -2,7 +2,6 @@ import { motion } from 'framer-motion'
 import { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
-import { getCollections } from '../../api/queries'
 import BreadCrumb from '../../components/BreadCrumb'
 import CollectionCard from '../../components/CollectionCard'
 import CustomSelect from '../../components/CustomSelect'
@@ -13,6 +12,7 @@ import type {
   CrumbType,
   selectDataType,
 } from '../../interfaces'
+import { getCollections } from '../../react-query/queries'
 import { handleAnimationDelay } from '../../utils'
 import { opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
@@ -78,10 +78,7 @@ const CollectionsPage: NextPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const { width } = useWindowDimensions()
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
-  const { isSuccess, isError, data, error, isLoading } = useQuery(
-    'getCollections',
-    () => getCollections()
-  )
+  const { data } = useQuery('getCollections', () => getCollections())
   const [collections, setCollections] = useState<CollectionCardType[]>([])
   const [dataAscending, setDataAscending] = useState<CollectionCardType[]>([])
   const [dataDescending, setDataDescending] = useState<CollectionCardType[]>([])
