@@ -94,8 +94,10 @@ const CollectionsPage: NextPage = () => {
     a: { collectionName: string },
     b: { collectionName: string }
   ) => {
-    if (a.collectionName < b.collectionName) return -1
-    if (a.collectionName > b.collectionName) return 1
+    if (a.collectionName.toLowerCase() < b.collectionName.toLowerCase())
+      return -1
+    if (a.collectionName.toLowerCase() > b.collectionName.toLowerCase())
+      return 1
     return 0
   }
 
@@ -103,8 +105,10 @@ const CollectionsPage: NextPage = () => {
     a: { collectionName: string },
     b: { collectionName: string }
   ) => {
-    if (a.collectionName > b.collectionName) return -1
-    if (a.collectionName < b.collectionName) return 1
+    if (a.collectionName.toLowerCase() > b.collectionName.toLowerCase())
+      return -1
+    if (a.collectionName.toLowerCase() < b.collectionName.toLowerCase())
+      return 1
     return 0
   }
 
