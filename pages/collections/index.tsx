@@ -79,12 +79,13 @@ const CollectionsPage: NextPage = () => {
   const { data, isSuccess } = useQuery(QUERIES.getCollections, () =>
     getCollections()
   )
-  const [selectedItem, setSelectedItem] = useState('recently')
+  const [selectedItem, setSelectedItem] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [collections, setCollections] = useState<CollectionCardType[]>([])
   const [dataAscending, setDataAscending] = useState<CollectionCardType[]>([])
   const [dataDescending, setDataDescending] = useState<CollectionCardType[]>([])
   const [dataUnsorted, setDataUnsorted] = useState<CollectionCardType[]>([])
+  const [dataRecent, setDataRecent] = useState<CollectionCardType[]>([])
 
   // const collectionsData: CollectionCardType[] = data?.data
 
@@ -117,21 +118,25 @@ const CollectionsPage: NextPage = () => {
       setCollections(dataAscending)
     } else if (selectedItem === 'z-a') {
       setCollections(dataDescending)
+    } else if (selectedItem === 'recently') {
+      setCollections(dataRecent)
     } else {
       setCollections(dataUnsorted)
     }
-  }, [selectedItem, dataAscending, dataUnsorted, dataDescending])
+  }, [selectedItem, dataAscending, dataUnsorted, dataDescending, dataRecent])
 
   useEffect(() => {
     if (data?.data.length) {
       let unsortedData = data.data
       const newArr = [...unsortedData]
       const newArr2 = [...unsortedData]
+      const newArr3 = [...unsortedData]
       setDataUnsorted(unsortedData)
       const ascendingArr = newArr.sort(compareAscending)
       setDataAscending(ascendingArr)
       const descendingArr = newArr2.sort(compareDescending)
       setDataDescending(descendingArr)
+      setDataRecent(newArr3.reverse())
     }
   }, [data?.data])
 
