@@ -1,20 +1,22 @@
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
+import { QueryClientProvider } from 'react-query'
+import { ReactQueryDevtools } from 'react-query/devtools'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import {
   configureChains,
   createClient,
   defaultChains,
   WagmiConfig,
 } from 'wagmi'
-import Layout from '../components/Layout'
-import '../styles/globals.css'
-
-// import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { publicProvider } from 'wagmi/providers/public'
+import Layout from '../components/Layout'
+import { queryClient } from '../react-query/queryClient'
+import '../styles/globals.css'
 
 const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
-  // alchemyProvider({ apiKey: 'yourAlchemyApiKey' }),
   publicProvider(),
 ])
 
@@ -35,11 +37,15 @@ type AppPropsWithLayout = AppProps & {
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   return (
-    <WagmiConfig client={client}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </WagmiConfig>
+    <QueryClientProvider client={queryClient}>
+      <WagmiConfig client={client}>
+        <Layout>
+          <Component {...pageProps} />
+          <ToastContainer />
+        </Layout>
+      </WagmiConfig>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   )
 }
 
