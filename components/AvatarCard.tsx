@@ -15,12 +15,13 @@ interface AvatarCardProps {
   createdAt: string
   is_in_auction?: boolean
   is_in_sale?: boolean
+  noCta?:boolean
   meta_data_url: string
   token_id: string
   token_owner: string
   updatedAt: string
   __v: any
-  _id:string
+  _id: string
 }
 
 interface NftdataProps {
@@ -64,6 +65,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
   createdAt,
   is_in_auction,
   is_in_sale,
+  noCta,
   meta_data_url,
   token_id,
   token_owner,
@@ -135,7 +137,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
     before:absolute before:-right-2 before:-top-2 before:w-[82px] before:h-[88px] before:bg-custom_yellow before:rounded-xl 
     `}
       >
-        <div className="absolute -top-16 z-20 grid place-items-center" >
+        <div className="absolute -top-16 z-20 grid place-items-center">
           {/* <Image
             src={Img}
             width={variant === 'lg' ? '442px' : '250px'}
@@ -176,7 +178,6 @@ const AvatarCard: FC<AvatarCardProps> = ({
               }
             />
           )}
-          
         </div>
         <div
           className={`
@@ -189,10 +190,9 @@ const AvatarCard: FC<AvatarCardProps> = ({
             style={{
               backgroundImage: "url('/images/others/avatar_bg.png')",
             }}
-            
           ></div>
         </div>
-        {!is_in_sale && (
+        {!noCta && (
           <div className="absolute  p-0 z-30 bottom-3 left-3 right-3  lg:h-1/4">
             <div className="opacity-70 bg-dark_heavy p-2 flex  justify-between h-20">
               <div className="text-custom_yellow  text-base lg:text-lg font-josefin">
