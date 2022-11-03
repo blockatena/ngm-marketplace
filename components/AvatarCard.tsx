@@ -17,7 +17,7 @@ interface AvatarCardProps {
   is_in_sale?: boolean
   noCta?:boolean
   meta_data_url: string
-  token_id: string
+  token_id: any
   token_owner: string
   updatedAt: string
   __v: any
