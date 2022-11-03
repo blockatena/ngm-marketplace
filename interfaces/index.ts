@@ -59,7 +59,7 @@ export type AvatarType = {
   is_in_auction: boolean
   is_in_sale: boolean
   meta_data_url: string
-  token_id: string
+  token_id: any
   token_owner: string
   updatedAt: string
   __v: any

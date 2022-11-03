@@ -164,6 +164,20 @@ const AvatarCard: FC<AvatarCardProps> = ({
               }
               alt="avatar"
             />
+          ): img ? (
+            <Image
+              loader={() => img}
+              src={img}
+              width={variant === 'lg' ? '442px' : '250px'}
+              height={
+                variant === 'lg' && clientWidth > 768
+                  ? '641px'
+                  : variant === 'lg' && clientWidth <= 768
+                  ? '900px'
+                  : '382px'
+              }
+              alt="avatar"
+            />
           ) : (
             <Image
               src={placeholderImg}
@@ -196,7 +210,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
           <div className="absolute  p-0 z-30 bottom-3 left-3 right-3  lg:h-1/4">
             <div className="opacity-70 bg-dark_heavy p-2 flex  justify-between h-20">
               <div className="text-custom_yellow  text-base lg:text-lg font-josefin">
-                {Name ? Name : ''}
+                {Name ? Name :name?name:''}
               </div>
               {is_in_auction && (
                 <TimerSection hours={12} minutes={30} seconds={20} />
