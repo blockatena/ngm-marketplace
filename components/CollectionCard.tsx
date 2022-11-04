@@ -8,8 +8,8 @@ interface CollectionCardProps extends CollectionCardType {}
 const placeholderImg = '/images/collections/placeholder.jpg'
 
 const CollectionCard: FC<CollectionCardProps> = ({
-  collectionName,
-  contractaddress,
+  collection_name,
+  contract_address,
   __v,
   _id,
   imageuri,
@@ -23,7 +23,7 @@ const CollectionCard: FC<CollectionCardProps> = ({
     hover:-translate-y-8 transition-all"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => router.push(`/collections/${contractaddress}`)}
+      onClick={() => router.push(`/collections/${contract_address}`)}
     >
       <div
         className={`bg-transparent  w-[80%] absolute z-10 top-6 bottom-6 skew-y-6 -skew-x-6 ml-[10%]
@@ -85,7 +85,7 @@ const CollectionCard: FC<CollectionCardProps> = ({
        }`}
       >
         <p className="text-white font-medium font-poppins text-lg lg:text-[29px] capitalize">
-          {collectionName}
+          {collection_name}
         </p>
       </div>
     </div>
