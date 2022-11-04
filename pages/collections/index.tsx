@@ -181,8 +181,9 @@ const CollectionsPage: NextPage = () => {
       </div>
       <div className="my-12 lg:my-20 flex justify-end">
         <Pagination
-          itemsPerPage={18}
-          totalItems={18}
+          // itemsPerPage={18}
+          // totalItems={18}
+          totalPages={1}
           paginate={paginate}
           currentPage={currentPage}
         />

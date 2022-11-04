@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
@@ -136,19 +135,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
     before:absolute before:-right-2 before:-top-2 before:w-[82px] before:h-[88px] before:bg-custom_yellow before:rounded-xl 
     `}
       >
-        <div className="absolute -top-16 z-20 grid place-items-center">
-          {/* <Image
-            src={Img}
-            width={variant === 'lg' ? '442px' : '250px'}
-            height={
-              variant === 'lg' && clientWidth > 768
-                ? '641px'
-                : variant === 'lg' && clientWidth <= 768
-                ? '900px'
-                : '382px'
-            }
-            alt="avatar"
-          /> */}
+        {/* <div className="absolute -top-16 z-20 grid place-items-center">
           {Img ? (
             <Image
               loader={() => Img}
@@ -191,7 +178,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
               }
             />
           )}
-        </div>
+        </div> */}
         <div
           className={`
       avatar-card-clip relative w-[160px] h-[225px] ${cardProperties.dimensions} rounded-tr-lg rounded-b-lg 
@@ -201,7 +188,9 @@ const AvatarCard: FC<AvatarCardProps> = ({
             className="avatar-card-clip rounded-b-lg rounded-tr-lg bg-dark_mild bg-scroll bg-cover
            absolute top-3 bottom-3 left-3 right-3"
             style={{
-              backgroundImage: "url('/images/others/avatar_bg.png')",
+              backgroundImage: `url(${
+                Img ? Img : '/images/others/avatar_bg.png'
+              })`,
             }}
           ></div>
         </div>
