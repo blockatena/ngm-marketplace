@@ -2,10 +2,6 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
-import { nftInstance } from '../axiosInstance'
-import { useQuery } from 'react-query'
-import { QUERIES } from '../react-query/constants'
-import { getNft } from '../react-query/queries'
 interface AvatarCardProps {
   name: string
   img: string
@@ -15,7 +11,7 @@ interface AvatarCardProps {
   createdAt: string
   is_in_auction?: boolean
   is_in_sale?: boolean
-  noCta?:boolean
+  noCta?: boolean
   meta_data_url: string
   token_id: any
   token_owner: string
@@ -71,7 +67,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
   token_owner,
   updatedAt,
   __v,
-  _id
+  _id,
 }) => {
   const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
@@ -91,11 +87,14 @@ const AvatarCard: FC<AvatarCardProps> = ({
   useEffect(() => {
     fetch(meta_data_url)
       .then((response) => response.json())
-      .then((data) =>{  setName(data.name); setImg(data.image)})
+      .then((data) => {
+        setName(data.name)
+        setImg(data.image)
+      })
+      .catch((err) => console.error(err))
   }, [meta_data_url])
-  
-  // console.log(nftinfo.name)
 
+  // console.log(nftinfo.name)
 
   useEffect(() => {
     if (isSelected) setShadow('avatar-shadow')
@@ -164,7 +163,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
               }
               alt="avatar"
             />
-          ): img ? (
+          ) : img ? (
             <Image
               loader={() => img}
               src={img}
@@ -210,7 +209,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
           <div className="absolute  p-0 z-30 bottom-3 left-3 right-3  lg:h-1/4">
             <div className="opacity-70 bg-dark_heavy p-2 flex  justify-between h-20">
               <div className="text-custom_yellow  text-base lg:text-lg font-josefin">
-                {Name ? Name :name?name:''}
+                {Name ? Name : name ? name : ''}
               </div>
               {is_in_auction && (
                 <TimerSection hours={12} minutes={30} seconds={20} />

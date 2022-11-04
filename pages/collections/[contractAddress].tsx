@@ -20,8 +20,6 @@ import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 // import { useQuery } from 'wagmi'
 
-
-
 // const avatars: AvatarType[] = [
 //   {
 //     tokenId: 1,
@@ -102,15 +100,15 @@ interface HeroSectionProps {
   totalvolume: any
   bestOffer: any
   owners: any
-  description:string
+  description: string
   floor: any
 }
 
-
 const placeholderLogo = '/images/collections/collection_avatar.png'
-const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
-  setIsOpen,
-}) => {
+const SideNav: FC<{
+  setIsOpen?: Dispatch<SetStateAction<boolean>>
+  handleFilter: (_isInAuction: boolean) => void
+}> = ({ setIsOpen, handleFilter }) => {
   // eslint-disable-next-line no-unused-vars
   const [currency, setCurrency] = useState('')
   // eslint-disable-next-line no-unused-vars
@@ -147,6 +145,7 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
             type="checkbox"
             id="auction_checkbox"
             className="mr-4 cursor-pointer accent-custom_yellow"
+            onChange={(e) => handleFilter(e.target.checked)}
           />
           <label htmlFor="auction_checkbox" className="text-xs md:text-[15px]">
             On auction
@@ -232,7 +231,6 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
   __v,
   _id,
 }) => {
-
   let banner = `url("${
     bannerimage ? bannerimage : '/images/collections/collection_hero.png'
   }")`
@@ -287,7 +285,7 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
               {name ? name : 'NaN'}
             </h2>
             <p className="text-white font-oxygen text-sm lg:text-lg">
-              <span>Items {totalsupply?totalsupply:'NA'} </span> ·{' '}
+              <span>Items {totalsupply ? totalsupply : 'NA'} </span> ·{' '}
               <span>Created {createdAt ? createdAt : 'NaN'}</span> ·{' '}
               <span>Creator fee 5%</span>{' '}
             </p>
@@ -346,14 +344,16 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
 
       <div className="max-w-[600px] flex justify-between">
         <div className="grid place-items-center">
-          <p className="font-oxygen text-white lg:text-[19px] font-light">{totalvolume?totalvolume:'NA'}</p>
+          <p className="font-oxygen text-white lg:text-[19px] font-light">
+            {totalvolume ? totalvolume : 'NA'}
+          </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Total Volume
           </p>
         </div>
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            {floor?floor:'NA'}
+            {floor ? floor : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Floor Price
@@ -361,7 +361,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
         </div>
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            {bestOffer?bestOffer:'NA'}
+            {bestOffer ? bestOffer : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Best Offer
@@ -369,7 +369,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
         </div>
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            {owners?owners:'NA'}
+            {owners ? owners : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Owners
@@ -449,35 +449,35 @@ const CollectionPage: NextPage = () => {
 
   const [collectionData, setCollectionData] = useState<HeroSectionProps[]>()
   const [avatars, setAvatars] = useState<AvatarType[]>([])
-  const [collection, setCollection] = useState < CollectionCardTypes[]>([])
+  const [collection, setCollection] = useState<CollectionCardTypes[]>([])
   const [filteredData, setFiltered] = useState<CollectionCardTypes[]>([])
 
-  const [auctioncChecked, setAuctionChecked] = useState(false) 
+  const [auctioncChecked, setAuctionChecked] = useState(false)
   const [dataOnAuction, setDataOnAuction] = useState<AvatarType[]>([])
   const [dataDescending, setDataDescending] = useState<AvatarType[]>([])
   const [dataUnsorted, setDataUnsorted] = useState<AvatarType[]>([])
   const [dataRecent, setDataRecent] = useState<AvatarType[]>([])
 
   const getcollection = async () => {
-    if(collection.length===0){
+    if (collection.length === 0) {
       axios
         .get('https://ngm-api-tpnng.ondigitalocean.app/nft/get-collections')
         .then(function (response) {
           setCollection(response.data)
         })
-        
-      
-    } else if(collection.length>0){
+    } else if (collection.length > 0) {
       // return
-    }else{
+    } else {
       console.log('test')
     }
-  //  console.log(collection[0]) 
+    //  console.log(collection[0])
   }
-  
-  const filterNames =()=>{
-    if(collection.length>0){
-      const filtered = collection.filter(ok => ok?.contractaddress === router?.query?.contractAddress)
+
+  const filterNames = () => {
+    if (collection.length > 0) {
+      const filtered = collection.filter(
+        (ok) => ok?.contractaddress === router?.query?.contractAddress
+      )
       setFiltered(filtered)
       // console.log(...filtered)
     }
@@ -486,20 +486,16 @@ const CollectionPage: NextPage = () => {
   const isOnAuction = () => {
     if (dataUnsorted?.length > 0) {
       const filter = dataUnsorted.filter((nft) => nft?.is_in_auction === true)
-      setAvatars(auctioncChecked?filter:dataUnsorted)
-      setAuctionChecked(auctioncChecked?!auctioncChecked:auctioncChecked)
+      setAvatars(auctioncChecked ? filter : dataUnsorted)
+      setAuctionChecked(auctioncChecked ? !auctioncChecked : auctioncChecked)
       return filter
     }
   }
 
-  
-
-  
-
   // const filterInternal = (contractaddress:any) => {
   //   return contractaddress === router?.query?.contractAddress;
   // }
-  useEffect(()=> {
+  useEffect(() => {
     if (router?.query?.contractAddress === undefined) {
       window.setTimeout(refetch, 1500)
     } else {
@@ -510,7 +506,7 @@ const CollectionPage: NextPage = () => {
   useEffect(() => {
     if (router?.query?.contractAddress === undefined) {
       window.setTimeout(refetch, 1500)
-    } else if(filteredData?.length>0){
+    } else if (filteredData?.length > 0) {
       return
     } else {
       filterNames()
@@ -529,19 +525,18 @@ const CollectionPage: NextPage = () => {
     }
   )
 
-// useEffect(() => {
-//   if (data?.data.nfts.length) {
-//     let unsortedData = data?.data.nfts
-//     const newArr = [...unsortedData]
-//     const newArr2 = [...unsortedData]
-//     const newArr3 = [...unsortedData]
-//     setDataUnsorted(unsortedData)
-//     // const is_On_Auction = isOnAuction(unsortedData)
-//     // setDataOnAuction(is_On_Auction?is_On_Auction:[])
-//     setDataRecent(newArr3.reverse())
-//   }
-// }, [data?.data])
-
+  // useEffect(() => {
+  //   if (data?.data.nfts.length) {
+  //     let unsortedData = data?.data.nfts
+  //     const newArr = [...unsortedData]
+  //     const newArr2 = [...unsortedData]
+  //     const newArr3 = [...unsortedData]
+  //     setDataUnsorted(unsortedData)
+  //     // const is_On_Auction = isOnAuction(unsortedData)
+  //     // setDataOnAuction(is_On_Auction?is_On_Auction:[])
+  //     setDataRecent(newArr3.reverse())
+  //   }
+  // }, [data?.data])
 
   let collectionName = filteredData[0]?.collectionName
   let floor = data?.data.floor_price
@@ -550,11 +545,13 @@ const CollectionPage: NextPage = () => {
   let owners = data?.data.owners
   let totalsupply = data?.data.nfts.length
   let createddate = filteredData[0]?.createdAt
-  createddate = createddate?.substring(0,10)
+  createddate = createddate?.substring(0, 10)
   let bannerurl
   let description = filteredData[0]?.description
-  let imageurl = filteredData[0]?.imageuri.length>0?filteredData[0]?.imageuri[0]:undefined
-  
+  let imageurl =
+    filteredData[0]?.imageuri.length > 0
+      ? filteredData[0]?.imageuri[0]
+      : undefined
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
 
@@ -568,9 +565,20 @@ const CollectionPage: NextPage = () => {
 
   const Avatar = data?.data.nfts
 
+  const handleFilter = (isInAuction: boolean) => {
+    if (isInAuction) {
+      let filteredAvatars = dataUnsorted.filter(
+        (data) => data.is_in_auction === true
+      )
+      setAvatars(filteredAvatars)
+      return
+    }
+    setAvatars(dataUnsorted)
+  }
 
   useEffect(() => {
     setAvatars(data?.data.nfts)
+    setDataUnsorted(data?.data.nfts)
     // setDataUnsorted(data?.data.nfts)
     setCollectionData(data?.data)
   }, [data?.data.nfts, data?.data])
@@ -645,7 +653,7 @@ const CollectionPage: NextPage = () => {
                 duration: 0.4,
               }}
             >
-              <SideNav />
+              <SideNav handleFilter={handleFilter} />
             </motion.div>
           </div>
           <div className="col-span-12 md:col-span-9">
@@ -711,7 +719,10 @@ const CollectionPage: NextPage = () => {
             }}
           >
             <Drawer setIsOpen={setIsDrawerOpen}>
-              <SideNav setIsOpen={setIsDrawerOpen} />
+              <SideNav
+                setIsOpen={setIsDrawerOpen}
+                handleFilter={handleFilter}
+              />
             </Drawer>
           </motion.div>
         )}
