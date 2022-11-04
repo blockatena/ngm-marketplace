@@ -1,32 +1,37 @@
 import { FC, useEffect, useState } from 'react'
 
 interface PaginationProps {
-  itemsPerPage: number
-  totalItems: number
+  // itemsPerPage: number
+  // totalItems: number
   paginate: (_pageNumber: number) => void
   currentPage: number
+  totalPages: number
 }
 
 const Pagination: FC<PaginationProps> = ({
-  itemsPerPage,
-  totalItems,
+  // itemsPerPage,
+  // totalItems,
   paginate,
   currentPage,
+  totalPages,
 }) => {
   const [pageNumbers, setPageNumbers] = useState<number[]>([])
 
   useEffect(() => {
     let pages: number[] = []
-    for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
+    // for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
+    //   pages.push(i)
+    // }
+    for (let i = 1; i <= totalPages; i++) {
       pages.push(i)
     }
     setPageNumbers(pages)
-  }, [itemsPerPage, totalItems])
+  }, [totalPages])
 
   return (
     <nav className="text-white">
       <ul className="flex gap-1">
-        {pageNumbers.length &&
+        {pageNumbers?.length &&
           pageNumbers.map((number) => (
             <li
               key={number}

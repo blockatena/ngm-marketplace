@@ -698,8 +698,8 @@ const CollectionPage: NextPage = () => {
         </div>
         <div className="flex justify-end mb-12">
           <Pagination
-            itemsPerPage={6}
-            totalItems={18}
+            // totalItems={18}
+            totalPages={1}
             paginate={paginate}
             currentPage={currentPage}
           />

@@ -1,5 +1,6 @@
 export const QUERIES = {
   getCollections: 'getCollections',
   getCollectionNFTs: 'getCollectionNFTs',
-  getNfts:'getNfts',
+  getNfts: 'getNfts',
+  getAllNFts: 'getAllNFts',
 }

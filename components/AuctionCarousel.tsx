@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/router'
 import {
   ButtonHTMLAttributes,
   DetailedHTMLProps,
@@ -6,6 +7,10 @@ import {
   ReactNode,
   useState,
 } from 'react'
+import { useQuery } from 'react-query'
+import { CollectionCardType } from '../interfaces'
+import { QUERIES } from '../react-query/constants'
+import { getCollections } from '../react-query/queries'
 import { fromRightAnimation, opacityAnimation } from '../utils/animations'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
@@ -24,11 +29,9 @@ interface CustomButtonProps
   children: ReactNode
 }
 
-interface CarouselItemProps {
+interface CarouselItemProps extends CollectionCardType {
   currentCardWidth: number
   currentIndex: number
-  img: string
-  title: string
 }
 
 const CustomButton: FC<CustomButtonProps> = ({ children, ...props }) => (
@@ -44,9 +47,11 @@ const CustomButton: FC<CustomButtonProps> = ({ children, ...props }) => (
 const CarouselItem: FC<CarouselItemProps> = ({
   currentCardWidth,
   currentIndex,
-  img,
-  title,
+  imageuri,
+  contract_address,
+  collection_name,
 }) => {
+  const router = useRouter()
   const [isHovered, setIsHovered] = useState(false)
   return (
     <div
@@ -56,35 +61,37 @@ const CarouselItem: FC<CarouselItemProps> = ({
       md:text-[25px] hover:md:text-[15px] text-white font-poppins font-medium "
       style={{
         transform: `translateX(-${currentCardWidth * currentIndex}px)`,
-        backgroundImage: `url(${img})`,
+        backgroundImage: `url(${imageuri[0]})`,
         backgroundSize: 'cover',
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => router.push(`/collections/${contract_address}`)}
     >
       <motion.p
         layout
         className={`capitalize px-1 ${isHovered && 'bg-black opacity-70'}`}
       >
-        {title}
+        {collection_name}
       </motion.p>
     </div>
   )
 }
 
 const AuctionCarousel: FC = () => {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const { data } = useQuery(QUERIES.getCollections, () => getCollections())
   const { width } = useWindowDimensions()
+  const [currentIndex, setCurrentIndex] = useState(0)
 
   const handleClick = (isForward: boolean) => {
     if (isForward) {
-      if (currentIndex < carouselData.length)
+      if (currentIndex < carouselData.length + 1)
         setCurrentIndex((prev) => prev + 1)
       else setCurrentIndex(0)
       return
     }
     if (currentIndex > 0) setCurrentIndex((prev) => prev - 1)
-    else setCurrentIndex(carouselData.length - 1)
+    else setCurrentIndex(carouselData.length + 1)
   }
 
   let currentCardWidth: 370 | 220
@@ -93,6 +100,8 @@ const AuctionCarousel: FC = () => {
   } else {
     currentCardWidth = 370
   }
+
+  const collectionsData: CollectionCardType[] = data?.data
 
   return (
     <div>
@@ -123,15 +132,15 @@ const AuctionCarousel: FC = () => {
             delay: 1,
           }}
         >
-          {carouselData.map(({ img, title }, index) => (
-            <CarouselItem
-              key={index}
-              currentIndex={currentIndex}
-              currentCardWidth={currentCardWidth}
-              img={img}
-              title={title}
-            />
-          ))}
+          {collectionsData?.length &&
+            collectionsData.map((collection, index) => (
+              <CarouselItem
+                key={index}
+                currentIndex={currentIndex}
+                currentCardWidth={currentCardWidth}
+                {...collection}
+              />
+            ))}
         </motion.div>
       </div>
     </div>

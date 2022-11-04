@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
-import { Dispatch, FC, SetStateAction, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
+import { useQuery } from 'react-query'
 import AuctionCarousel from '../../components/AuctionCarousel'
 import AvatarCard from '../../components/AvatarCard'
 import BreadCrumb from '../../components/BreadCrumb'
@@ -10,6 +11,8 @@ import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
 import type { AvatarType } from '../../interfaces'
 import { CrumbType } from '../../interfaces'
+import { QUERIES } from '../../react-query/constants'
+import { getAllNFts } from '../../react-query/queries'
 import { handleAnimationDelay } from '../../utils'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
@@ -19,188 +22,188 @@ const crumbData: CrumbType[] = [
   { name: 'assets', route: '/assets' },
 ]
 
-const avatars: AvatarType[] = [
-  {
-    token_id: 1,
-    name: 'Wraith',
-    img: '/images/auction/auction_img_1.svg',
-    is_in_auction: false,
-    contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-  {
-    token_id: 2,
-    name: 'Horizon',
-    img: '/images/auction/auction_img_2.svg',
-    is_in_auction: true,
-    contract_address: '0xfd2b4561630c02b8047B911c22d3f3bfF3ad64Ce',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-  {
-    token_id: 3,
-    name: 'Lifeline',
-    img: '/images/auction/auction_img_3.svg',
-    is_in_auction: false,
-    contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-  {
-    token_id: 4,
-    name: 'Fuse',
-    img: '/images/auction/auction_img_4.svg',
-    is_in_auction: true,
-    contract_address: '0xfe2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-  {
-    token_id: 5,
-    name: 'Fortune',
-    img: '/images/auction/auction_img_5.svg',
-    is_in_auction: true,
-    contract_address: '0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-  {
-    token_id: 6,
-    name: 'Crypto',
-    img: '/images/auction/auction_img_6.svg',
-    is_in_auction: false,
-    contract_address: '0xfd6b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-  {
-    token_id: 7,
-    name: 'Wraith',
-    img: '/images/auction/auction_img_1.svg',
-    is_in_auction: true,
-    contract_address: '0xfa2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-  {
-    token_id: 8,
-    name: 'Horizon',
-    img: '/images/auction/auction_img_2.svg',
-    is_in_auction: false,
-    contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ca',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-  {
-    token_id: 9,
-    name: 'Lifeline',
-    img: '/images/auction/auction_img_3.svg',
-    is_in_auction: true,
-    contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cb',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-  {
-    token_id: 10,
-    name: 'Fuse',
-    img: '/images/auction/auction_img_4.svg',
-    is_in_auction: false,
-    contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cc',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-  {
-    token_id: 11,
-    name: 'Fortune',
-    img: '/images/auction/auction_img_5.svg',
-    is_in_auction: true,
-    contract_address: '0xfd2b3161630c02b8047B911c22d3f3bfF3ad64Ce',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-  {
-    token_id: 12,
-    name: 'Crypto',
-    img: '/images/auction/auction_img_6.svg',
-    is_in_auction: false,
-    contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-    contract_type:'',
-    createdAt:'',
-    is_in_sale:false,
-    meta_data_url:'',
-    token_owner:'',
-    updatedAt:'',
-    __v:0,
-    _id:''
-  },
-]
+// const avatars: AvatarType[] = [
+//   {
+//     token_id: 1,
+//     name: 'Wraith',
+//     img: '/images/auction/auction_img_1.svg',
+//     is_in_auction: false,
+//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+//   {
+//     token_id: 2,
+//     name: 'Horizon',
+//     img: '/images/auction/auction_img_2.svg',
+//     is_in_auction: true,
+//     contract_address: '0xfd2b4561630c02b8047B911c22d3f3bfF3ad64Ce',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+//   {
+//     token_id: 3,
+//     name: 'Lifeline',
+//     img: '/images/auction/auction_img_3.svg',
+//     is_in_auction: false,
+//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+//   {
+//     token_id: 4,
+//     name: 'Fuse',
+//     img: '/images/auction/auction_img_4.svg',
+//     is_in_auction: true,
+//     contract_address: '0xfe2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+//   {
+//     token_id: 5,
+//     name: 'Fortune',
+//     img: '/images/auction/auction_img_5.svg',
+//     is_in_auction: true,
+//     contract_address: '0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+//   {
+//     token_id: 6,
+//     name: 'Crypto',
+//     img: '/images/auction/auction_img_6.svg',
+//     is_in_auction: false,
+//     contract_address: '0xfd6b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+//   {
+//     token_id: 7,
+//     name: 'Wraith',
+//     img: '/images/auction/auction_img_1.svg',
+//     is_in_auction: true,
+//     contract_address: '0xfa2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+//   {
+//     token_id: 8,
+//     name: 'Horizon',
+//     img: '/images/auction/auction_img_2.svg',
+//     is_in_auction: false,
+//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ca',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+//   {
+//     token_id: 9,
+//     name: 'Lifeline',
+//     img: '/images/auction/auction_img_3.svg',
+//     is_in_auction: true,
+//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cb',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+//   {
+//     token_id: 10,
+//     name: 'Fuse',
+//     img: '/images/auction/auction_img_4.svg',
+//     is_in_auction: false,
+//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cc',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+//   {
+//     token_id: 11,
+//     name: 'Fortune',
+//     img: '/images/auction/auction_img_5.svg',
+//     is_in_auction: true,
+//     contract_address: '0xfd2b3161630c02b8047B911c22d3f3bfF3ad64Ce',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+//   {
+//     token_id: 12,
+//     name: 'Crypto',
+//     img: '/images/auction/auction_img_6.svg',
+//     is_in_auction: false,
+//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//     contract_type:'',
+//     createdAt:'',
+//     is_in_sale:false,
+//     meta_data_url:'',
+//     token_owner:'',
+//     updatedAt:'',
+//     __v:0,
+//     _id:''
+//   },
+// ]
 
 const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
   setIsOpen,
@@ -283,12 +286,25 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
   )
 }
 
-const LiveAuctionPage: NextPage = () => {
+const AssetsPage: NextPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const { data } = useQuery([QUERIES.getAllNFts, currentPage], () =>
+    getAllNFts(currentPage)
+  )
   const { width } = useWindowDimensions()
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [totalPages, setTotalPages] = useState(1)
+  const [avatars, setAvatars] = useState<AvatarType[]>()
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+  const handlePaginate = (pageNumber: number) => setCurrentPage(pageNumber)
+
+  useEffect(() => {
+    if (data?.data) {
+      setAvatars(data.data.nfts)
+      setTotalPages(data.data?.totalpages)
+      setCurrentPage(+data.data?.currentPage)
+    }
+  }, [data?.data])
 
   return (
     <main className="min-h-screen">
@@ -348,31 +364,33 @@ const LiveAuctionPage: NextPage = () => {
               className="py-10 md:px-4 bg-transparent rounded-lg grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
           gap-20 w-full  max-w-full mx-auto px-10"
             >
-              {avatars?.map((cardData, index) => (
-                <motion.div
-                  className="flex justify-center"
-                  key={index}
-                  variants={opacityAnimation}
-                  initial="initial"
-                  whileInView="final"
-                  viewport={{ once: true }}
-                  transition={{
-                    ease: 'easeInOut',
-                    duration: 0.6,
-                    delay: handleAnimationDelay(index, width),
-                  }}
-                >
-                  <AvatarCard {...cardData} />
-                </motion.div>
-              ))}
+              {avatars?.length &&
+                avatars?.map((cardData, index) => (
+                  <motion.div
+                    className="flex justify-center"
+                    key={index}
+                    variants={opacityAnimation}
+                    initial="initial"
+                    whileInView="final"
+                    viewport={{ once: true }}
+                    transition={{
+                      ease: 'easeInOut',
+                      duration: 0.6,
+                      delay: handleAnimationDelay(index, width),
+                    }}
+                  >
+                    <AvatarCard {...cardData} />
+                  </motion.div>
+                ))}
             </div>
           </div>
         </div>
         <div className="flex justify-end mb-12">
           <Pagination
-            itemsPerPage={6}
-            totalItems={18}
-            paginate={paginate}
+            // itemsPerPage={10}
+            // totalItems={18}
+            totalPages={totalPages}
+            paginate={handlePaginate}
             currentPage={currentPage}
           />
         </div>
@@ -400,4 +418,4 @@ const LiveAuctionPage: NextPage = () => {
   )
 }
 
-export default LiveAuctionPage
+export default AssetsPage
