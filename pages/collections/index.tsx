@@ -92,23 +92,23 @@ const CollectionsPage: NextPage = () => {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
   const compareAscending = (
-    a: { collectionName: string },
-    b: { collectionName: string }
+    a: { collection_name: string },
+    b: { collection_name: string }
   ) => {
-    if (a.collectionName.toLowerCase() < b.collectionName.toLowerCase())
+    if (a.collection_name?.toLowerCase() < b.collection_name?.toLowerCase())
       return -1
-    if (a.collectionName.toLowerCase() > b.collectionName.toLowerCase())
+    if (a.collection_name?.toLowerCase() > b.collection_name?.toLowerCase())
       return 1
     return 0
   }
 
   const compareDescending = (
-    a: { collectionName: string },
-    b: { collectionName: string }
+    a: { collection_name: string },
+    b: { collection_name: string }
   ) => {
-    if (a.collectionName.toLowerCase() > b.collectionName.toLowerCase())
+    if (a.collection_name?.toLowerCase() > b.collection_name?.toLowerCase())
       return -1
-    if (a.collectionName.toLowerCase() < b.collectionName.toLowerCase())
+    if (a.collection_name?.toLowerCase() < b.collection_name?.toLowerCase())
       return 1
     return 0
   }
