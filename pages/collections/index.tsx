@@ -7,7 +7,7 @@ import CollectionCard from '../../components/CollectionCard'
 import CustomSelect from '../../components/CustomSelect'
 import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
-import withAuth from '../../components/WIthAuth'
+import withAuth from '../../components/withAuth'
 import type {
   CollectionCardType,
   CrumbType,
