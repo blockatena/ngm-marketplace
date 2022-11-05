@@ -282,11 +282,11 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
           </div>
           <div className="flex flex-col justify-end">
             <h2 className="font-poppins mb-3 text-white font-medium text-2xl lg:text-[35px]">
-              {name ? name : 'NaN'}
+              {name ? name : 'Collection'}
             </h2>
             <p className="text-white font-oxygen text-sm lg:text-lg">
-              <span>Items {totalsupply ? totalsupply : 'NA'} </span> ·{' '}
-              <span>Created {createdAt ? createdAt : 'NaN'}</span> ·{' '}
+              <span>Items {totalsupply || totalsupply===0 ? totalsupply : 'NA'} </span> ·{' '}
+              <span>Created {createdAt ? createdAt : 'yyyy-mm-dd'}</span> ·{' '}
               <span>Creator fee 5%</span>{' '}
             </p>
           </div>
@@ -345,7 +345,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
       <div className="max-w-[600px] flex justify-between">
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            {totalvolume ? totalvolume : 'NA'}
+            {totalvolume || totalvolume === 0 ? totalvolume : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Total Volume
@@ -353,7 +353,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
         </div>
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            {floor ? floor : 'NA'}
+            {floor || floor === 0 ? floor : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Floor Price
@@ -361,7 +361,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
         </div>
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            {bestOffer ? bestOffer : 'NA'}
+            {bestOffer || bestOffer===0 ? bestOffer : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Best Offer
@@ -369,7 +369,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
         </div>
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            {owners ? owners : 'NA'}
+            {owners || owners ===0 ? owners : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Owners
@@ -380,7 +380,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
   )
 }
 
-const CollectionSearchSection: FC = () => {
+const CollectionSearchSection: FC<{handleFilter: (_value: any)=> void}> = ({ handleFilter }) => {
   const { width } = useWindowDimensions()
   return (
     <motion.section
@@ -431,6 +431,7 @@ const CollectionSearchSection: FC = () => {
           id="expiration"
           className="w-full max-w-[175px] lg:h-[51px] cursor-pointer bg-[#151515] outline-none rounded-lg
           font-inter text-white text-center text-xs lg:text-base border border-[#6A6363]"
+          onChange={(e) => handleFilter(e.target.value)}
         >
           <option value={1}>Recently Created</option>
           <option value={2}>Old to New</option>
@@ -450,68 +451,8 @@ const CollectionPage: NextPage = () => {
   const [collectionData, setCollectionData] = useState<HeroSectionProps[]>()
   const [avatars, setAvatars] = useState<AvatarType[]>([])
   const [collection, setCollection] = useState<CollectionCardTypes[]>([])
-  const [filteredData, setFiltered] = useState<CollectionCardTypes[]>([])
-
-  const [auctioncChecked, setAuctionChecked] = useState(false)
-  const [dataOnAuction, setDataOnAuction] = useState<AvatarType[]>([])
-  const [dataDescending, setDataDescending] = useState<AvatarType[]>([])
+  // const [filteredData, setFiltered] = useState<CollectionCardTypes[]>([])
   const [dataUnsorted, setDataUnsorted] = useState<AvatarType[]>([])
-  const [dataRecent, setDataRecent] = useState<AvatarType[]>([])
-
-  const getcollection = async () => {
-    if (collection.length === 0) {
-      axios
-        .get('https://ngm-api-tpnng.ondigitalocean.app/nft/get-collections')
-        .then(function (response) {
-          setCollection(response.data)
-        })
-    } else if (collection.length > 0) {
-      // return
-    } else {
-      console.log('test')
-    }
-    //  console.log(collection[0])
-  }
-
-  const filterNames = () => {
-    if (collection.length > 0) {
-      const filtered = collection.filter(
-        (ok) => ok?.contractaddress === router?.query?.contractAddress
-      )
-      setFiltered(filtered)
-      // console.log(...filtered)
-    }
-  }
-
-  const isOnAuction = () => {
-    if (dataUnsorted?.length > 0) {
-      const filter = dataUnsorted.filter((nft) => nft?.is_in_auction === true)
-      setAvatars(auctioncChecked ? filter : dataUnsorted)
-      setAuctionChecked(auctioncChecked ? !auctioncChecked : auctioncChecked)
-      return filter
-    }
-  }
-
-  // const filterInternal = (contractaddress:any) => {
-  //   return contractaddress === router?.query?.contractAddress;
-  // }
-  useEffect(() => {
-    if (router?.query?.contractAddress === undefined) {
-      window.setTimeout(refetch, 1500)
-    } else {
-      getcollection()
-    }
-  })
-
-  useEffect(() => {
-    if (router?.query?.contractAddress === undefined) {
-      window.setTimeout(refetch, 1500)
-    } else if (filteredData?.length > 0) {
-      return
-    } else {
-      filterNames()
-    }
-  })
 
   const { data, refetch, isSuccess } = useQuery(
     QUERIES.getCollectionNFTs,
@@ -538,20 +479,20 @@ const CollectionPage: NextPage = () => {
   //   }
   // }, [data?.data])
 
-  let collectionName = filteredData[0]?.collectionName
+  let collectionName = data?.data?.collection?.collection_name
   let floor = data?.data.floor_price
   let bestOffer = data?.data.best_offer
   let totalvolume = data?.data.total_volume
   let owners = data?.data.owners
   let totalsupply = data?.data.nfts.length
-  let createddate = filteredData[0]?.createdAt
+  let createddate = data?.data?.collection?.createdAt
   createddate = createddate?.substring(0, 10)
-  let bannerurl
-  let description = filteredData[0]?.description
+  let bannerurl = '/images/collections/static.jpg'
+  let description = data?.data?.collection?.description
   let imageurl =
-    filteredData[0]?.imageuri.length > 0
-      ? filteredData[0]?.imageuri[0]
-      : undefined
+    data?.data?.collection?.imageuri?.length > 0 ? data?.data?.collection?.imageuri[0] : undefined
+
+    // console.log(data?.data)
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
 
@@ -559,7 +500,7 @@ const CollectionPage: NextPage = () => {
     if (router?.query?.contractAddress === undefined) {
       window.setTimeout(refetch, 1500)
     } else {
-      refetch
+      // refetch
     }
   }, [router.query.contractAddress, refetch])
 
@@ -576,23 +517,89 @@ const CollectionPage: NextPage = () => {
     setAvatars(dataUnsorted)
   }
 
+  const oldtoNew = () => {
+    if(dataUnsorted.length>0){
+      const sortedBydate = dataUnsorted.sort(function (a:any, b:any) {
+        console.log(new Date(a.createdAt).getTime())
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          ? -1
+          : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          ? 1
+          : 0
+      })
+
+      setAvatars(sortedBydate)
+      return
+    }
+  }
+
+  const recently = () => {
+    if (dataUnsorted.length > 0) {
+      const sortedBydate = dataUnsorted.sort(function (a, b) {
+        return new Date(b.createdAt).getTime() -
+          new Date(a.createdAt).getTime()
+          ? 1
+          : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          ? -1
+          : 0
+      })
+      setAvatars(sortedBydate)
+      return
+    } 
+  }
+
+
+  const handleFilters = (value: any) => {
+    console.log('value is ',value)
+    
+    if(value==='1'){
+      const sortedBydate = dataUnsorted.sort(function (a, b) {
+        return new Date(b.createdAt).getTime()/1000 - new Date(a.createdAt).getTime()/1000
+          ? 1
+          : new Date(a.createdAt).getTime()/1000 - new Date(b.createdAt).getTime()/1000
+          ? -1
+          : 0
+      })
+      setAvatars(sortedBydate)
+      
+      return 
+    }
+    
+    if(value==='2'){
+      const sortedBydate = dataUnsorted.sort(function (a: any, b: any) {
+        // console.log(new Date(a.createdAt).getTime())
+        return new Date(b.createdAt).getTime()/1000 - new Date(a.createdAt).getTime()/1000
+          ? -1
+          : new Date(a.createdAt).getTime()/1000 - new Date(b.createdAt).getTime()/1000
+          ? 1
+          : 0
+      })
+
+      setAvatars(sortedBydate)
+      return
+
+    }
+  }
+
+
   useEffect(() => {
     setAvatars(data?.data.nfts)
     setDataUnsorted(data?.data.nfts)
-    // setDataUnsorted(data?.data.nfts)
     setCollectionData(data?.data)
+    
+    
   }, [data?.data.nfts, data?.data])
 
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },
-    { name: collectionName, route: '/' },
+    { name: collectionName ? collectionName : 'Collection', route: '/' },
   ]
 
   return (
     <main className="min-h-screen">
       <div className="px-4 py-1  md:p-4 pt-6 lg:px-16">
         <BreadCrumb crumbs={crumbData} />
-        {<PageHeading name={collectionName} />}
+        {<PageHeading name={collectionName?collectionName:'Collection'} />}
       </div>
       <div className="px-4 py-1 md:p-4 pt-6 lg:px-16 mt-4 md:mt-14">
         {collectionData ? (
@@ -637,7 +644,7 @@ const CollectionPage: NextPage = () => {
           ''
         )}
         {/* <CollectionInfoSection /> */}
-        <CollectionSearchSection />
+        <CollectionSearchSection handleFilter={handleFilters} />
       </div>
       <div className="mt-8 md:mt-20 lg:pr-20">
         <div className="grid grid-cols-12 md:gap-4">

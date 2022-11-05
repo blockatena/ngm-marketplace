@@ -16,9 +16,9 @@ export type CollectionCardType = {
 
 export type CollectionCardTypes = {
   chain: string
-  collectionName: string
-  contractaddress: string
-  ownerAddress: string
+  collection_name: string
+  contract_address: string
+  owner_address: string
   symbol: string
   transactionhash: string
   createdAt: string

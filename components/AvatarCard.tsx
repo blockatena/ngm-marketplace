@@ -7,7 +7,7 @@ interface AvatarCardProps {
   variant?: 'xs' | 'sm' | 'lg'
   contract_address: string
   contract_type: string
-  createdAt: string
+  createdAt: any
   is_in_auction?: boolean
   is_in_sale?: boolean
   noCta?: boolean
