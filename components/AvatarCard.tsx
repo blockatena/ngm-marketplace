@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
-import useWindowDimensions from '../utils/hooks/useWindowDimensions'
+// import useWindowDimensions from '../utils/hooks/useWindowDimensions'
+
 interface AvatarCardProps {
   name: string
   img: string
@@ -19,15 +20,15 @@ interface AvatarCardProps {
   _id: string
 }
 
-interface NftdataProps {
-  image: string
-  name: string
-  attributes: any
-  description: string
-  external_uri: string
-}
+// interface NftdataProps {
+//   image: string
+//   name: string
+//   attributes: any
+//   description: string
+//   external_uri: string
+// }
 
-const placeholderImg = '/images/collections/placeholder.jpg'
+// const placeholderImg = '/images/collections/placeholder.jpg'
 const TimerSection: FC<{ hours: number; minutes: number; seconds: number }> = ({
   hours,
   minutes,
@@ -53,20 +54,12 @@ const TimerSection: FC<{ hours: number; minutes: number; seconds: number }> = ({
 
 const AvatarCard: FC<AvatarCardProps> = ({
   name,
-  img,
   variant = 'sm',
   contract_address,
-  contract_type,
-  createdAt,
   is_in_auction,
-  is_in_sale,
   noCta,
   meta_data_url,
   token_id,
-  token_owner,
-  updatedAt,
-  __v,
-  _id,
 }) => {
   const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
@@ -76,12 +69,12 @@ const AvatarCard: FC<AvatarCardProps> = ({
   const [cardProperties, setCardProperties] = useState({
     dimensions: 'w-[250px] h-[330px]',
   })
-  const { width } = useWindowDimensions()
-  const [clientWidth, setClientWidth] = useState(0)
+  // const { width } = useWindowDimensions()
+  // const [clientWidth, setClientWidth] = useState(0)
 
-  useEffect(() => {
-    setClientWidth(width)
-  }, [width])
+  // useEffect(() => {
+  //   setClientWidth(width)
+  // }, [width])
 
   useEffect(() => {
     fetch(meta_data_url)

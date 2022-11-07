@@ -10,7 +10,7 @@ import Drawer from '../../components/Drawer'
 import NavAccordion from '../../components/NavAccordion'
 import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
-import type { AvatarType, CollectionCardTypes } from '../../interfaces'
+import type { AvatarType } from '../../interfaces'
 import { CrumbType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
 import { getCollectionNFTs } from '../../react-query/queries'
@@ -218,17 +218,8 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
   name,
   img,
   bannerimage,
-  contract_address,
-  contract_type,
-  totalvolume,
   totalsupply,
-  bestOffer,
-  floor,
-  owners,
   createdAt,
-  description,
-  __v,
-  _id,
 }) => {
   let banner = `url("${
     bannerimage ? bannerimage : '/images/collections/collection_hero.png'
@@ -312,20 +303,11 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
 }
 
 const CollectionInfoSection: FC<HeroSectionProps> = ({
-  name,
-  img,
-  bannerimage,
-  contract_address,
-  contract_type,
   totalvolume,
-  totalsupply,
   bestOffer,
   floor,
   owners,
-  createdAt,
   description,
-  __v,
-  _id,
 }) => {
   return (
     <motion.section
@@ -453,7 +435,7 @@ const CollectionPage: NextPage = () => {
 
   const [collectionData, setCollectionData] = useState<HeroSectionProps[]>()
   const [avatars, setAvatars] = useState<AvatarType[]>([])
-  const [collection, setCollection] = useState<CollectionCardTypes[]>([])
+  // const [collection, setCollection] = useState<CollectionCardTypes[]>([])
   // const [filteredData, setFiltered] = useState<CollectionCardTypes[]>([])
   const [dataUnsorted, setDataUnsorted] = useState<AvatarType[]>([])
 
@@ -509,7 +491,7 @@ const CollectionPage: NextPage = () => {
     }
   }, [router.query.contractAddress, refetch])
 
-  const Avatar = data?.data.nfts
+  // const Avatar = data?.data.nfts
 
   const handleFilter = (isInAuction: boolean) => {
     if (isInAuction) {
@@ -522,35 +504,35 @@ const CollectionPage: NextPage = () => {
     setAvatars(dataUnsorted)
   }
 
-  const oldtoNew = () => {
-    if (dataUnsorted.length > 0) {
-      const sortedBydate = dataUnsorted.sort(function (a: any, b: any) {
-        // console.log(new Date(a.createdAt).getTime())
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          ? -1
-          : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          ? 1
-          : 0
-      })
+  // const oldtoNew = () => {
+  //   if (dataUnsorted.length > 0) {
+  //     const sortedBydate = dataUnsorted.sort(function (a: any, b: any) {
+  //       // console.log(new Date(a.createdAt).getTime())
+  //       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  //         ? -1
+  //         : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  //         ? 1
+  //         : 0
+  //     })
 
-      setAvatars(sortedBydate)
-      return
-    }
-  }
+  //     setAvatars(sortedBydate)
+  //     return
+  //   }
+  // }
 
-  const recently = () => {
-    if (dataUnsorted.length > 0) {
-      const sortedBydate = dataUnsorted.sort(function (a, b) {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          ? 1
-          : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          ? -1
-          : 0
-      })
-      setAvatars(sortedBydate)
-      return
-    }
-  }
+  // const recently = () => {
+  //   if (dataUnsorted.length > 0) {
+  //     const sortedBydate = dataUnsorted.sort(function (a, b) {
+  //       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  //         ? 1
+  //         : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  //         ? -1
+  //         : 0
+  //     })
+  //     setAvatars(sortedBydate)
+  //     return
+  //   }
+  // }
 
   const handleFilters = (value: any) => {
     // console.log('value is ',value)
