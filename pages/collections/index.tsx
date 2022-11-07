@@ -7,7 +7,7 @@ import CollectionCard from '../../components/CollectionCard'
 import CustomSelect from '../../components/CustomSelect'
 import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
-import withAuth from '../../components/withAuth'
+import withProtection from '../../components/withProtection'
 import type {
   CollectionCardType,
   CrumbType,
@@ -193,4 +193,4 @@ const CollectionsPage: NextPage = () => {
   )
 }
 
-export default withAuth(CollectionsPage)
+export default withProtection(CollectionsPage)

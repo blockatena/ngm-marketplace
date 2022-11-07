@@ -3,9 +3,9 @@ import type { FC, ReactElement } from 'react'
 import { useEffect } from 'react'
 import { useAccount } from 'wagmi'
 
-type withAuthFn = (_Component: FC) => FC
+type withProtectionFn = (_Component: FC) => FC
 
-const withAuth: withAuthFn = (Component) => {
+const withProtection: withProtectionFn = (Component) => {
   const Authenticated: FC = (props): ReactElement | null => {
     const { isConnected } = useAccount()
     const router = useRouter()
@@ -26,4 +26,4 @@ const withAuth: withAuthFn = (Component) => {
   return Authenticated
 }
 
-export default withAuth
+export default withProtection
