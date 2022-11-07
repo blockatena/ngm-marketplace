@@ -23,7 +23,7 @@ export type CollectionCardTypes = {
   transactionhash: string
   createdAt: string
   type: string
-  description:string
+  description: string
   __v: number
   _id: string
   baseuri: string
@@ -59,9 +59,25 @@ export type AvatarType = {
   is_in_auction: boolean
   is_in_sale: boolean
   meta_data_url: string
-  token_id: any
+  token_id: string
   token_owner: string
   updatedAt: string
-  __v: any
-  _id:string
+  __v: number
+  _id: string
+  contract_details: {
+    _id: string
+    symbol: string
+    chain: string
+    type: string
+    transactionhash: string
+    baseuri: string
+    createdAt: string
+    updatedAt: string
+    __v: number
+    description: string
+    imageuri: string[]
+    owner_address: string
+    collection_name: string
+    contract_address: string
+  }
 }

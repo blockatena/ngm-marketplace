@@ -22,3 +22,6 @@ export const getAllNFts = (
 ) => {
   return axiosInstance.get(`/nft/Get-all-nfts/${page_number}/${items_per_page}`)
 }
+
+export const getSingleNft = (contractAddress: string, tokenId: string) =>
+  axiosInstance.get(`/nft/get-nft/${contractAddress}/${tokenId}`)

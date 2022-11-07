@@ -2,14 +2,20 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import { FC, useState } from 'react'
 import AvatarCard from '../../components/AvatarCard'
+import { AvatarType } from '../../interfaces'
 import ownerImg from '../../public/images/others/owner.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
 import CheckoutModal from '../modals/CheckoutModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 
-const ProductOverviewSection: FC = () => {
+const ProductOverviewSection: FC<{
+  nft: AvatarType | undefined
+  name: string
+}> = ({ nft, name }) => {
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
+
+  const meta_data_url = nft?.meta_data_url || ''
 
   return (
     <section className="flex flex-col xl:flex-row gap-4 lg:gap-0 2xl:gap-32 xl:justify-between p-0">
@@ -34,7 +40,7 @@ const ProductOverviewSection: FC = () => {
           contract_address="0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce"
           contract_type={''}
           createdAt={''}
-          meta_data_url={''}
+          meta_data_url={meta_data_url}
           token_owner={''}
           updatedAt={''}
           __v={undefined}
@@ -43,10 +49,10 @@ const ProductOverviewSection: FC = () => {
         <div className="lg:hidden grid place-items-center">
           <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
             <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
-              Apex Legend
+              {nft?.contract_details.collection_name}
             </p>
             <p className="text-white text-2xl lg:text-[49px] font-josefin">
-              Fuse
+              {name}
             </p>
           </div>
         </div>
@@ -65,17 +71,15 @@ const ProductOverviewSection: FC = () => {
       >
         <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 hidden lg:block">
           <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
-            Apex Legend
+            {nft?.contract_details.collection_name}
           </p>
-          <p className="text-white text-2xl lg:text-[49px] font-josefin">
-            Fuse
+          <p className="text-white text-2xl lg:text-[49px] font-josefin leading-[55px]">
+            {name}
           </p>
         </div>
 
         <p className="text-[#D7D7D7] font-poppins text-sm lg:text-base text-center lg:text-left">
-          The Fuse is an offensive character that harnesses the power of
-          grenades, cluster bombs, and mortars to overwhelm enemy squads with
-          it&apos;s own unique traits & personality
+          {nft?.contract_details.description}
         </p>
 
         <div className="flex justify-between font-poppins">
@@ -123,7 +127,7 @@ const ProductOverviewSection: FC = () => {
             className="w-full btn-primary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
             onClick={() => setIsOfferModalOpen(true)}
           >
-            {'Make Offer' || 'Place Bid'}
+            {nft?.is_in_auction ? 'Place Bid' : 'Make Offer'}
           </button>
         </div>
       </motion.div>
