@@ -13,6 +13,22 @@ export type CollectionCardType = {
   baseuri: string
   imageuri: string[]
 }
+
+export type CollectionCardTypes = {
+  chain: string
+  collection_name: string
+  contract_address: string
+  owner_address: string
+  symbol: string
+  transactionhash: string
+  createdAt: string
+  type: string
+  description:string
+  __v: number
+  _id: string
+  baseuri: string
+  imageuri: string[]
+}
 // export type CollectionCardType = {
 //   chain: number
 //   name: string
@@ -26,10 +42,26 @@ export type selectDataType = {
   value: string
 }
 
+// export type AvatarType = {
+//   name: string
+//   img: string
+//   tokenId: number
+//   contractAddress: string
+//   isOnAuction: boolean
+// }
+
 export type AvatarType = {
   name: string
   img: string
-  tokenId: number
-  contractAddress: string
-  isOnAuction: boolean
+  contract_address: string
+  contract_type: string
+  createdAt: string
+  is_in_auction: boolean
+  is_in_sale: boolean
+  meta_data_url: string
+  token_id: any
+  token_owner: string
+  updatedAt: string
+  __v: any
+  _id:string
 }

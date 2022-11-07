@@ -1,7 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
 import Image from 'next/image'
-import { Dispatch, FC, SetStateAction, useState } from 'react'
+import { useRouter } from 'next/router'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
+import { useQuery } from 'react-query'
 import AvatarCard from '../../components/AvatarCard'
 import BreadCrumb from '../../components/BreadCrumb'
 import Drawer from '../../components/Drawer'
@@ -10,86 +12,102 @@ import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
 import type { AvatarType } from '../../interfaces'
 import { CrumbType } from '../../interfaces'
+import { QUERIES } from '../../react-query/constants'
+import { getCollectionNFTs } from '../../react-query/queries'
 import { handleAnimationDelay } from '../../utils'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
+// import { useQuery } from 'wagmi'
 
-const crumbData: CrumbType[] = [
-  { name: 'home', route: '/' },
-  { name: 'apex legend', route: '/' },
-]
-
-const avatars: AvatarType[] = [
-  {
-    tokenId: 1,
-    name: 'Wraith',
-    img: '/images/auction/auction_img_1.svg',
-    isOnAuction: false,
-    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-  },
-  {
-    tokenId: 2,
-    name: 'Horizon',
-    img: '/images/auction/auction_img_2.svg',
-    isOnAuction: true,
-    contractAddress: '0xfd2b4561630c02b8047B911c22d3f3bfF3ad64Ce',
-  },
-  {
-    tokenId: 3,
-    name: 'Lifeline',
-    img: '/images/auction/auction_img_3.svg',
-    isOnAuction: false,
-    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-  },
-  {
-    tokenId: 4,
-    name: 'Fuse',
-    img: '/images/auction/auction_img_4.svg',
-    isOnAuction: true,
-    contractAddress: '0xfe2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-  },
-  {
-    tokenId: 5,
-    name: 'Fortune',
-    img: '/images/auction/auction_img_5.svg',
-    isOnAuction: true,
-    contractAddress: '0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-  },
-  {
-    tokenId: 6,
-    name: 'Crypto',
-    img: '/images/auction/auction_img_6.svg',
-    isOnAuction: false,
-    contractAddress: '0xfd6b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-  },
-  {
-    tokenId: 7,
-    name: 'Wraith',
-    img: '/images/auction/auction_img_1.svg',
-    isOnAuction: true,
-    contractAddress: '0xfa2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-  },
-  {
-    tokenId: 8,
-    name: 'Horizon',
-    img: '/images/auction/auction_img_2.svg',
-    isOnAuction: false,
-    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ca',
-  },
-  {
-    tokenId: 9,
-    name: 'Lifeline',
-    img: '/images/auction/auction_img_3.svg',
-    isOnAuction: true,
-    contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cb',
-  },
-]
+// const avatars: AvatarType[] = [
+//   {
+//     tokenId: 1,
+//     name: 'Wraith',
+//     img: '/images/auction/auction_img_1.svg',
+//     isOnAuction: false,
+//     contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//   },
+//   {
+//     tokenId: 2,
+//     name: 'Horizon',
+//     img: '/images/auction/auction_img_2.svg',
+//     isOnAuction: true,
+//     contractAddress: '0xfd2b4561630c02b8047B911c22d3f3bfF3ad64Ce',
+//   },
+//   {
+//     tokenId: 3,
+//     name: 'Lifeline',
+//     img: '/images/auction/auction_img_3.svg',
+//     isOnAuction: false,
+//     contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//   },
+//   {
+//     tokenId: 4,
+//     name: 'Fuse',
+//     img: '/images/auction/auction_img_4.svg',
+//     isOnAuction: true,
+//     contractAddress: '0xfe2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//   },
+//   {
+//     tokenId: 5,
+//     name: 'Fortune',
+//     img: '/images/auction/auction_img_5.svg',
+//     isOnAuction: true,
+//     contractAddress: '0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//   },
+//   {
+//     tokenId: 6,
+//     name: 'Crypto',
+//     img: '/images/auction/auction_img_6.svg',
+//     isOnAuction: false,
+//     contractAddress: '0xfd6b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//   },
+//   {
+//     tokenId: 7,
+//     name: 'Wraith',
+//     img: '/images/auction/auction_img_1.svg',
+//     isOnAuction: true,
+//     contractAddress: '0xfa2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//   },
+//   {
+//     tokenId: 8,
+//     name: 'Horizon',
+//     img: '/images/auction/auction_img_2.svg',
+//     isOnAuction: false,
+//     contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ca',
+//   },
+//   {
+//     tokenId: 9,
+//     name: 'Lifeline',
+//     img: '/images/auction/auction_img_3.svg',
+//     isOnAuction: true,
+//     contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cb',
+//   },
+// ]
 
 // const currencyData: string[] = ['eth', 'weth', 'ape', 'usdc']
+interface HeroSectionProps {
+  name: string
+  img: any
+  bannerimage: any
+  contract_address: string
+  contract_type: string
+  createdAt: string
+  __v: any
+  _id: string
+  totalsupply: any
+  totalvolume: any
+  bestOffer: any
+  owners: any
+  description: string
+  floor: any
+}
 
-const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
-  setIsOpen,
-}) => {
+const placeholderLogo = '/images/collections/collection_avatar.png'
+const SideNav: FC<{
+  setIsOpen?: Dispatch<SetStateAction<boolean>>
+  handleFilter: (_isInAuction: boolean) => void
+}> = ({ setIsOpen, handleFilter }) => {
   // eslint-disable-next-line no-unused-vars
   const [currency, setCurrency] = useState('')
   // eslint-disable-next-line no-unused-vars
@@ -126,6 +144,7 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
             type="checkbox"
             id="auction_checkbox"
             className="mr-4 cursor-pointer accent-custom_yellow"
+            onChange={(e) => handleFilter(e.target.checked)}
           />
           <label htmlFor="auction_checkbox" className="text-xs md:text-[15px]">
             On auction
@@ -195,12 +214,21 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
   )
 }
 
-const CollectionHeroSection: FC = () => {
+const CollectionHeroSection: FC<HeroSectionProps> = ({
+  name,
+  img,
+  bannerimage,
+  totalsupply,
+  createdAt,
+}) => {
+  let banner = `url("${
+    bannerimage ? bannerimage : '/images/collections/collection_hero.png'
+  }")`
   return (
     <motion.section
       className="w-full h-[279px] bg-cover p-2 flex justify-between items-end lg:px-4 lg:py-2"
       style={{
-        backgroundImage: "url('/images/collections/collection_hero.png')",
+        backgroundImage: banner,
       }}
       variants={opacityAnimation}
       initial="initial"
@@ -215,20 +243,42 @@ const CollectionHeroSection: FC = () => {
       <div className="flex justify-between w-full">
         <div className="flex gap-4">
           <div>
-            <Image
+            {/* <Image
               src="/images/collections/collection_avatar.png"
               width="150px"
               height="130px"
               alt="collection_img"
               className="rounded-lg"
-            />
+            /> */}
+            {img ? (
+              <Image
+                loader={() => img}
+                src={img}
+                className="rounded-lg"
+                width="150px"
+                height="130px"
+                alt="collection_img"
+                // layout="fill"
+              />
+            ) : (
+              <Image
+                src={placeholderLogo}
+                className="rounded-lg"
+                width="150px"
+                height="130px"
+                alt="collection_img"
+              />
+            )}
           </div>
           <div className="flex flex-col justify-end">
             <h2 className="font-poppins mb-3 text-white font-medium text-2xl lg:text-[35px]">
-              Apex Legend1234#
+              {name ? name : 'Collection'}
             </h2>
             <p className="text-white font-oxygen text-sm lg:text-lg">
-              <span>Items 10.0K </span> · <span>Created Aug 2022</span> ·{' '}
+              <span>
+                Items {totalsupply || totalsupply === 0 ? totalsupply : 'NA'}{' '}
+              </span>{' '}
+              · <span>Created {createdAt ? createdAt : 'yyyy-mm-dd'}</span> ·{' '}
               <span>Creator fee 5%</span>{' '}
             </p>
           </div>
@@ -252,7 +302,13 @@ const CollectionHeroSection: FC = () => {
   )
 }
 
-const CollectionInfoSection: FC = () => {
+const CollectionInfoSection: FC<HeroSectionProps> = ({
+  totalvolume,
+  bestOffer,
+  floor,
+  owners,
+  description,
+}) => {
   return (
     <motion.section
       variants={opacityAnimation}
@@ -266,21 +322,21 @@ const CollectionInfoSection: FC = () => {
       }}
     >
       <p className="font-oxygen text-[#A0A0A0] text-sm lg:text-lg font-bold max-w-[930px] py-5 lg:py-10">
-        We believe that people with imagination can change the world for better
-        and those that are crazy enough to think they can bring their wildest
-        imaginations to life are the ones&apos; who actually do.{' '}
+        {description}{' '}
       </p>
 
       <div className="max-w-[600px] flex justify-between">
         <div className="grid place-items-center">
-          <p className="font-oxygen text-white lg:text-[19px] font-light">15</p>
+          <p className="font-oxygen text-white lg:text-[19px] font-light">
+            {totalvolume || totalvolume === 0 ? totalvolume : 'NA'}
+          </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Total Volume
           </p>
         </div>
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            0.015
+            {floor || floor === 0 ? floor : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Floor Price
@@ -288,7 +344,7 @@ const CollectionInfoSection: FC = () => {
         </div>
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            0.017
+            {bestOffer || bestOffer === 0 ? bestOffer : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Best Offer
@@ -296,7 +352,7 @@ const CollectionInfoSection: FC = () => {
         </div>
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            1,245
+            {owners || owners === 0 ? owners : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Owners
@@ -307,7 +363,9 @@ const CollectionInfoSection: FC = () => {
   )
 }
 
-const CollectionSearchSection: FC = () => {
+const CollectionSearchSection: FC<{ handleFilter: (_value: any) => void }> = ({
+  handleFilter,
+}) => {
   const { width } = useWindowDimensions()
   return (
     <motion.section
@@ -358,10 +416,10 @@ const CollectionSearchSection: FC = () => {
           id="expiration"
           className="w-full max-w-[175px] lg:h-[51px] cursor-pointer bg-[#151515] outline-none rounded-lg
           font-inter text-white text-center text-xs lg:text-base border border-[#6A6363]"
+          onChange={(e) => handleFilter(e.target.value)}
         >
-          <option value={3}>Recently Listed</option>
-          <option value={2}>Option Two</option>
-          <option value={1}>Option Three</option>
+          <option value={1}>Recently Created</option>
+          <option value={2}>Old to New</option>
         </select>
       </div>
     </motion.section>
@@ -369,22 +427,209 @@ const CollectionSearchSection: FC = () => {
 }
 
 const CollectionPage: NextPage = () => {
+  const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { width } = useWindowDimensions()
-
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+
+  const [collectionData, setCollectionData] = useState<HeroSectionProps[]>()
+  const [avatars, setAvatars] = useState<AvatarType[]>([])
+  // const [collection, setCollection] = useState<CollectionCardTypes[]>([])
+  // const [filteredData, setFiltered] = useState<CollectionCardTypes[]>([])
+  const [dataUnsorted, setDataUnsorted] = useState<AvatarType[]>([])
+
+  const { data, refetch, isSuccess } = useQuery(
+    QUERIES.getCollectionNFTs,
+    () => getCollectionNFTs(router?.query?.contractAddress),
+    {
+      // staleTime: 3000,
+      // enabled: true,
+      // refetchIntervalInBackground:true,
+      refetchOnWindowFocus: true,
+      // refetchOnReconnect: true,
+    }
+  )
+
+  // useEffect(() => {
+  //   if (data?.data.nfts.length) {
+  //     let unsortedData = data?.data.nfts
+  //     const newArr = [...unsortedData]
+  //     const newArr2 = [...unsortedData]
+  //     const newArr3 = [...unsortedData]
+  //     setDataUnsorted(unsortedData)
+  //     // const is_On_Auction = isOnAuction(unsortedData)
+  //     // setDataOnAuction(is_On_Auction?is_On_Auction:[])
+  //     setDataRecent(newArr3.reverse())
+  //   }
+  // }, [data?.data])
+
+  let collectionName = data?.data?.collection?.collection_name
+  let floor = data?.data.floor_price
+  let bestOffer = data?.data.best_offer
+  let totalvolume = data?.data.total_volume
+  let owners = data?.data.owners
+  let totalsupply = data?.data.nfts.length
+  let createddate = data?.data?.collection?.createdAt
+  createddate = createddate?.substring(0, 10)
+  let bannerurl = '/images/collections/static.jpg'
+  let description = data?.data?.collection?.description
+  let imageurl =
+    data?.data?.collection?.imageuri?.length > 0
+      ? data?.data?.collection?.imageuri[0]
+      : undefined
+
+  // console.log(data?.data)
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (router?.query?.contractAddress === undefined) {
+      window.setTimeout(refetch, 1500)
+    } else {
+      // refetch
+    }
+  }, [router.query.contractAddress, refetch])
+
+  // const Avatar = data?.data.nfts
+
+  const handleFilter = (isInAuction: boolean) => {
+    if (isInAuction) {
+      let filteredAvatars = dataUnsorted.filter(
+        (data) => data.is_in_auction === true
+      )
+      setAvatars(filteredAvatars)
+      return
+    }
+    setAvatars(dataUnsorted)
+  }
+
+  // const oldtoNew = () => {
+  //   if (dataUnsorted.length > 0) {
+  //     const sortedBydate = dataUnsorted.sort(function (a: any, b: any) {
+  //       // console.log(new Date(a.createdAt).getTime())
+  //       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  //         ? -1
+  //         : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  //         ? 1
+  //         : 0
+  //     })
+
+  //     setAvatars(sortedBydate)
+  //     return
+  //   }
+  // }
+
+  // const recently = () => {
+  //   if (dataUnsorted.length > 0) {
+  //     const sortedBydate = dataUnsorted.sort(function (a, b) {
+  //       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  //         ? 1
+  //         : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  //         ? -1
+  //         : 0
+  //     })
+  //     setAvatars(sortedBydate)
+  //     return
+  //   }
+  // }
+
+  const handleFilters = (value: any) => {
+    // console.log('value is ',value)
+
+    if (value === '1') {
+      const sortedBydate = dataUnsorted.sort(function (a, b) {
+        return new Date(b.createdAt).getTime() / 1000 -
+          new Date(a.createdAt).getTime() / 1000
+          ? 1
+          : new Date(a.createdAt).getTime() / 1000 -
+            new Date(b.createdAt).getTime() / 1000
+          ? -1
+          : 0
+      })
+      setAvatars(sortedBydate)
+
+      return
+    }
+
+    if (value === '2') {
+      const sortedBydate = dataUnsorted.sort(function (a: any, b: any) {
+        // console.log(new Date(a.createdAt).getTime())
+        return new Date(b.createdAt).getTime() / 1000 -
+          new Date(a.createdAt).getTime() / 1000
+          ? -1
+          : new Date(a.createdAt).getTime() / 1000 -
+            new Date(b.createdAt).getTime() / 1000
+          ? 1
+          : 0
+      })
+
+      setAvatars(sortedBydate)
+      return
+    }
+  }
+
+  useEffect(() => {
+    setAvatars(data?.data.nfts)
+    setDataUnsorted(data?.data.nfts)
+    setCollectionData(data?.data)
+  }, [data?.data.nfts, data?.data])
+
+  const crumbData: CrumbType[] = [
+    { name: 'home', route: '/' },
+    { name: collectionName ? collectionName : 'Collection', route: '/' },
+  ]
 
   return (
     <main className="min-h-screen">
       <div className="px-4 py-1  md:p-4 pt-6 lg:px-16">
         <BreadCrumb crumbs={crumbData} />
-        <PageHeading name="apex legend" />
+        {<PageHeading name={collectionName ? collectionName : 'Collection'} />}
       </div>
       <div className="px-4 py-1 md:p-4 pt-6 lg:px-16 mt-4 md:mt-14">
-        <CollectionHeroSection />
-        <CollectionInfoSection />
-        <CollectionSearchSection />
+        {collectionData ? (
+          <CollectionHeroSection
+            name={collectionName}
+            img={imageurl}
+            bannerimage={bannerurl}
+            contract_address={''}
+            contract_type={''}
+            owners={owners}
+            totalsupply={totalsupply}
+            createdAt={createddate}
+            __v={undefined}
+            description={description}
+            _id={''}
+            totalvolume={totalvolume}
+            bestOffer={bestOffer}
+            floor={floor}
+          />
+        ) : (
+          ''
+        )}
+
+        {collectionData ? (
+          <CollectionInfoSection
+            name={collectionName}
+            img={imageurl}
+            bannerimage={bannerurl}
+            contract_address={''}
+            contract_type={''}
+            owners={owners}
+            totalsupply={totalsupply}
+            createdAt={createddate}
+            description={description}
+            __v={undefined}
+            _id={''}
+            totalvolume={totalvolume}
+            bestOffer={bestOffer}
+            floor={floor}
+          />
+        ) : (
+          ''
+        )}
+        {/* <CollectionInfoSection /> */}
+        <CollectionSearchSection handleFilter={handleFilters} />
       </div>
       <div className="mt-8 md:mt-20 lg:pr-20">
         <div className="grid grid-cols-12 md:gap-4">
@@ -400,7 +645,7 @@ const CollectionPage: NextPage = () => {
                 duration: 0.4,
               }}
             >
-              <SideNav />
+              <SideNav handleFilter={handleFilter} />
             </motion.div>
           </div>
           <div className="col-span-12 md:col-span-9">
@@ -433,13 +678,20 @@ const CollectionPage: NextPage = () => {
                   <AvatarCard {...cardData} />
                 </motion.div>
               ))}
+              {isSuccess &&
+                avatars?.length === 0 &&
+                router?.query?.contractAddress !== undefined && (
+                  <p className="font-inter text-white text-lg text-center p-10">
+                    No Items found
+                  </p>
+                )}
             </div>
           </div>
         </div>
         <div className="flex justify-end mb-12">
           <Pagination
-            itemsPerPage={6}
-            totalItems={18}
+            // totalItems={18}
+            totalPages={1}
             paginate={paginate}
             currentPage={currentPage}
           />
@@ -459,7 +711,10 @@ const CollectionPage: NextPage = () => {
             }}
           >
             <Drawer setIsOpen={setIsDrawerOpen}>
-              <SideNav setIsOpen={setIsDrawerOpen} />
+              <SideNav
+                setIsOpen={setIsDrawerOpen}
+                handleFilter={handleFilter}
+              />
             </Drawer>
           </motion.div>
         )}

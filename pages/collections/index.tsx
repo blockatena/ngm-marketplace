@@ -7,6 +7,7 @@ import CollectionCard from '../../components/CollectionCard'
 import CustomSelect from '../../components/CustomSelect'
 import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
+import withProtection from '../../components/withProtection'
 import type {
   CollectionCardType,
   CrumbType,
@@ -181,8 +182,9 @@ const CollectionsPage: NextPage = () => {
       </div>
       <div className="my-12 lg:my-20 flex justify-end">
         <Pagination
-          itemsPerPage={18}
-          totalItems={18}
+          // itemsPerPage={18}
+          // totalItems={18}
+          totalPages={1}
           paginate={paginate}
           currentPage={currentPage}
         />
@@ -191,4 +193,4 @@ const CollectionsPage: NextPage = () => {
   )
 }
 
-export default CollectionsPage
+export default withProtection(CollectionsPage)
