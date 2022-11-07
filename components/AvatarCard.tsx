@@ -34,7 +34,7 @@ const TimerSection: FC<{ hours: number; minutes: number; seconds: number }> = ({
   seconds,
 }) => {
   return (
-    <div className="text-white  text-[9px] lg:text-xs pt-1">
+    <div className="text-white  text-[9px] lg:text-xs pt-1 max-w-full">
       <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
         {hours}
       </span>
@@ -197,12 +197,18 @@ const AvatarCard: FC<AvatarCardProps> = ({
         {!noCta && (
           <div className="absolute  p-0 z-30 bottom-3 left-3 right-3  lg:h-1/4">
             <div className="opacity-70 bg-dark_heavy p-2 flex  justify-between h-20">
-              <div className="text-custom_yellow  text-base lg:text-lg font-josefin">
+              <div
+                className={`text-custom_yellow  text-base lg:text-lg font-josefin truncate ${
+                  is_in_auction ? 'w-1/2' : ''
+                }`}
+              >
                 {Name ? Name : name ? name : ''}
               </div>
-              {is_in_auction && (
-                <TimerSection hours={12} minutes={30} seconds={20} />
-              )}
+              <div className={`${is_in_auction ? 'w-1/2' : 'w-0'}`}>
+                {is_in_auction && (
+                  <TimerSection hours={12} minutes={30} seconds={20} />
+                )}
+              </div>
             </div>
             <div className="flex  absolute top-10 -bottom-0 right-0 left-0 ">
               <div className="text-center grid place-items-center avatar-btn-left w-full  h-full bg-black text-gray-400 rounded-l-lg">

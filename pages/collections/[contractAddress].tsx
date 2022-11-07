@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
 import Image from 'next/image'
@@ -285,8 +284,10 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
               {name ? name : 'Collection'}
             </h2>
             <p className="text-white font-oxygen text-sm lg:text-lg">
-              <span>Items {totalsupply || totalsupply===0 ? totalsupply : 'NA'} </span> ·{' '}
-              <span>Created {createdAt ? createdAt : 'yyyy-mm-dd'}</span> ·{' '}
+              <span>
+                Items {totalsupply || totalsupply === 0 ? totalsupply : 'NA'}{' '}
+              </span>{' '}
+              · <span>Created {createdAt ? createdAt : 'yyyy-mm-dd'}</span> ·{' '}
               <span>Creator fee 5%</span>{' '}
             </p>
           </div>
@@ -361,7 +362,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
         </div>
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            {bestOffer || bestOffer===0 ? bestOffer : 'NA'}
+            {bestOffer || bestOffer === 0 ? bestOffer : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Best Offer
@@ -369,7 +370,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
         </div>
         <div className="grid place-items-center">
           <p className="font-oxygen text-white lg:text-[19px] font-light">
-            {owners || owners ===0 ? owners : 'NA'}
+            {owners || owners === 0 ? owners : 'NA'}
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Owners
@@ -380,7 +381,9 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
   )
 }
 
-const CollectionSearchSection: FC<{handleFilter: (_value: any)=> void}> = ({ handleFilter }) => {
+const CollectionSearchSection: FC<{ handleFilter: (_value: any) => void }> = ({
+  handleFilter,
+}) => {
   const { width } = useWindowDimensions()
   return (
     <motion.section
@@ -490,9 +493,11 @@ const CollectionPage: NextPage = () => {
   let bannerurl = '/images/collections/static.jpg'
   let description = data?.data?.collection?.description
   let imageurl =
-    data?.data?.collection?.imageuri?.length > 0 ? data?.data?.collection?.imageuri[0] : undefined
+    data?.data?.collection?.imageuri?.length > 0
+      ? data?.data?.collection?.imageuri[0]
+      : undefined
 
-    // console.log(data?.data)
+  // console.log(data?.data)
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
 
@@ -518,9 +523,9 @@ const CollectionPage: NextPage = () => {
   }
 
   const oldtoNew = () => {
-    if(dataUnsorted.length>0){
-      const sortedBydate = dataUnsorted.sort(function (a:any, b:any) {
-        console.log(new Date(a.createdAt).getTime())
+    if (dataUnsorted.length > 0) {
+      const sortedBydate = dataUnsorted.sort(function (a: any, b: any) {
+        // console.log(new Date(a.createdAt).getTime())
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           ? -1
           : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -536,8 +541,7 @@ const CollectionPage: NextPage = () => {
   const recently = () => {
     if (dataUnsorted.length > 0) {
       const sortedBydate = dataUnsorted.sort(function (a, b) {
-        return new Date(b.createdAt).getTime() -
-          new Date(a.createdAt).getTime()
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           ? 1
           : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           ? -1
@@ -545,49 +549,48 @@ const CollectionPage: NextPage = () => {
       })
       setAvatars(sortedBydate)
       return
-    } 
+    }
   }
 
-
   const handleFilters = (value: any) => {
-    console.log('value is ',value)
-    
-    if(value==='1'){
+    // console.log('value is ',value)
+
+    if (value === '1') {
       const sortedBydate = dataUnsorted.sort(function (a, b) {
-        return new Date(b.createdAt).getTime()/1000 - new Date(a.createdAt).getTime()/1000
+        return new Date(b.createdAt).getTime() / 1000 -
+          new Date(a.createdAt).getTime() / 1000
           ? 1
-          : new Date(a.createdAt).getTime()/1000 - new Date(b.createdAt).getTime()/1000
+          : new Date(a.createdAt).getTime() / 1000 -
+            new Date(b.createdAt).getTime() / 1000
           ? -1
           : 0
       })
       setAvatars(sortedBydate)
-      
-      return 
+
+      return
     }
-    
-    if(value==='2'){
+
+    if (value === '2') {
       const sortedBydate = dataUnsorted.sort(function (a: any, b: any) {
         // console.log(new Date(a.createdAt).getTime())
-        return new Date(b.createdAt).getTime()/1000 - new Date(a.createdAt).getTime()/1000
+        return new Date(b.createdAt).getTime() / 1000 -
+          new Date(a.createdAt).getTime() / 1000
           ? -1
-          : new Date(a.createdAt).getTime()/1000 - new Date(b.createdAt).getTime()/1000
+          : new Date(a.createdAt).getTime() / 1000 -
+            new Date(b.createdAt).getTime() / 1000
           ? 1
           : 0
       })
 
       setAvatars(sortedBydate)
       return
-
     }
   }
-
 
   useEffect(() => {
     setAvatars(data?.data.nfts)
     setDataUnsorted(data?.data.nfts)
     setCollectionData(data?.data)
-    
-    
   }, [data?.data.nfts, data?.data])
 
   const crumbData: CrumbType[] = [
@@ -599,7 +602,7 @@ const CollectionPage: NextPage = () => {
     <main className="min-h-screen">
       <div className="px-4 py-1  md:p-4 pt-6 lg:px-16">
         <BreadCrumb crumbs={crumbData} />
-        {<PageHeading name={collectionName?collectionName:'Collection'} />}
+        {<PageHeading name={collectionName ? collectionName : 'Collection'} />}
       </div>
       <div className="px-4 py-1 md:p-4 pt-6 lg:px-16 mt-4 md:mt-14">
         {collectionData ? (
