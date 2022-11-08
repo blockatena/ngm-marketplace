@@ -115,9 +115,9 @@ const AvatarCard: FC<AvatarCardProps> = ({
   }, [variant])
 
   const handleClick = () => {
-    if (is_in_auction) {
-      return
-    }
+    // if (is_in_auction) {
+    //   return
+    // }
     router.push(`/assets/${contract_address}/${token_id}`)
   }
 

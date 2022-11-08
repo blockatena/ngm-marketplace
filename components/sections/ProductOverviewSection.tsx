@@ -5,17 +5,22 @@ import AvatarCard from '../../components/AvatarCard'
 import { AvatarType } from '../../interfaces'
 import ownerImg from '../../public/images/others/owner.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
-import CheckoutModal from '../modals/CheckoutModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
+import PlaceBidModal from '../modals/PlaceBidModal'
 
 const ProductOverviewSection: FC<{
   nft: AvatarType | undefined
   name: string
 }> = ({ nft, name }) => {
-  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false)
+  const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
 
   const meta_data_url = nft?.meta_data_url || ''
+
+  const handleClick = () => {
+    nft?.is_in_auction === false && setIsOfferModalOpen(true)
+    nft?.is_in_auction && setIsBidModalOpen(true)
+  }
 
   return (
     <section className="flex flex-col xl:flex-row gap-4 lg:gap-0 2xl:gap-32 xl:justify-between p-0">
@@ -119,23 +124,23 @@ const ProductOverviewSection: FC<{
         <div className="flex flex-col md:flex-row justify-between gap-2 lg:gap-4">
           {/* <button
             className="btn-secondary w-full md:w-1/2 h-[42px] md:h-16 text-sm lg:text-[21px]"
-            onClick={() => setIsCheckoutModalOpen(true)}
+            onClick={() => setIsBidModalOpen(true)}
           >
             Purchase Now
           </button> */}
           <button
             className="w-full btn-primary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
-            onClick={() => setIsOfferModalOpen(true)}
+            onClick={handleClick}
           >
             {nft?.is_in_auction ? 'Place Bid' : 'Make Offer'}
           </button>
         </div>
       </motion.div>
       <AnimatePresence>
-        {isCheckoutModalOpen && (
-          <CheckoutModal
-            isOpen={isCheckoutModalOpen}
-            setIsOpen={setIsCheckoutModalOpen}
+        {isBidModalOpen && (
+          <PlaceBidModal
+            isOpen={isBidModalOpen}
+            setIsOpen={setIsBidModalOpen}
           />
         )}
       </AnimatePresence>
