@@ -1,23 +1,24 @@
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
+import { AvatarType } from '../interfaces'
 // import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
-interface AvatarCardProps {
-  name: string
-  img: string
+interface AvatarCardProps extends AvatarType {
+  // name: string
+  // img: string
   variant?: 'xs' | 'sm' | 'lg'
-  contract_address: string
-  contract_type: string
-  createdAt: any
-  is_in_auction?: boolean
-  is_in_sale?: boolean
+  // contract_address: string
+  // contract_type: string
+  // createdAt: any
+  // is_in_auction?: boolean
+  // is_in_sale?: boolean
   noCta?: boolean
-  meta_data_url: string
-  token_id: any
-  token_owner: string
-  updatedAt: string
-  __v: any
-  _id: string
+  // meta_data_url: string
+  // token_id: any
+  // token_owner: string
+  // updatedAt: string
+  // __v: any
+  // _id: string
 }
 
 // interface NftdataProps {
@@ -53,13 +54,12 @@ const TimerSection: FC<{ hours: number; minutes: number; seconds: number }> = ({
 }
 
 const AvatarCard: FC<AvatarCardProps> = ({
-  name,
   variant = 'sm',
-  contract_address,
-  is_in_auction,
   noCta,
   meta_data_url,
+  contract_address,
   token_id,
+  is_in_auction,
 }) => {
   const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
@@ -77,13 +77,15 @@ const AvatarCard: FC<AvatarCardProps> = ({
   // }, [width])
 
   useEffect(() => {
-    fetch(meta_data_url)
-      .then((response) => response.json())
-      .then((data) => {
-        setName(data.name)
-        setImg(data.image)
-      })
-      .catch((err) => console.error(err))
+    if (meta_data_url) {
+      fetch(meta_data_url)
+        .then((response) => response.json())
+        .then((data) => {
+          setName(data.name)
+          setImg(data.image)
+        })
+        .catch((err) => console.error(err))
+    }
   }, [meta_data_url])
 
   // console.log(nftinfo.name)
@@ -195,7 +197,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
                   is_in_auction ? 'w-1/2' : ''
                 }`}
               >
-                {Name ? Name : name ? name : ''}
+                {Name ? Name : ''}
               </div>
               <div className={`${is_in_auction ? 'w-1/2' : 'w-0'}`}>
                 {is_in_auction && (

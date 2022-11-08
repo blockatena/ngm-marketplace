@@ -2,13 +2,15 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Dispatch, FC, SetStateAction } from 'react'
 import AvatarCard from '../../components/AvatarCard'
+import { AvatarType } from '../../interfaces'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 
 const CheckoutModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
-}> = ({ setIsOpen }) => {
+  nft: AvatarType
+}> = ({ setIsOpen, nft }) => {
   return (
     <ModalBase>
       <motion.div
@@ -37,12 +39,14 @@ const CheckoutModal: FC<{
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-12 md:col-span-4 flex justify-center md:block">
             <AvatarCard
-              name="Wraith"
-              img="/images/auction/auction_img_1.svg"
+              // name="Wraith"
+              // img="/images/auction/auction_img_1.svg"
               variant="xs"
               noCta
-              token_id={1}
-              contract_address="0xfd3b3575630c02b8047B911c22d3f3bfF3ad64Ce" contract_type={''} createdAt={''} meta_data_url={''} token_owner={''} updatedAt={''} __v={undefined} _id={''}            />
+              {...nft}
+              // token_id={1}
+              // contract_address="0xfd3b3575630c02b8047B911c22d3f3bfF3ad64Ce" contract_type={''} createdAt={''} meta_data_url={''} token_owner={''} updatedAt={''} __v={undefined} _id={''}
+            />
           </div>
           <div className="col-span-12 md:col-span-8">
             <div className=" capitalize border-l-[4px] border-custom_yellow pl-2">

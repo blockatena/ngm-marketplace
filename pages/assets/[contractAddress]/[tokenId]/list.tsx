@@ -7,7 +7,7 @@ import AvatarCard from '../../../../components/AvatarCard'
 import BreadCrumb from '../../../../components/BreadCrumb'
 import ListingSuccessModal from '../../../../components/modals/ListingSuccessModal'
 import PageHeading from '../../../../components/PageHeading'
-import type { CrumbType } from '../../../../interfaces'
+import type { AvatarType, CrumbType } from '../../../../interfaces'
 import {
   fromLeftAnimation,
   opacityAnimation,
@@ -21,6 +21,20 @@ const crumbData: CrumbType[] = [
     route: '/assets/0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce/1',
   },
 ]
+
+const initalNftState: AvatarType = {
+  _id: '',
+  contract_address: '',
+  contract_type: '',
+  token_id: '0',
+  meta_data_url: '',
+  is_in_auction: false,
+  is_in_sale: false,
+  token_owner: '',
+  createdAt: '',
+  updatedAt: '',
+  __v: 0,
+}
 
 const ListAssetPage: NextPage = () => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
@@ -47,19 +61,20 @@ const ListAssetPage: NextPage = () => {
               }}
             >
               <AvatarCard
-                name="Wraith"
-                img="/images/auction/auction_img_1.svg"
+                // name="Wraith"
+                // img="/images/auction/auction_img_1.svg"
                 variant="xs"
                 noCta
-                token_id={1}
-                contract_address="0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce"
-                contract_type={''}
-                createdAt={''}
-                meta_data_url={''}
-                token_owner={''}
-                updatedAt={''}
-                __v={undefined}
-                _id={''}
+                {...initalNftState}
+                // token_id={1}
+                // contract_address="0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce"
+                // contract_type={''}
+                // createdAt={''}
+                // meta_data_url={''}
+                // token_owner={''}
+                // updatedAt={''}
+                // __v={undefined}
+                // _id={''}
               />
               <div className="grid place-items-center">
                 <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">

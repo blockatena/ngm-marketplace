@@ -86,6 +86,23 @@ import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 // ]
 
 // const currencyData: string[] = ['eth', 'weth', 'ape', 'usdc']
+
+// const initalAvatarsState: AvatarType[] = [
+//   {
+//     _id: '',
+//     contract_address: '',
+//     contract_type: '',
+//     token_id: '0',
+//     meta_data_url: '',
+//     is_in_auction: false,
+//     is_in_sale: false,
+//     token_owner: '',
+//     createdAt: '',
+//     updatedAt: '',
+//     __v: 0,
+//   },
+// ]
+
 interface HeroSectionProps {
   name: string
   img: any

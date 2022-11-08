@@ -8,17 +8,36 @@ import PageHeading from '../../../../components/PageHeading'
 import DescriptionBidHistorySection from '../../../../components/sections/DescriptionBidHistorySection'
 import ExploreSection from '../../../../components/sections/ExploreSection'
 import ProductOverviewSection from '../../../../components/sections/ProductOverviewSection'
-import type { AvatarType, CrumbType } from '../../../../interfaces'
+import type {
+  AvatarType,
+  CrumbType,
+  NftContractType,
+} from '../../../../interfaces'
 import leftVector from '../../../../public/images/others/left_vector.png'
 import rightVector from '../../../../public/images/others/right_vector.png'
 import { QUERIES } from '../../../../react-query/constants'
 import { getSingleNft } from '../../../../react-query/queries'
 
+const initalNftState: AvatarType = {
+  _id: '',
+  contract_address: '',
+  contract_type: '',
+  token_id: '0',
+  meta_data_url: '',
+  is_in_auction: false,
+  is_in_sale: false,
+  token_owner: '',
+  createdAt: '',
+  updatedAt: '',
+  __v: 0,
+}
+
 const ViewAssetPage: NextPage = () => {
   const [contractAddress, setContractAddress] = useState('')
   const [tokenId, setTokenId] = useState('')
   const [name, setName] = useState('')
-  const [nft, setNft] = useState<AvatarType>()
+  const [nft, setNft] = useState<AvatarType>(initalNftState)
+  const [contractDetails, setContractDetails] = useState<NftContractType>()
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId)
@@ -28,8 +47,8 @@ const ViewAssetPage: NextPage = () => {
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },
     {
-      name: nft?.contract_details.collection_name || '',
-      route: `/collections/${nft?.contract_address}`,
+      name: contractDetails?.collection_name || '',
+      route: `/collections/${contractDetails?.contract_address}`,
     },
     {
       name,
@@ -38,9 +57,10 @@ const ViewAssetPage: NextPage = () => {
   ]
 
   useEffect(() => {
-    setNft(data?.data)
-    if (data?.data) {
-      fetch(data.data.meta_data_url)
+    setNft(data?.data.nft)
+    setContractDetails(data?.data?.contract_details)
+    if (data?.data.nft) {
+      fetch(data.data.nft.meta_data_url)
         .then((response) => response.json())
         .then((data) => {
           setName(data.name)
@@ -77,7 +97,11 @@ const ViewAssetPage: NextPage = () => {
             <Image src={leftVector} alt="" />
           </div>
           <div className="col-span-10 flex justify-center">
-            <ProductOverviewSection nft={nft} name={name} />
+            <ProductOverviewSection
+              nft={nft}
+              name={name}
+              contractDetails={contractDetails}
+            />
           </div>
           <div className="col-span-1 flex justify-end ">
             <div className="w-3 lg:w-7 flex">
@@ -87,7 +111,10 @@ const ViewAssetPage: NextPage = () => {
         </div>
       </div>
       <div className="px-3 md:px-4 lg:px-0">
-        <DescriptionBidHistorySection nft={nft} />
+        <DescriptionBidHistorySection
+          nft={nft}
+          contractDetails={contractDetails}
+        />
         <ExploreSection />
       </div>
     </main>

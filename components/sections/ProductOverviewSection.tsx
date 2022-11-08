@@ -2,20 +2,21 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import { FC, useState } from 'react'
 import AvatarCard from '../../components/AvatarCard'
-import { AvatarType } from '../../interfaces'
+import { AvatarType, NftContractType } from '../../interfaces'
 import ownerImg from '../../public/images/others/owner.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
 
 const ProductOverviewSection: FC<{
-  nft: AvatarType | undefined
+  nft: AvatarType
+  contractDetails: NftContractType | undefined
   name: string
-}> = ({ nft, name }) => {
+}> = ({ nft, name, contractDetails }) => {
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
 
-  const meta_data_url = nft?.meta_data_url || ''
+  // const meta_data_url = nft?.nft.meta_data_url || ''
 
   const handleClick = () => {
     nft?.is_in_auction === false && setIsOfferModalOpen(true)
@@ -37,24 +38,30 @@ const ProductOverviewSection: FC<{
         }}
       >
         <AvatarCard
-          name="Wraith"
-          img="/images/auction/auction_img_1.svg"
+          // name="Wraith"
+          // img="/images/auction/auction_img_1.svg"
           variant="lg"
           noCta
-          token_id={1}
-          contract_address="0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce"
-          contract_type={''}
-          createdAt={''}
-          meta_data_url={meta_data_url}
-          token_owner={''}
-          updatedAt={''}
-          __v={undefined}
-          _id={''}
+          {...nft}
+          // contract_details={
+          //   _id: '',
+          //   symbol: '',
+          //   owner_address: '',
+          //   collection_name: '',
+          //   chain: '',
+          //   type: '',
+          //   transactionhash: '',
+          //   contract_address: '',
+          //   description: '',
+          //   baseuri: '',
+          //   imageuri: [''],
+          //   createdAt: ''}
         />
         <div className="lg:hidden grid place-items-center">
           <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
             <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
-              {nft?.contract_details.collection_name}
+              {/* {nft?.contract_details.collection_name} */}
+              {contractDetails?.collection_name}
             </p>
             <p className="text-white text-2xl lg:text-[49px] font-josefin">
               {name}
@@ -76,7 +83,7 @@ const ProductOverviewSection: FC<{
       >
         <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 hidden lg:block">
           <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
-            {nft?.contract_details.collection_name}
+            {contractDetails?.collection_name}
           </p>
           <p className="text-white text-2xl lg:text-[49px] font-josefin leading-[55px]">
             {name}
@@ -84,7 +91,7 @@ const ProductOverviewSection: FC<{
         </div>
 
         <p className="text-[#D7D7D7] font-poppins text-sm lg:text-base text-center lg:text-left">
-          {nft?.contract_details.description}
+          {contractDetails?.description}
         </p>
 
         <div className="flex justify-between font-poppins">

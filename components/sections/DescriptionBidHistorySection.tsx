@@ -12,7 +12,7 @@ import {
 import { motion } from 'framer-motion'
 import { FC, useEffect, useRef, useState } from 'react'
 import { Line } from 'react-chartjs-2'
-import { AvatarType } from '../../interfaces'
+import { AvatarType, NftContractType } from '../../interfaces'
 import { opacityAnimation } from '../../utils/animations'
 
 ChartJS.register(
@@ -76,12 +76,15 @@ const DescriptionItem: FC<{ name: string; value: string }> = ({
   </div>
 )
 
-const CharacterDescription: FC<{ nft: AvatarType | undefined }> = ({ nft }) => {
+const CharacterDescription: FC<{
+  nft: AvatarType | undefined
+  contractDetails: NftContractType
+}> = ({ nft, contractDetails }) => {
   const description = [
     { name: 'Contract Address', value: nft?.contract_address || '' },
     { name: 'Token ID', value: nft?.token_id || '' },
     { name: 'Token Standard', value: nft?.contract_type || '' },
-    { name: 'Blockchain', value: nft?.contract_details.chain || '' },
+    { name: 'Blockchain', value: contractDetails?.chain || '' },
   ]
 
   return (
@@ -98,7 +101,7 @@ const CharacterDescription: FC<{ nft: AvatarType | undefined }> = ({ nft }) => {
           delay: 0.1,
         }}
       >
-        {nft?.contract_details.description}
+        {contractDetails?.description}
       </motion.p>
       <div className="max-w-[349px] text-[#E7ECF2] font-poppins flex flex-col gap-6">
         {description.map((item, index) => (
@@ -141,9 +144,10 @@ const BidHistory = () => {
     </div>
   )
 }
-const DescriptionBidHistorySection: FC<{ nft: AvatarType | undefined }> = ({
-  nft,
-}) => {
+const DescriptionBidHistorySection: FC<{
+  nft: AvatarType | undefined
+  contractDetails: NftContractType | undefined
+}> = ({ nft, contractDetails }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0)
   const [tabUnderlineLeft, setTabUnderlineLeft] = useState(0)
@@ -187,7 +191,7 @@ const DescriptionBidHistorySection: FC<{ nft: AvatarType | undefined }> = ({
       </div>
       <div className="py-4">
         {activeTabIndex === 0 ? (
-          <CharacterDescription nft={nft} />
+          <CharacterDescription nft={nft} contractDetails={contractDetails} />
         ) : (
           <BidHistory />
         )}
