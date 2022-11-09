@@ -43,6 +43,13 @@ const avatars: AvatarType[] = [
     createdAt: '',
     updatedAt: '',
     __v: 0,
+    meta_data: {
+      name: '',
+      image: '',
+      description: '',
+      external_uri: '',
+      attributes: [{ name: '', value: '' }],
+    },
   },
   {
     _id: '',
@@ -56,6 +63,13 @@ const avatars: AvatarType[] = [
     createdAt: '',
     updatedAt: '',
     __v: 0,
+    meta_data: {
+      name: '',
+      image: '',
+      description: '',
+      external_uri: '',
+      attributes: [{ name: '', value: '' }],
+    },
   },
   {
     _id: '',
@@ -69,6 +83,13 @@ const avatars: AvatarType[] = [
     createdAt: '',
     updatedAt: '',
     __v: 0,
+    meta_data: {
+      name: '',
+      image: '',
+      description: '',
+      external_uri: '',
+      attributes: [{ name: '', value: '' }],
+    },
   },
   // {
   //   contract_details: {

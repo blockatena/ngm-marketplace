@@ -56,15 +56,16 @@ const TimerSection: FC<{ hours: number; minutes: number; seconds: number }> = ({
 const AvatarCard: FC<AvatarCardProps> = ({
   variant = 'sm',
   noCta,
-  meta_data_url,
+  // meta_data_url,
   contract_address,
   token_id,
   is_in_auction,
+  meta_data,
 }) => {
   const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
-  const [Name, setName] = useState('')
-  const [Img, setImg] = useState('')
+  // const [Name, setName] = useState('')
+  // const [Img, setImg] = useState('')
   const [shadow, setShadow] = useState('')
   const [cardProperties, setCardProperties] = useState({
     dimensions: 'w-[250px] h-[330px]',
@@ -76,17 +77,17 @@ const AvatarCard: FC<AvatarCardProps> = ({
   //   setClientWidth(width)
   // }, [width])
 
-  useEffect(() => {
-    if (meta_data_url) {
-      fetch(meta_data_url)
-        .then((response) => response.json())
-        .then((data) => {
-          setName(data.name)
-          setImg(data.image)
-        })
-        .catch((err) => console.error(err))
-    }
-  }, [meta_data_url])
+  // useEffect(() => {
+  //   if (meta_data_url) {
+  //     fetch(meta_data_url)
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         setName(data.name)
+  //         setImg(data.image)
+  //       })
+  //       .catch((err) => console.error(err))
+  //   }
+  // }, [meta_data_url])
 
   // console.log(nftinfo.name)
 
@@ -184,7 +185,9 @@ const AvatarCard: FC<AvatarCardProps> = ({
            absolute top-3 bottom-3 left-3 right-3"
             style={{
               backgroundImage: `url(${
-                Img ? Img : '/images/others/avatar_bg.png'
+                meta_data?.image
+                  ? meta_data?.image
+                  : '/images/others/avatar_bg.png'
               })`,
             }}
           ></div>
@@ -197,7 +200,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
                   is_in_auction ? 'w-1/2' : ''
                 }`}
               >
-                {Name ? Name : ''}
+                {meta_data?.name ? meta_data?.name : ''}
               </div>
               <div className={`${is_in_auction ? 'w-1/2' : 'w-0'}`}>
                 {is_in_auction && (

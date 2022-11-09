@@ -30,12 +30,19 @@ const initalNftState: AvatarType = {
   createdAt: '',
   updatedAt: '',
   __v: 0,
+  meta_data: {
+    name: '',
+    image: '',
+    description: '',
+    external_uri: '',
+    attributes: [{ name: '', value: '' }],
+  },
 }
 
 const ViewAssetPage: NextPage = () => {
   const [contractAddress, setContractAddress] = useState('')
   const [tokenId, setTokenId] = useState('')
-  const [name, setName] = useState('')
+  // const [name, setName] = useState('')
   const [nft, setNft] = useState<AvatarType>(initalNftState)
   const [contractDetails, setContractDetails] = useState<NftContractType>()
   const { data } = useQuery(
@@ -51,7 +58,7 @@ const ViewAssetPage: NextPage = () => {
       route: `/collections/${contractDetails?.contract_address}`,
     },
     {
-      name,
+      name: nft?.meta_data?.name,
       route: `/assets/${contractAddress}/${tokenId}`,
     },
   ]
@@ -59,14 +66,14 @@ const ViewAssetPage: NextPage = () => {
   useEffect(() => {
     setNft(data?.data.nft)
     setContractDetails(data?.data?.contract_details)
-    if (data?.data.nft) {
-      fetch(data.data.nft.meta_data_url)
-        .then((response) => response.json())
-        .then((data) => {
-          setName(data.name)
-        })
-        .catch((err) => console.error(err))
-    }
+    // if (data?.data.nft) {
+    //   fetch(data.data.nft.meta_data_url)
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //       setName(data.name)
+    //     })
+    //     .catch((err) => console.error(err))
+    // }
   }, [data?.data])
 
   useEffect(() => {
@@ -82,7 +89,7 @@ const ViewAssetPage: NextPage = () => {
       <div className="px-2 md:px-4 lg:px-0">
         <BreadCrumb crumbs={crumbData} />
       </div>
-      <PageHeading name={name} />
+      <PageHeading name={nft?.meta_data?.name} />
       <div className="mt-16 mb-8">
         <div className="w-full h-[20px] md:h-[40px] flex mb-4">
           <Image
@@ -99,7 +106,6 @@ const ViewAssetPage: NextPage = () => {
           <div className="col-span-10 flex justify-center">
             <ProductOverviewSection
               nft={nft}
-              name={name}
               contractDetails={contractDetails}
             />
           </div>

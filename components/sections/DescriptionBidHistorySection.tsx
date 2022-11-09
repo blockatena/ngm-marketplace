@@ -80,8 +80,15 @@ const CharacterDescription: FC<{
   nft: AvatarType | undefined
   contractDetails: NftContractType
 }> = ({ nft, contractDetails }) => {
+  const address =
+    nft?.contract_address &&
+    `${nft?.contract_address?.substring(
+      0,
+      6
+    )}...${nft?.contract_address?.substring(nft?.contract_address?.length - 4)}`
+
   const description = [
-    { name: 'Contract Address', value: nft?.contract_address || '' },
+    { name: 'Contract Address', value: address || '' },
     { name: 'Token ID', value: nft?.token_id || '' },
     { name: 'Token Standard', value: nft?.contract_type || '' },
     { name: 'Blockchain', value: contractDetails?.chain || '' },
@@ -101,7 +108,7 @@ const CharacterDescription: FC<{
           delay: 0.1,
         }}
       >
-        {contractDetails?.description}
+        {nft?.meta_data?.description}
       </motion.p>
       <div className="max-w-[349px] text-[#E7ECF2] font-poppins flex flex-col gap-6">
         {description.map((item, index) => (

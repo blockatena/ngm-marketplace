@@ -126,6 +126,13 @@ export type AvatarType = {
   createdAt: string
   updatedAt: string
   __v: number
+  meta_data: {
+    name: string
+    image: string
+    description: string
+    external_uri: string
+    attributes: { name: string; value: string }[]
+  }
 }
 
 export type NftContractType = {

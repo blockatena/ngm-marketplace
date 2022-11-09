@@ -34,6 +34,13 @@ const initalNftState: AvatarType = {
   createdAt: '',
   updatedAt: '',
   __v: 0,
+  meta_data: {
+    name: '',
+    image: '',
+    description: '',
+    external_uri: '',
+    attributes: [{ name: '', value: '' }],
+  },
 }
 
 const ListAssetPage: NextPage = () => {

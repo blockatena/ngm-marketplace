@@ -11,8 +11,8 @@ import PlaceBidModal from '../modals/PlaceBidModal'
 const ProductOverviewSection: FC<{
   nft: AvatarType
   contractDetails: NftContractType | undefined
-  name: string
-}> = ({ nft, name, contractDetails }) => {
+  // name: string
+}> = ({ nft, contractDetails }) => {
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
 
@@ -64,7 +64,7 @@ const ProductOverviewSection: FC<{
               {contractDetails?.collection_name}
             </p>
             <p className="text-white text-2xl lg:text-[49px] font-josefin">
-              {name}
+              {nft?.meta_data?.name}
             </p>
           </div>
         </div>
@@ -86,12 +86,12 @@ const ProductOverviewSection: FC<{
             {contractDetails?.collection_name}
           </p>
           <p className="text-white text-2xl lg:text-[49px] font-josefin leading-[55px]">
-            {name}
+            {nft?.meta_data?.name}
           </p>
         </div>
 
         <p className="text-[#D7D7D7] font-poppins text-sm lg:text-base text-center lg:text-left">
-          {contractDetails?.description}
+          {nft?.meta_data?.description}
         </p>
 
         <div className="flex justify-between font-poppins">
