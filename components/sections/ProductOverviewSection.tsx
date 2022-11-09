@@ -1,10 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import Image from 'next/image'
+import { useRouter } from 'next/router'
+// import Image from 'next/image'
 import { FC, useState } from 'react'
+import { useAccount } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
 import { AvatarType, NftContractType } from '../../interfaces'
-import ownerImg from '../../public/images/others/owner.png'
+// import ownerImg from '../../public/images/others/owner.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
+import useIsMounted from '../../utils/hooks/useIsMounted'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
 
@@ -13,12 +16,19 @@ const ProductOverviewSection: FC<{
   contractDetails: NftContractType | undefined
   // name: string
 }> = ({ nft, contractDetails }) => {
+  const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
+  const { address } = useAccount()
+  const isMounted = useIsMounted()
 
   // const meta_data_url = nft?.nft.meta_data_url || ''
 
   const handleClick = () => {
+    if (isMounted && nft?.token_owner === address) {
+      router.push(`${router.asPath}/list`)
+      return
+    }
     nft?.is_in_auction === false && setIsOfferModalOpen(true)
     nft?.is_in_auction && setIsBidModalOpen(true)
   }
@@ -109,15 +119,22 @@ const ProductOverviewSection: FC<{
           </div>
         </div>
 
-        <div className="flex justify-between md:flex-row gap-2 md:gap-0">
+        <div className="flex justify-between md:flex-row gap-2">
           <div className="flex justify-between gap-4 lg:gap-6 bg-gray-900 p-2 lg:p-4 rounded-lg">
-            <div>
-              <Image src={ownerImg} alt="" />
+            <div className="bg-custom_gray_light h-10 w-10 rounded">
+              {/* <Image src={ownerImg} alt="" /> */}
             </div>
             <div className="font-poppins">
               <p className="text-gray-600 text-sm lg:text-base">Owner</p>
               <p className="font-medium text-white text-sm lg:text-base">
-                SalvadorDali
+                {/* SalvadorDali */}
+                {nft?.token_owner &&
+                  `${nft.token_owner.substring(
+                    0,
+                    5
+                  )}...${nft.token_owner.substring(
+                    nft.token_owner.length - 3
+                  )}`}
               </p>
             </div>
           </div>
@@ -139,7 +156,11 @@ const ProductOverviewSection: FC<{
             className="w-full btn-primary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
             onClick={handleClick}
           >
-            {nft?.is_in_auction ? 'Place Bid' : 'Make Offer'}
+            {isMounted && nft?.token_owner && nft.token_owner === address
+              ? 'Sell'
+              : nft?.is_in_auction
+              ? 'Place Bid'
+              : 'Make Offer'}
           </button>
         </div>
       </motion.div>

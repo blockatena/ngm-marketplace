@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
+import { useAccount } from 'wagmi'
 import { AvatarType } from '../interfaces'
+import useIsMounted from '../utils/hooks/useIsMounted'
 // import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
 interface AvatarCardProps extends AvatarType {
@@ -61,6 +63,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
   token_id,
   is_in_auction,
   meta_data,
+  token_owner,
 }) => {
   const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
@@ -70,6 +73,9 @@ const AvatarCard: FC<AvatarCardProps> = ({
   const [cardProperties, setCardProperties] = useState({
     dimensions: 'w-[250px] h-[330px]',
   })
+  const { address } = useAccount()
+  const isMounted = useIsMounted()
+
   // const { width } = useWindowDimensions()
   // const [clientWidth, setClientWidth] = useState(0)
 
@@ -225,7 +231,11 @@ const AvatarCard: FC<AvatarCardProps> = ({
         hover:bg-[#e6c518]"
                 onClick={handleClick}
               >
-                {is_in_auction ? 'Place Bid' : 'View'}
+                {isMounted && (!is_in_auction || address === token_owner)
+                  ? 'View'
+                  : isMounted && is_in_auction
+                  ? 'Place Bid'
+                  : ''}
               </div>
             </div>
           </div>

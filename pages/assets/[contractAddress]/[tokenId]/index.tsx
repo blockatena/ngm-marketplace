@@ -74,7 +74,7 @@ const ViewAssetPage: NextPage = () => {
     //     })
     //     .catch((err) => console.error(err))
     // }
-  }, [data?.data])
+  }, [data?.data?.contract_details, data?.data.nft])
 
   useEffect(() => {
     if (asPath) {
