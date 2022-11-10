@@ -23,7 +23,7 @@ export type CollectionCardTypes = {
   transactionhash: string
   createdAt: string
   type: string
-  description:string
+  description: string
   __v: number
   _id: string
   baseuri: string
@@ -50,18 +50,104 @@ export type selectDataType = {
 //   isOnAuction: boolean
 // }
 
+// export type AvatarType = {
+//   name: string
+//   img: string
+//   contract_address: string
+//   contract_type: string
+//   createdAt: string
+//   is_in_auction: boolean
+//   is_in_sale: boolean
+//   meta_data_url: string
+//   token_id: string
+//   token_owner: string
+//   updatedAt: string
+//   __v: number
+//   _id: string
+//   contract_details: {
+//     _id: string
+//     symbol: string
+//     chain: string
+//     type: string
+//     transactionhash: string
+//     baseuri: string
+//     createdAt: string
+//     updatedAt: string
+//     __v: number
+//     description: string
+//     imageuri: string[]
+//     owner_address: string
+//     collection_name: string
+//     contract_address: string
+//   }
+// }
+
+// export type AvatarType = {
+//   contract_details: {
+//     _id: string
+//     symbol: string
+//     owner_address: string
+//     collection_name: string
+//     chain: string
+//     type: string
+//     transactionhash: string
+//     contract_address: string
+//     description: string
+//     baseuri: string
+//     imageuri: string[]
+//     createdAt: string
+//     updatedAt: string
+//     __v: number
+//   }
+//   nft: {
+//     _id: string
+//     contract_address: string
+//     contract_type: string
+//     token_id: string
+//     meta_data_url: string
+//     is_in_auction: boolean
+//     is_in_sale: boolean
+//     token_owner: string
+//     createdAt: string
+//     updatedAt: string
+//     __v: number
+//   }
+// }
+
 export type AvatarType = {
-  name: string
-  img: string
+  _id: string
   contract_address: string
   contract_type: string
-  createdAt: string
+  token_id: string
+  meta_data_url: string
   is_in_auction: boolean
   is_in_sale: boolean
-  meta_data_url: string
-  token_id: any
   token_owner: string
+  createdAt: string
   updatedAt: string
-  __v: any
-  _id:string
+  __v: number
+  meta_data: {
+    name: string
+    image: string
+    description: string
+    external_uri: string
+    attributes: { name: string; value: string }[]
+  }
+}
+
+export type NftContractType = {
+  _id: string
+  symbol: string
+  owner_address: string
+  collection_name: string
+  chain: string
+  type: string
+  transactionhash: string
+  contract_address: string
+  description: string
+  baseuri: string
+  imageuri: string[]
+  createdAt: string
+  updatedAt: string
+  __v: number
 }

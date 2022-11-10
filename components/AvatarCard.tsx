@@ -1,23 +1,26 @@
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
+import { useAccount } from 'wagmi'
+import { AvatarType } from '../interfaces'
+import useIsMounted from '../utils/hooks/useIsMounted'
 // import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
-interface AvatarCardProps {
-  name: string
-  img: string
+interface AvatarCardProps extends AvatarType {
+  // name: string
+  // img: string
   variant?: 'xs' | 'sm' | 'lg'
-  contract_address: string
-  contract_type: string
-  createdAt: any
-  is_in_auction?: boolean
-  is_in_sale?: boolean
+  // contract_address: string
+  // contract_type: string
+  // createdAt: any
+  // is_in_auction?: boolean
+  // is_in_sale?: boolean
   noCta?: boolean
-  meta_data_url: string
-  token_id: any
-  token_owner: string
-  updatedAt: string
-  __v: any
-  _id: string
+  // meta_data_url: string
+  // token_id: any
+  // token_owner: string
+  // updatedAt: string
+  // __v: any
+  // _id: string
 }
 
 // interface NftdataProps {
@@ -53,22 +56,26 @@ const TimerSection: FC<{ hours: number; minutes: number; seconds: number }> = ({
 }
 
 const AvatarCard: FC<AvatarCardProps> = ({
-  name,
   variant = 'sm',
-  contract_address,
-  is_in_auction,
   noCta,
-  meta_data_url,
+  // meta_data_url,
+  contract_address,
   token_id,
+  is_in_auction,
+  meta_data,
+  token_owner,
 }) => {
   const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
-  const [Name, setName] = useState('')
-  const [Img, setImg] = useState('')
+  // const [Name, setName] = useState('')
+  // const [Img, setImg] = useState('')
   const [shadow, setShadow] = useState('')
   const [cardProperties, setCardProperties] = useState({
     dimensions: 'w-[250px] h-[330px]',
   })
+  const { address } = useAccount()
+  const isMounted = useIsMounted()
+
   // const { width } = useWindowDimensions()
   // const [clientWidth, setClientWidth] = useState(0)
 
@@ -76,15 +83,17 @@ const AvatarCard: FC<AvatarCardProps> = ({
   //   setClientWidth(width)
   // }, [width])
 
-  useEffect(() => {
-    fetch(meta_data_url)
-      .then((response) => response.json())
-      .then((data) => {
-        setName(data.name)
-        setImg(data.image)
-      })
-      .catch((err) => console.error(err))
-  }, [meta_data_url])
+  // useEffect(() => {
+  //   if (meta_data_url) {
+  //     fetch(meta_data_url)
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         setName(data.name)
+  //         setImg(data.image)
+  //       })
+  //       .catch((err) => console.error(err))
+  //   }
+  // }, [meta_data_url])
 
   // console.log(nftinfo.name)
 
@@ -115,9 +124,9 @@ const AvatarCard: FC<AvatarCardProps> = ({
   }, [variant])
 
   const handleClick = () => {
-    if (is_in_auction) {
-      return
-    }
+    // if (is_in_auction) {
+    //   return
+    // }
     router.push(`/assets/${contract_address}/${token_id}`)
   }
 
@@ -182,7 +191,9 @@ const AvatarCard: FC<AvatarCardProps> = ({
            absolute top-3 bottom-3 left-3 right-3"
             style={{
               backgroundImage: `url(${
-                Img ? Img : '/images/others/avatar_bg.png'
+                meta_data?.image
+                  ? meta_data?.image
+                  : '/images/others/avatar_bg.png'
               })`,
             }}
           ></div>
@@ -195,7 +206,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
                   is_in_auction ? 'w-1/2' : ''
                 }`}
               >
-                {Name ? Name : name ? name : ''}
+                {meta_data?.name ? meta_data?.name : ''}
               </div>
               <div className={`${is_in_auction ? 'w-1/2' : 'w-0'}`}>
                 {is_in_auction && (
@@ -220,7 +231,11 @@ const AvatarCard: FC<AvatarCardProps> = ({
         hover:bg-[#e6c518]"
                 onClick={handleClick}
               >
-                {is_in_auction ? 'Place Bid' : 'View'}
+                {isMounted && (!is_in_auction || address === token_owner)
+                  ? 'View'
+                  : isMounted && is_in_auction
+                  ? 'Place Bid'
+                  : ''}
               </div>
             </div>
           </div>

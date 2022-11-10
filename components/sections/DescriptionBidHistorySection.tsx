@@ -12,6 +12,7 @@ import {
 import { motion } from 'framer-motion'
 import { FC, useEffect, useRef, useState } from 'react'
 import { Line } from 'react-chartjs-2'
+import { AvatarType, NftContractType } from '../../interfaces'
 import { opacityAnimation } from '../../utils/animations'
 
 ChartJS.register(
@@ -61,13 +62,6 @@ export const AvatarData = [
   },
 ]
 
-const description = [
-  { name: 'Contract Address', value: '0x3a3..2039' },
-  { name: 'Token ID', value: '4133' },
-  { name: 'Token Standard', value: 'ERC-721' },
-  { name: 'Blockchain', value: 'Ethereum' },
-]
-
 const LineChart = ({ chartData }) => {
   return <Line data={chartData} />
 }
@@ -76,13 +70,30 @@ const DescriptionItem: FC<{ name: string; value: string }> = ({
   name,
   value,
 }) => (
-  <div className="flex justify-between ">
+  <div className="flex justify-between gap-4">
     <p className=" font-bold">{name}</p>
     <p className="">{value}</p>
   </div>
 )
 
-const CharacterDescription = () => {
+const CharacterDescription: FC<{
+  nft: AvatarType | undefined
+  contractDetails: NftContractType
+}> = ({ nft, contractDetails }) => {
+  const address =
+    nft?.contract_address &&
+    `${nft?.contract_address?.substring(
+      0,
+      6
+    )}...${nft?.contract_address?.substring(nft?.contract_address?.length - 4)}`
+
+  const description = [
+    { name: 'Contract Address', value: address || '' },
+    { name: 'Token ID', value: nft?.token_id || '' },
+    { name: 'Token Standard', value: nft?.contract_type || '' },
+    { name: 'Blockchain', value: contractDetails?.chain || '' },
+  ]
+
   return (
     <div className="p-4">
       <motion.p
@@ -97,9 +108,7 @@ const CharacterDescription = () => {
           delay: 0.1,
         }}
       >
-        The Fuse is an offensive character that harnesses the power of grenades,
-        cluster bombs, and mortars to overwhelm enemy squads with it&apos;s own
-        unique traits & personality
+        {nft?.meta_data?.description}
       </motion.p>
       <div className="max-w-[349px] text-[#E7ECF2] font-poppins flex flex-col gap-6">
         {description.map((item, index) => (
@@ -142,8 +151,10 @@ const BidHistory = () => {
     </div>
   )
 }
-
-export default function DescriptionBidHistorySection() {
+const DescriptionBidHistorySection: FC<{
+  nft: AvatarType | undefined
+  contractDetails: NftContractType | undefined
+}> = ({ nft, contractDetails }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0)
   const [tabUnderlineLeft, setTabUnderlineLeft] = useState(0)
@@ -186,8 +197,14 @@ export default function DescriptionBidHistorySection() {
         />
       </div>
       <div className="py-4">
-        {activeTabIndex === 0 ? <CharacterDescription /> : <BidHistory />}
+        {activeTabIndex === 0 ? (
+          <CharacterDescription nft={nft} contractDetails={contractDetails} />
+        ) : (
+          <BidHistory />
+        )}
       </div>
     </section>
   )
 }
+
+export default DescriptionBidHistorySection
