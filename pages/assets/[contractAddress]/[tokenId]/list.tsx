@@ -1,33 +1,33 @@
-import { NextPage } from 'next'
-import { useRouter } from 'next/router'
+import { ethers } from 'ethers'
 import { AnimatePresence, motion } from 'framer-motion'
+import { NextPage } from 'next'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { ChangeEvent, useEffect, useState } from 'react'
+import { useMutation, useQuery } from 'react-query'
+// import { toast } from 'react-toastify'
 import AvatarCard from '../../../../components/AvatarCard'
 import BreadCrumb from '../../../../components/BreadCrumb'
 import ListingSuccessModal from '../../../../components/modals/ListingSuccessModal'
 import PageHeading from '../../../../components/PageHeading'
-import type { AvatarType, CrumbType } from '../../../../interfaces'
+import {
+  NGM1155ABI,
+  NGM721PSIABI,
+  NGMMarketAddress,
+  NGMTINY721ABI,
+} from '../../../../contracts/nftabi'
+import type {
+  AvatarType,
+  CrumbType,
+  nftAuctionBodyType,
+  NftContractType,
+} from '../../../../interfaces'
+import { QUERIES } from '../../../../react-query/constants'
+import { createNftAuction, getSingleNft } from '../../../../react-query/queries'
 import {
   fromLeftAnimation,
   opacityAnimation,
 } from '../../../../utils/animations'
-import { QUERIES } from '../../../../react-query/constants'
-import { getSingleNft } from '../../../../react-query/queries'
-import { useQuery } from 'react-query'
-import { NGMTINY721ABI } from '../../../../contracts/nftabi'
-import { NGM1155ABI } from '../../../../contracts/nftabi'
-import { NGM721PSIABI } from '../../../../contracts/nftabi'
-import { ethers } from 'ethers'
-import { NGMMarketAddress } from '../../../../contracts/nftabi'
-const crumbData: CrumbType[] = [
-  { name: 'home', route: '/' },
-  { name: 'apex legends', route: '/collections/3' },
-  {
-    name: 'fuse',
-    route: '/assets/0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce/1',
-  },
-]
 
 const initalNftState: AvatarType = {
   _id: '',
@@ -50,6 +50,12 @@ const initalNftState: AvatarType = {
   },
 }
 
+const initialFormState = {
+  start_date: '',
+  end_date: '',
+  min_price: 0,
+}
+
 const ListAssetPage: NextPage = () => {
   const [contractAddress, setContractAddress] = useState('')
   const [tokenId, setTokenId] = useState('')
@@ -58,14 +64,42 @@ const ListAssetPage: NextPage = () => {
   const { asPath } = useRouter()
 
   const [nft, setNft] = useState<AvatarType>(initalNftState)
+  const [contractDetails, setContractDetails] = useState<NftContractType>()
+  const [formData, setFormData] = useState(initialFormState)
+  const [isLoading, setIsLoading] = useState(false)
 
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId)
   )
 
+  const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }))
+  }
 
-  const onlisting = async ()=>{
+  const { mutate, isSuccess, data: response } = useMutation(createNftAuction)
+
+  // let a:nftAuctionBodyType = {}
+  // mutate(a)
+
+  const crumbData: CrumbType[] = [
+    { name: 'home', route: '/' },
+    {
+      name: `${contractDetails?.collection_name || ''}`,
+      route: `/collections/${contractAddress}`,
+    },
+    {
+      name: `${nft?.meta_data?.name || ''}`,
+      route: `/assets/${contractAddress}/${tokenId}`,
+    },
+  ]
+
+  const onlisting = async () => {
+    setIsLoading(true)
     const ethereum = (window as any).ethereum
     const accounts = await ethereum.request({
       method: 'eth_requestAccounts',
@@ -74,36 +108,50 @@ const ListAssetPage: NextPage = () => {
     const provider = new ethers.providers.Web3Provider(ethereum)
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
-    
-    console.log(signer)
+
+    // console.log(signer)
     const nftcontract = new ethers.Contract(contractAddress, NFTABI, signer)
 
-    const isApproved = await nftcontract.isApprovedForAll(signer._address,NGMMarketAddress)
-    console.log(isApproved)
+    const isApproved = await nftcontract.isApprovedForAll(
+      signer._address,
+      NGMMarketAddress
+    )
+    // console.log(isApproved)
 
-    if(isApproved===true){
-    // Axios data:POST
-    setIsSuccessModalOpen(true)
+    const requestData: nftAuctionBodyType = {
+      contract_address: nft?.contract_address,
+      token_id: nft?.token_id,
+      token_owner: nft?.token_owner,
+      ...formData,
+    }
+
+    if (isApproved === true) {
+      // POST DATA
+      mutate(requestData)
+      setIsLoading(false)
+      // if (isSuccess) {
+      //   setIsSuccessModalOpen(true)
+      // }
     } else {
+      // console.log(formData)
       await nftcontract
         .setApprovalForAll(NGMMarketAddress, true)
         .then((tx: any) => {
           console.log('processing')
           provider.waitForTransaction(tx.hash).then(() => {
-            console.log(tx.hash)
+            // console.log(tx.hash)
             //Axios data:POST
-            setIsSuccessModalOpen(true)
+            mutate(requestData)
+            // setIsSuccessModalOpen(true)
+            setIsLoading(false)
           })
         })
         .catch((e: any) => {
+          setIsLoading(false)
           console.log(e.message)
         })
-      
     }
-    
   }
-  
-
 
   useEffect(() => {
     if (asPath) {
@@ -113,7 +161,7 @@ const ListAssetPage: NextPage = () => {
     }
   }, [asPath])
 
-  useEffect(()=>{
+  useEffect(() => {
     if (data?.data?.nft) {
       setNFTABI(
         data.data.nft.contract_type === 'NGMTINY721'
@@ -122,13 +170,26 @@ const ListAssetPage: NextPage = () => {
           ? NGM721PSIABI
           : data.data.nft.contract_type === 'NGM1155'
           ? NGM1155ABI
-          :''
+          : ''
       )
-      setNft(data?.data.nft)
+      setNft(data?.data?.nft)
+      setContractDetails(data?.data?.contract_details)
     }
-  },[data])
+  }, [data])
 
-
+  useEffect(() => {
+    // if (response?.status === 201) {
+    //   toast(String(response?.data), {
+    //     hideProgressBar: true,
+    //     autoClose: 3000,
+    //     type: 'error',
+    //     position: 'top-right',
+    //     theme: 'dark',
+    //   })
+    //   return
+    // }
+    isSuccess && setIsSuccessModalOpen(true)
+  }, [isSuccess])
 
   return (
     <main className="min-h-screen p-2 pt-6 lg:px-16 mb-6">
@@ -170,14 +231,16 @@ const ListAssetPage: NextPage = () => {
               <div className="grid place-items-center">
                 <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
                   <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
-                    {data?.data.contract_details.collection_name
-                      ? data?.data.contract_details.collection_name
-                      : 'collection'}
+                    {/* {data?.data.contract_details?.collection_name
+                      ? data?.data.contract_details?.collection_name
+                      : 'collection'} */}
+                    {contractDetails?.collection_name || ''}
                   </p>
                   <p className="text-white text-2xl lg:text-[47px] font-josefin">
-                    {data?.data.nft.meta_data.name
-                      ? data?.data.nft.meta_data.name
-                      : 'collection'}
+                    {/* {data?.data.nft.meta_data?.name
+                      ? data?.data.nft.meta_data?.name
+                      : 'collection'} */}
+                    {nft?.meta_data?.name || ''}
                   </p>
                 </div>
               </div>
@@ -283,10 +346,12 @@ const ListAssetPage: NextPage = () => {
                   <p>WETH</p>
                 </div>
                 <input
-                  type="text"
+                  type="number"
                   id="starting_price"
+                  name="min_price"
                   className="w-full bg-[#585858] outline-none rounded-lg text-white font-poppins 
                   px-2 lg:pl-8 border border-[#E5E4E4]"
+                  onChange={handleUserInput}
                 />
               </div>
               <p className="font-poppins lg:text-[21px] text-white text-end mt-2">
@@ -320,7 +385,9 @@ const ListAssetPage: NextPage = () => {
                   <input
                     type="datetime-local"
                     id="start_date"
+                    name="start_date"
                     className="bg-[#4D4D49] text-white"
+                    onChange={handleUserInput}
                   />
                 </div>
                 <p className="text-lg text-white"> - </p>
@@ -328,7 +395,9 @@ const ListAssetPage: NextPage = () => {
                   <input
                     type="datetime-local"
                     id="end_date"
+                    name="end_date"
                     className="bg-[#4D4D49] text-white"
+                    onChange={handleUserInput}
                   />
                 </div>
               </div>
@@ -384,12 +453,20 @@ const ListAssetPage: NextPage = () => {
               }}
             >
               <button
-                className="btn-primary w-[200px] h-[40px] lg:w-[618px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]
-            "
+                className="btn-primary grid place-items-center w-[200px] h-[40px] lg:w-[618px] lg:h-[57px] 
+                rounded-lg font-poppins lg:text-[25px]"
                 // onClick={() => setIsSuccessModalOpen(true)}
                 onClick={() => onlisting()}
+                disabled={isLoading}
               >
-                Complete Listing
+                {!isLoading ? (
+                  'Complete Listing'
+                ) : (
+                  <span
+                    className={`block border-2 border-black border-dashed w-4 h-4 lg:w-8 lg:h-8
+                    rounded-full animate-spin`}
+                  ></span>
+                )}
               </button>
             </motion.div>
 
@@ -401,7 +478,9 @@ const ListAssetPage: NextPage = () => {
                   nftname={data?.data?.nft.meta_data.name}
                   collection_name={data?.data.contract_details.collection_name}
                   token_id={data?.data?.nft.token_id}
-                  contract_address={data?.data.contract_details.contract_address}
+                  contract_address={
+                    data?.data.contract_details.contract_address
+                  }
                 />
               )}
             </AnimatePresence>
