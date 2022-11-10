@@ -1,8 +1,8 @@
 import { NextPage } from 'next'
-
+import { useRouter } from 'next/router'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AvatarCard from '../../../../components/AvatarCard'
 import BreadCrumb from '../../../../components/BreadCrumb'
 import ListingSuccessModal from '../../../../components/modals/ListingSuccessModal'
@@ -12,7 +12,14 @@ import {
   fromLeftAnimation,
   opacityAnimation,
 } from '../../../../utils/animations'
-
+import { QUERIES } from '../../../../react-query/constants'
+import { getSingleNft } from '../../../../react-query/queries'
+import { useQuery } from 'react-query'
+import { NGMTINY721ABI } from '../../../../contracts/nftabi'
+import { NGM1155ABI } from '../../../../contracts/nftabi'
+import { NGM721PSIABI } from '../../../../contracts/nftabi'
+import { ethers } from 'ethers'
+import { NGMMarketAddress } from '../../../../contracts/nftabi'
 const crumbData: CrumbType[] = [
   { name: 'home', route: '/' },
   { name: 'apex legends', route: '/collections/3' },
@@ -44,7 +51,84 @@ const initalNftState: AvatarType = {
 }
 
 const ListAssetPage: NextPage = () => {
+  const [contractAddress, setContractAddress] = useState('')
+  const [tokenId, setTokenId] = useState('')
+  const [NFTABI, setNFTABI] = useState<any>()
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+  const { asPath } = useRouter()
+
+  const [nft, setNft] = useState<AvatarType>(initalNftState)
+
+  const { data } = useQuery(
+    [QUERIES.getSingleNft, contractAddress, tokenId],
+    () => getSingleNft(contractAddress, tokenId)
+  )
+
+
+  const onlisting = async ()=>{
+    const ethereum = (window as any).ethereum
+    const accounts = await ethereum.request({
+      method: 'eth_requestAccounts',
+    })
+
+    const provider = new ethers.providers.Web3Provider(ethereum)
+    const walletAddress = accounts[0] // first account in MetaMask
+    const signer = provider.getSigner(walletAddress)
+    
+    console.log(signer)
+    const nftcontract = new ethers.Contract(contractAddress, NFTABI, signer)
+
+    const isApproved = await nftcontract.isApprovedForAll(signer._address,NGMMarketAddress)
+    console.log(isApproved)
+
+    if(isApproved===true){
+    // Axios data:POST
+    setIsSuccessModalOpen(true)
+    } else {
+      await nftcontract
+        .setApprovalForAll(NGMMarketAddress, true)
+        .then((tx: any) => {
+          console.log('processing')
+          provider.waitForTransaction(tx.hash).then(() => {
+            console.log(tx.hash)
+            //Axios data:POST
+            setIsSuccessModalOpen(true)
+          })
+        })
+        .catch((e: any) => {
+          console.log(e.message)
+        })
+      
+    }
+    
+  }
+  
+
+
+  useEffect(() => {
+    if (asPath) {
+      const routeArr = asPath.split('/')
+      setContractAddress(routeArr[routeArr.length - 3])
+      setTokenId(routeArr[routeArr.length - 2])
+    }
+  }, [asPath])
+
+  useEffect(()=>{
+    if (data?.data?.nft) {
+      setNFTABI(
+        data.data.nft.contract_type === 'NGMTINY721'
+          ? NGMTINY721ABI
+          : data.data.nft.contract_type === 'NGM721PSI'
+          ? NGM721PSIABI
+          : data.data.nft.contract_type === 'NGM1155'
+          ? NGM1155ABI
+          :''
+      )
+      setNft(data?.data.nft)
+    }
+  },[data])
+
+
 
   return (
     <main className="min-h-screen p-2 pt-6 lg:px-16 mb-6">
@@ -72,7 +156,7 @@ const ListAssetPage: NextPage = () => {
                 // img="/images/auction/auction_img_1.svg"
                 variant="xs"
                 noCta
-                {...initalNftState}
+                {...nft}
                 // token_id={1}
                 // contract_address="0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce"
                 // contract_type={''}
@@ -86,10 +170,14 @@ const ListAssetPage: NextPage = () => {
               <div className="grid place-items-center">
                 <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
                   <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
-                    Apex Legend
+                    {data?.data.contract_details.collection_name
+                      ? data?.data.contract_details.collection_name
+                      : 'collection'}
                   </p>
                   <p className="text-white text-2xl lg:text-[47px] font-josefin">
-                    Fuse
+                    {data?.data.nft.meta_data.name
+                      ? data?.data.nft.meta_data.name
+                      : 'collection'}
                   </p>
                 </div>
               </div>
@@ -298,7 +386,8 @@ const ListAssetPage: NextPage = () => {
               <button
                 className="btn-primary w-[200px] h-[40px] lg:w-[618px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]
             "
-                onClick={() => setIsSuccessModalOpen(true)}
+                // onClick={() => setIsSuccessModalOpen(true)}
+                onClick={() => onlisting()}
               >
                 Complete Listing
               </button>
@@ -309,6 +398,10 @@ const ListAssetPage: NextPage = () => {
                 <ListingSuccessModal
                   isOpen={isSuccessModalOpen}
                   setIsOpen={setIsSuccessModalOpen}
+                  nftname={data?.data?.nft.meta_data.name}
+                  collection_name={data?.data.contract_details.collection_name}
+                  token_id={data?.data?.nft.token_id}
+                  contract_address={data?.data.contract_details.contract_address}
                 />
               )}
             </AnimatePresence>
