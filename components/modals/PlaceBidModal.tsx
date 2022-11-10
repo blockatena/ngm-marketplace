@@ -3,11 +3,72 @@ import Image from 'next/image'
 import { Dispatch, FC, SetStateAction } from 'react'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
-
+import { useState } from 'react'
+import { ethers } from 'ethers'
+import {
+  NGM20ABI,
+  NGM20Address,
+  NGMMarketAddress,
+} from '../../contracts/nftabi'
 const PlaceBidModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
 }> = ({ setIsOpen }) => {
+  const [bidAmount, setBidAmount] = useState(0)
+  const onBid = async () => {
+    const ethereum = (window as any).ethereum
+    const accounts = await ethereum.request({
+      method: 'eth_requestAccounts',
+    })
+
+    
+    const provider = new ethers.providers.Web3Provider(ethereum)
+    const walletAddress = accounts[0] // first account in MetaMask
+    const signer = provider.getSigner(walletAddress)
+
+    const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
+
+    const minimumBid = 0 // need to get data from api
+
+    if (bidAmount === minimumBid) {
+      console.log(`Amount must be more than minium bid`)
+    } else {
+      const Offer = ethers.utils.parseUnits(bidAmount.toString(), 'ether')
+      const approvedAmt = await wethcontract.allowance(
+        signer._address,
+        NGMMarketAddress
+      )
+
+      if (approvedAmt >= Offer) {
+        // Axios data:POST ( Place Bid )
+        // confirmation model
+      } else {
+        const approvedtokens: any = ethers.utils.formatEther(approvedAmt)
+        const amt = bidAmount - approvedtokens
+        const amount = ethers.utils.parseUnits(amt.toString(), 'ether')
+        await wethcontract
+          .approve(NGMMarketAddress, amount)
+          .then((tx: any) => {
+            console.log('processing')
+            provider.waitForTransaction(tx.hash).then(() => {
+              console.log(tx.hash)
+              //Axios data:POST ( Place Bid )
+              //confirmation model
+            })
+          })
+          .catch((e: any) => {
+            console.log(e.message)
+          })
+      }
+    }
+  }
+  const getBidAmount = (value: any) => {
+    if (value > 0) {
+      setBidAmount(value)
+    } else {
+      setBidAmount(0)
+    }
+  }
   return (
     <ModalBase>
       <motion.div
@@ -44,6 +105,7 @@ const PlaceBidModal: FC<{
           </div>
           <div className="h-[47px] relative rounded-lg">
             <input
+              onChange={(e) => getBidAmount(e.target.value)}
               type="text"
               id="offer_amount"
               className="outline-none w-full h-full bg-[#585858] pl-[25%] text-white rounded-lg"
@@ -65,6 +127,7 @@ const PlaceBidModal: FC<{
             <button
               className="btn-primary w-[200px] h-[40px] lg:w-[375px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]
             "
+              onClick={() => onBid()}
             >
               Place Bid
             </button>
