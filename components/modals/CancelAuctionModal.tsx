@@ -7,6 +7,7 @@ import { QUERIES } from '../../react-query/constants'
 import { cancelAuction } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
+import Spinner from '../Spinner'
 
 const CancelAuctionModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
@@ -70,10 +71,7 @@ const CancelAuctionModal: FC<{
         </h2>
         {isLoading && (
           <div className="py-4 grid place-items-center">
-            <span
-              className={`block border-2 border-custom_yellow border-dashed w-4 h-4 lg:w-8 lg:h-8
-                      rounded-full animate-spin`}
-            ></span>
+            <Spinner />
           </div>
         )}
 
