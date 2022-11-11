@@ -14,7 +14,7 @@ import Spinner from '../../../../components/Spinner'
 import {
   NGM1155ABI,
   NGM721PSIABI,
-  NGMMarketAddress,
+  // NGMMarketAddress,
   NGMTINY721ABI,
 } from '../../../../contracts/nftabi'
 import type {
@@ -30,6 +30,8 @@ import {
   opacityAnimation,
 } from '../../../../utils/animations'
 import useCurrentDateTime from '../../../../utils/hooks/useCurrentDateTime'
+
+const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 
 const initalNftState: AvatarType = {
   _id: '',

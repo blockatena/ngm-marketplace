@@ -1,22 +1,19 @@
+import { ethers } from 'ethers'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { useState } from 'react'
-import { Dispatch, FC, SetStateAction } from 'react'
+import { Dispatch, FC, SetStateAction, useState } from 'react'
+import { NGM20ABI } from '../../contracts/nftabi'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
-import { ethers } from 'ethers'
-import {
-  NGM20ABI,
-  NGM20Address,
-  NGMMarketAddress
-} from '../../contracts/nftabi'
+
+const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
+const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
+
 const MakeOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
-
 }> = ({ setIsOpen }) => {
-
-  const [OfferAmount,setOfferAmount] = useState(0)
+  const [OfferAmount, setOfferAmount] = useState(0)
   const onOffer = async () => {
     const ethereum = (window as any).ethereum
     const accounts = await ethereum.request({
@@ -29,47 +26,44 @@ const MakeOfferModal: FC<{
 
     const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
 
-    if(OfferAmount===0){
+    if (OfferAmount === 0) {
       console.log(`Amount must be more than 0`)
-    } else{
-
-    const Offer = ethers.utils.parseUnits(OfferAmount.toString(), "ether");
-    const approvedAmt = await wethcontract.allowance(
-      signer._address,
-      NGMMarketAddress
-    )
-
-    if (approvedAmt>=Offer) {
-      // Axios data:POST ( Make Offer )
-      // confirmation model
     } else {
-      
-      const approvedtokens:any = ethers.utils.formatEther(approvedAmt)
-      const amt = OfferAmount-approvedtokens
-      const amount = ethers.utils.parseUnits(amt.toString(), 'ether')
-      await wethcontract
-        .approve(NGMMarketAddress, amount)
-        .then((tx: any) => {
-          console.log('processing')
-          provider.waitForTransaction(tx.hash).then(() => {
-            console.log(tx.hash)
-            //Axios data:POST ( Make Offer )
-            //confirmation model
+      const Offer = ethers.utils.parseUnits(OfferAmount.toString(), 'ether')
+      const approvedAmt = await wethcontract.allowance(
+        signer._address,
+        NGMMarketAddress
+      )
+
+      if (approvedAmt >= Offer) {
+        // Axios data:POST ( Make Offer )
+        // confirmation model
+      } else {
+        const approvedtokens: any = ethers.utils.formatEther(approvedAmt)
+        const amt = OfferAmount - approvedtokens
+        const amount = ethers.utils.parseUnits(amt.toString(), 'ether')
+        await wethcontract
+          .approve(NGMMarketAddress, amount)
+          .then((tx: any) => {
+            console.log('processing')
+            provider.waitForTransaction(tx.hash).then(() => {
+              console.log(tx.hash)
+              //Axios data:POST ( Make Offer )
+              //confirmation model
+            })
           })
-        })
-        .catch((e: any) => {
-          console.log(e.message)
-        })
+          .catch((e: any) => {
+            console.log(e.message)
+          })
+      }
     }
   }
-  }
-  const getOfferAmount =(value:any)=>{
-    if(value>0){
+  const getOfferAmount = (value: any) => {
+    if (value > 0) {
       setOfferAmount(value)
-    } else{
+    } else {
       setOfferAmount(0)
     }
-    
   }
 
   return (
