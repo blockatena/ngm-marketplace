@@ -246,13 +246,8 @@ export const NGM20ABI = [
     type: 'function',
   },
 ]
-export const NGM20Address = '0x197a176C17eA881fa9c6cF64A0096B7F2633cA2F'
+
 export const NGMMARKETABI = [
-  {
-    inputs: [],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
-  },
   {
     inputs: [
       {
@@ -305,56 +300,12 @@ export const NGMMARKETABI = [
     type: 'function',
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_seller',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: '_buyer',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: '_tokenId',
-        type: 'uint256',
-      },
-    ],
-    name: 'setParticularBuyerAddress',
-    outputs: [],
+    inputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    name: 'validationDatabase',
-    outputs: [
-      {
-        internalType: 'address',
-        name: 'Seller',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'Buyer',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
+    type: 'constructor',
   },
 ]
 
-// export const NGMMarketAddress = '0x21C3620526A695bb063a772Ad293CFC9BaA64140'
-export const NGMMarketAddress = '0xB7CA1Fb0eE7725760867Fb35169Fe946CD24E361'
 export const market = [
   {
     inputs: [
@@ -1267,5 +1218,3 @@ export const NGMTINY721ABI = [
     type: 'function',
   },
 ]
-
-export const Provider = 'https://rpc-mumbai.maticvigil.com/'

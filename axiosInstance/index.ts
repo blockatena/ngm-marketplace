@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseURL = 'https://ngm-api-tpnng.ondigitalocean.app'
+const baseURL = process.env.NEXT_PUBLIC_API_URL || ''
 
 export const axiosInstance = axios.create({
   baseURL,

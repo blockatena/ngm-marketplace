@@ -1,15 +1,15 @@
+import { ethers } from 'ethers'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { Dispatch, FC, SetStateAction } from 'react'
+import { Dispatch, FC, SetStateAction, useState } from 'react'
+import { NGM20ABI } from '../../contracts/nftabi'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
-import { useState } from 'react'
-import { ethers } from 'ethers'
-import {
-  NGM20ABI,
-  NGM20Address,
-  NGMMarketAddress,
-} from '../../contracts/nftabi'
+
+const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
+
+const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
+
 const PlaceBidModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -21,7 +21,6 @@ const PlaceBidModal: FC<{
       method: 'eth_requestAccounts',
     })
 
-    
     const provider = new ethers.providers.Web3Provider(ethereum)
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
