@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
-// import { toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import AvatarCard from '../../../../components/AvatarCard'
 import BreadCrumb from '../../../../components/BreadCrumb'
 import ListingSuccessModal from '../../../../components/modals/ListingSuccessModal'
@@ -99,6 +99,16 @@ const ListAssetPage: NextPage = () => {
   ]
 
   const onlisting = async () => {
+    if (nft?.is_in_auction) {
+      toast('NFT already listed!', {
+        hideProgressBar: true,
+        autoClose: 3000,
+        type: 'error',
+        position: 'top-right',
+        theme: 'dark',
+      })
+      return
+    }
     setIsLoading(true)
     const ethereum = (window as any).ethereum
     const accounts = await ethereum.request({

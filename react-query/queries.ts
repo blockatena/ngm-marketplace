@@ -30,3 +30,10 @@ export const getSingleNft = (contractAddress: string, tokenId: string) =>
 export const createNftAuction = (data: nftAuctionBodyType) => {
   return axiosInstance.post('/nft-marketplace/create-nft-auction', data)
 }
+
+export const cancelAuction = (data: {
+  contract_address: string
+  token_id: string
+}) => {
+  return axiosInstance.post('/nft-marketplace/cancel-auction', data)
+}
