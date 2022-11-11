@@ -10,6 +10,7 @@ import AvatarCard from '../../../../components/AvatarCard'
 import BreadCrumb from '../../../../components/BreadCrumb'
 import ListingSuccessModal from '../../../../components/modals/ListingSuccessModal'
 import PageHeading from '../../../../components/PageHeading'
+import Spinner from '../../../../components/Spinner'
 import {
   NGM1155ABI,
   NGM721PSIABI,
@@ -28,6 +29,7 @@ import {
   fromLeftAnimation,
   opacityAnimation,
 } from '../../../../utils/animations'
+import useCurrentDateTime from '../../../../utils/hooks/useCurrentDateTime'
 
 const initalNftState: AvatarType = {
   _id: '',
@@ -81,10 +83,8 @@ const ListAssetPage: NextPage = () => {
     }))
   }
 
-  const { mutate, isSuccess, data: response } = useMutation(createNftAuction)
-
-  // let a:nftAuctionBodyType = {}
-  // mutate(a)
+  const { mutate, isSuccess } = useMutation(createNftAuction)
+  const { date, time } = useCurrentDateTime()
 
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },
@@ -99,6 +99,17 @@ const ListAssetPage: NextPage = () => {
   ]
 
   const onlisting = async () => {
+    if (!formData.end_date || !formData.min_price) {
+      toast('Please fill all required fields', {
+        hideProgressBar: true,
+        autoClose: 3000,
+        type: 'error',
+        position: 'top-right',
+        theme: 'dark',
+      })
+      return
+    }
+
     if (nft?.is_in_auction) {
       toast('NFT already listed!', {
         hideProgressBar: true,
@@ -398,6 +409,8 @@ const ListAssetPage: NextPage = () => {
                     name="start_date"
                     className="bg-[#4D4D49] text-white"
                     onChange={handleUserInput}
+                    value={`${date}T${time}`}
+                    disabled
                   />
                 </div>
                 <p className="text-lg text-white"> - </p>
@@ -469,14 +482,7 @@ const ListAssetPage: NextPage = () => {
                 onClick={() => onlisting()}
                 disabled={isLoading}
               >
-                {!isLoading ? (
-                  'Complete Listing'
-                ) : (
-                  <span
-                    className={`block border-2 border-black border-dashed w-4 h-4 lg:w-8 lg:h-8
-                    rounded-full animate-spin`}
-                  ></span>
-                )}
+                {!isLoading ? 'Complete Listing' : <Spinner color="black" />}
               </button>
             </motion.div>
 
