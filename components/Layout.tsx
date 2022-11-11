@@ -3,7 +3,7 @@ import { FC, ReactNode } from 'react'
 import Footer from './Footer'
 
 import Header from './Header'
-import { Loading } from './Loading'
+import Loading from './Loading'
 
 interface LayoutProps {
   children: ReactNode

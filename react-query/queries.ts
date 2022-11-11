@@ -1,4 +1,5 @@
 import { axiosInstance, nftInstance } from '../axiosInstance'
+import { nftAuctionBodyType } from '../interfaces'
 
 export const getCollections = () => {
   return axiosInstance.get('/nft/get-collections')
@@ -25,3 +26,14 @@ export const getAllNFts = (
 
 export const getSingleNft = (contractAddress: string, tokenId: string) =>
   axiosInstance.get(`/nft/get-nft/${contractAddress}/${tokenId}`)
+
+export const createNftAuction = (data: nftAuctionBodyType) => {
+  return axiosInstance.post('/nft-marketplace/create-nft-auction', data)
+}
+
+export const cancelAuction = (data: {
+  contract_address: string
+  token_id: string
+}) => {
+  return axiosInstance.post('/nft-marketplace/cancel-auction', data)
+}

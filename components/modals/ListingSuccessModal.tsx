@@ -2,11 +2,22 @@ import { motion } from 'framer-motion'
 import { Dispatch, FC, SetStateAction } from 'react'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
+import { useRouter } from 'next/router'
 
 const ListingSuccessModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
-}> = ({ setIsOpen }) => {
+  nftname: string
+  collection_name: string
+  contract_address:string
+  token_id:string
+}> = ({ setIsOpen, nftname, collection_name,contract_address,token_id }) => {
+
+  const router = useRouter()
+
+  const viewListing =()=>{
+    router.push(`/assets/${contract_address}/${token_id}`)
+  }
   return (
     <ModalBase>
       <motion.div
@@ -44,12 +55,15 @@ const ListingSuccessModal: FC<{
           font-semi flex justify-center"
           >
             <p className="max-w-[500px]">
-              Your Item Apex Legend55444# from Fortune Collections has been
+              Your Item {nftname} from {collection_name} Collections has been
               listed for Sale
             </p>
           </div>
           <p className="mt-28">
-            <button className="btn-primary w-full rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins">
+            <button
+              className="btn-primary w-full rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
+              onClick={() => viewListing()}
+            >
               View Listing
             </button>
           </p>

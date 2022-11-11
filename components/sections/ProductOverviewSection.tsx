@@ -8,6 +8,7 @@ import { AvatarType, NftContractType } from '../../interfaces'
 // import ownerImg from '../../public/images/others/owner.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
 import useIsMounted from '../../utils/hooks/useIsMounted'
+import CancelAuctionModal from '../modals/CancelAuctionModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
 
@@ -21,10 +22,31 @@ const ProductOverviewSection: FC<{
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
   const { address } = useAccount()
   const isMounted = useIsMounted()
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
 
   // const meta_data_url = nft?.nft.meta_data_url || ''
 
+  const isCancellable =
+    isMounted &&
+    nft?.token_owner &&
+    nft.token_owner === address &&
+    nft?.is_in_auction
+
   const handleClick = () => {
+    // if (isMounted && nft?.token_owner === address && nft?.is_in_auction) {
+    //   toast('You have already listed this NFT!', {
+    //     hideProgressBar: true,
+    //     autoClose: 3000,
+    //     type: 'error',
+    //     position: 'top-right',
+    //     theme: 'dark',
+    //   })
+    //   return
+    // }
+    if (isCancellable) {
+      setIsCancelModalOpen(true)
+      return
+    }
     if (isMounted && nft?.token_owner === address) {
       router.push(`${router.asPath}/list`)
       return
@@ -156,7 +178,9 @@ const ProductOverviewSection: FC<{
             className="w-full btn-primary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
             onClick={handleClick}
           >
-            {isMounted && nft?.token_owner && nft.token_owner === address
+            {isCancellable
+              ? 'Cancel Auction'
+              : isMounted && nft?.token_owner && nft.token_owner === address
               ? 'Sell'
               : nft?.is_in_auction
               ? 'Place Bid'
@@ -177,6 +201,16 @@ const ProductOverviewSection: FC<{
           <MakeOfferModal
             isOpen={isOfferModalOpen}
             setIsOpen={setIsOfferModalOpen}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isCancelModalOpen && (
+          <CancelAuctionModal
+            isOpen={isCancelModalOpen}
+            setIsOpen={setIsCancelModalOpen}
+            nft={nft}
           />
         )}
       </AnimatePresence>

@@ -1,5 +1,7 @@
 export type CrumbType = { name: string; route: string }
 
+export type addressType = `0x${string}`
+
 export type CollectionCardType = {
   chain: string
   collection_name: string
@@ -150,4 +152,13 @@ export type NftContractType = {
   createdAt: string
   updatedAt: string
   __v: number
+}
+
+export type nftAuctionBodyType = {
+  token_owner: string
+  contract_address: string
+  token_id: string
+  start_date: string
+  end_date: string
+  min_price: number
 }
