@@ -59,12 +59,12 @@ const initialFormState = {
 }
 
 const ListAssetPage: NextPage = () => {
+  const { asPath } = useRouter()
+  const { date, time } = useCurrentDateTime()
   const [contractAddress, setContractAddress] = useState('')
   const [tokenId, setTokenId] = useState('')
   const [NFTABI, setNFTABI] = useState<any>()
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-  const { asPath } = useRouter()
-
   const [nft, setNft] = useState<AvatarType>(initalNftState)
   const [contractDetails, setContractDetails] = useState<NftContractType>()
   const [formData, setFormData] = useState(initialFormState)
@@ -75,6 +75,8 @@ const ListAssetPage: NextPage = () => {
     () => getSingleNft(contractAddress, tokenId)
   )
 
+  const { mutate, isSuccess } = useMutation(createNftAuction)
+
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prevData) => ({
@@ -82,9 +84,6 @@ const ListAssetPage: NextPage = () => {
       [name]: value,
     }))
   }
-
-  const { mutate, isSuccess } = useMutation(createNftAuction)
-  const { date, time } = useCurrentDateTime()
 
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },
