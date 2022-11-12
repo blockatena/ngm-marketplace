@@ -162,3 +162,10 @@ export type nftAuctionBodyType = {
   end_date: string
   min_price: number
 }
+
+export type NftBidType = {
+  bidder_address: string
+  contract_address: string
+  token_id: string
+  bid_amount: number
+}

@@ -1,5 +1,5 @@
 import { axiosInstance, nftInstance } from '../axiosInstance'
-import { nftAuctionBodyType } from '../interfaces'
+import type { nftAuctionBodyType, NftBidType } from '../interfaces'
 
 export const getCollections = () => {
   return axiosInstance.get('/nft/get-collections')
@@ -36,4 +36,8 @@ export const cancelAuction = (data: {
   token_id: string
 }) => {
   return axiosInstance.post('/nft-marketplace/cancel-auction', data)
+}
+
+export const placeBid = (data: NftBidType) => {
+  return axiosInstance.post('/nft-marketplace/place-nft-bid', data)
 }
