@@ -1,21 +1,16 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import NFTZoneLogo from '../NFTZoneLogo'
 
 import nft_hero_character from '../../public/images/hero/hero_image.png'
-import {
-  fromLeftAnimation,
-  fromRightAnimation,
-  fromTopAnimation,
-} from '../../utils/animations'
+import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
 
 const HeroSection: React.FC = () => {
   const router = useRouter()
   //Btn logic
-  const joinCommunityOnClick = () => {
-    console.log('JOIN COMMUNITY')
-  }
+  // const joinCommunityOnClick = () => {
+  //   console.log('JOIN COMMUNITY')
+  // }
 
   const letsExploreOnClick = () => {
     router.push('/collections')
@@ -23,8 +18,10 @@ const HeroSection: React.FC = () => {
 
   return (
     <section className="bg-hero bg-cover bg-no-repeat bg-center min-h-screen">
+      {/* <Header /> */}
+
       <div className="w-[90%] md:w-[850px] l:w-[1150px] xl:w-[1229px] mx-auto ">
-        <motion.div
+        {/* <motion.div
           variants={fromTopAnimation}
           initial="initial"
           animate="final"
@@ -42,8 +39,9 @@ const HeroSection: React.FC = () => {
           >
             Join Community
           </button>
-        </motion.div>
-        <div className="flex flex-col-reverse lg:flex-row pt-[40px] md:pt-[60px] lg:pt-[120px] items-center w-full">
+        </motion.div> */}
+        {/* <div className="flex flex-col-reverse lg:flex-row pt-[40px] md:pt-[60px] lg:pt-[120px] items-center w-full"> */}
+        <div className="flex flex-col-reverse lg:flex-row pt-[20px] md:pt-[30px] lg:pt-[60px] items-center w-full">
           <div className="w-full lg:w-[70%] xl:w-[60%] space-y-[25px] md:space-y-[30px] lg:space-y-[40px]">
             <motion.h1
               variants={fromLeftAnimation}

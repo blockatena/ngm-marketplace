@@ -15,7 +15,9 @@
     clip-path: polygon(15% 0, 100% 0, 100% 75%, 75% 100%, 0 100%, 0 25%);
   }
   .btn-primary {
-    @apply font-btn bg-gradient-to-b from-custom-yellow to-custom-orange text-black font-bold hover:from-custom-yellow-hover hover:to-custom-orange-hover active:from-custom-yellow-active active:to-custom-orange-active transition-all ease-in-out duration-1000;
+    @apply font-btn bg-gradient-to-b from-custom-yellow to-custom-orange text-black font-bold 
+    enabled:hover:from-custom-yellow-hover enabled:hover:to-custom-orange-hover enabled:active:from-custom-yellow-active
+     enabled:active:to-custom-orange-active disabled:from-gray-300 disabled:to-gray-400 transition-all ease-in-out duration-1000;
   }
   .btn-secondary {
     @apply border-2 rounded-lg border-[#05C14D] text-white font-poppins hover:border-custom_yellow hover:text-custom_yellow;
