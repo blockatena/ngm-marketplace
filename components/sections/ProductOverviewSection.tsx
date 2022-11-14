@@ -15,15 +15,20 @@ import PlaceBidModal from '../modals/PlaceBidModal'
 const ProductOverviewSection: FC<{
   nft: AvatarType
   contractDetails: NftContractType | undefined
-  // name: string
-}> = ({ nft, contractDetails }) => {
+  endTime: string
+  bidAmt: string
+  lastBid: string
+}> = ({ nft, contractDetails, endTime, bidAmt, lastBid }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
   const { address } = useAccount()
   const isMounted = useIsMounted()
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
-
+  const [D, setD] = useState(0)
+  const [H, setH] = useState(0)
+  const [M, setM] = useState(0)
+  const [S, setS] = useState(0)
   // const meta_data_url = nft?.nft.meta_data_url || ''
 
   const isCancellable =
@@ -54,6 +59,31 @@ const ProductOverviewSection: FC<{
     nft?.is_in_auction === false && setIsOfferModalOpen(true)
     nft?.is_in_auction && setIsBidModalOpen(true)
   }
+  if (nft?.is_in_auction === true) {
+    setInterval(() => {
+      if (Date.parse(endTime) > Date.now()) {
+        const Difference = (Date.parse(endTime) - Date.now()) / 1000
+        // console.log(Difference)
+        const day = Math.floor(Difference / (24 * 60 * 60))
+        const hour = Math.floor((Difference - day * 24 * 60 * 60) / (60 * 60))
+        const minute = Math.floor(
+          (Difference - day * 24 * 60 * 60 - hour * 60 * 60) / 60
+        )
+        const second = Math.floor(
+          Difference - day * 24 * 60 * 60 - hour * 60 * 60 - minute * 60
+        )
+        setD(day)
+        setH(hour)
+        setM(minute)
+        setS(second)
+      } else {
+        //
+      }
+    }, 1000)
+  } else {
+    //
+  }
+
 
   return (
     <section className="flex flex-col xl:flex-row gap-4 lg:gap-0 2xl:gap-32 xl:justify-between p-0">
@@ -128,16 +158,24 @@ const ProductOverviewSection: FC<{
 
         <div className="flex justify-between font-poppins">
           <div>
-            <p className="text-gray-600 text-sm lg:text-base">Price Bid</p>
-            <p className="text-white font-bold text-lg lg:text-2xl">
-              10.89 ETH
-            </p>
+            {bidAmt && (
+              <>
+                <p className="text-gray-600 text-sm lg:text-base">Price Bid</p>
+                <p className="text-white font-bold text-lg lg:text-2xl">
+                  {bidAmt} ETH
+                </p>
+              </>
+            )}
           </div>
           <div>
-            <p className="text-gray-600 text-sm lg:text-base">Last Bid</p>
-            <p className="text-white font-bold text-lg lg:text-2xl">
-              10.89 ETH
-            </p>
+            {bidAmt && (
+              <>
+                <p className="text-gray-600 text-sm lg:text-base">Last Bid</p>
+                <p className="text-white font-bold text-lg lg:text-2xl">
+                  {bidAmt} ETH
+                </p>
+              </>
+            )}
           </div>
         </div>
 
@@ -162,7 +200,11 @@ const ProductOverviewSection: FC<{
           </div>
           <div className="grid place-items-center">
             <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
-              05 : 12 : 07 : 45
+              {D < 10 && <>0</>}
+              {D} : {H < 10 && <>0</>}
+              {H} : {M < 10 && <>0</>}
+              {M} : {S < 10 && <>0</>}
+              {S}
             </div>
           </div>
         </div>

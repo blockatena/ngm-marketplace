@@ -45,6 +45,9 @@ const ViewAssetPage: NextPage = () => {
   // const [name, setName] = useState('')
   const [nft, setNft] = useState<AvatarType>(initalNftState)
   const [contractDetails, setContractDetails] = useState<NftContractType>()
+  const [endTime,setEndTime] = useState('');
+  const [bidAmt, setBidAmt] = useState('');
+  const [lastBid, setLastBid] = useState('')
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId)
@@ -64,8 +67,11 @@ const ViewAssetPage: NextPage = () => {
   ]
 
   useEffect(() => {
-    setNft(data?.data.nft)
-    setContractDetails(data?.data?.contract_details)
+    setEndTime(data?.data?.auction?.end_date);
+    setBidAmt(data?.data?.bids?.[0]?.bid_amount);
+    setLastBid(data?.data?.bids?.[-1]?.bid_amount)
+    setNft(data?.data.nft);
+    setContractDetails(data?.data?.contract_details);
     // if (data?.data.nft) {
     //   fetch(data.data.nft.meta_data_url)
     //     .then((response) => response.json())
@@ -74,7 +80,7 @@ const ViewAssetPage: NextPage = () => {
     //     })
     //     .catch((err) => console.error(err))
     // }
-  }, [data?.data?.contract_details, data?.data.nft])
+  }, [data?.data?.contract_details, data?.data.nft,data])
 
   useEffect(() => {
     if (asPath) {
@@ -105,6 +111,9 @@ const ViewAssetPage: NextPage = () => {
           </div>
           <div className="col-span-10 flex justify-center">
             <ProductOverviewSection
+              endTime={endTime}
+              bidAmt={bidAmt}
+              lastBid={lastBid}
               nft={nft}
               contractDetails={contractDetails}
             />
@@ -121,7 +130,7 @@ const ViewAssetPage: NextPage = () => {
           nft={nft}
           contractDetails={contractDetails}
         />
-        <ExploreSection />
+        <ExploreSection contractAddress={contractAddress} tokenId={tokenId}/>
       </div>
     </main>
   )

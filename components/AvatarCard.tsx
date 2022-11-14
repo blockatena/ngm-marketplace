@@ -32,13 +32,25 @@ interface AvatarCardProps extends AvatarType {
 // }
 
 // const placeholderImg = '/images/collections/placeholder.jpg'
-const TimerSection: FC<{ hours: number; minutes: number; seconds: number }> = ({
+const TimerSection: FC<{ days: number;hours: number; minutes: number; seconds: number }> = ({
+  days,
   hours,
   minutes,
   seconds,
 }) => {
+
   return (
     <div className="text-white  text-[9px] lg:text-xs pt-1 max-w-full">
+      {
+        days>0 &&
+        <>
+        <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
+          {days}
+        </span>
+        d{' '}
+        </>
+      }
+      
       <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
         {hours}
       </span>
@@ -47,10 +59,15 @@ const TimerSection: FC<{ hours: number; minutes: number; seconds: number }> = ({
         {minutes}
       </span>
       m{' '}
+      { days === 0 &&
+      <>
       <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
         {seconds}
       </span>
       s
+      </>
+      }
+      
     </div>
   )
 }
@@ -73,6 +90,12 @@ const AvatarCard: FC<AvatarCardProps> = ({
   const [cardProperties, setCardProperties] = useState({
     dimensions: 'w-[250px] h-[330px]',
   })
+
+  const [D,setD] = useState(0);
+  const [H,setH] = useState(0);
+  const [M,setM] = useState(0);
+  const [S,setS] = useState(0);
+
   const { address } = useAccount()
   const isMounted = useIsMounted()
 
@@ -128,6 +151,34 @@ const AvatarCard: FC<AvatarCardProps> = ({
     //   return
     // }
     router.push(`/assets/${contract_address}/${token_id}`)
+  }
+
+  const inputTime = '2022-11-20T08:24:23.676Z'
+
+  if (is_in_auction === true) {
+
+    setInterval(() => {
+      if (Date.parse(inputTime) > Date.now()) {
+        const Difference = (Date.parse(inputTime) - Date.now()) / 1000
+        // console.log(Difference)
+        const day = Math.floor(Difference / (24 * 60 * 60))
+        const hour = Math.floor((Difference - day * 24 * 60 * 60) / (60 * 60))
+        const minute = Math.floor(
+          (Difference - day * 24 * 60 * 60 - hour * 60 * 60) / 60
+        )
+        const second = Math.floor(
+          Difference - day * 24 * 60 * 60 - hour * 60 * 60 - minute * 60
+        )
+        setD(day)
+        setH(hour)
+        setM(minute)
+        setS(second)
+      } else {
+        //
+      }
+    }, 1000)
+  } else {
+    //
   }
 
   return (
@@ -210,7 +261,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
               </div>
               <div className={`${is_in_auction ? 'w-1/2' : 'w-0'}`}>
                 {is_in_auction && (
-                  <TimerSection hours={12} minutes={30} seconds={20} />
+                  <TimerSection days={D} hours={H} minutes={M} seconds={S} />
                 )}
               </div>
             </div>

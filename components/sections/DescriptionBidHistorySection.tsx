@@ -66,15 +66,39 @@ const LineChart = ({ chartData }) => {
   return <Line data={chartData} />
 }
 
-const DescriptionItem: FC<{ name: string; value: string }> = ({
+const DescriptionItem: FC<{ name: string; value: string; contract:string; tokenUri:string}> = ({
   name,
   value,
-}) => (
-  <div className="flex justify-between gap-4">
-    <p className=" font-bold">{name}</p>
-    <p className="">{value}</p>
-  </div>
-)
+  contract,
+  tokenUri
+}) => {
+  const clickC = () => {
+    if (name === 'Contract Address') {
+      let url = `https://mumbai.polygonscan.com/token/${contract}`
+      window.open(url, '_blank')
+    } else if ( name === 'Token ID'){
+      let url = tokenUri
+      window.open(url, '_blank')
+    }
+  }
+  return (
+    <>
+      <div className="flex justify-between gap-4">
+        <p className=" font-bold">{name}</p>
+        <p
+          className={
+            name === 'Contract Address' || name === 'Token ID'? 'cursor-pointer underline' : ''
+          }
+          onClick={() => {
+            clickC()
+          }}
+        >
+          {value}
+        </p>
+      </div>
+    </>
+  )
+}
 
 const CharacterDescription: FC<{
   nft: AvatarType | undefined
@@ -124,7 +148,11 @@ const CharacterDescription: FC<{
               delay: index * 0.2,
             }}
           >
-            <DescriptionItem {...item} />
+            <DescriptionItem
+              {...item}
+              contract={nft?.contract_address}
+              tokenUri={nft?.meta_data_url}
+            />
           </motion.div>
         ))}
       </div>
