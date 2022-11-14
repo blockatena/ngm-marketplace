@@ -5,68 +5,6 @@ import { opacityAnimation } from '../../utils/animations'
 import AvatarCard from '../AvatarCard'
 import { FC } from 'react'
 
-// const avatars: AvatarType[] = [
-//   {
-//     _id: '',
-//     contract_address: '',
-//     contract_type: '',
-//     token_id: '0',
-//     meta_data_url: '',
-//     is_in_auction: false,
-//     is_in_sale: false,
-//     token_owner: '',
-//     createdAt: '',
-//     updatedAt: '',
-//     __v: 0,
-//     meta_data: {
-//       name: '',
-//       image: '',
-//       description: '',
-//       external_uri: '',
-//       attributes: [{ name: '', value: '' }],
-//     },
-//   },
-//   {
-//     _id: '',
-//     contract_address: '',
-//     contract_type: '',
-//     token_id: '0',
-//     meta_data_url: '',
-//     is_in_auction: false,
-//     is_in_sale: false,
-//     token_owner: '',
-//     createdAt: '',
-//     updatedAt: '',
-//     __v: 0,
-//     meta_data: {
-//       name: '',
-//       image: '',
-//       description: '',
-//       external_uri: '',
-//       attributes: [{ name: '', value: '' }],
-//     },
-//   },
-//   {
-//     _id: '',
-//     contract_address: '',
-//     contract_type: '',
-//     token_id: '0',
-//     meta_data_url: '',
-//     is_in_auction: false,
-//     is_in_sale: false,
-//     token_owner: '',
-//     createdAt: '',
-//     updatedAt: '',
-//     __v: 0,
-//     meta_data: {
-//       name: '',
-//       image: '',
-//       description: '',
-//       external_uri: '',
-//       attributes: [{ name: '', value: '' }],
-//     },
-//   },
-// ]
 
 const ExploreSection: FC<{
   contractAddress: string
