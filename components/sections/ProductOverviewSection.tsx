@@ -193,6 +193,7 @@ const ProductOverviewSection: FC<{
           <PlaceBidModal
             isOpen={isBidModalOpen}
             setIsOpen={setIsBidModalOpen}
+            nft={nft}
           />
         )}
       </AnimatePresence>
