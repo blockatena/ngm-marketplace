@@ -3,10 +3,7 @@ import { useRouter } from 'next/router'
 import { AvatarType } from '../../interfaces'
 import { opacityAnimation } from '../../utils/animations'
 import AvatarCard from '../AvatarCard'
-import { useQuery } from 'react-query'
-import { QUERIES } from '../../react-query/constants'
-import { getCollectionNFTs } from '../../react-query/queries'
-import { FC, useEffect, useState } from 'react'
+import { FC } from 'react'
 
 // const avatars: AvatarType[] = [
 //   {
@@ -71,58 +68,14 @@ import { FC, useEffect, useState } from 'react'
 //   },
 // ]
 
-const ExploreSection: FC<{contractAddress:string;tokenId:string}> = ({contractAddress,tokenId}) => {
+const ExploreSection: FC<{
+  contractAddress: string
+  explore: AvatarType[]
+}> = ({ contractAddress,explore}) => {
   const router = useRouter()
-  const [Avatars, setAvatars] = useState<AvatarType[]>([])
-  const [explore, setExplore] = useState<AvatarType[]>([])
-
-  const { data, refetch } = useQuery(
-    [QUERIES.getCollectionNFTs, contractAddress],
-    () => getCollectionNFTs(contractAddress)
-  )
-
-  useEffect(() => {
-    if (contractAddress === undefined) {
-      window.setTimeout(refetch, 1500)
-    } else {
-      // refetch
-    }
-  }, [contractAddress, refetch])
-
-  useEffect(() => {
-    if(explore?.length>0){
-      //
-    }
-    else if (Avatars?.length > 0) {
-      filter2(Avatars)
-    } 
-  }, [Avatars])
-
-  const filter2 = (Avatars:any) => {
-    if (Avatars?.length > 0) {
-      var newItems = []
-      for (var i = 0; i < 3; i) {
-        var idx = Math.floor(Math.random() * Avatars.length)
-        if (Avatars[idx].token_id !== tokenId) {
-          newItems.push(Avatars[idx])
-          Avatars.splice(idx, 1)
-          i++
-        }
-      }
-      setExplore(newItems)
-    }
-  }
-
-  const openCollection = () =>{
+  const openCollection = () => {
     router.push(`/collections/${contractAddress}`)
   }
-
-// console.log(explore)
-  useEffect(() => {
-    setAvatars(data?.data.nfts)
-    // filternfts()
-    filter2(Avatars)
-  }, [data?.data.nfts])
 
   return (
     <section className="mt-8 mb-12">
@@ -152,7 +105,12 @@ const ExploreSection: FC<{contractAddress:string;tokenId:string}> = ({contractAd
         ))}
       </div>
       <div className="flex justify-center">
-        <p className="font-poppins text-white font-semibold cursor-pointer border-b border-custom_yellow px-1" onClick={()=>{openCollection()}}>
+        <p
+          className="font-poppins text-white font-semibold cursor-pointer border-b border-custom_yellow px-1"
+          onClick={() => {
+            openCollection()
+          }}
+        >
           Explore more
         </p>
       </div>
