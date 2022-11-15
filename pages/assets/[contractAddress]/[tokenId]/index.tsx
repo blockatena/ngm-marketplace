@@ -9,6 +9,7 @@ import DescriptionBidHistorySection from '../../../../components/sections/Descri
 import ExploreSection from '../../../../components/sections/ExploreSection'
 import ProductOverviewSection from '../../../../components/sections/ProductOverviewSection'
 import type {
+  AuctionType,
   AvatarType,
   BidType,
   CrumbType,
@@ -55,11 +56,12 @@ const ViewAssetPage: NextPage = () => {
   const [bidAmt, setBidAmt] = useState('')
   const [lastBid, setLastBid] = useState('')
   const [bids, setBids] = useState<BidType[]>()
+  const [auctionDetails, setAuctionDetails] = useState<AuctionType>()
 
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId),
-    { enabled: !!contractAddress && !!tokenId }
+    { enabled: !!contractAddress && !!tokenId, refetchInterval: 30000 }
   )
   const { asPath } = useRouter()
 
@@ -114,6 +116,7 @@ const ViewAssetPage: NextPage = () => {
     setAvatars(DATA?.data?.data?.nfts)
     setContractDetails(data?.data?.contract_details)
     data?.data?.bids && setBids(data.data.bids)
+    data?.data?.auction && setAuctionDetails(data.data.auction)
     // if (data?.data.nft) {
     //   fetch(data.data.nft.meta_data_url)
     //     .then((response) => response.json())
@@ -158,6 +161,8 @@ const ViewAssetPage: NextPage = () => {
               lastBid={lastBid}
               nft={nft}
               contractDetails={contractDetails}
+              bids={bids}
+              auction={auctionDetails}
             />
           </div>
           <div className="col-span-1 flex justify-end ">
@@ -172,6 +177,7 @@ const ViewAssetPage: NextPage = () => {
           nft={nft}
           contractDetails={contractDetails}
           bids={bids}
+          auction={auctionDetails}
         />
         <ExploreSection contractAddress={contractAddress} explore={explore} />
       </div>

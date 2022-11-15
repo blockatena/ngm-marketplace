@@ -183,3 +183,17 @@ export type BidType = {
   status: string
   __v: number
 }
+
+export type AuctionType = {
+  _id: string
+  token_owner: string
+  contract_address: string
+  token_id: string
+  start_date: string
+  end_date: string
+  min_price: string
+  createdAt: string
+  updatedAt: string
+  status: string
+  __v: number
+}

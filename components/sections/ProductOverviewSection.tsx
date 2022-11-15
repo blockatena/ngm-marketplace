@@ -4,7 +4,12 @@ import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 import { useAccount } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
-import { AvatarType, NftContractType } from '../../interfaces'
+import {
+  AuctionType,
+  AvatarType,
+  BidType,
+  NftContractType,
+} from '../../interfaces'
 // import ownerImg from '../../public/images/others/owner.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
 import useIsMounted from '../../utils/hooks/useIsMounted'
@@ -15,10 +20,12 @@ import PlaceBidModal from '../modals/PlaceBidModal'
 const ProductOverviewSection: FC<{
   nft: AvatarType
   contractDetails: NftContractType | undefined
+  bids: BidType[] | undefined
+  auction: AuctionType | undefined
   endTime: string
   bidAmt: string
   lastBid: string
-}> = ({ nft, contractDetails, endTime, bidAmt, lastBid }) => {
+}> = ({ nft, contractDetails, endTime, bidAmt, bids, auction }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
@@ -84,7 +91,6 @@ const ProductOverviewSection: FC<{
     //
   }
 
-
   return (
     <section className="flex flex-col xl:flex-row gap-4 lg:gap-0 2xl:gap-32 xl:justify-between p-0">
       <motion.div
@@ -99,30 +105,10 @@ const ProductOverviewSection: FC<{
           delay: 0.6,
         }}
       >
-        <AvatarCard
-          // name="Wraith"
-          // img="/images/auction/auction_img_1.svg"
-          variant="lg"
-          noCta
-          {...nft}
-          // contract_details={
-          //   _id: '',
-          //   symbol: '',
-          //   owner_address: '',
-          //   collection_name: '',
-          //   chain: '',
-          //   type: '',
-          //   transactionhash: '',
-          //   contract_address: '',
-          //   description: '',
-          //   baseuri: '',
-          //   imageuri: [''],
-          //   createdAt: ''}
-        />
+        <AvatarCard variant="lg" noCta {...nft} />
         <div className="lg:hidden grid place-items-center">
           <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
             <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
-              {/* {nft?.contract_details.collection_name} */}
               {contractDetails?.collection_name}
             </p>
             <p className="text-white text-2xl lg:text-[49px] font-josefin">
@@ -158,21 +144,25 @@ const ProductOverviewSection: FC<{
 
         <div className="flex justify-between font-poppins">
           <div>
-            {bidAmt && (
+            {auction?.min_price && (
               <>
-                <p className="text-gray-600 text-sm lg:text-base">Price Bid</p>
+                <p className="text-gray-600 text-sm lg:text-base">
+                  Auction Price
+                </p>
                 <p className="text-white font-bold text-lg lg:text-2xl">
-                  {bidAmt} ETH
+                  {auction?.min_price} ETH
                 </p>
               </>
             )}
           </div>
           <div>
-            {bidAmt && (
+            {bids?.length && bids[0].bid_amount && (
               <>
-                <p className="text-gray-600 text-sm lg:text-base">Last Bid</p>
+                <p className="text-gray-600 text-sm lg:text-base">
+                  Highest Bid
+                </p>
                 <p className="text-white font-bold text-lg lg:text-2xl">
-                  {bidAmt} ETH
+                  {bids && bids[0].bid_amount} ETH
                 </p>
               </>
             )}
