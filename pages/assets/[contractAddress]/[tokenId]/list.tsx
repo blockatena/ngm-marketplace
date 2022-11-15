@@ -54,15 +54,14 @@ const initalNftState: AvatarType = {
   },
 }
 
-const initialFormState = {
-  start_date: '',
-  end_date: '',
-  min_price: 0,
-}
-
 const ListAssetPage: NextPage = () => {
   const { asPath } = useRouter()
   const { date, time } = useCurrentDateTime()
+  const initialFormState = {
+    start_date: `${date}T${time}`,
+    end_date: '',
+    min_price: 0,
+  }
   const [contractAddress, setContractAddress] = useState('')
   const [tokenId, setTokenId] = useState('')
   const [NFTABI, setNFTABI] = useState<any>()
@@ -74,7 +73,8 @@ const ListAssetPage: NextPage = () => {
 
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
-    () => getSingleNft(contractAddress, tokenId)
+    () => getSingleNft(contractAddress, tokenId),
+    { enabled: !!contractAddress && !!tokenId }
   )
 
   const { mutate, isSuccess } = useMutation(createNftAuction)
