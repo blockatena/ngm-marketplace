@@ -1,9 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/router'
 // import Image from 'next/image'
-import { FC, useState } from 'react'
+import { FC, useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
+import { ethers } from 'ethers'
+import { NGM20ABI } from '../../contracts/nftabi'
 import {
   AuctionType,
   AvatarType,
@@ -16,6 +18,7 @@ import useIsMounted from '../../utils/hooks/useIsMounted'
 import CancelAuctionModal from '../modals/CancelAuctionModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
+const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
 
 const ProductOverviewSection: FC<{
   nft: AvatarType
@@ -36,6 +39,7 @@ const ProductOverviewSection: FC<{
   const [H, setH] = useState(0)
   const [M, setM] = useState(0)
   const [S, setS] = useState(0)
+  const [accountBalance, setAccountBalance] = useState('')
   // const meta_data_url = nft?.nft.meta_data_url || ''
 
   const isCancellable =
@@ -44,6 +48,30 @@ const ProductOverviewSection: FC<{
     nft.token_owner === address &&
     nft?.is_in_auction
 
+    const getBalance = async (address: `0x${string}` | undefined) => {
+      if (address) {
+        const ethereum = (window as any).ethereum
+        const accounts = await ethereum.request({
+          method: 'eth_requestAccounts',
+        })
+        const provider = new ethers.providers.JsonRpcProvider(
+          'https://rpc-mumbai.maticvigil.com/'
+        )
+        const walletAddress = accounts[0] // first account in MetaMask
+        const signer = provider.getSigner(walletAddress)
+        const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
+        const balance = await wethcontract.balanceOf(address)
+        let balanceInEth: any = ethers.utils.formatEther(balance)
+        balanceInEth = parseFloat(balanceInEth).toFixed(2)
+        setAccountBalance(balanceInEth)
+      }
+    }
+
+    useEffect(() => {
+      if (!accountBalance) {
+        getBalance(address)
+      }
+    }, [address, accountBalance])
   const handleClick = () => {
     // if (isMounted && nft?.token_owner === address && nft?.is_in_auction) {
     //   toast('You have already listed this NFT!', {
@@ -70,7 +98,6 @@ const ProductOverviewSection: FC<{
     setInterval(() => {
       if (Date.parse(endTime) > Date.now()) {
         const Difference = (Date.parse(endTime) - Date.now()) / 1000
-        // console.log(Difference)
         const day = Math.floor(Difference / (24 * 60 * 60))
         const hour = Math.floor((Difference - day * 24 * 60 * 60) / (60 * 60))
         const minute = Math.floor(
@@ -226,6 +253,7 @@ const ProductOverviewSection: FC<{
             isOpen={isBidModalOpen}
             setIsOpen={setIsBidModalOpen}
             nft={nft}
+            accountBalance={accountBalance}
           />
         )}
       </AnimatePresence>
