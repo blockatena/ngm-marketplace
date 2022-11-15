@@ -6,7 +6,7 @@ import { useMutation } from 'react-query'
 import { toast } from 'react-toastify'
 import { useAccount } from 'wagmi'
 import { NGM20ABI } from '../../contracts/nftabi'
-import type { AvatarType, NftBidType } from '../../interfaces'
+import type { AvatarType, NftBidBodyType } from '../../interfaces'
 import { placeBid } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
@@ -61,7 +61,7 @@ const PlaceBidModal: FC<{
     const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
     const minimumBid = 0 // need to get data from api
 
-    const bidData: NftBidType = {
+    const bidData: NftBidBodyType = {
       bid_amount: bidAmount,
       bidder_address: address ? address : '',
       contract_address: nft?.contract_address,

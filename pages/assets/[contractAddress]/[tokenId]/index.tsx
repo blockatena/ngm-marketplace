@@ -10,6 +10,7 @@ import ExploreSection from '../../../../components/sections/ExploreSection'
 import ProductOverviewSection from '../../../../components/sections/ProductOverviewSection'
 import type {
   AvatarType,
+  BidType,
   CrumbType,
   NftContractType,
 } from '../../../../interfaces'
@@ -17,8 +18,8 @@ import leftVector from '../../../../public/images/others/left_vector.png'
 import rightVector from '../../../../public/images/others/right_vector.png'
 import { QUERIES } from '../../../../react-query/constants'
 import {
-  getSingleNft,
   getCollectionNFTs,
+  getSingleNft,
 } from '../../../../react-query/queries'
 
 const initalNftState: AvatarType = {
@@ -50,12 +51,15 @@ const ViewAssetPage: NextPage = () => {
   const [nft, setNft] = useState<AvatarType>(initalNftState)
   const [Avatars, setAvatars] = useState<AvatarType[]>([])
   const [contractDetails, setContractDetails] = useState<NftContractType>()
-  const [endTime,setEndTime] = useState('');
-  const [bidAmt, setBidAmt] = useState('');
+  const [endTime, setEndTime] = useState('')
+  const [bidAmt, setBidAmt] = useState('')
   const [lastBid, setLastBid] = useState('')
+  const [bids, setBids] = useState<BidType[]>()
+
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
-    () => getSingleNft(contractAddress, tokenId)
+    () => getSingleNft(contractAddress, tokenId),
+    { enabled: !!contractAddress && !!tokenId }
   )
   const { asPath } = useRouter()
 
@@ -71,11 +75,13 @@ const ViewAssetPage: NextPage = () => {
     },
   ]
 
-  const DATA = useQuery([QUERIES.getCollectionNFTs, contractAddress], () =>
-    getCollectionNFTs(contractAddress)
+  const DATA = useQuery(
+    [QUERIES.getCollectionNFTs, contractAddress],
+    () => getCollectionNFTs(contractAddress),
+    { enabled: !!contractAddress }
   )
 
-  console.log(Avatars)
+  // console.log(Avatars)
 
   useEffect(() => {
     if (explore?.length > 0) {
@@ -99,15 +105,15 @@ const ViewAssetPage: NextPage = () => {
       setExplore(newItems)
     }
   }
-  
 
   useEffect(() => {
-    setEndTime(data?.data?.auction?.end_date);
-    setBidAmt(data?.data?.bids?.[0]?.bid_amount);
+    setEndTime(data?.data?.auction?.end_date)
+    setBidAmt(data?.data?.bids?.[0]?.bid_amount)
     setLastBid(data?.data?.bids?.[-1]?.bid_amount)
-    setNft(data?.data.nft);
+    setNft(data?.data.nft)
     setAvatars(DATA?.data?.data?.nfts)
-    setContractDetails(data?.data?.contract_details);
+    setContractDetails(data?.data?.contract_details)
+    data?.data?.bids && setBids(data.data.bids)
     // if (data?.data.nft) {
     //   fetch(data.data.nft.meta_data_url)
     //     .then((response) => response.json())
@@ -116,7 +122,7 @@ const ViewAssetPage: NextPage = () => {
     //     })
     //     .catch((err) => console.error(err))
     // }
-  }, [data?.data?.contract_details, data?.data.nft,data,DATA])
+  }, [data?.data?.contract_details, data?.data.nft, data, DATA])
 
   useEffect(() => {
     if (asPath) {
@@ -165,8 +171,9 @@ const ViewAssetPage: NextPage = () => {
         <DescriptionBidHistorySection
           nft={nft}
           contractDetails={contractDetails}
+          bids={bids}
         />
-        <ExploreSection contractAddress={contractAddress} explore = {explore}/>
+        <ExploreSection contractAddress={contractAddress} explore={explore} />
       </div>
     </main>
   )
