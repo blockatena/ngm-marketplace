@@ -25,7 +25,7 @@ const ProductOverviewSection: FC<{
   endTime: string
   bidAmt: string
   lastBid: string
-}> = ({ nft, contractDetails, endTime, bidAmt, bids, auction }) => {
+}> = ({ nft, contractDetails, endTime, bids, auction }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
