@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/router'
 // import Image from 'next/image'
-import { FC, useState, useEffect } from 'react'
+import { ethers } from 'ethers'
+import { FC, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
-import { ethers } from 'ethers'
 import { NGM20ABI } from '../../contracts/nftabi'
 import {
   AuctionType,
@@ -48,30 +48,30 @@ const ProductOverviewSection: FC<{
     nft.token_owner === address &&
     nft?.is_in_auction
 
-    const getBalance = async (address: `0x${string}` | undefined) => {
-      if (address) {
-        const ethereum = (window as any).ethereum
-        const accounts = await ethereum.request({
-          method: 'eth_requestAccounts',
-        })
-        const provider = new ethers.providers.JsonRpcProvider(
-          'https://rpc-mumbai.maticvigil.com/'
-        )
-        const walletAddress = accounts[0] // first account in MetaMask
-        const signer = provider.getSigner(walletAddress)
-        const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
-        const balance = await wethcontract.balanceOf(address)
-        let balanceInEth: any = ethers.utils.formatEther(balance)
-        balanceInEth = parseFloat(balanceInEth).toFixed(2)
-        setAccountBalance(balanceInEth)
-      }
+  const getBalance = async (address: `0x${string}` | undefined) => {
+    if (address) {
+      const ethereum = (window as any).ethereum
+      const accounts = await ethereum.request({
+        method: 'eth_requestAccounts',
+      })
+      const provider = new ethers.providers.JsonRpcProvider(
+        'https://rpc-mumbai.maticvigil.com/'
+      )
+      const walletAddress = accounts[0] // first account in MetaMask
+      const signer = provider.getSigner(walletAddress)
+      const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
+      const balance = await wethcontract.balanceOf(address)
+      let balanceInEth: any = ethers.utils.formatEther(balance)
+      balanceInEth = parseFloat(balanceInEth).toFixed(2)
+      setAccountBalance(balanceInEth)
     }
+  }
 
-    useEffect(() => {
-      if (!accountBalance) {
-        getBalance(address)
-      }
-    }, [address, accountBalance])
+  useEffect(() => {
+    if (!accountBalance) {
+      getBalance(address)
+    }
+  }, [address, accountBalance])
   const handleClick = () => {
     // if (isMounted && nft?.token_owner === address && nft?.is_in_auction) {
     //   toast('You have already listed this NFT!', {
@@ -215,15 +215,17 @@ const ProductOverviewSection: FC<{
               </p>
             </div>
           </div>
-          <div className="grid place-items-center">
-            <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
-              {D < 10 && <>0</>}
-              {D} : {H < 10 && <>0</>}
-              {H} : {M < 10 && <>0</>}
-              {M} : {S < 10 && <>0</>}
-              {S}
+          {nft?.is_in_auction && (
+            <div className="grid place-items-center">
+              <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
+                {D < 10 && <>0</>}
+                {D} : {H < 10 && <>0</>}
+                {H} : {M < 10 && <>0</>}
+                {M} : {S < 10 && <>0</>}
+                {S}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="flex flex-col md:flex-row justify-between gap-2 lg:gap-4">
