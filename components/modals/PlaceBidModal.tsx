@@ -45,7 +45,7 @@ const PlaceBidModal: FC<{
 
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
     const { chainId } = await provider.getNetwork()
-    if(chainId!==CHAINID) {
+    if (chainId !== CHAINID) {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: ethers.utils.hexValue(CHAINID) }], // chainId must be in hexadecimal numbers
@@ -61,7 +61,6 @@ const PlaceBidModal: FC<{
       'ether'
     )
 
-
     const bidData: NftBidBodyType = {
       bid_amount: bidAmount,
       bidder_address: walletAddress ? walletAddress : '',
@@ -70,7 +69,7 @@ const PlaceBidModal: FC<{
     }
 
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
-      toast.dark(`You don't have enough balance to place a bid`, {
+      toast.dark(`Your bid is greater than your wallet balance`, {
         type: 'error',
         hideProgressBar: true,
       })
@@ -82,7 +81,6 @@ const PlaceBidModal: FC<{
         signer._address,
         NGMMarketAddress
       )
-
 
       if (parseInt(approvedAmt.toString()) > parseInt(Offer.toString())) {
         mutate(bidData)
@@ -96,13 +94,11 @@ const PlaceBidModal: FC<{
           .then((tx: any) => {
             toast.dark('Processing Transaction!')
             provider.waitForTransaction(tx.hash).then(() => {
-              
               mutate(bidData)
               setLoading(false)
             })
           })
           .catch(() => {
-            
             toast.dark(String('User Rejected Request'), { type: 'error' })
             setLoading(false)
           })
