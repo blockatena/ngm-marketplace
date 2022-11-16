@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react'
 import { getCollectionNFTs } from '../../react-query/queries'
 import { useQuery } from 'react-query'
 import { QUERIES } from '../../react-query/constants'
+const baseURL = process.env.NEXT_PUBLIC_API_URL || ''
 const ExploreSection: FC<{
   contractAddress: string
   tokenId:string
@@ -15,11 +16,30 @@ const ExploreSection: FC<{
   const [explore, setExplore] = useState<AvatarType[]>([])
   const [Avatars, setAvatars] = useState<AvatarType[]>([])
 
-  const DATA = useQuery(
-    [QUERIES.getCollectionNFTs, contractAddress],
-    () => getCollectionNFTs(contractAddress),
-    { enabled: !!contractAddress }
-  )
+  // const DATA = useQuery(
+  //   [QUERIES.getCollectionNFTs, contractAddress],
+  //   () => getCollectionNFTs(contractAddress),
+  //   { enabled: !!contractAddress }
+  // )
+
+  const getNFTs = ()=>{
+  if (Avatars?.length > 0){
+    return;
+  } else {
+    let url = `${baseURL}/nft/collection/${contractAddress}`
+  fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if(Avatars?.length>0){
+            //
+          } else {
+          setAvatars(data.nfts)
+          }
+        });
+      }
+
+  }
+
 
 
   useEffect(() => {
@@ -31,8 +51,11 @@ const ExploreSection: FC<{
   })
 
   useEffect(() => {
-    setAvatars(DATA?.data?.data?.nfts)
-  }, [DATA])
+    if (Avatars?.length > 0) {  return}
+    else {
+      getNFTs()
+    }
+  })
 
   const filter2 = (Avatars: any) => {
     if (Avatars?.length > 0) {
