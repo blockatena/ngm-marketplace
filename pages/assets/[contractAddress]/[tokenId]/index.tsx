@@ -9,14 +9,18 @@ import DescriptionBidHistorySection from '../../../../components/sections/Descri
 import ExploreSection from '../../../../components/sections/ExploreSection'
 import ProductOverviewSection from '../../../../components/sections/ProductOverviewSection'
 import type {
+  AuctionType,
   AvatarType,
+  BidType,
   CrumbType,
   NftContractType,
 } from '../../../../interfaces'
 import leftVector from '../../../../public/images/others/left_vector.png'
 import rightVector from '../../../../public/images/others/right_vector.png'
 import { QUERIES } from '../../../../react-query/constants'
-import { getSingleNft } from '../../../../react-query/queries'
+import {
+  getSingleNft,
+} from '../../../../react-query/queries'
 
 const initalNftState: AvatarType = {
   _id: '',
@@ -45,9 +49,14 @@ const ViewAssetPage: NextPage = () => {
   // const [name, setName] = useState('')
   const [nft, setNft] = useState<AvatarType>(initalNftState)
   const [contractDetails, setContractDetails] = useState<NftContractType>()
+  const [endTime, setEndTime] = useState('')
+  const [bids, setBids] = useState<BidType[]>()
+  const [auctionDetails, setAuctionDetails] = useState<AuctionType>()
+
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
-    () => getSingleNft(contractAddress, tokenId)
+    () => getSingleNft(contractAddress, tokenId),
+    { enabled: !!contractAddress && !!tokenId, refetchInterval: 30000 }
   )
   const { asPath } = useRouter()
 
@@ -64,17 +73,14 @@ const ViewAssetPage: NextPage = () => {
   ]
 
   useEffect(() => {
+    setEndTime(data?.data?.auction?.end_date)
     setNft(data?.data.nft)
+    // setAvatars(DATA?.data?.data?.nfts)
     setContractDetails(data?.data?.contract_details)
-    // if (data?.data.nft) {
-    //   fetch(data.data.nft.meta_data_url)
-    //     .then((response) => response.json())
-    //     .then((data) => {
-    //       setName(data.name)
-    //     })
-    //     .catch((err) => console.error(err))
-    // }
-  }, [data?.data?.contract_details, data?.data.nft])
+    data?.data?.bids && setBids(data.data.bids)
+    data?.data?.auction && setAuctionDetails(data.data.auction)
+    
+  }, [data?.data?.contract_details, data?.data.nft, data])
 
   useEffect(() => {
     if (asPath) {
@@ -105,8 +111,11 @@ const ViewAssetPage: NextPage = () => {
           </div>
           <div className="col-span-10 flex justify-center">
             <ProductOverviewSection
+              endTime={endTime}
               nft={nft}
               contractDetails={contractDetails}
+              bids={bids}
+              auction={auctionDetails}
             />
           </div>
           <div className="col-span-1 flex justify-end ">
@@ -120,8 +129,10 @@ const ViewAssetPage: NextPage = () => {
         <DescriptionBidHistorySection
           nft={nft}
           contractDetails={contractDetails}
+          bids={bids}
+          auction={auctionDetails}
         />
-        <ExploreSection />
+        <ExploreSection contractAddress={contractAddress} tokenId={tokenId} />
       </div>
     </main>
   )

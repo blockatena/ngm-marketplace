@@ -32,6 +32,7 @@ import {
 import useCurrentDateTime from '../../../../utils/hooks/useCurrentDateTime'
 
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
+const CHAINID = 80001
 
 const initalNftState: AvatarType = {
   _id: '',
@@ -54,15 +55,14 @@ const initalNftState: AvatarType = {
   },
 }
 
-const initialFormState = {
-  start_date: '',
-  end_date: '',
-  min_price: 0,
-}
-
 const ListAssetPage: NextPage = () => {
   const { asPath } = useRouter()
   const { date, time } = useCurrentDateTime()
+  const initialFormState = {
+    start_date: `${date}T${time}`,
+    end_date: '',
+    min_price: 0,
+  }
   const [contractAddress, setContractAddress] = useState('')
   const [tokenId, setTokenId] = useState('')
   const [NFTABI, setNFTABI] = useState<any>()
@@ -74,7 +74,8 @@ const ListAssetPage: NextPage = () => {
 
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
-    () => getSingleNft(contractAddress, tokenId)
+    () => getSingleNft(contractAddress, tokenId),
+    { enabled: !!contractAddress && !!tokenId }
   )
 
   const { mutate, isSuccess } = useMutation(createNftAuction)
@@ -128,6 +129,13 @@ const ListAssetPage: NextPage = () => {
     })
 
     const provider = new ethers.providers.Web3Provider(ethereum)
+    const { chainId } = await provider.getNetwork()
+    if (chainId !== CHAINID) {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: ethers.utils.hexValue(CHAINID) }], // chainId must be in hexadecimal numbers
+      })
+    }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
 
