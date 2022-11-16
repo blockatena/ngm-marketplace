@@ -5,9 +5,6 @@ import { opacityAnimation } from '../../utils/animations'
 import AvatarCard from '../AvatarCard'
 import { FC } from 'react'
 import { useState, useEffect } from 'react'
-import { getCollectionNFTs } from '../../react-query/queries'
-import { useQuery } from 'react-query'
-import { QUERIES } from '../../react-query/constants'
 const baseURL = process.env.NEXT_PUBLIC_API_URL || ''
 const ExploreSection: FC<{
   contractAddress: string
