@@ -32,6 +32,7 @@ import {
 import useCurrentDateTime from '../../../../utils/hooks/useCurrentDateTime'
 
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
+const CHAINID = 80001
 
 const initalNftState: AvatarType = {
   _id: '',
@@ -128,6 +129,13 @@ const ListAssetPage: NextPage = () => {
     })
 
     const provider = new ethers.providers.Web3Provider(ethereum)
+    const { chainId } = await provider.getNetwork()
+    if (chainId !== CHAINID) {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: ethers.utils.hexValue(CHAINID) }], // chainId must be in hexadecimal numbers
+      })
+    }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
 

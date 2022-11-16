@@ -4,12 +4,52 @@ import { AvatarType } from '../../interfaces'
 import { opacityAnimation } from '../../utils/animations'
 import AvatarCard from '../AvatarCard'
 import { FC } from 'react'
-
-
+import { useState, useEffect } from 'react'
+import { getCollectionNFTs } from '../../react-query/queries'
+import { useQuery } from 'react-query'
+import { QUERIES } from '../../react-query/constants'
 const ExploreSection: FC<{
   contractAddress: string
-  explore: AvatarType[]
-}> = ({ contractAddress,explore}) => {
+  tokenId:string
+}> = ({ contractAddress, tokenId}) => {
+  const [explore, setExplore] = useState<AvatarType[]>([])
+  const [Avatars, setAvatars] = useState<AvatarType[]>([])
+
+  const DATA = useQuery(
+    [QUERIES.getCollectionNFTs, contractAddress],
+    () => getCollectionNFTs(contractAddress),
+    { enabled: !!contractAddress }
+  )
+
+
+  useEffect(() => {
+    if (explore?.length > 0) {
+      return
+    } else {
+      filter2(Avatars)
+    }
+  })
+
+  useEffect(() => {
+    setAvatars(DATA?.data?.data?.nfts)
+  }, [DATA])
+
+  const filter2 = (Avatars: any) => {
+    if (Avatars?.length > 0) {
+      var newItems = []
+      for (var i = 0; i < 3; i) {
+        var idx = Math.floor(Math.random() * Avatars.length)
+        if (Avatars?.[idx]?.token_id !== tokenId) {
+          newItems.push(Avatars[idx])
+          Avatars.splice(idx, 1)
+          i++
+        }
+      }
+      setExplore(newItems)
+    }
+  }
+
+
   const router = useRouter()
   const openCollection = () => {
     router.push(`/collections/${contractAddress}`)

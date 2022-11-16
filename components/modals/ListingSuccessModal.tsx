@@ -16,7 +16,9 @@ const ListingSuccessModal: FC<{
   const router = useRouter()
 
   const viewListing =()=>{
+
     router.push(`/assets/${contract_address}/${token_id}`)
+    setIsOpen(false)
   }
   return (
     <ModalBase>
