@@ -1,29 +1,43 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/router'
 // import Image from 'next/image'
-import { FC, useState } from 'react'
+import { ethers } from 'ethers'
+import { FC, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
-import { AvatarType, NftContractType } from '../../interfaces'
+import { NGM20ABI } from '../../contracts/nftabi'
+import {
+  AuctionType,
+  AvatarType,
+  BidType,
+  NftContractType,
+} from '../../interfaces'
 // import ownerImg from '../../public/images/others/owner.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
 import useIsMounted from '../../utils/hooks/useIsMounted'
 import CancelAuctionModal from '../modals/CancelAuctionModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
+const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
 
 const ProductOverviewSection: FC<{
   nft: AvatarType
   contractDetails: NftContractType | undefined
-  // name: string
-}> = ({ nft, contractDetails }) => {
+  bids: BidType[] | undefined
+  auction: AuctionType | undefined
+  endTime: string
+}> = ({ nft, contractDetails, endTime, bids, auction }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
   const { address } = useAccount()
   const isMounted = useIsMounted()
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
-
+  const [D, setD] = useState(0)
+  const [H, setH] = useState(0)
+  const [M, setM] = useState(0)
+  const [S, setS] = useState(0)
+  const [accountBalance, setAccountBalance] = useState('')
   // const meta_data_url = nft?.nft.meta_data_url || ''
 
   const isCancellable =
@@ -32,6 +46,30 @@ const ProductOverviewSection: FC<{
     nft.token_owner === address &&
     nft?.is_in_auction
 
+  const getBalance = async (address: `0x${string}` | undefined) => {
+    if (address) {
+      const ethereum = (window as any).ethereum
+      const accounts = await ethereum.request({
+        method: 'eth_requestAccounts',
+      })
+      const provider = new ethers.providers.JsonRpcProvider(
+        'https://rpc-mumbai.maticvigil.com/'
+      )
+      const walletAddress = accounts[0] // first account in MetaMask
+      const signer = provider.getSigner(walletAddress)
+      const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
+      const balance = await wethcontract.balanceOf(address)
+      let balanceInEth: any = ethers.utils.formatEther(balance)
+      balanceInEth = parseFloat(balanceInEth).toFixed(2)
+      setAccountBalance(balanceInEth)
+    }
+  }
+
+  useEffect(() => {
+    if (!accountBalance) {
+      getBalance(address)
+    }
+  }, [address, accountBalance])
   const handleClick = () => {
     // if (isMounted && nft?.token_owner === address && nft?.is_in_auction) {
     //   toast('You have already listed this NFT!', {
@@ -54,6 +92,29 @@ const ProductOverviewSection: FC<{
     nft?.is_in_auction === false && setIsOfferModalOpen(true)
     nft?.is_in_auction && setIsBidModalOpen(true)
   }
+  if (nft?.is_in_auction === true) {
+    setInterval(() => {
+      if (Date.parse(endTime) > Date.now()) {
+        const Difference = (Date.parse(endTime) - Date.now()) / 1000
+        const day = Math.floor(Difference / (24 * 60 * 60))
+        const hour = Math.floor((Difference - day * 24 * 60 * 60) / (60 * 60))
+        const minute = Math.floor(
+          (Difference - day * 24 * 60 * 60 - hour * 60 * 60) / 60
+        )
+        const second = Math.floor(
+          Difference - day * 24 * 60 * 60 - hour * 60 * 60 - minute * 60
+        )
+        setD(day)
+        setH(hour)
+        setM(minute)
+        setS(second)
+      } else {
+        //
+      }
+    }, 1000)
+  } else {
+    //
+  }
 
   return (
     <section className="flex flex-col xl:flex-row gap-4 lg:gap-0 2xl:gap-32 xl:justify-between p-0">
@@ -69,30 +130,10 @@ const ProductOverviewSection: FC<{
           delay: 0.6,
         }}
       >
-        <AvatarCard
-          // name="Wraith"
-          // img="/images/auction/auction_img_1.svg"
-          variant="lg"
-          noCta
-          {...nft}
-          // contract_details={
-          //   _id: '',
-          //   symbol: '',
-          //   owner_address: '',
-          //   collection_name: '',
-          //   chain: '',
-          //   type: '',
-          //   transactionhash: '',
-          //   contract_address: '',
-          //   description: '',
-          //   baseuri: '',
-          //   imageuri: [''],
-          //   createdAt: ''}
-        />
+        <AvatarCard variant="lg" noCta {...nft} />
         <div className="lg:hidden grid place-items-center">
           <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
             <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
-              {/* {nft?.contract_details.collection_name} */}
               {contractDetails?.collection_name}
             </p>
             <p className="text-white text-2xl lg:text-[49px] font-josefin">
@@ -128,16 +169,28 @@ const ProductOverviewSection: FC<{
 
         <div className="flex justify-between font-poppins">
           <div>
-            <p className="text-gray-600 text-sm lg:text-base">Price Bid</p>
-            <p className="text-white font-bold text-lg lg:text-2xl">
-              10.89 ETH
-            </p>
+            {auction?.min_price && (
+              <>
+                <p className="text-gray-600 text-sm lg:text-base">
+                  Auction Price
+                </p>
+                <p className="text-white font-bold text-lg lg:text-2xl">
+                  {auction?.min_price} ETH
+                </p>
+              </>
+            )}
           </div>
           <div>
-            <p className="text-gray-600 text-sm lg:text-base">Last Bid</p>
-            <p className="text-white font-bold text-lg lg:text-2xl">
-              10.89 ETH
-            </p>
+            {bids?.length && bids[0].bid_amount && (
+              <>
+                <p className="text-gray-600 text-sm lg:text-base">
+                  Highest Bid
+                </p>
+                <p className="text-white font-bold text-lg lg:text-2xl">
+                  {bids && bids[0].bid_amount} ETH
+                </p>
+              </>
+            )}
           </div>
         </div>
 
@@ -160,11 +213,17 @@ const ProductOverviewSection: FC<{
               </p>
             </div>
           </div>
-          <div className="grid place-items-center">
-            <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
-              05 : 12 : 07 : 45
+          {nft?.is_in_auction && (
+            <div className="grid place-items-center">
+              <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
+                {D < 10 && <>0</>}
+                {D} : {H < 10 && <>0</>}
+                {H} : {M < 10 && <>0</>}
+                {M} : {S < 10 && <>0</>}
+                {S}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="flex flex-col md:flex-row justify-between gap-2 lg:gap-4">
@@ -194,6 +253,7 @@ const ProductOverviewSection: FC<{
             isOpen={isBidModalOpen}
             setIsOpen={setIsBidModalOpen}
             nft={nft}
+            accountBalance={accountBalance}
           />
         )}
       </AnimatePresence>
