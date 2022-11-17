@@ -63,7 +63,7 @@ const PlaceBidModal: FC<{
 
     const bidData: NftBidBodyType = {
       bid_amount: bidAmount,
-      bidder_address: walletAddress ? walletAddress : '',
+      bidder_address: address ? address : '',
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
     }
