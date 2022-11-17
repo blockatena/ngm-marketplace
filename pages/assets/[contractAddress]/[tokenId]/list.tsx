@@ -148,11 +148,17 @@ const ListAssetPage: NextPage = () => {
     )
     // console.log(isApproved)
 
+    let startDate = new Date(formData.start_date).toISOString()
+    let endDate = new Date(formData.end_date).toISOString()
+
     const requestData: nftAuctionBodyType = {
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
       token_owner: nft?.token_owner,
-      ...formData,
+      start_date: startDate,
+      end_date: endDate,
+      min_price: formData.min_price,
+      // ...formData,
     }
 
     if (isApproved === true) {

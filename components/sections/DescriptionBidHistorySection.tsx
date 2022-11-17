@@ -7,7 +7,7 @@ import {
   LineElement,
   PointElement,
   Title,
-  Tooltip,
+  Tooltip
 } from 'chart.js'
 import { motion } from 'framer-motion'
 import { FC, useEffect, useRef, useState } from 'react'
@@ -16,7 +16,7 @@ import {
   AuctionType,
   AvatarType,
   BidType,
-  NftContractType,
+  NftContractType
 } from '../../interfaces'
 import { opacityAnimation } from '../../utils/animations'
 
@@ -304,7 +304,7 @@ const CurrentBids: FC<{
             })}
           {bids?.length === 0 && (
             <tr>
-              <td>No Bids</td>
+              <td>Bids</td>
             </tr>
           )}
         </tbody>
