@@ -287,7 +287,7 @@ const CurrentBids: FC<{
       className="font-poppins text-[#D7D7D7] lg:text-lg px-2 lg:px-4 max-h-[300px]
     overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
     >
-      <table className="w-full overflow-x-auto text-center border border-white">
+      <table className="w-full overflow-x-auto text-center border border-gray-500">
         <thead>
           <tr className="h-16">
             {tableHeadings.map((heading) => (
@@ -304,7 +304,7 @@ const CurrentBids: FC<{
             })}
           {bids?.length === 0 && (
             <tr>
-              <td>No Bids</td>
+              <td>Bids</td>
             </tr>
           )}
         </tbody>
