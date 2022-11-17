@@ -7,7 +7,7 @@ import {
   LineElement,
   PointElement,
   Title,
-  Tooltip
+  Tooltip,
 } from 'chart.js'
 import { motion } from 'framer-motion'
 import { FC, useEffect, useRef, useState } from 'react'
@@ -16,7 +16,7 @@ import {
   AuctionType,
   AvatarType,
   BidType,
-  NftContractType
+  NftContractType,
 } from '../../interfaces'
 import { opacityAnimation } from '../../utils/animations'
 
@@ -287,7 +287,7 @@ const CurrentBids: FC<{
       className="font-poppins text-[#D7D7D7] lg:text-lg px-2 lg:px-4 max-h-[300px]
     overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
     >
-      <table className="w-full overflow-x-auto text-center border border-white">
+      <table className="w-full overflow-x-auto text-center border border-gray-500">
         <thead>
           <tr className="h-16">
             {tableHeadings.map((heading) => (
