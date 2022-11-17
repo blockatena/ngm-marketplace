@@ -67,9 +67,19 @@ const PlaceBidModal: FC<{
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
     }
-
+    console.log(parseInt(inputAmt.toString()))
+    
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
       toast.dark(`Your bid is greater than your wallet balance`, {
+        type: 'error',
+        hideProgressBar: true,
+      })
+      setLoading(false)
+      return
+    } else if (
+      parseInt(inputAmt.toString())<=0)
+     {
+      toast.dark(`Can't Bid less than 0`, {
         type: 'error',
         hideProgressBar: true,
       })

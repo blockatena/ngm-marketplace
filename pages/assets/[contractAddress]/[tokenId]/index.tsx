@@ -56,7 +56,11 @@ const ViewAssetPage: NextPage = () => {
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId),
-    { enabled: !!contractAddress && !!tokenId, refetchInterval: 30000 }
+    {
+      enabled: !!contractAddress && !!tokenId,
+      refetchInterval: 30000,
+      refetchIntervalInBackground: true,
+    }
   )
   const { asPath } = useRouter()
 
@@ -77,8 +81,8 @@ const ViewAssetPage: NextPage = () => {
     setNft(data?.data.nft)
     // setAvatars(DATA?.data?.data?.nfts)
     setContractDetails(data?.data?.contract_details)
-    data?.data?.bids && setBids(data.data.bids)
-    data?.data?.auction && setAuctionDetails(data.data.auction)
+    setBids(data?.data.bids)
+    setAuctionDetails(data?.data.auction)
     
   }, [data?.data?.contract_details, data?.data.nft, data])
 
