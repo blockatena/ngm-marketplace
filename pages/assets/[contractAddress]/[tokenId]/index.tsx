@@ -58,7 +58,7 @@ const ViewAssetPage: NextPage = () => {
     () => getSingleNft(contractAddress, tokenId),
     {
       enabled: !!contractAddress && !!tokenId,
-      refetchInterval: 30000,
+      refetchInterval: 10000,
       refetchIntervalInBackground: true,
     }
   )

@@ -42,6 +42,7 @@ const tabsData = [
   // },
 ]
 
+
 export const AvatarData = [
   {
     id: 1,
@@ -96,7 +97,7 @@ const DescriptionItem: FC<{
         <p
           className={
             name === 'Contract Address' || name === 'Token ID'
-              ? 'cursor-pointer underline'
+              ? 'cursor-pointer underline hover:text-sky-500'
               : ''
           }
           onClick={() => {
@@ -220,6 +221,12 @@ const shortenString = (value: string) => {
 //   )
 // }
 
+const onClickAddress = (user)=>{
+      let url = `https://mumbai.polygonscan.com/address/${user}`
+      window.open(url, '_blank')
+}
+  
+
 const BidItem: FC<{ bid: BidType; auction: AuctionType | undefined }> = ({
   bid,
   // auction,
@@ -261,7 +268,15 @@ const BidItem: FC<{ bid: BidType; auction: AuctionType | undefined }> = ({
       }}
     >
       {bidData?.map((bidData, index) => (
-        <td key={index} className="border border-gray-500 h-16">
+        <td
+          key={index}
+          className={
+            bidData?.name === 'Bidder Address'
+              ? 'cursor-pointer underline hover:text-sky-500'
+              : 'border border-gray-500 h-16'
+          }
+          onClick={() => onClickAddress(bid?.bidder_address)}
+        >
           {bidData?.value}
         </td>
       ))}
@@ -314,6 +329,11 @@ const CurrentBids: FC<{
       {bids?.length === 0 && (
         // <tr>
         <p className="text-center b text-3xl p-12">- No Bids yet -</p>
+        // </tr>
+      )}
+      {!auction && (
+        // <tr>
+        <p className="text-center b text-3xl p-12">-The NFT not on auction-</p>
         // </tr>
       )}
     </div>
