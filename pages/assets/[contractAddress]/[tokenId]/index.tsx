@@ -52,13 +52,13 @@ const ViewAssetPage: NextPage = () => {
   const [endTime, setEndTime] = useState('')
   const [bids, setBids] = useState<BidType[]>()
   const [auctionDetails, setAuctionDetails] = useState<AuctionType>()
-
+  const refetchtime:number = parseInt(process.env.NEXT_PUBLIC_REFETCH_TIME?process.env.NEXT_PUBLIC_REFETCH_TIME:'30000')
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId),
     {
       enabled: !!contractAddress && !!tokenId,
-      refetchInterval: 10000,
+      refetchInterval: refetchtime,
       refetchIntervalInBackground: true,
     }
   )
@@ -83,7 +83,6 @@ const ViewAssetPage: NextPage = () => {
     setContractDetails(data?.data?.contract_details)
     setBids(data?.data.bids)
     setAuctionDetails(data?.data.auction)
-    
   }, [data?.data?.contract_details, data?.data.nft, data])
 
   useEffect(() => {
