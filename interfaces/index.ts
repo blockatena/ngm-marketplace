@@ -197,3 +197,12 @@ export type AuctionType = {
   status: string
   __v: number
 }
+
+
+export type nftCancelbidType = {
+  
+  bidder_address: string
+  token_id: string
+  contract_address: string
+
+}

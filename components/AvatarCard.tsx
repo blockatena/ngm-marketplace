@@ -5,7 +5,9 @@ import { AvatarType } from '../interfaces'
 import useIsMounted from '../utils/hooks/useIsMounted'
 // import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
+const BaseURL = process.env.NEXT_PUBLIC_API_URL || ''
 interface AvatarCardProps extends AvatarType {
+
   // name: string
   // img: string
   variant?: 'xs' | 'sm' | 'lg'
@@ -86,6 +88,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
   const [isSelected, setIsSelected] = useState(false)
   // const [Name, setName] = useState('')
   // const [Img, setImg] = useState('')
+  const [auctionAmount,setAuctionAmount] = useState()
   const [shadow, setShadow] = useState('')
   const [cardProperties, setCardProperties] = useState({
     dimensions: 'w-[250px] h-[330px]',
@@ -119,6 +122,21 @@ const AvatarCard: FC<AvatarCardProps> = ({
   // }, [meta_data_url])
 
   // console.log(nftinfo.name)
+  const ifInauction = ()=>{
+    if(!auctionAmount){
+    let url = `${BaseURL}/nft/get-nft/${contract_address}/${token_id}`
+    if(is_in_auction){
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          setAuctionAmount(data?.auction?.min_price)
+        });
+      }
+    }
+  }
+  useEffect(()=>{
+    ifInauction()
+  })
 
   useEffect(() => {
     if (isSelected) setShadow('avatar-shadow')
@@ -266,14 +284,17 @@ const AvatarCard: FC<AvatarCardProps> = ({
               </div>
             </div>
             <div className="flex  absolute top-10 -bottom-0 right-0 left-0 ">
+              
+              { is_in_auction &&
               <div className="text-center grid place-items-center avatar-btn-left w-full  h-full bg-black text-gray-400 rounded-l-lg">
                 <p className="text-[10px] lg:text-xs font-poppins my-0">
-                  {is_in_auction ? 'Current Bid' : 'Price'}
+                  {is_in_auction ? 'Price' : ''}
                 </p>
                 <p className="text-[8px] lg:text-sm font-poppins font-medium my-0">
-                  $200
+                  {is_in_auction && <>{auctionAmount} Ξ</>}
                 </p>
               </div>
+        }
 
               <div
                 role="button"

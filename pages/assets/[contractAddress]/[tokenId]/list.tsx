@@ -110,6 +110,19 @@ const ListAssetPage: NextPage = () => {
         theme: 'dark',
       })
       return
+    } 
+
+    let date = new Date(formData.end_date).getTime()
+    let now = Date.now()
+    if(date<now){
+      toast('End Time must be greater than current time', {
+        hideProgressBar: true,
+        autoClose: 3000,
+        type: 'error',
+        position: 'top-right',
+        theme: 'dark',
+      })
+      return
     }
 
     if (nft?.is_in_auction) {

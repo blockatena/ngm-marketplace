@@ -18,6 +18,7 @@ import useIsMounted from '../../utils/hooks/useIsMounted'
 import CancelAuctionModal from '../modals/CancelAuctionModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
+import CancelBidModal from '../modals/CancelBidModal'
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
 
 const ProductOverviewSection: FC<{
@@ -29,6 +30,8 @@ const ProductOverviewSection: FC<{
 }> = ({ nft, contractDetails, endTime, bids, auction }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
+  const [isCancelBidModalOpen, setIsCancelBidModalOpen] = useState(false)
+  const [isUserIsBidder, setIsUserIsBidder] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
   const { address } = useAccount()
   const isMounted = useIsMounted()
@@ -44,6 +47,10 @@ const ProductOverviewSection: FC<{
     isMounted &&
     nft?.token_owner &&
     nft.token_owner === address &&
+    nft?.is_in_auction
+
+  const isBidCancellable =
+    isUserIsBidder &&
     nft?.is_in_auction
 
   const getBalance = async (address: `0x${string}` | undefined) => {
@@ -70,6 +77,25 @@ const ProductOverviewSection: FC<{
       getBalance(address)
     }
   }, [address, accountBalance])
+
+  const isUserPlacedBid = ()=>{
+    const usersbid:any =  bids?.filter((e) =>{
+      return e.bidder_address === address
+    })
+    if(usersbid?.length>0){
+      setIsUserIsBidder(true)
+    } else if (usersbid?.length===0){
+      setIsUserIsBidder(false)
+    }
+  }
+  useEffect(()=>{
+    if (nft?.is_in_auction) {
+      window.setTimeout(isUserPlacedBid, 5000)
+    } else {
+      // refetch
+    }
+  })
+
   const handleClick = () => {
     // if (isMounted && nft?.token_owner === address && nft?.is_in_auction) {
     //   toast('You have already listed this NFT!', {
@@ -81,16 +107,22 @@ const ProductOverviewSection: FC<{
     //   })
     //   return
     // }
-    if (isCancellable) {
-      setIsCancelModalOpen(true)
+    if (isBidCancellable){
+      setIsCancelBidModalOpen(true)
       return
     }
+      if (isCancellable) {
+        setIsCancelModalOpen(true)
+        return
+      }
     if (isMounted && nft?.token_owner === address) {
       router.push(`${router.asPath}/list`)
       return
     }
+    
+    nft?.is_in_auction && isUserIsBidder && setIsCancelBidModalOpen(true)
     nft?.is_in_auction === false && setIsOfferModalOpen(true)
-    nft?.is_in_auction && setIsBidModalOpen(true)
+    nft?.is_in_auction && !isUserIsBidder && setIsBidModalOpen(true)
   }
   if (nft?.is_in_auction === true) {
     setInterval(() => {
@@ -241,6 +273,8 @@ const ProductOverviewSection: FC<{
               ? 'Cancel Auction'
               : isMounted && nft?.token_owner && nft.token_owner === address
               ? 'Sell'
+              :isBidCancellable
+              ? 'Cancel Bid'
               : nft?.is_in_auction
               ? 'Place Bid'
               : 'Make Offer'}
@@ -254,6 +288,15 @@ const ProductOverviewSection: FC<{
             setIsOpen={setIsBidModalOpen}
             nft={nft}
             accountBalance={accountBalance}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isCancelBidModalOpen && (
+          <CancelBidModal
+            isOpen={isCancelBidModalOpen}
+            setIsOpen={setIsCancelBidModalOpen}
+            nft={nft}
           />
         )}
       </AnimatePresence>
