@@ -88,6 +88,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
   const [isSelected, setIsSelected] = useState(false)
   // const [Name, setName] = useState('')
   // const [Img, setImg] = useState('')
+  const [inputTime,setAuctionTime] = useState('')
   const [auctionAmount,setAuctionAmount] = useState()
   const [shadow, setShadow] = useState('')
   const [cardProperties, setCardProperties] = useState({
@@ -123,14 +124,15 @@ const AvatarCard: FC<AvatarCardProps> = ({
 
   // console.log(nftinfo.name)
   const ifInauction = ()=>{
-    if(!auctionAmount){
-    let url = `${BaseURL}/nft/get-nft/${contract_address}/${token_id}`
-    if(is_in_auction){
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          setAuctionAmount(data?.auction?.min_price)
-        });
+    if (!auctionAmount && !inputTime) {
+      let url = `${BaseURL}/nft/get-nft/${contract_address}/${token_id}`
+      if (is_in_auction) {
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            setAuctionTime(data?.auction?.end_date)
+            setAuctionAmount(data?.auction?.min_price)
+          })
       }
     }
   }
@@ -171,7 +173,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
     router.push(`/assets/${contract_address}/${token_id}`)
   }
 
-  const inputTime = '2022-11-20T08:24:23.676Z'
+  
 
   if (is_in_auction === true) {
 
