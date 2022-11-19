@@ -4,35 +4,38 @@ import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { AvatarType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
-import { cancelAuction } from '../../react-query/queries'
+import { cancelBid } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
+import { useAccount } from 'wagmi'
 
-const CancelAuctionModal: FC<{
+const CancelBidModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   nft: AvatarType
 }> = ({ setIsOpen, nft }) => {
   const queryClient = useQueryClient()
 
-  const { mutate, isSuccess, data, isLoading } = useMutation(cancelAuction, {
+  const { mutate, isSuccess, data, isLoading } = useMutation(cancelBid, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
   })
+    const { address } = useAccount()
 
   const handleClick = () => {
     const data = {
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
+      bidder_address:address?address:''
     }
     mutate(data)
   }
 
   useEffect(() => {
     if (isSuccess) {
-      toast('Auction Cancelled Successfully', {
+      toast('Bid Cancelled Successfully', {
         hideProgressBar: true,
         autoClose: 3000,
         type: 'success',
@@ -67,7 +70,7 @@ const CancelAuctionModal: FC<{
           </span>
         </p>
         <h2 className="text-white font-poppins text-[20px] lg:text-[30px] text-center my-4">
-          Are you sure you want to cancel this auction?
+          Are you sure you want to cancel this bid?
         </h2>
         {isLoading && (
           <div className="py-4 grid place-items-center">
@@ -98,4 +101,4 @@ const CancelAuctionModal: FC<{
   )
 }
 
-export default CancelAuctionModal
+export default CancelBidModal

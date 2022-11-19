@@ -24,7 +24,9 @@ const ExploreSection: FC<{
     return;
   } else {
     let url = `${baseURL}/nft/collection/${contractAddress}`
-  fetch(url)
+    // console.log(url)
+    if(contractAddress){
+    fetch(url)
         .then(response => response.json())
         .then(data => {
           if(Avatars?.length>0){
@@ -34,6 +36,7 @@ const ExploreSection: FC<{
           }
         });
       }
+    }
 
   }
 

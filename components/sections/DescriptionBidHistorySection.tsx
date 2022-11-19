@@ -37,10 +37,11 @@ const tabsData = [
   {
     label: 'Current Bids',
   },
-  {
-    label: 'Bid History',
-  },
+  // {
+  //   label: 'Bid History',
+  // },
 ]
+
 
 export const AvatarData = [
   {
@@ -96,7 +97,7 @@ const DescriptionItem: FC<{
         <p
           className={
             name === 'Contract Address' || name === 'Token ID'
-              ? 'cursor-pointer underline'
+              ? 'cursor-pointer underline hover:text-sky-500'
               : ''
           }
           onClick={() => {
@@ -220,12 +221,18 @@ const shortenString = (value: string) => {
 //   )
 // }
 
+const onClickAddress = (user)=>{
+      let url = `https://mumbai.polygonscan.com/address/${user}`
+      window.open(url, '_blank')
+}
+  
+
 const BidItem: FC<{ bid: BidType; auction: AuctionType | undefined }> = ({
   bid,
   // auction,
 }) => {
   let timePlaced = ''
-  let timeUpdated = ''
+  // let timeUpdated = ''
 
   if (bid?.createdAt) {
     let d = new Date(bid.createdAt)
@@ -233,15 +240,15 @@ const BidItem: FC<{ bid: BidType; auction: AuctionType | undefined }> = ({
   }
 
   if (bid?.updatedAt) {
-    let d = new Date(bid.updatedAt)
-    timeUpdated = d.toLocaleString()
+    // let d = new Date(bid.updatedAt)
+    // timeUpdated = d.toLocaleString()
   }
 
   const bidData = [
     { name: 'Bidder Address', value: shortenString(bid?.bidder_address) },
     { name: 'Bid Amount', value: bid?.bid_amount },
     { name: 'Placed At', value: timePlaced },
-    { name: 'Updated At', value: timeUpdated },
+    // { name: 'Updated At', value: timeUpdated },
     // { name: 'Contract Address', value: shortenString(bid?.contract_address) },
     // { name: 'Token ID', value: bid?.token_id },
     // { name: 'Auction ID', value: bid?.auction_id },
@@ -261,7 +268,15 @@ const BidItem: FC<{ bid: BidType; auction: AuctionType | undefined }> = ({
       }}
     >
       {bidData?.map((bidData, index) => (
-        <td key={index} className="border border-gray-500 h-16">
+        <td
+          key={index}
+          className={
+            bidData?.name === 'Bidder Address'
+              ? 'cursor-pointer underline hover:text-sky-500'
+              : 'border border-gray-500 h-16'
+          }
+          onClick={() => onClickAddress(bid?.bidder_address)}
+        >
           {bidData?.value}
         </td>
       ))}
@@ -277,7 +292,7 @@ const CurrentBids: FC<{
     { name: 'Bidder Address' },
     { name: 'Bid Amount (WETH)' },
     { name: 'Placed At' },
-    { name: 'Updated At' },
+    // { name: 'Updated At' },
     // { name: 'Contract Address' },
     // { name: 'Token ID' },
     // { name: 'Auction ID' },
@@ -287,28 +302,40 @@ const CurrentBids: FC<{
       className="font-poppins text-[#D7D7D7] lg:text-lg px-2 lg:px-4 max-h-[300px]
     overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
     >
-      <table className="w-full overflow-x-auto text-center border border-gray-500">
-        <thead>
-          <tr className="h-16">
-            {tableHeadings.map((heading) => (
-              <th key={heading.name} className="border border-gray-500 h-16">
-                {heading.name}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {bids?.length &&
-            bids.map((bid, index) => {
-              return <BidItem key={index} bid={bid} auction={auction} />
-            })}
-          {bids?.length === 0 && (
-            <tr>
-              <td>Bids</td>
+      {bids?.[0] && (
+        <table className="w-full overflow-x-auto text-center border border-gray-500">
+          <thead>
+            <tr className="h-16">
+              {tableHeadings.map((heading) => (
+                <th key={heading.name} className="border border-gray-500 h-16">
+                  {heading.name}
+                </th>
+              ))}
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {bids?.length &&
+              bids.map((bid, index) => {
+                return <BidItem key={index} bid={bid} auction={auction} />
+              })}
+            {bids?.length === 0 && (
+              // <tr>
+              <td>Bids</td>
+              // </tr>
+            )}
+          </tbody>
+        </table>
+      )}
+      {bids?.length === 0 && (
+        // <tr>
+        <p className="text-center b text-3xl p-12">- No Bids yet -</p>
+        // </tr>
+      )}
+      {!auction && (
+        // <tr>
+        <p className="text-center b text-3xl p-12">-The NFT not on auction-</p>
+        // </tr>
+      )}
     </div>
   )
 }
