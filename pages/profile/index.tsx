@@ -2,9 +2,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { Dispatch, FC, SetStateAction, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { FaHamburger } from 'react-icons/fa'
+import { useQuery } from 'react-query'
+import { useAccount } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
+import withProtection from '../../components/withProtection'
 import { AvatarType } from '../../interfaces'
 import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 import historyIcon from '../../public/images/icons/Activity.svg'
@@ -14,6 +17,8 @@ import collectionIcon from '../../public/images/icons/Folder.svg'
 import messageIcon from '../../public/images/icons/Message.svg'
 import settingsIcon from '../../public/images/icons/Setting.svg'
 import walletIcon from '../../public/images/icons/Wallet.svg'
+import { QUERIES } from '../../react-query/constants'
+import { getUserNfts } from '../../react-query/queries'
 import {
   fromLeftAnimation,
   fromRightAnimation,
@@ -207,6 +212,19 @@ const ProfilePage: NextPage = () => {
   const [isCollections, setIsCollections] = useState(true)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { width } = useWindowDimensions()
+  const { address } = useAccount()
+  const { data } = useQuery(
+    [QUERIES.getUserNfts, address],
+    () => getUserNfts(address || ''),
+    { enabled: !!address }
+  )
+  const [nfts, setNfts] = useState<AvatarType[]>()
+
+  useEffect(() => {
+    if (data?.data) {
+      setNfts(data.data)
+    }
+  }, [data?.data])
 
   const handleDelay = (index: number): number => {
     if (width >= 1536) {
@@ -310,23 +328,29 @@ const ProfilePage: NextPage = () => {
               className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
           gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
             >
-              {avatars?.map((cardData, index) => (
-                <motion.div
-                  className="flex justify-center"
-                  key={index}
-                  variants={opacityAnimation}
-                  initial="initial"
-                  whileInView="final"
-                  viewport={{ once: true }}
-                  transition={{
-                    ease: 'easeInOut',
-                    duration: 0.6,
-                    delay: handleDelay(index),
-                  }}
-                >
-                  <AvatarCard {...cardData} />
-                </motion.div>
-              ))}
+              {nfts?.length &&
+                nfts.map((cardData, index) => (
+                  <motion.div
+                    className="flex justify-center"
+                    key={index}
+                    variants={opacityAnimation}
+                    initial="initial"
+                    whileInView="final"
+                    viewport={{ once: true }}
+                    transition={{
+                      ease: 'easeInOut',
+                      duration: 0.6,
+                      delay: handleDelay(index),
+                    }}
+                  >
+                    <AvatarCard {...cardData} />
+                  </motion.div>
+                ))}
+              {nfts?.length === 0 && (
+                <p className="text-white font-poppins p-4">
+                  No NFTs owned by this user
+                </p>
+              )}
             </div>
           </motion.div>
         </div>
@@ -352,4 +376,4 @@ const ProfilePage: NextPage = () => {
   )
 }
 
-export default ProfilePage
+export default withProtection(ProfilePage)
