@@ -49,3 +49,6 @@ export const placeBid = (data: NftBidBodyType) => {
 export const cancelBid = (data: nftCancelbidType) => {
   return axiosInstance.post('/nft-marketplace/cancel-bid', data)
 }
+
+export const getUserNfts = (ownerAddress: string) =>
+  axiosInstance.get(`/nft/get-user-nfts/${ownerAddress}`)
