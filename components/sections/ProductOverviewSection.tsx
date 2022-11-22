@@ -14,6 +14,7 @@ import {
 } from '../../interfaces'
 // import ownerImg from '../../public/images/others/owner.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
+import { DEAD_ADDRESS } from '../../utils/constants'
 import useIsMounted from '../../utils/hooks/useIsMounted'
 import CancelAuctionModal from '../modals/CancelAuctionModal'
 import CancelBidModal from '../modals/CancelBidModal'
@@ -230,8 +231,7 @@ const ProductOverviewSection: FC<{
               {/* <Image src={ownerImg} alt="" /> */}
             </div>
             <div className="font-poppins">
-              {nft?.token_owner !==
-                '0x000000000000000000000000000000000000dead' && (
+              {nft?.token_owner !== DEAD_ADDRESS && (
                 <>
                   <p className="text-gray-600 text-sm lg:text-base">Owner</p>
                   <p className="font-medium text-white text-sm lg:text-base">
@@ -253,8 +253,7 @@ const ProductOverviewSection: FC<{
                   </p>
                 </>
               )}
-              {nft?.token_owner ===
-                '0x000000000000000000000000000000000000dead' && (
+              {nft?.token_owner === DEAD_ADDRESS && (
                 <p className="text-white text-sm lg:text-base">
                   This token is burned
                 </p>
@@ -281,8 +280,7 @@ const ProductOverviewSection: FC<{
           >
             Purchase Now
           </button> */}
-          {nft?.token_owner !==
-            '0x000000000000000000000000000000000000dead' && (
+          {nft?.token_owner !== DEAD_ADDRESS && (
             <button
               className="w-full btn-primary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
               onClick={handleClick}

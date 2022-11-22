@@ -594,6 +594,7 @@ const CollectionPage: NextPage = () => {
 
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },
+    { name: 'collections', route: '/collections' },
     { name: collectionName ? collectionName : 'Collection', route: '/' },
   ]
 
