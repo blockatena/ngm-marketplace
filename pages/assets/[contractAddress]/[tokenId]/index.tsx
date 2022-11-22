@@ -8,6 +8,7 @@ import PageHeading from '../../../../components/PageHeading'
 import DescriptionBidHistorySection from '../../../../components/sections/DescriptionBidHistorySection'
 import ExploreSection from '../../../../components/sections/ExploreSection'
 import ProductOverviewSection from '../../../../components/sections/ProductOverviewSection'
+import withProtection from '../../../../components/withProtection'
 import type {
   AuctionType,
   AvatarType,
@@ -18,9 +19,7 @@ import type {
 import leftVector from '../../../../public/images/others/left_vector.png'
 import rightVector from '../../../../public/images/others/right_vector.png'
 import { QUERIES } from '../../../../react-query/constants'
-import {
-  getSingleNft,
-} from '../../../../react-query/queries'
+import { getSingleNft } from '../../../../react-query/queries'
 
 const initalNftState: AvatarType = {
   _id: '',
@@ -52,7 +51,11 @@ const ViewAssetPage: NextPage = () => {
   const [endTime, setEndTime] = useState('')
   const [bids, setBids] = useState<BidType[]>()
   const [auctionDetails, setAuctionDetails] = useState<AuctionType>()
-  const refetchtime:number = parseInt(process.env.NEXT_PUBLIC_REFETCH_TIME?process.env.NEXT_PUBLIC_REFETCH_TIME:'30000')
+  const refetchtime: number = parseInt(
+    process.env.NEXT_PUBLIC_REFETCH_TIME
+      ? process.env.NEXT_PUBLIC_REFETCH_TIME
+      : '30000'
+  )
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId),
@@ -141,4 +144,4 @@ const ViewAssetPage: NextPage = () => {
   )
 }
 
-export default ViewAssetPage
+export default withProtection(ViewAssetPage)

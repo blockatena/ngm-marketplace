@@ -17,6 +17,10 @@ const ConnectButton: FC = () => {
   const isMounted = useIsMounted()
 
   const handleClick = () => {
+    if (isMounted && !isConnected && router.asPath === '/') {
+      router.push('/profile')
+      return
+    }
     isMounted && !isConnected && router.push('/connect-wallet')
   }
 
