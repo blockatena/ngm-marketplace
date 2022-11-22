@@ -18,7 +18,7 @@ import {
   BidType,
   NftContractType,
 } from '../../interfaces'
-import { opacityAnimation } from '../../utils/animations'
+import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
 
 ChartJS.register(
   CategoryScale,
@@ -41,7 +41,6 @@ const tabsData = [
   //   label: 'Bid History',
   // },
 ]
-
 
 export const AvatarData = [
   {
@@ -221,14 +220,18 @@ const shortenString = (value: string) => {
 //   )
 // }
 
-const onClickAddress = (user)=>{
-      let url = `https://mumbai.polygonscan.com/address/${user}`
-      window.open(url, '_blank')
+const onClickAddress = (user) => {
+  let url = `https://mumbai.polygonscan.com/address/${user}`
+  window.open(url, '_blank')
 }
-  
 
-const BidItem: FC<{ bid: BidType; auction: AuctionType | undefined }> = ({
+const BidItem: FC<{
+  bid: BidType
+  auction: AuctionType | undefined
+  index: number
+}> = ({
   bid,
+  index,
   // auction,
 }) => {
   let timePlaced = ''
@@ -244,6 +247,11 @@ const BidItem: FC<{ bid: BidType; auction: AuctionType | undefined }> = ({
     // timeUpdated = d.toLocaleString()
   }
 
+  let bgColor = 'bg-transparent'
+  if (index % 2 === 0) {
+    bgColor = 'bg-[#070707]'
+  }
+
   const bidData = [
     { name: 'Bidder Address', value: shortenString(bid?.bidder_address) },
     { name: 'Bid Amount', value: bid?.bid_amount },
@@ -256,15 +264,15 @@ const BidItem: FC<{ bid: BidType; auction: AuctionType | undefined }> = ({
 
   return (
     <motion.tr
-      className="font-poppins text-[#D7D7D7] lg:text-lg py-2 h-16"
-      variants={opacityAnimation}
+      className={`${bgColor} font-poppins text-[#D7D7D7] lg:text-lg py-2 h-16`}
+      variants={fromRightAnimation}
       initial="initial"
       whileInView="final"
       viewport={{ once: true }}
       transition={{
         ease: 'easeInOut',
         duration: 0.4,
-        delay: 0.1,
+        delay: 0.1 * index,
       }}
     >
       {bidData?.map((bidData, index) => (
@@ -273,7 +281,7 @@ const BidItem: FC<{ bid: BidType; auction: AuctionType | undefined }> = ({
           className={
             bidData?.name === 'Bidder Address'
               ? 'cursor-pointer underline hover:text-sky-500'
-              : 'border border-gray-500 h-16'
+              : 'h-16'
           }
           onClick={() => onClickAddress(bid?.bidder_address)}
         >
@@ -299,15 +307,15 @@ const CurrentBids: FC<{
   ]
   return (
     <div
-      className="font-poppins text-[#D7D7D7] lg:text-lg px-2 lg:px-4 max-h-[300px]
+      className="font-poppins text-[#D7D7D7] lg:text-lg px-2 lg:px-4 max-h-[300px] lg:overflow-x-hidden
     overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
     >
       {bids?.[0] && (
-        <table className="w-full overflow-x-auto text-center border border-gray-500">
+        <table className="w-full overflow-x-auto text-center">
           <thead>
             <tr className="h-16">
               {tableHeadings.map((heading) => (
-                <th key={heading.name} className="border border-gray-500 h-16">
+                <th key={heading.name} className="h-16">
                   {heading.name}
                 </th>
               ))}
@@ -316,7 +324,14 @@ const CurrentBids: FC<{
           <tbody>
             {bids?.length &&
               bids.map((bid, index) => {
-                return <BidItem key={index} bid={bid} auction={auction} />
+                return (
+                  <BidItem
+                    key={index}
+                    bid={bid}
+                    auction={auction}
+                    index={index}
+                  />
+                )
               })}
             {bids?.length === 0 && (
               // <tr>
