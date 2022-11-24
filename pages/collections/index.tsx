@@ -77,9 +77,10 @@ const selectData: selectDataType[] = [
 
 const CollectionsPage: NextPage = () => {
   const { width } = useWindowDimensions()
-  const { data, isSuccess } = useQuery(QUERIES.getCollections, () =>
-    getCollections()
+  const { data, isSuccess, refetch } = useQuery(QUERIES.getCollections, () =>
+    getCollections(currentPage, perPage)
   )
+
   const [selectedItem, setSelectedItem] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [collections, setCollections] = useState<CollectionCardType[]>([])
@@ -87,10 +88,21 @@ const CollectionsPage: NextPage = () => {
   const [dataDescending, setDataDescending] = useState<CollectionCardType[]>([])
   const [dataUnsorted, setDataUnsorted] = useState<CollectionCardType[]>([])
   const [dataRecent, setDataRecent] = useState<CollectionCardType[]>([])
-
+  const [totalPages,setTotalPages] = useState(1)
+  const perPage = 6;
+  const [total,setTotalCollections] = useState(18);
   // const collectionsData: CollectionCardType[] = data?.data
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+  const paginate = async (pageNumber: number) => {
+      await setCurrentPage(pageNumber)
+      await refetch()
+      await setCollections(dataUnsorted)
+      return;
+  }
+
+  useEffect(()=>{
+    paginate;
+  })
 
   const compareAscending = (
     a: { collection_name: string },
@@ -123,8 +135,10 @@ const CollectionsPage: NextPage = () => {
       setCollections(dataRecent)
     } else {
       setCollections(dataUnsorted)
+      setTotalCollections(data?.data?.totalCollections || 18)
+      setTotalPages(total/perPage);
     }
-  }, [selectedItem, dataAscending, dataUnsorted, dataDescending, dataRecent])
+  }, [selectedItem, dataAscending, dataUnsorted, dataDescending, dataRecent,data?.data?.totalCollections,perPage,total])
 
   useEffect(() => {
     if (data?.data.length) {
@@ -184,7 +198,7 @@ const CollectionsPage: NextPage = () => {
         <Pagination
           // itemsPerPage={18}
           // totalItems={18}
-          totalPages={1}
+          totalPages={totalPages}
           paginate={paginate}
           currentPage={currentPage}
         />

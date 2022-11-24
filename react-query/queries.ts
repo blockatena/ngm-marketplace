@@ -5,8 +5,8 @@ import type {
   nftCancelbidType,
 } from '../interfaces'
 
-export const getCollections = () => {
-  return axiosInstance.get('/nft/get-collections')
+export const getCollections = (page:any,perPage:any) => {
+  return axiosInstance.get(`/nft/get-collections/${page}/${perPage}`)
 }
 
 export const getCollectionNFTs = (ContractAddress: any) => {
