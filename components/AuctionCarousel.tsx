@@ -101,7 +101,7 @@ const AuctionCarousel: FC = () => {
     currentCardWidth = 370
   }
 
-  const collectionsData: CollectionCardType[] = data?.data
+  const collectionsData: CollectionCardType[] = data?.data?.collections
 
   return (
     <div>

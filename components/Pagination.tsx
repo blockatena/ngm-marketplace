@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, Fragment, useEffect, useState } from 'react'
 
 interface PaginationProps {
   // itemsPerPage: number
@@ -32,19 +32,33 @@ const Pagination: FC<PaginationProps> = ({
     <nav className="text-white">
       <ul className="flex gap-1">
         {pageNumbers?.length !== 0 &&
-          pageNumbers.map((number) => (
-            <li
-              key={number}
-              onClick={() => paginate(number)}
-              className={` bg-[#333335] cursor-pointer py-1 px-2 rounded-sm font-inter text-sm lg:text-lg ${
-                currentPage === number
-                  ? ' text-[#F4F4F4] shadow-inner shadow-[#f4f4f4]'
-                  : 'text-[#949191]'
-              }`}
-            >
-              {number}
-            </li>
-          ))}
+          pageNumbers.map((number) => {
+            if (
+              number === 1 ||
+              number === currentPage ||
+              number === pageNumbers.length ||
+              number === currentPage + 1 ||
+              number === currentPage - 1
+            ) {
+              return (
+                <Fragment key={number}>
+                  {number === pageNumbers.length &&
+                    pageNumbers.length > 3 &&
+                    '...'}
+                  <li
+                    onClick={() => paginate(number)}
+                    className={` bg-[#333335] cursor-pointer py-1 px-2 rounded-sm font-inter text-sm lg:text-lg ${
+                      currentPage === number
+                        ? ' text-[#F4F4F4] shadow-inner shadow-[#f4f4f4]'
+                        : 'text-[#949191]'
+                    }`}
+                  >
+                    {number}
+                  </li>
+                </Fragment>
+              )
+            }
+          })}
       </ul>
     </nav>
   )
