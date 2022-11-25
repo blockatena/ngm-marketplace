@@ -31,7 +31,7 @@ const Pagination: FC<PaginationProps> = ({
   return (
     <nav className="text-white">
       <ul className="flex gap-1">
-        {pageNumbers?.length &&
+        {pageNumbers?.length !== 0 &&
           pageNumbers.map((number) => (
             <li
               key={number}
