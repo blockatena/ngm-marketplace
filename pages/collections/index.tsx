@@ -77,32 +77,22 @@ const selectData: selectDataType[] = [
 
 const CollectionsPage: NextPage = () => {
   const { width } = useWindowDimensions()
-  const { data, isSuccess, refetch } = useQuery(QUERIES.getCollections, () =>
-    getCollections(currentPage, perPage)
-  )
-
-  const [selectedItem, setSelectedItem] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const { data, isSuccess } = useQuery(
+    [QUERIES.getCollections, currentPage],
+    () => getCollections(currentPage)
+  )
+  const [selectedItem, setSelectedItem] = useState('')
   const [collections, setCollections] = useState<CollectionCardType[]>([])
   const [dataAscending, setDataAscending] = useState<CollectionCardType[]>([])
   const [dataDescending, setDataDescending] = useState<CollectionCardType[]>([])
   const [dataUnsorted, setDataUnsorted] = useState<CollectionCardType[]>([])
   const [dataRecent, setDataRecent] = useState<CollectionCardType[]>([])
-  const [totalPages,setTotalPages] = useState(1)
-  const perPage = 6;
-  const [total,setTotalCollections] = useState(18);
+
   // const collectionsData: CollectionCardType[] = data?.data
 
-  const paginate = async (pageNumber: number) => {
-      await setCurrentPage(pageNumber)
-      await refetch()
-      await setCollections(dataUnsorted)
-      return;
-  }
-
-  useEffect(()=>{
-    paginate;
-  })
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
   const compareAscending = (
     a: { collection_name: string },
@@ -135,18 +125,18 @@ const CollectionsPage: NextPage = () => {
       setCollections(dataRecent)
     } else {
       setCollections(dataUnsorted)
-      setTotalCollections(data?.data?.totalCollections || 18)
-      setTotalPages(total/perPage);
     }
-  }, [selectedItem, dataAscending, dataUnsorted, dataDescending, dataRecent,data?.data?.totalCollections,perPage,total])
+  }, [selectedItem, dataAscending, dataUnsorted, dataDescending, dataRecent])
 
   useEffect(() => {
-    if (data?.data.length) {
-      let unsortedData = data.data
+    if (data?.data?.collections.length) {
+      let unsortedData = data.data.collections
       const newArr = [...unsortedData]
       const newArr2 = [...unsortedData]
       const newArr3 = [...unsortedData]
       setDataUnsorted(unsortedData)
+      setTotalPages(data?.data?.total_pages)
+      setCurrentPage(Number(data?.data?.currentPage))
       const ascendingArr = newArr.sort(compareAscending)
       setDataAscending(ascendingArr)
       const descendingArr = newArr2.sort(compareDescending)
@@ -196,8 +186,6 @@ const CollectionsPage: NextPage = () => {
       </div>
       <div className="my-12 lg:my-20 flex justify-end">
         <Pagination
-          // itemsPerPage={18}
-          // totalItems={18}
           totalPages={totalPages}
           paginate={paginate}
           currentPage={currentPage}

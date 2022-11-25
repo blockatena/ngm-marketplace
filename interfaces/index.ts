@@ -198,11 +198,18 @@ export type AuctionType = {
   __v: number
 }
 
-
 export type nftCancelbidType = {
-  
   bidder_address: string
   token_id: string
   contract_address: string
+}
 
+export type UserNftsBodyType = {
+  contract_address?: string
+  token_owner: `0x${string}` | undefined
+  listed_in?: string
+  page_number: number
+  items_per_page: number
+  order: 'NewToOld' | 'OldToNew'
+  alphabetical_order: 'AtoZ' | 'ZtoA'
 }
