@@ -194,7 +194,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
   }
 
   let bottomStyle = 'avatar-btn-right'
-  if (isMounted && (!is_in_auction || address === token_owner)) {
+  if (isMounted && !is_in_auction) {
     bottomStyle = 'rounded-l-lg'
   }
 

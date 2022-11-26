@@ -4,11 +4,11 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { FaHamburger } from 'react-icons/fa'
-import { useQuery } from 'react-query'
-import { useAccount } from 'wagmi'
+import { useAccount, useMutation } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
+import Pagination from '../../components/Pagination'
 import withProtection from '../../components/withProtection'
-import { AvatarType } from '../../interfaces'
+import { AvatarType, UserNftsBodyType } from '../../interfaces'
 import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 import historyIcon from '../../public/images/icons/Activity.svg'
 import categoryIcon from '../../public/images/icons/Category.svg'
@@ -17,7 +17,6 @@ import collectionIcon from '../../public/images/icons/Folder.svg'
 import messageIcon from '../../public/images/icons/Message.svg'
 import settingsIcon from '../../public/images/icons/Setting.svg'
 import walletIcon from '../../public/images/icons/Wallet.svg'
-import { QUERIES } from '../../react-query/constants'
 import { getUserNfts } from '../../react-query/queries'
 import {
   fromLeftAnimation,
@@ -208,21 +207,44 @@ const Drawer: FC<{
   )
 }
 
+const ITEMS_PER_PAGE = 12
+const ALPHABETICAL_ORDER = 'AtoZ'
+const ORDER = 'NewToOld'
+
 const ProfilePage: NextPage = () => {
   const [isCollections, setIsCollections] = useState(true)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [nfts, setNfts] = useState<AvatarType[]>()
   const { width } = useWindowDimensions()
   const { address } = useAccount()
-  const { data } = useQuery(
-    [QUERIES.getUserNfts, address],
-    () => getUserNfts(address || ''),
-    { enabled: !!address }
-  )
-  const [nfts, setNfts] = useState<AvatarType[]>()
+  const { mutate, data } = useMutation(getUserNfts)
+
+  // const { data } = useQuery(
+  //   [QUERIES.getUserNfts, address],
+  //   () => getUserNfts(address || '', currentPage),
+  //   { enabled: !!address }
+  // )
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
   useEffect(() => {
-    if (data?.data) {
-      setNfts(data.data)
+    let body: UserNftsBodyType = {
+      token_owner: address,
+      page_number: currentPage,
+      items_per_page: ITEMS_PER_PAGE,
+      alphabetical_order: ALPHABETICAL_ORDER,
+      order: ORDER,
+    }
+    address && mutate(body)
+  }, [mutate, address, currentPage])
+
+  useEffect(() => {
+    if (data?.data?.nfts) {
+      setNfts(data.data.nfts)
+      setCurrentPage(data.data.currentPage)
+      setTotalPages(data.data.total_pages)
     }
   }, [data?.data])
 
@@ -351,6 +373,13 @@ const ProfilePage: NextPage = () => {
                   No NFTs owned by this user
                 </p>
               )}
+            </div>
+            <div className="flex justify-end p-4 pb-10">
+              <Pagination
+                totalPages={totalPages}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
             </div>
           </motion.div>
         </div>
