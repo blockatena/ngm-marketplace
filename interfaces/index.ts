@@ -204,9 +204,9 @@ export type nftCancelbidType = {
   contract_address: string
 }
 
-export type UserNftsBodyType = {
+export type CollectionNftsBodyType = {
   contract_address?: string
-  token_owner: `0x${string}` | undefined
+  token_owner?: `0x${string}` | undefined
   listed_in?: string
   page_number: number
   items_per_page: number
