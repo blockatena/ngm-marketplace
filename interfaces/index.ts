@@ -204,12 +204,21 @@ export type nftCancelbidType = {
   contract_address: string
 }
 
-export type UserNftsBodyType = {
+export type CollectionNftsBodyType = {
   contract_address?: string
-  token_owner: `0x${string}` | undefined
+  token_owner?: `0x${string}` | undefined
   listed_in?: string
   page_number: number
   items_per_page: number
   order: 'NewToOld' | 'OldToNew'
   alphabetical_order: 'AtoZ' | 'ZtoA'
+}
+
+export type NftSaleBodyType = {
+  token_owner: string
+  contract_address: string
+  token_id: string
+  start_date: string
+  end_date: string
+  price: string
 }
