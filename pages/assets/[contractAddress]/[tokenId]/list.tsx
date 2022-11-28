@@ -4,6 +4,7 @@ import { NextPage } from 'next'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { ChangeEvent, useEffect, useState } from 'react'
+import { AiFillCheckSquare, AiOutlineClockCircle } from 'react-icons/ai'
 import { useMutation, useQuery } from 'react-query'
 import { toast } from 'react-toastify'
 import AvatarCard from '../../../../components/AvatarCard'
@@ -316,7 +317,7 @@ const ListAssetPage: NextPage = () => {
             lg:text-[28px] flex p-1 border border-[#4D4D49] shadow-inner"
               >
                 <div
-                  className={`flex items-center justify-center gap-2 w-1/2  cursor-pointer 
+                  className={`flex items-center justify-center gap-2 w-1/2  cursor-pointer transition-all duration-500
                 ${
                   type === 'auction' &&
                   'rounded-l-2xl rounded-r-2xl bg-[#4D4D49]'
@@ -324,12 +325,13 @@ const ListAssetPage: NextPage = () => {
                   onClick={() => setType('auction')}
                 >
                   <p>
-                    <Image
+                    {/* <Image
                       src="/images/icons/clock.svg"
                       alt="icon"
                       width="24px"
                       height="24px"
-                    />
+                    /> */}
+                    <AiOutlineClockCircle fontSize={24} />
                   </p>
                   <p>Time Auction</p>
                 </div>
@@ -342,12 +344,7 @@ const ListAssetPage: NextPage = () => {
                   onClick={() => setType('fixed')}
                 >
                   <p>
-                    <Image
-                      src="/images/icons/clock.svg"
-                      alt="icon"
-                      width="24px"
-                      height="24px"
-                    />
+                    <AiFillCheckSquare fontSize={24} />
                   </p>
                   <p>Fixed Sale</p>
                 </div>
