@@ -13,8 +13,10 @@ const withProtection: withProtectionFn = (Component) => {
     const isMounted = useIsMounted()
 
     useEffect(() => {
-      if (isMounted && !isConnected) router.push('/connect-wallet')
-    })
+      if (!isConnected) router.push('/connect-wallet')
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isConnected])
 
     return isConnected && isMounted ? (
       <Component {...props} />

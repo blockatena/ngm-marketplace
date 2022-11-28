@@ -2,10 +2,13 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { Dispatch, FC, SetStateAction, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { FaHamburger } from 'react-icons/fa'
+import { useAccount, useMutation } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
-import { AvatarType } from '../../interfaces'
+import Pagination from '../../components/Pagination'
+import withProtection from '../../components/withProtection'
+import { AvatarType, UserNftsBodyType } from '../../interfaces'
 import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 import historyIcon from '../../public/images/icons/Activity.svg'
 import categoryIcon from '../../public/images/icons/Category.svg'
@@ -14,6 +17,7 @@ import collectionIcon from '../../public/images/icons/Folder.svg'
 import messageIcon from '../../public/images/icons/Message.svg'
 import settingsIcon from '../../public/images/icons/Setting.svg'
 import walletIcon from '../../public/images/icons/Wallet.svg'
+import { getUserNfts } from '../../react-query/queries'
 import {
   fromLeftAnimation,
   fromRightAnimation,
@@ -30,130 +34,130 @@ const routes = [
   { name: 'settings', route: '/', icon: settingsIcon },
 ]
 
-const avatars: AvatarType[] = [
-  {
-    _id: '',
-    contract_address: '',
-    contract_type: '',
-    token_id: '0',
-    meta_data_url: '',
-    is_in_auction: false,
-    is_in_sale: false,
-    token_owner: '',
-    createdAt: '',
-    updatedAt: '',
-    __v: 0,
-    meta_data: {
-      name: '',
-      image: '',
-      description: '',
-      external_uri: '',
-      attributes: [{ name: '', value: '' }],
-    },
-  },
-  {
-    _id: '',
-    contract_address: '',
-    contract_type: '',
-    token_id: '0',
-    meta_data_url: '',
-    is_in_auction: false,
-    is_in_sale: false,
-    token_owner: '',
-    createdAt: '',
-    updatedAt: '',
-    __v: 0,
-    meta_data: {
-      name: '',
-      image: '',
-      description: '',
-      external_uri: '',
-      attributes: [{ name: '', value: '' }],
-    },
-  },
-  {
-    _id: '',
-    contract_address: '',
-    contract_type: '',
-    token_id: '0',
-    meta_data_url: '',
-    is_in_auction: false,
-    is_in_sale: false,
-    token_owner: '',
-    createdAt: '',
-    updatedAt: '',
-    __v: 0,
-    meta_data: {
-      name: '',
-      image: '',
-      description: '',
-      external_uri: '',
-      attributes: [{ name: '', value: '' }],
-    },
-  },
-  // {
-  //   contract_details: {
-  //     _id: '',
-  //     symbol: '',
-  //     owner_address: '',
-  //     collection_name: '',
-  //     chain: '',
-  //     type: '',
-  //     transactionhash: '',
-  //     contract_address: '',
-  //     description: '',
-  //     baseuri: '',
-  //     imageuri: ['', ''],
-  //     createdAt: '',
-  //     updatedAt: '',
-  //     __v: 0,
-  //   },
-  //   nft: {
-  //     _id: '',
-  //     contract_address: '',
-  //     contract_type: '',
-  //     token_id: '0',
-  //     meta_data_url: '',
-  //     is_in_auction: false,
-  //     is_in_sale: false,
-  //     token_owner: '',
-  //     createdAt: '',
-  //     updatedAt: '',
-  //     __v: 0,
-  //   },
-  // },
-  // {
-  //   token_id: '12',
-  //   name: 'Crypto',
-  //   img: '/images/auction/auction_img_6.svg',
-  //   is_in_auction: false,
-  //   contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-  //   contract_type: '',
-  //   createdAt: '',
-  //   is_in_sale: false,
-  //   meta_data_url: '',
-  //   token_owner: '',
-  //   updatedAt: '',
-  //   __v: 0,
-  //   _id: '',
-  //   contract_details: {
-  //     _id: '',
-  //     symbol: '',
-  //     owner_address: '',
-  //     collection_name: '',
-  //     chain: '',
-  //     type: '',
-  //     transactionhash: '',
-  //     contract_address: '',
-  //     baseuri: '',
-  //     createdAt: '',
-  //     updatedAt: '',
-  //     __v: 0,
-  //     description: '',
-  //     imageuri: ['', ''],
-  //   },
-  // },
-]
+// const avatars: AvatarType[] = [
+//   {
+//     _id: '',
+//     contract_address: '',
+//     contract_type: '',
+//     token_id: '0',
+//     meta_data_url: '',
+//     is_in_auction: false,
+//     is_in_sale: false,
+//     token_owner: '',
+//     createdAt: '',
+//     updatedAt: '',
+//     __v: 0,
+//     meta_data: {
+//       name: '',
+//       image: '',
+//       description: '',
+//       external_uri: '',
+//       attributes: [{ name: '', value: '' }],
+//     },
+//   },
+//   {
+//     _id: '',
+//     contract_address: '',
+//     contract_type: '',
+//     token_id: '0',
+//     meta_data_url: '',
+//     is_in_auction: false,
+//     is_in_sale: false,
+//     token_owner: '',
+//     createdAt: '',
+//     updatedAt: '',
+//     __v: 0,
+//     meta_data: {
+//       name: '',
+//       image: '',
+//       description: '',
+//       external_uri: '',
+//       attributes: [{ name: '', value: '' }],
+//     },
+//   },
+//   {
+//     _id: '',
+//     contract_address: '',
+//     contract_type: '',
+//     token_id: '0',
+//     meta_data_url: '',
+//     is_in_auction: false,
+//     is_in_sale: false,
+//     token_owner: '',
+//     createdAt: '',
+//     updatedAt: '',
+//     __v: 0,
+//     meta_data: {
+//       name: '',
+//       image: '',
+//       description: '',
+//       external_uri: '',
+//       attributes: [{ name: '', value: '' }],
+//     },
+//   },
+//   // {
+//   //   contract_details: {
+//   //     _id: '',
+//   //     symbol: '',
+//   //     owner_address: '',
+//   //     collection_name: '',
+//   //     chain: '',
+//   //     type: '',
+//   //     transactionhash: '',
+//   //     contract_address: '',
+//   //     description: '',
+//   //     baseuri: '',
+//   //     imageuri: ['', ''],
+//   //     createdAt: '',
+//   //     updatedAt: '',
+//   //     __v: 0,
+//   //   },
+//   //   nft: {
+//   //     _id: '',
+//   //     contract_address: '',
+//   //     contract_type: '',
+//   //     token_id: '0',
+//   //     meta_data_url: '',
+//   //     is_in_auction: false,
+//   //     is_in_sale: false,
+//   //     token_owner: '',
+//   //     createdAt: '',
+//   //     updatedAt: '',
+//   //     __v: 0,
+//   //   },
+//   // },
+//   // {
+//   //   token_id: '12',
+//   //   name: 'Crypto',
+//   //   img: '/images/auction/auction_img_6.svg',
+//   //   is_in_auction: false,
+//   //   contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
+//   //   contract_type: '',
+//   //   createdAt: '',
+//   //   is_in_sale: false,
+//   //   meta_data_url: '',
+//   //   token_owner: '',
+//   //   updatedAt: '',
+//   //   __v: 0,
+//   //   _id: '',
+//   //   contract_details: {
+//   //     _id: '',
+//   //     symbol: '',
+//   //     owner_address: '',
+//   //     collection_name: '',
+//   //     chain: '',
+//   //     type: '',
+//   //     transactionhash: '',
+//   //     contract_address: '',
+//   //     baseuri: '',
+//   //     createdAt: '',
+//   //     updatedAt: '',
+//   //     __v: 0,
+//   //     description: '',
+//   //     imageuri: ['', ''],
+//   //   },
+//   // },
+// ]
 
 const NavRoute: FC<{
   icon: string
@@ -203,10 +207,46 @@ const Drawer: FC<{
   )
 }
 
+const ITEMS_PER_PAGE = 12
+const ALPHABETICAL_ORDER = 'AtoZ'
+const ORDER = 'NewToOld'
+
 const ProfilePage: NextPage = () => {
   const [isCollections, setIsCollections] = useState(true)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [nfts, setNfts] = useState<AvatarType[]>()
   const { width } = useWindowDimensions()
+  const { address } = useAccount()
+  const { mutate, data } = useMutation(getUserNfts)
+
+  // const { data } = useQuery(
+  //   [QUERIES.getUserNfts, address],
+  //   () => getUserNfts(address || '', currentPage),
+  //   { enabled: !!address }
+  // )
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+
+  useEffect(() => {
+    let body: UserNftsBodyType = {
+      token_owner: address,
+      page_number: currentPage,
+      items_per_page: ITEMS_PER_PAGE,
+      alphabetical_order: ALPHABETICAL_ORDER,
+      order: ORDER,
+    }
+    address && mutate(body)
+  }, [mutate, address, currentPage])
+
+  useEffect(() => {
+    if (data?.data?.nfts) {
+      setNfts(data.data.nfts)
+      setCurrentPage(data.data.currentPage)
+      setTotalPages(data.data.total_pages)
+    }
+  }, [data?.data])
 
   const handleDelay = (index: number): number => {
     if (width >= 1536) {
@@ -310,23 +350,36 @@ const ProfilePage: NextPage = () => {
               className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
           gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
             >
-              {avatars?.map((cardData, index) => (
-                <motion.div
-                  className="flex justify-center"
-                  key={index}
-                  variants={opacityAnimation}
-                  initial="initial"
-                  whileInView="final"
-                  viewport={{ once: true }}
-                  transition={{
-                    ease: 'easeInOut',
-                    duration: 0.6,
-                    delay: handleDelay(index),
-                  }}
-                >
-                  <AvatarCard {...cardData} />
-                </motion.div>
-              ))}
+              {nfts?.length &&
+                nfts.map((cardData, index) => (
+                  <motion.div
+                    className="flex justify-center"
+                    key={index}
+                    variants={opacityAnimation}
+                    initial="initial"
+                    whileInView="final"
+                    viewport={{ once: true }}
+                    transition={{
+                      ease: 'easeInOut',
+                      duration: 0.6,
+                      delay: handleDelay(index),
+                    }}
+                  >
+                    <AvatarCard {...cardData} />
+                  </motion.div>
+                ))}
+              {nfts?.length === 0 && (
+                <p className="text-white font-poppins p-4">
+                  No NFTs owned by this user
+                </p>
+              )}
+            </div>
+            <div className="flex justify-end p-4 pb-10">
+              <Pagination
+                totalPages={totalPages}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
             </div>
           </motion.div>
         </div>
@@ -352,4 +405,4 @@ const ProfilePage: NextPage = () => {
   )
 }
 
-export default ProfilePage
+export default withProtection(ProfilePage)

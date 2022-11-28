@@ -77,11 +77,13 @@ const selectData: selectDataType[] = [
 
 const CollectionsPage: NextPage = () => {
   const { width } = useWindowDimensions()
-  const { data, isSuccess } = useQuery(QUERIES.getCollections, () =>
-    getCollections()
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const { data, isSuccess } = useQuery(
+    [QUERIES.getCollections, currentPage],
+    () => getCollections(currentPage)
   )
   const [selectedItem, setSelectedItem] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
   const [collections, setCollections] = useState<CollectionCardType[]>([])
   const [dataAscending, setDataAscending] = useState<CollectionCardType[]>([])
   const [dataDescending, setDataDescending] = useState<CollectionCardType[]>([])
@@ -127,12 +129,14 @@ const CollectionsPage: NextPage = () => {
   }, [selectedItem, dataAscending, dataUnsorted, dataDescending, dataRecent])
 
   useEffect(() => {
-    if (data?.data.length) {
-      let unsortedData = data.data
+    if (data?.data?.collections.length) {
+      let unsortedData = data.data.collections
       const newArr = [...unsortedData]
       const newArr2 = [...unsortedData]
       const newArr3 = [...unsortedData]
       setDataUnsorted(unsortedData)
+      setTotalPages(data?.data?.total_pages)
+      setCurrentPage(Number(data?.data?.currentPage))
       const ascendingArr = newArr.sort(compareAscending)
       setDataAscending(ascendingArr)
       const descendingArr = newArr2.sort(compareDescending)
@@ -182,9 +186,7 @@ const CollectionsPage: NextPage = () => {
       </div>
       <div className="my-12 lg:my-20 flex justify-end">
         <Pagination
-          // itemsPerPage={18}
-          // totalItems={18}
-          totalPages={1}
+          totalPages={totalPages}
           paginate={paginate}
           currentPage={currentPage}
         />

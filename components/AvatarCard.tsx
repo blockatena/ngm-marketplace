@@ -7,7 +7,6 @@ import useIsMounted from '../utils/hooks/useIsMounted'
 
 const BaseURL = process.env.NEXT_PUBLIC_API_URL || ''
 interface AvatarCardProps extends AvatarType {
-
   // name: string
   // img: string
   variant?: 'xs' | 'sm' | 'lg'
@@ -34,25 +33,22 @@ interface AvatarCardProps extends AvatarType {
 // }
 
 // const placeholderImg = '/images/collections/placeholder.jpg'
-const TimerSection: FC<{ days: number;hours: number; minutes: number; seconds: number }> = ({
-  days,
-  hours,
-  minutes,
-  seconds,
-}) => {
-
+const TimerSection: FC<{
+  days: number
+  hours: number
+  minutes: number
+  seconds: number
+}> = ({ days, hours, minutes, seconds }) => {
   return (
     <div className="text-white  text-[9px] lg:text-xs pt-1 max-w-full">
-      {
-        days>0 &&
+      {days > 0 && (
         <>
-        <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
-          {days}
-        </span>
-        d{' '}
+          <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
+            {days}
+          </span>
+          d{' '}
         </>
-      }
-      
+      )}
       <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
         {hours}
       </span>
@@ -61,15 +57,14 @@ const TimerSection: FC<{ days: number;hours: number; minutes: number; seconds: n
         {minutes}
       </span>
       m{' '}
-      { days === 0 &&
-      <>
-      <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
-        {seconds}
-      </span>
-      s
-      </>
-      }
-      
+      {days === 0 && (
+        <>
+          <span className="rounded bg-gray-600 p-[2px] md:p-1 font-bold font-lora">
+            {seconds}
+          </span>
+          s
+        </>
+      )}
     </div>
   )
 }
@@ -88,17 +83,17 @@ const AvatarCard: FC<AvatarCardProps> = ({
   const [isSelected, setIsSelected] = useState(false)
   // const [Name, setName] = useState('')
   // const [Img, setImg] = useState('')
-  const [inputTime,setAuctionTime] = useState('')
-  const [auctionAmount,setAuctionAmount] = useState()
+  const [inputTime, setAuctionTime] = useState('')
+  const [auctionAmount, setAuctionAmount] = useState()
   const [shadow, setShadow] = useState('')
   const [cardProperties, setCardProperties] = useState({
     dimensions: 'w-[250px] h-[330px]',
   })
 
-  const [D,setD] = useState(0);
-  const [H,setH] = useState(0);
-  const [M,setM] = useState(0);
-  const [S,setS] = useState(0);
+  const [D, setD] = useState(0)
+  const [H, setH] = useState(0)
+  const [M, setM] = useState(0)
+  const [S, setS] = useState(0)
 
   const { address } = useAccount()
   const isMounted = useIsMounted()
@@ -123,7 +118,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
   // }, [meta_data_url])
 
   // console.log(nftinfo.name)
-  const ifInauction = ()=>{
+  const ifInauction = () => {
     if (!auctionAmount && !inputTime) {
       let url = `${BaseURL}/nft/get-nft/${contract_address}/${token_id}`
       if (is_in_auction) {
@@ -136,7 +131,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
       }
     }
   }
-  useEffect(()=>{
+  useEffect(() => {
     ifInauction()
   })
 
@@ -173,10 +168,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
     router.push(`/assets/${contract_address}/${token_id}`)
   }
 
-  
-
   if (is_in_auction === true) {
-
     setInterval(() => {
       if (Date.parse(inputTime) > Date.now()) {
         const Difference = (Date.parse(inputTime) - Date.now()) / 1000
@@ -199,6 +191,11 @@ const AvatarCard: FC<AvatarCardProps> = ({
     }, 1000)
   } else {
     //
+  }
+
+  let bottomStyle = 'avatar-btn-right'
+  if (isMounted && !is_in_auction) {
+    bottomStyle = 'rounded-l-lg'
   }
 
   return (
@@ -286,23 +283,22 @@ const AvatarCard: FC<AvatarCardProps> = ({
               </div>
             </div>
             <div className="flex  absolute top-10 -bottom-0 right-0 left-0 ">
-              
-              { is_in_auction &&
-              <div className="text-center grid place-items-center avatar-btn-left w-full  h-full bg-black text-gray-400 rounded-l-lg">
-                <p className="text-[10px] lg:text-xs font-poppins my-0">
-                  {is_in_auction ? 'Price' : ''}
-                </p>
-                <p className="text-[8px] lg:text-sm font-poppins font-medium my-0">
-                  {is_in_auction && <>{auctionAmount} Ξ</>}
-                </p>
-              </div>
-        }
+              {is_in_auction && (
+                <div className="text-center grid place-items-center avatar-btn-left w-full  h-full bg-black text-gray-400 rounded-l-lg">
+                  <p className="text-[10px] lg:text-xs font-poppins my-0">
+                    {is_in_auction ? 'Price' : ''}
+                  </p>
+                  <p className="text-[8px] lg:text-sm font-poppins font-medium my-0">
+                    {is_in_auction && <>{auctionAmount} Ξ</>}
+                  </p>
+                </div>
+              )}
 
               <div
                 role="button"
-                className="avatar-btn-right cursor-pointer w-full h-full bg-custom_yellow opacity-100
+                className={`${bottomStyle} cursor-pointer w-full h-full bg-custom_yellow opacity-100
         grid place-items-center text-black font-poppins font-semibold text-[13px] lg:text-base capitalize rounded-r-lg 
-        hover:bg-[#e6c518]"
+        hover:bg-[#e6c518]`}
                 onClick={handleClick}
               >
                 {isMounted && (!is_in_auction || address === token_owner)

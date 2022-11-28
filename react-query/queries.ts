@@ -3,10 +3,16 @@ import type {
   nftAuctionBodyType,
   NftBidBodyType,
   nftCancelbidType,
+  UserNftsBodyType,
 } from '../interfaces'
 
-export const getCollections = () => {
-  return axiosInstance.get('/nft/get-collections')
+export const getCollections = (
+  page_number: number,
+  items_per_page: number = 12
+) => {
+  return axiosInstance.get(
+    `/nft/get-collections/${page_number}/${items_per_page}`
+  )
 }
 
 export const getCollectionNFTs = (ContractAddress: any) => {
@@ -49,3 +55,6 @@ export const placeBid = (data: NftBidBodyType) => {
 export const cancelBid = (data: nftCancelbidType) => {
   return axiosInstance.post('/nft-marketplace/cancel-bid', data)
 }
+
+export const getUserNfts = (data: UserNftsBodyType) =>
+  axiosInstance.post(`/nft/get-nfts-listed-collection`, data)

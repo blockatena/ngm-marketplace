@@ -79,7 +79,7 @@ const CarouselItem: FC<CarouselItemProps> = ({
 }
 
 const AuctionCarousel: FC = () => {
-  const { data } = useQuery(QUERIES.getCollections, () => getCollections())
+  const { data } = useQuery(QUERIES.getCollections, () => getCollections(1))
   const { width } = useWindowDimensions()
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -101,7 +101,7 @@ const AuctionCarousel: FC = () => {
     currentCardWidth = 370
   }
 
-  const collectionsData: CollectionCardType[] = data?.data
+  const collectionsData: CollectionCardType[] = data?.data?.collections
 
   return (
     <div>
