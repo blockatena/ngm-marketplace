@@ -30,17 +30,7 @@ ChartJS.register(
   Legend
 )
 
-const tabsData = [
-  {
-    label: 'Description',
-  },
-  {
-    label: 'Current Bids',
-  },
-  // {
-  //   label: 'Bid History',
-  // },
-]
+
 
 export const AvatarData = [
   {
@@ -348,7 +338,9 @@ const CurrentBids: FC<{
       )}
       {!auction && (
         // <tr>
-        <p className="text-center b text-3xl p-12">-The NFT not on auction-</p>
+        <p className="text-center b text-3xl p-12">
+          -The NFT don&lsquo;t have any offers-
+        </p>
         // </tr>
       )}
     </div>
@@ -366,6 +358,21 @@ const DescriptionBidHistorySection: FC<{
   const [tabUnderlineLeft, setTabUnderlineLeft] = useState(0)
 
   const tabsRef = useRef([])
+
+  const tabsData = [
+    {
+      label: 'Description',
+    },
+    {
+      label:
+        nft?.is_in_auction === true
+          ? 'Current Bids'
+          : "Top Offers",
+    },
+    // {
+    //   label: 'Bid History',
+    // },
+  ]
 
   useEffect(() => {
     function setTabPosition() {

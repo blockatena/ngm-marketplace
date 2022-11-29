@@ -159,6 +159,11 @@ const ProductOverviewSection: FC<{
     //
   }
 
+  const onClickAddress = (owner:any) => {
+    let url = `https://mumbai.polygonscan.com/address/${owner}`
+    window.open(url, '_blank')
+  }
+
   return (
     <section className="flex flex-col xl:flex-row gap-4 lg:gap-0 2xl:gap-32 xl:justify-between p-0">
       <motion.div
@@ -249,10 +254,11 @@ const ProductOverviewSection: FC<{
                   <p className="font-medium text-white text-sm lg:text-base">
                     {/* SalvadorDali */}
                     <a
-                      href={`https://mumbai.polygonscan.com/address/${nft?.token_owner}`}
+                      // href={`https://mumbai.polygonscan.com/address/${nft?.token_owner}`}
+                      onClick={() => onClickAddress(nft?.token_owner?nft?.token_owner:'')}
                       target="_blank"
                       rel="noreferrer"
-                      className="underline hover:text-sky-500"
+                      className="underline hover:text-sky-500 cursor-pointer"
                     >
                       {nft?.token_owner &&
                         `${nft.token_owner.substring(

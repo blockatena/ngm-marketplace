@@ -12,7 +12,7 @@ const ExploreSection: FC<{
 }> = ({ contractAddress, tokenId}) => {
   const [explore, setExplore] = useState<AvatarType[]>([])
   const [Avatars, setAvatars] = useState<AvatarType[]>([])
-
+  const [token, settToken] = useState<Number>()
   // const DATA = useQuery(
   //   [QUERIES.getCollectionNFTs, contractAddress],
   //   () => getCollectionNFTs(contractAddress),
@@ -39,15 +39,27 @@ const ExploreSection: FC<{
     }
 
   }
-
-
+// eslint-disable-next-line react-hooks/exhaustive-deps
+useEffect(()=>{
+  if(token !== parseInt(tokenId)){
+    filter2(Avatars)
+    let tok = parseInt(tokenId)
+    settToken(tok)
+  } else
+  if(token == 0 && tokenId){
+    let tok = parseInt(tokenId)
+    settToken(tok)
+  }
+})
 
   useEffect(() => {
-    if (explore?.length > 0) {
-      return
-    } else {
+    if (explore[2]===undefined){
       filter2(Avatars)
-    }
+    } else if (explore?.length > 0) {
+        return
+      } else {
+        filter2(Avatars)
+      }
   })
 
   useEffect(() => {
@@ -60,15 +72,20 @@ const ExploreSection: FC<{
   const filter2 = (Avatars: any) => {
     if (Avatars?.length > 0) {
       var newItems = []
-      for (var i = 0; i < 3; i) {
+      for (var i = 0; i < 3; i++) {
         var idx = Math.floor(Math.random() * Avatars.length)
-        if (Avatars?.[idx]?.token_id !== tokenId) {
-          newItems.push(Avatars[idx])
-          Avatars.splice(idx, 1)
-          i++
-        }
+          if (
+            Avatars?.[idx]?.token_id !== tokenId ||
+            Avatars?.[idx]?.token_id
+          ) {
+            newItems.push(Avatars[idx])
+            Avatars.splice(idx, 1)
+          } else {i--
+          }
       }
-      setExplore(newItems)
+        setExplore(newItems)
+      
+      
     }
   }
 
