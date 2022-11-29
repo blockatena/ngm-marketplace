@@ -2,11 +2,12 @@ import { ethers } from 'ethers'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
-import { useMutation } from 'react-query'
+import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { useAccount } from 'wagmi'
 import { NGM20ABI } from '../../contracts/nftabi'
 import type { AvatarType, NftOfferBodyType } from '../../interfaces'
+import { QUERIES } from '../../react-query/constants'
 import { makeOffer } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
@@ -21,12 +22,17 @@ const MakeOfferModal: FC<{
   nft: AvatarType
   accountBalance: any
 }> = ({ setIsOpen, nft, accountBalance }) => {
+  const queryClient = useQueryClient()
   const { address } = useAccount()
   const [bidAmount, setBidAmount] = useState(0)
   const [loading, setLoading] = useState(false)
   // const [accountBalance, setAccountBalance] = useState('')
 
-  const { mutate, data, isLoading, isSuccess } = useMutation(makeOffer)
+  const { mutate, data, isLoading, isSuccess } = useMutation(makeOffer, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(QUERIES.getSingleNft)
+    },
+  })
 
   const onBid = async () => {
     if (nft?.token_owner === address) {
@@ -67,7 +73,6 @@ const MakeOfferModal: FC<{
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
     }
-    console.log(parseInt(inputAmt.toString()))
 
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
       toast.dark(`Your offer is greater than your wallet balance`, {
@@ -123,16 +128,11 @@ const MakeOfferModal: FC<{
 
   useEffect(() => {
     if (isSuccess) {
-      console.log('is Successfull')
-      toast.dark(
-        (typeof data?.data === 'string' && data.data) ||
-          (data?.data?.status === 'started' && 'Offer Made Successfully') ||
-          '',
-        {
-          hideProgressBar: true,
-        }
-      )
-      data?.data?.status === 'started' && setIsOpen(false)
+      toast.dark('Offer Made Successfully', {
+        hideProgressBar: true,
+        type: 'success',
+      })
+      setIsOpen(false)
     }
   }, [isSuccess, data?.data, setIsOpen])
 
