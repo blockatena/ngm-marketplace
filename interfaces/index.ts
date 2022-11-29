@@ -222,3 +222,10 @@ export type NftSaleBodyType = {
   end_date: string
   price: string
 }
+
+export type NftOfferBodyType = {
+  contract_address: string
+  token_id: string
+  offer_price: string
+  offer_person_address: string
+}

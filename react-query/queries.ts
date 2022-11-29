@@ -4,6 +4,7 @@ import type {
   nftAuctionBodyType,
   NftBidBodyType,
   nftCancelbidType,
+  NftOfferBodyType,
   NftSaleBodyType,
 } from '../interfaces'
 
@@ -73,4 +74,8 @@ export const cancelSale = (data: {
 
 export const getCollectionDetails = (contractAddress: string) => {
   return axiosInstance.get(`/nft/collection/${contractAddress}`)
+}
+
+export const makeOffer = (data: NftOfferBodyType) => {
+  return axiosInstance.post('/nft-marketplace/make-offer-to-nft', data)
 }

@@ -61,22 +61,21 @@ const ProductOverviewSection: FC<{
   const isBidCancellable = isUserIsBidder && nft?.is_in_auction
 
   const getBalance = async (address: `0x${string}` | undefined) => {
-    if (address) {
-      const ethereum = (window as any).ethereum
-      const accounts = await ethereum.request({
-        method: 'eth_requestAccounts',
-      })
-      const provider = new ethers.providers.JsonRpcProvider(
-        'https://rpc-mumbai.maticvigil.com/'
-      )
-      const walletAddress = accounts[0] // first account in MetaMask
-      const signer = provider.getSigner(walletAddress)
-      const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
-      const balance = await wethcontract.balanceOf(address)
-      let balanceInEth: any = ethers.utils.formatEther(balance)
-      balanceInEth = parseFloat(balanceInEth).toFixed(2)
-      setAccountBalance(balanceInEth)
-    }
+    if (!address) return
+    const ethereum = (window as any).ethereum
+    const accounts = await ethereum.request({
+      method: 'eth_requestAccounts',
+    })
+    const provider = new ethers.providers.JsonRpcProvider(
+      'https://rpc-mumbai.maticvigil.com/'
+    )
+    const walletAddress = accounts[0] // first account in MetaMask
+    const signer = provider.getSigner(walletAddress)
+    const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
+    const balance = await wethcontract.balanceOf(address)
+    let balanceInEth: any = ethers.utils.formatEther(balance)
+    balanceInEth = parseFloat(balanceInEth).toFixed(2)
+    setAccountBalance(balanceInEth)
   }
 
   useEffect(() => {
@@ -336,6 +335,8 @@ const ProductOverviewSection: FC<{
           <MakeOfferModal
             isOpen={isOfferModalOpen}
             setIsOpen={setIsOfferModalOpen}
+            nft={nft}
+            accountBalance={accountBalance}
           />
         )}
       </AnimatePresence>

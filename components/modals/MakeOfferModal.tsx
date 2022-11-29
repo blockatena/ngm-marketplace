@@ -1,75 +1,145 @@
 import { ethers } from 'ethers'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { Dispatch, FC, SetStateAction, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
+import { useMutation } from 'react-query'
+import { toast } from 'react-toastify'
+import { useAccount } from 'wagmi'
 import { NGM20ABI } from '../../contracts/nftabi'
+import type { AvatarType, NftOfferBodyType } from '../../interfaces'
+import { makeOffer } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
+import Spinner from '../Spinner'
 
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
-
+const CHAINID = 80001
 const MakeOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
-}> = ({ setIsOpen }) => {
-  const [OfferAmount, setOfferAmount] = useState(0)
-  const onOffer = async () => {
+  nft: AvatarType
+  accountBalance: any
+}> = ({ setIsOpen, nft, accountBalance }) => {
+  const { address } = useAccount()
+  const [bidAmount, setBidAmount] = useState(0)
+  const [loading, setLoading] = useState(false)
+  // const [accountBalance, setAccountBalance] = useState('')
+
+  const { mutate, data, isLoading, isSuccess } = useMutation(makeOffer)
+
+  const onBid = async () => {
+    if (nft?.token_owner === address) {
+      toast.dark('You own this NFT!', {
+        type: 'error',
+        hideProgressBar: true,
+      })
+      return
+    }
+
+    setLoading(true)
     const ethereum = (window as any).ethereum
     const accounts = await ethereum.request({
       method: 'eth_requestAccounts',
     })
 
-    const provider = new ethers.providers.Web3Provider(ethereum)
+    const provider = new ethers.providers.Web3Provider(ethereum, 'any')
+    const { chainId } = await provider.getNetwork()
+    if (chainId !== CHAINID) {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: ethers.utils.hexValue(CHAINID) }], // chainId must be in hexadecimal numbers
+      })
+    }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
-
     const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
+    // const minimumBid = 0 // need to get data from api
+    const bal = await wethcontract.balanceOf(walletAddress)
+    const inputAmt: any = await ethers.utils.parseUnits(
+      bidAmount.toString(),
+      'ether'
+    )
 
-    if (OfferAmount === 0) {
-      console.log(`Amount must be more than 0`)
+    const offerData: NftOfferBodyType = {
+      offer_person_address: address ? address : '',
+      offer_price: String(bidAmount),
+      contract_address: nft?.contract_address,
+      token_id: nft?.token_id,
+    }
+    console.log(parseInt(inputAmt.toString()))
+
+    if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
+      toast.dark(`Your offer is greater than your wallet balance`, {
+        type: 'error',
+        hideProgressBar: true,
+      })
+      setLoading(false)
+      return
+    } else if (parseInt(inputAmt.toString()) <= 0) {
+      toast.dark(`Offer must be greater than 0`, {
+        type: 'error',
+        hideProgressBar: true,
+      })
+      setLoading(false)
+      return
     } else {
-      const Offer = ethers.utils.parseUnits(OfferAmount.toString(), 'ether')
+      const Offer = ethers.utils.parseUnits(bidAmount.toString(), 'ether')
       const approvedAmt = await wethcontract.allowance(
         signer._address,
         NGMMarketAddress
       )
 
-      if (approvedAmt >= Offer) {
-        // Axios data:POST ( Make Offer )
-        // confirmation model
+      if (parseInt(approvedAmt.toString()) > parseInt(Offer.toString())) {
+        mutate(offerData)
+        setLoading(false)
       } else {
-        const approvedtokens: any = ethers.utils.formatEther(approvedAmt)
-        const amt = OfferAmount - approvedtokens
+        // const approvedtokens: any = ethers.utils.formatEther(approvedAmt)
+        const amt = 1000
         const amount = ethers.utils.parseUnits(amt.toString(), 'ether')
         await wethcontract
           .approve(NGMMarketAddress, amount)
           .then((tx: any) => {
-            console.log('processing')
+            toast.dark('Processing Transaction!')
             provider.waitForTransaction(tx.hash).then(() => {
-              console.log(tx.hash)
-              //Axios data:POST ( Make Offer )
-              //confirmation model
+              mutate(offerData)
+              setLoading(false)
             })
           })
-          .catch((e: any) => {
-            console.log(e.message)
+          .catch(() => {
+            toast.dark(String('User Rejected Request'), { type: 'error' })
+            setLoading(false)
           })
       }
     }
   }
-  const getOfferAmount = (value: any) => {
+  const handleBidAmount = (value: number) => {
     if (value > 0) {
-      setOfferAmount(value)
+      setBidAmount(value)
     } else {
-      setOfferAmount(0)
+      setBidAmount(0)
     }
   }
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log('is Successfull')
+      toast.dark(
+        (typeof data?.data === 'string' && data.data) ||
+          (data?.data?.status === 'started' && 'Offer Made Successfully') ||
+          '',
+        {
+          hideProgressBar: true,
+        }
+      )
+      data?.data?.status === 'started' && setIsOpen(false)
+    }
+  }, [isSuccess, data?.data, setIsOpen])
 
   return (
     <ModalBase>
       <motion.div
-        className="w-full max-w-[866px] lg:h-[582px] py-4 px-4 lg:px-10 
+        className="w-full max-w-[866px] lg:h-[350px] py-4 px-4 lg:px-10 
     rounded-lg skew-y-1 -skew-x-1 bg-gradient-to-b from-[#494A4A] via-[#222324] to-[#030507]"
         variants={fromTopAnimation}
         initial="initial"
@@ -98,11 +168,11 @@ const MakeOfferModal: FC<{
             <label htmlFor="offer_amount" className="text-white">
               Offer Amount
             </label>
-            <span className="text-[#AEA8A8]">Balance : 0.00WETH </span>
+            <span className="text-[#AEA8A8]">{`Balance : ${accountBalance} WETH `}</span>
           </div>
           <div className="h-[47px] relative rounded-lg">
             <input
-              onChange={(e) => getOfferAmount(e.target.value)}
+              onChange={(e) => handleBidAmount(Number(e.target.value))}
               type="text"
               id="offer_amount"
               className="outline-none w-full h-full bg-[#585858] pl-[25%] text-white rounded-lg"
@@ -117,55 +187,15 @@ const MakeOfferModal: FC<{
               <span>WETH</span>
             </p>
           </div>
-          <p className="font-poppins text-xs lg:text-[17px] text-[#7C7C7C] mt-2">
-            The next bid must be 5% more than the current bid
-          </p>
-
-          <div className="mt-10 ">
-            <label
-              htmlFor="expiration"
-              className="font-poppins lg:text-[20px] text-white"
-            >
-              Offer Expiration{' '}
-            </label>
-            <div className="flex gap-4 justify-between mt-2">
-              <select
-                id="expiration"
-                className="lg:w-[243px] lg:h-[47px] cursor-pointer bg-[#585858] outline-none rounded-lg
-                font-poppins text-white text-center"
-              >
-                <option value={3}>3 days</option>
-                <option value={2}>2 days</option>
-                <option value={1}>1 day</option>
-              </select>
-              <input
-                type="time"
-                className="w-full bg-[#585858] outline-none rounded-lg text-white font-poppins px-2"
-              />
-            </div>
-          </div>
-
-          <div className="mt-10 flex gap-4 lg:pl-10">
-            <input
-              type="checkbox"
-              id="terms"
-              className="bg-[#585858] text-black cursor-pointer lg:text-[21px]"
-            />
-            <p className="font-poppins text-white text-xs md:text-base">
-              By clicking this box, I agree to NGM{' '}
-              <span className="text-[#4F95FF] cursor-pointer">
-                terms of services
-              </span>{' '}
-            </p>
-          </div>
 
           <div className="grid place-items-center mt-8">
             <button
               className="btn-primary w-[200px] h-[40px] lg:w-[375px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]
-            "
-              onClick={() => onOffer()}
+            grid place-items-center"
+              onClick={() => onBid()}
+              disabled={isLoading || loading}
             >
-              Make Offer
+              {isLoading || loading ? <Spinner color="black" /> : 'Make Offer'}
             </button>
           </div>
         </div>
