@@ -3,105 +3,23 @@ import { NextPage } from 'next'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import AvatarCard from '../../components/AvatarCard'
 import BreadCrumb from '../../components/BreadCrumb'
 import Drawer from '../../components/Drawer'
 import NavAccordion from '../../components/NavAccordion'
 import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
-import type { AvatarType } from '../../interfaces'
+import type { AvatarType, CollectionNftsBodyType } from '../../interfaces'
 import { CrumbType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
-import { getCollectionNFTs } from '../../react-query/queries'
+import {
+  getCollectionDetails,
+  getCollectionNfts,
+} from '../../react-query/queries'
 import { handleAnimationDelay } from '../../utils'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
-// import { useQuery } from 'wagmi'
-
-// const avatars: AvatarType[] = [
-//   {
-//     tokenId: 1,
-//     name: 'Wraith',
-//     img: '/images/auction/auction_img_1.svg',
-//     isOnAuction: false,
-//     contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//   },
-//   {
-//     tokenId: 2,
-//     name: 'Horizon',
-//     img: '/images/auction/auction_img_2.svg',
-//     isOnAuction: true,
-//     contractAddress: '0xfd2b4561630c02b8047B911c22d3f3bfF3ad64Ce',
-//   },
-//   {
-//     tokenId: 3,
-//     name: 'Lifeline',
-//     img: '/images/auction/auction_img_3.svg',
-//     isOnAuction: false,
-//     contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//   },
-//   {
-//     tokenId: 4,
-//     name: 'Fuse',
-//     img: '/images/auction/auction_img_4.svg',
-//     isOnAuction: true,
-//     contractAddress: '0xfe2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//   },
-//   {
-//     tokenId: 5,
-//     name: 'Fortune',
-//     img: '/images/auction/auction_img_5.svg',
-//     isOnAuction: true,
-//     contractAddress: '0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//   },
-//   {
-//     tokenId: 6,
-//     name: 'Crypto',
-//     img: '/images/auction/auction_img_6.svg',
-//     isOnAuction: false,
-//     contractAddress: '0xfd6b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//   },
-//   {
-//     tokenId: 7,
-//     name: 'Wraith',
-//     img: '/images/auction/auction_img_1.svg',
-//     isOnAuction: true,
-//     contractAddress: '0xfa2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//   },
-//   {
-//     tokenId: 8,
-//     name: 'Horizon',
-//     img: '/images/auction/auction_img_2.svg',
-//     isOnAuction: false,
-//     contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ca',
-//   },
-//   {
-//     tokenId: 9,
-//     name: 'Lifeline',
-//     img: '/images/auction/auction_img_3.svg',
-//     isOnAuction: true,
-//     contractAddress: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cb',
-//   },
-// ]
-
-// const currencyData: string[] = ['eth', 'weth', 'ape', 'usdc']
-
-// const initalAvatarsState: AvatarType[] = [
-//   {
-//     _id: '',
-//     contract_address: '',
-//     contract_type: '',
-//     token_id: '0',
-//     meta_data_url: '',
-//     is_in_auction: false,
-//     is_in_sale: false,
-//     token_owner: '',
-//     createdAt: '',
-//     updatedAt: '',
-//     __v: 0,
-//   },
-// ]
 
 interface HeroSectionProps {
   name: string
@@ -383,7 +301,13 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
 const CollectionSearchSection: FC<{ handleFilter: (_value: any) => void }> = ({
   handleFilter,
 }) => {
-  const { width } = useWindowDimensions()
+  const { width: clientWidth } = useWindowDimensions()
+  const [width, setWidth] = useState(1)
+
+  useEffect(() => {
+    setWidth(clientWidth)
+  }, [clientWidth])
+
   return (
     <motion.section
       className="grid grid-cols-12 mt-5 lg:mt-10 gap-2 lg:gap-4"
@@ -443,9 +367,14 @@ const CollectionSearchSection: FC<{ handleFilter: (_value: any) => void }> = ({
   )
 }
 
+const ITEMS_PER_PAGE = 12
+const ALPHABETICAL_ORDER = 'AtoZ'
+const ORDER = 'NewToOld'
+
 const CollectionPage: NextPage = () => {
   const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { width } = useWindowDimensions()
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
@@ -456,17 +385,34 @@ const CollectionPage: NextPage = () => {
   // const [filteredData, setFiltered] = useState<CollectionCardTypes[]>([])
   const [dataUnsorted, setDataUnsorted] = useState<AvatarType[]>([])
 
-  const { data, refetch, isSuccess } = useQuery(
-    QUERIES.getCollectionNFTs,
-    () => getCollectionNFTs(router?.query?.contractAddress),
-    {
-      // staleTime: 3000,
-      // enabled: true,
-      // refetchIntervalInBackground:true,
-      refetchOnWindowFocus: true,
-      // refetchOnReconnect: true,
-    }
+  const contractAddress = String(router?.query?.contractAddress)
+
+  const { mutate, data, isSuccess } = useMutation(getCollectionNfts)
+
+  const { data: collectionDetails } = useQuery(
+    QUERIES.getCollectionDetails,
+    () => getCollectionDetails(contractAddress),
+    { enabled: !!contractAddress && contractAddress !== 'undefined' }
   )
+
+  useEffect(() => {
+    let body: CollectionNftsBodyType = {
+      contract_address: contractAddress,
+      page_number: currentPage,
+      items_per_page: ITEMS_PER_PAGE,
+      alphabetical_order: ALPHABETICAL_ORDER,
+      order: ORDER,
+    }
+    contractAddress !== 'undefined' && mutate(body)
+  }, [mutate, contractAddress, currentPage])
+
+  // const { data, refetch, isSuccess } = useQuery(
+  //   QUERIES.getCollectionNFTs,
+  //   () => getCollectionNFTs(router?.query?.contractAddress),
+  //   {
+  //     refetchOnWindowFocus: true,
+  //   }
+  // )
 
   // useEffect(() => {
   //   if (data?.data.nfts.length) {
@@ -481,32 +427,32 @@ const CollectionPage: NextPage = () => {
   //   }
   // }, [data?.data])
 
-  let collectionName = data?.data?.collection?.collection_name
-  let floor = data?.data.floor_price
-  let bestOffer = data?.data.best_offer
-  let totalvolume = data?.data.total_volume
-  let owners = data?.data.owners
-  let totalsupply = data?.data.nfts.length
-  let createddate = data?.data?.collection?.createdAt
+  let collectionName = collectionDetails?.data?.collection?.collection_name
+  let floor = collectionDetails?.data.floor_price
+  let bestOffer = collectionDetails?.data.best_offer
+  let totalvolume = collectionDetails?.data.total_volume
+  let owners = collectionDetails?.data.owners
+  let totalsupply = collectionDetails?.data.nfts.length
+  let createddate = collectionDetails?.data?.collection?.createdAt
   createddate = createddate?.substring(0, 10)
   let bannerurl = '/images/collections/static.jpg'
-  let description = data?.data?.collection?.description
+  let description = collectionDetails?.data?.collection?.description
   let imageurl =
-    data?.data?.collection?.imageuri?.length > 0
-      ? data?.data?.collection?.imageuri[0]
+    collectionDetails?.data?.collection?.imageuri?.length > 0
+      ? collectionDetails?.data?.collection?.imageuri[0]
       : undefined
 
   // console.log(data?.data)
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    if (router?.query?.contractAddress === undefined) {
-      window.setTimeout(refetch, 1500)
-    } else {
-      // refetch
-    }
-  }, [router.query.contractAddress, refetch])
+  // useEffect(() => {
+  //   if (router?.query?.contractAddress === undefined) {
+  //     window.setTimeout(refetch, 1500)
+  //   } else {
+  //     // refetch
+  //   }
+  // }, [router.query.contractAddress, refetch])
 
   // const Avatar = data?.data.nfts
 
@@ -586,11 +532,21 @@ const CollectionPage: NextPage = () => {
     }
   }
 
+  // useEffect(() => {
+  //   setAvatars(data?.data.nfts)
+  //   setDataUnsorted(data?.data.nfts)
+  //   setCollectionData(data?.data)
+  // }, [data?.data.nfts, data?.data])
+
   useEffect(() => {
-    setAvatars(data?.data.nfts)
-    setDataUnsorted(data?.data.nfts)
-    setCollectionData(data?.data)
-  }, [data?.data.nfts, data?.data])
+    if (data?.data?.nfts) {
+      setAvatars(data.data.nfts)
+      setDataUnsorted(data?.data.nfts)
+      setCollectionData(data?.data)
+      setCurrentPage(data.data.currentPage)
+      setTotalPages(data.data.total_pages)
+    }
+  }, [data?.data])
 
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },
@@ -708,8 +664,7 @@ const CollectionPage: NextPage = () => {
         </div>
         <div className="flex justify-end mb-12">
           <Pagination
-            // totalItems={18}
-            totalPages={1}
+            totalPages={totalPages}
             paginate={paginate}
             currentPage={currentPage}
           />

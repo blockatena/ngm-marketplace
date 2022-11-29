@@ -8,7 +8,7 @@ import { useAccount, useMutation } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
 import Pagination from '../../components/Pagination'
 import withProtection from '../../components/withProtection'
-import { AvatarType, UserNftsBodyType } from '../../interfaces'
+import { AvatarType, CollectionNftsBodyType } from '../../interfaces'
 import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 import historyIcon from '../../public/images/icons/Activity.svg'
 import categoryIcon from '../../public/images/icons/Category.svg'
@@ -17,7 +17,7 @@ import collectionIcon from '../../public/images/icons/Folder.svg'
 import messageIcon from '../../public/images/icons/Message.svg'
 import settingsIcon from '../../public/images/icons/Setting.svg'
 import walletIcon from '../../public/images/icons/Wallet.svg'
-import { getUserNfts } from '../../react-query/queries'
+import { getCollectionNfts } from '../../react-query/queries'
 import {
   fromLeftAnimation,
   fromRightAnimation,
@@ -219,7 +219,7 @@ const ProfilePage: NextPage = () => {
   const [nfts, setNfts] = useState<AvatarType[]>()
   const { width } = useWindowDimensions()
   const { address } = useAccount()
-  const { mutate, data } = useMutation(getUserNfts)
+  const { mutate, data } = useMutation(getCollectionNfts)
 
   // const { data } = useQuery(
   //   [QUERIES.getUserNfts, address],
@@ -230,7 +230,7 @@ const ProfilePage: NextPage = () => {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
   useEffect(() => {
-    let body: UserNftsBodyType = {
+    let body: CollectionNftsBodyType = {
       token_owner: address,
       page_number: currentPage,
       items_per_page: ITEMS_PER_PAGE,

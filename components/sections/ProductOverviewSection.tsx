@@ -18,6 +18,7 @@ import { DEAD_ADDRESS } from '../../utils/constants'
 import useIsMounted from '../../utils/hooks/useIsMounted'
 import CancelAuctionModal from '../modals/CancelAuctionModal'
 import CancelBidModal from '../modals/CancelBidModal'
+import CancelSaleModal from '../modals/CancelSaleModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
@@ -34,6 +35,7 @@ const ProductOverviewSection: FC<{
   const [isCancelBidModalOpen, setIsCancelBidModalOpen] = useState(false)
   const [isUserIsBidder, setIsUserIsBidder] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
+  const [isCancelSaleModalOpen, setIsCancelSaleModalOpen] = useState(false)
   const { address } = useAccount()
   const isMounted = useIsMounted()
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
@@ -50,25 +52,30 @@ const ProductOverviewSection: FC<{
     nft.token_owner === address &&
     nft?.is_in_auction
 
+  const isSaleCancellable =
+    isMounted &&
+    nft?.token_owner &&
+    nft.token_owner === address &&
+    nft?.is_in_sale
+
   const isBidCancellable = isUserIsBidder && nft?.is_in_auction
 
   const getBalance = async (address: `0x${string}` | undefined) => {
-    if (address) {
-      const ethereum = (window as any).ethereum
-      const accounts = await ethereum.request({
-        method: 'eth_requestAccounts',
-      })
-      const provider = new ethers.providers.JsonRpcProvider(
-        'https://rpc-mumbai.maticvigil.com/'
-      )
-      const walletAddress = accounts[0] // first account in MetaMask
-      const signer = provider.getSigner(walletAddress)
-      const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
-      const balance = await wethcontract.balanceOf(address)
-      let balanceInEth: any = ethers.utils.formatEther(balance)
-      balanceInEth = parseFloat(balanceInEth).toFixed(2)
-      setAccountBalance(balanceInEth)
-    }
+    if (!address) return
+    const ethereum = (window as any).ethereum
+    const accounts = await ethereum.request({
+      method: 'eth_requestAccounts',
+    })
+    const provider = new ethers.providers.JsonRpcProvider(
+      'https://rpc-mumbai.maticvigil.com/'
+    )
+    const walletAddress = accounts[0] // first account in MetaMask
+    const signer = provider.getSigner(walletAddress)
+    const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
+    const balance = await wethcontract.balanceOf(address)
+    let balanceInEth: any = ethers.utils.formatEther(balance)
+    balanceInEth = parseFloat(balanceInEth).toFixed(2)
+    setAccountBalance(balanceInEth)
   }
 
   useEffect(() => {
@@ -112,6 +119,10 @@ const ProductOverviewSection: FC<{
     }
     if (isCancellable) {
       setIsCancelModalOpen(true)
+      return
+    }
+    if (isSaleCancellable) {
+      setIsCancelSaleModalOpen(true)
       return
     }
     if (isMounted && nft?.token_owner === address) {
@@ -282,11 +293,13 @@ const ProductOverviewSection: FC<{
           </button> */}
           {nft?.token_owner !== DEAD_ADDRESS && (
             <button
-              className="w-full btn-primary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
+              className="w-full lg:min-w-[327px] btn-primary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
               onClick={handleClick}
             >
               {isCancellable
                 ? 'Cancel Auction'
+                : isSaleCancellable
+                ? 'Cancel Sale'
                 : isMounted && nft?.token_owner && nft.token_owner === address
                 ? 'Sell'
                 : isBidCancellable
@@ -322,15 +335,25 @@ const ProductOverviewSection: FC<{
           <MakeOfferModal
             isOpen={isOfferModalOpen}
             setIsOpen={setIsOfferModalOpen}
+            nft={nft}
+            accountBalance={accountBalance}
           />
         )}
       </AnimatePresence>
-
       <AnimatePresence>
         {isCancelModalOpen && (
           <CancelAuctionModal
             isOpen={isCancelModalOpen}
             setIsOpen={setIsCancelModalOpen}
+            nft={nft}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isCancelSaleModalOpen && (
+          <CancelSaleModal
+            isOpen={isCancelSaleModalOpen}
+            setIsOpen={setIsCancelSaleModalOpen}
             nft={nft}
           />
         )}

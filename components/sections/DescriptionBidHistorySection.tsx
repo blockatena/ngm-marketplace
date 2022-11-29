@@ -17,6 +17,8 @@ import {
   AvatarType,
   BidType,
   NftContractType,
+  OfferType,
+  SaleType,
 } from '../../interfaces'
 import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
 
@@ -29,18 +31,6 @@ ChartJS.register(
   Tooltip,
   Legend
 )
-
-const tabsData = [
-  {
-    label: 'Description',
-  },
-  {
-    label: 'Current Bids',
-  },
-  // {
-  //   label: 'Bid History',
-  // },
-]
 
 export const AvatarData = [
   {
@@ -348,7 +338,115 @@ const CurrentBids: FC<{
       )}
       {!auction && (
         // <tr>
-        <p className="text-center b text-3xl p-12">-The NFT not on auction-</p>
+        <p className="text-center b text-3xl p-12">-NFT not on auction-</p>
+        // </tr>
+      )}
+    </div>
+  )
+}
+
+const OfferItem: FC<{
+  offer: OfferType
+  index: number
+}> = ({ offer, index }) => {
+  let timePlaced = ''
+
+  if (offer?.createdAt) {
+    let d = new Date(offer.createdAt)
+    timePlaced = d.toLocaleString()
+  }
+
+  let bgColor = 'bg-transparent'
+  if (index % 2 === 0) {
+    bgColor = 'bg-[#070707]'
+  }
+
+  const offerData = [
+    {
+      name: 'Buyer Address',
+      value: shortenString(offer?.offer_person_address),
+    },
+    { name: 'Bid Amount', value: offer?.offer_price },
+    { name: 'Made At', value: timePlaced },
+  ]
+
+  return (
+    <motion.tr
+      className={`${bgColor} font-poppins text-[#D7D7D7] lg:text-lg py-2 h-16`}
+      variants={fromRightAnimation}
+      initial="initial"
+      whileInView="final"
+      viewport={{ once: true }}
+      transition={{
+        ease: 'easeInOut',
+        duration: 0.4,
+        delay: index < 6 ? 0.1 * index : 0,
+      }}
+    >
+      {offerData?.map((offerData, index) => (
+        <td
+          key={index}
+          className={
+            offerData?.name === 'Buyer Address'
+              ? 'cursor-pointer underline hover:text-sky-500'
+              : 'h-16'
+          }
+          onClick={() => onClickAddress(offer?.offer_person_address)}
+        >
+          {offerData?.value}
+        </td>
+      ))}
+    </motion.tr>
+  )
+}
+
+const CurrentOffers: FC<{
+  offers: OfferType[] | undefined
+  sale: SaleType | undefined
+}> = ({ offers, sale }) => {
+  const tableHeadings = [
+    { name: 'Buyer Address' },
+    { name: 'Offer Amount (WETH)' },
+    { name: 'Made At' },
+  ]
+
+  return (
+    <div
+      className="font-poppins text-[#D7D7D7] lg:text-lg px-2 lg:px-4 max-h-[300px] lg:overflow-x-hidden
+    overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
+    >
+      {offers?.length && (
+        <table className="w-full overflow-x-auto text-center">
+          <thead>
+            <tr className="h-16">
+              {tableHeadings.map((heading) => (
+                <th key={heading.name} className="h-16">
+                  {heading.name}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {offers?.length &&
+              offers.map((offer, index) => {
+                return <OfferItem key={index} offer={offer} index={index} />
+              })}
+            {offers?.length === 0 && (
+              // <tr>
+              <td>Bids</td>
+              // </tr>
+            )}
+          </tbody>
+        </table>
+      )}
+      {offers?.length === 0 && (
+        // <tr>
+        <p className="text-center b text-3xl p-12">- No Offers yet -</p>
+        // </tr>
+      )}
+      {!sale && (
+        // <tr>
+        <p className="text-center b text-3xl p-12">-NFT not on sale-</p>
         // </tr>
       )}
     </div>
@@ -360,10 +458,24 @@ const DescriptionBidHistorySection: FC<{
   contractDetails: NftContractType | undefined
   bids: BidType[] | undefined
   auction: AuctionType | undefined
-}> = ({ nft, contractDetails, bids, auction }) => {
+  offers: OfferType[] | undefined
+  sale: SaleType | undefined
+}> = ({ nft, contractDetails, bids, auction, offers, sale }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0)
   const [tabUnderlineLeft, setTabUnderlineLeft] = useState(0)
+
+  const tabsData = [
+    {
+      label: 'Description',
+    },
+    {
+      label: nft?.is_in_sale ? 'Current Offers' : 'Current Bids',
+    },
+    // {
+    //   label: 'Bid History',
+    // },
+  ]
 
   const tabsRef = useRef([])
 
@@ -406,7 +518,11 @@ const DescriptionBidHistorySection: FC<{
         {activeTabIndex === 0 ? (
           <CharacterDescription nft={nft} contractDetails={contractDetails} />
         ) : activeTabIndex === 1 ? (
-          <CurrentBids bids={bids} auction={auction} />
+          nft?.is_in_sale ? (
+            <CurrentOffers offers={offers} sale={sale} />
+          ) : (
+            <CurrentBids bids={bids} auction={auction} />
+          )
         ) : (
           <BidHistory />
         )}

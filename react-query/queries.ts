@@ -1,9 +1,11 @@
 import { axiosInstance, nftInstance } from '../axiosInstance'
 import type {
+  CollectionNftsBodyType,
   nftAuctionBodyType,
   NftBidBodyType,
   nftCancelbidType,
-  UserNftsBodyType,
+  NftOfferBodyType,
+  NftSaleBodyType,
 } from '../interfaces'
 
 export const getCollections = (
@@ -15,9 +17,9 @@ export const getCollections = (
   )
 }
 
-export const getCollectionNFTs = (ContractAddress: any) => {
-  return axiosInstance.get(`/nft/collection/${ContractAddress}`)
-}
+// export const getCollectionNFTs = (ContractAddress: any) => {
+//   return axiosInstance.get(`/nft/collection/${ContractAddress}`)
+// }
 
 export const getCollectionInfo = (ContractAddress: any) => {
   return axiosInstance.get(`/deployment/contract-Details/${ContractAddress}`)
@@ -56,5 +58,24 @@ export const cancelBid = (data: nftCancelbidType) => {
   return axiosInstance.post('/nft-marketplace/cancel-bid', data)
 }
 
-export const getUserNfts = (data: UserNftsBodyType) =>
+export const getCollectionNfts = (data: CollectionNftsBodyType) =>
   axiosInstance.post(`/nft/get-nfts-listed-collection`, data)
+
+export const createNftSale = (data: NftSaleBodyType) => {
+  return axiosInstance.post('/nft-marketplace/create-sale', data)
+}
+
+export const cancelSale = (data: {
+  contract_address: string
+  token_id: string
+}) => {
+  return axiosInstance.post('/nft-marketplace/cancel-sale', data)
+}
+
+export const getCollectionDetails = (contractAddress: string) => {
+  return axiosInstance.get(`/nft/collection/${contractAddress}`)
+}
+
+export const makeOffer = (data: NftOfferBodyType) => {
+  return axiosInstance.post('/nft-marketplace/make-offer-to-nft', data)
+}
