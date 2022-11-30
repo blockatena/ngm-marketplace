@@ -1,61 +1,67 @@
 import { motion } from 'framer-motion'
-import img_1 from '../../public/images/auction/auction_img_1.svg'
-import img_2 from '../../public/images/auction/auction_img_2.svg'
-import img_3 from '../../public/images/auction/auction_img_3.svg'
-import img_4 from '../../public/images/auction/auction_img_4.svg'
-import img_5 from '../../public/images/auction/auction_img_5.svg'
-import img_6 from '../../public/images/auction/auction_img_6.svg'
+import { useEffect, useState } from 'react'
+// import img_1 from '../../public/images/auction/auction_img_1.svg'
+// import img_2 from '../../public/images/auction/auction_img_2.svg'
+// import img_3 from '../../public/images/auction/auction_img_3.svg'
+// import img_4 from '../../public/images/auction/auction_img_4.svg'
+// import img_5 from '../../public/images/auction/auction_img_5.svg'
+// import img_6 from '../../public/images/auction/auction_img_6.svg'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import { CONTAINER_PADDING } from '../../utils/constants'
 // import getCommast from '../../utils/getCommas'
 // import transformTimeLeft from '../../utils/transformTimeLeft'
-import AuctionCard from '../AuctionCard'
+import { useQuery } from 'react-query'
+import type { AvatarType } from '../../interfaces'
+import { QUERIES } from '../../react-query/constants'
+import { getAllNFts } from '../../react-query/queries'
+import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
+import AvatarCard from '../AvatarCard'
 
-interface AuctionCardProps {
-  imgUrl: any
-  expireDate: Date
-  currentPrice: number
-  characterName: string
-}
+// interface AuctionCardProps {
+//   imgUrl: any
+//   expireDate: Date
+//   currentPrice: number
+//   characterName: string
+// }
 
-export const auctionData: AuctionCardProps[] = [
-  {
-    imgUrl: img_1,
-    characterName: 'Fuse',
-    currentPrice: 20000,
-    expireDate: new Date(2021, 8, 23),
-  },
-  {
-    imgUrl: img_2,
-    characterName: 'Nick Fury',
-    currentPrice: 20000,
-    expireDate: new Date(2022, 8, 23, 3, 4, 5),
-  },
-  {
-    imgUrl: img_3,
-    characterName: 'Nico',
-    currentPrice: 20000,
-    expireDate: new Date(2022, 8, 22, 6, 7, 8),
-  },
-  {
-    imgUrl: img_4,
-    characterName: 'Taric',
-    currentPrice: 20000,
-    expireDate: new Date(2022, 8, 21, 2, 2, 2),
-  },
-  {
-    imgUrl: img_5,
-    characterName: 'Wraith',
-    currentPrice: 20000,
-    expireDate: new Date(2022, 8, 20, 1, 1, 1),
-  },
-  {
-    imgUrl: img_6,
-    characterName: 'Harth Stonebrew',
-    currentPrice: 20000,
-    expireDate: new Date(2022, 7, 24),
-  },
-]
+// export const auctionData: AuctionCardProps[] = [
+//   {
+//     imgUrl: img_1,
+//     characterName: 'Fuse',
+//     currentPrice: 20000,
+//     expireDate: new Date(2021, 8, 23),
+//   },
+//   {
+//     imgUrl: img_2,
+//     characterName: 'Nick Fury',
+//     currentPrice: 20000,
+//     expireDate: new Date(2022, 8, 23, 3, 4, 5),
+//   },
+//   {
+//     imgUrl: img_3,
+//     characterName: 'Nico',
+//     currentPrice: 20000,
+//     expireDate: new Date(2022, 8, 22, 6, 7, 8),
+//   },
+//   {
+//     imgUrl: img_4,
+//     characterName: 'Taric',
+//     currentPrice: 20000,
+//     expireDate: new Date(2022, 8, 21, 2, 2, 2),
+//   },
+//   {
+//     imgUrl: img_5,
+//     characterName: 'Wraith',
+//     currentPrice: 20000,
+//     expireDate: new Date(2022, 8, 20, 1, 1, 1),
+//   },
+//   {
+//     imgUrl: img_6,
+//     characterName: 'Harth Stonebrew',
+//     currentPrice: 20000,
+//     expireDate: new Date(2022, 7, 24),
+//   },
+// ]
 
 // const TimerSquare: React.FC<{ time: string; title: string }> = ({
 //   time,
@@ -144,9 +150,30 @@ export const auctionData: AuctionCardProps[] = [
 //   )
 // }
 
+const CURRENT_PAGE = 1
+
 const LiveAuctionSection: React.FC = () => {
+  const [avatars, setAvatars] = useState<AvatarType[]>()
+  const [clientWidth, setClientWidth] = useState(1)
+  const { data } = useQuery([QUERIES.getAllNFts, CURRENT_PAGE], () =>
+    getAllNFts(CURRENT_PAGE, 12)
+  )
+  const { width } = useWindowDimensions()
+
+  useEffect(() => {
+    setClientWidth(width)
+  }, [width])
+
+  useEffect(() => {
+    if (data?.data) {
+      setAvatars(data.data.nfts)
+    }
+  }, [data?.data])
+
+  const is2xl = clientWidth >= 1536
+
   return (
-    <section className="w-full min-h-screen pt-10">
+    <section className="w-full min-h-screen 2xl:min-h-full pt-10">
       <div
         className={`${CONTAINER_PADDING} w-full flex justify-start items-center mx-auto pb-12`}
       >
@@ -175,16 +202,22 @@ const LiveAuctionSection: React.FC = () => {
           duration: 0.5,
           delay: 0.9,
         }}
-        className={`${CONTAINER_PADDING} grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-20 w-full bg-black mx-auto py-9 rounded-xl`}
+        className={`${CONTAINER_PADDING} grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-10 lg:gap-20 w-full bg-black mx-auto py-9 rounded-xl`}
       >
-        {auctionData.map((auction, index) => {
-          return (
-            <AuctionCard
-              {...auction}
-              key={index}
-              onClick={() => console.log('buy auction card nr' + index)}
-            />
-          )
+        {avatars?.map((avatar, index) => {
+          if (is2xl && index < 8) {
+            return (
+              <div className="flex justify-center" key={index}>
+                <AvatarCard {...avatar} />
+              </div>
+            )
+          }
+          if (!is2xl && index < 6)
+            return (
+              <div className="flex justify-center" key={index}>
+                <AvatarCard {...avatar} />
+              </div>
+            )
         })}
       </motion.div>
     </section>
