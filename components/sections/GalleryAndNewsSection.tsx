@@ -13,6 +13,7 @@ import {
   fromLeftAnimation,
   fromRightAnimation,
 } from '../../utils/animations'
+import { CONTAINER_PADDING } from '../../utils/constants'
 import getDescription from '../../utils/getDescription'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 
@@ -271,7 +272,7 @@ const GalleryAndNewsSection: React.FC = () => {
           duration: 0.5,
           delay: 0.6,
         }}
-        className="w-[90%] md:w-[750px] lg:w-[950px] xl:w-[1200px] flex items-end justify-between mx-auto"
+        className={`${CONTAINER_PADDING} w-full  flex items-end justify-between mx-auto`}
       >
         <h2 className="z-10 text-white leading-none font-popins font-medium text-[32px] md:text-[38px] lg:text-[50px] relative before:absolute before:w-[4px] before:h-[30px] before:md:h-[35px] before:lg:h-[48px] before:bg-[#FFDC20] before:-translate-x-2 before:md:-translate-x-3 before:lg:-translate-x-4 pt-10">
           Top Galleries
@@ -283,7 +284,9 @@ const GalleryAndNewsSection: React.FC = () => {
           view more
         </button>
       </motion.div>
-      <div className="w-[90%] md:w-[700px] lg:w-[1000px] xl:w-[1100px] flex flex-col lg:flex-row items-center justify-between mx-auto pt-14 lg:pt-16 space-y-24 lg:space-y-0">
+      <div
+        className={`${CONTAINER_PADDING} w-full flex flex-col lg:flex-row items-center justify-between mx-auto pt-14 space-y-24 lg:space-y-0`}
+      >
         {galleryData.map((data, index) => {
           return (
             <GalleryCard
@@ -311,7 +314,7 @@ const GalleryAndNewsSection: React.FC = () => {
           Latest News
         </motion.h2>
       </div>
-      <div className="w-[90%] md:w-[750px] lg:w-[790px] xl:w-[1193px] flex justify-end mx-auto">
+      <div className={`${CONTAINER_PADDING} w-full flex justify-end mx-auto`}>
         <motion.div
           variants={fromRightAnimation}
           initial="initial"

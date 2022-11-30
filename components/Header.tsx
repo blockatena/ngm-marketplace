@@ -8,6 +8,7 @@ import {
   fromRightAnimation,
   fromTopAnimation,
 } from '../utils/animations'
+import { CONTAINER_PADDING } from '../utils/constants'
 import useIsMounted from '../utils/hooks/useIsMounted'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
@@ -155,14 +156,18 @@ const Header: FC = () => {
   const router = useRouter()
 
   return (
-    <header className="p-4 pt-6 lg:px-16 bg-transparent absolute top-0 left-0 right-0">
-      <div className="grid grid-cols-12 gap-1">
-        <div className="col-span-3 md:col-span-6">
-          <Logo />
-        </div>
-        <div className="col-span-9 md:col-span-6 flex justify-end gap-2 md:gap-6 lg:gap-16">
-          {router.asPath !== '/' && <Search />}
-          <ConnectButton />
+    <header className="relative">
+      <div
+        className={`${CONTAINER_PADDING} bg-transparent absolute left-0 right-0`}
+      >
+        <div className="grid grid-cols-12 gap-1">
+          <div className="col-span-3 md:col-span-6">
+            <Logo />
+          </div>
+          <div className="col-span-9 md:col-span-6 flex justify-end gap-2 md:gap-6 lg:gap-16">
+            {router.asPath !== '/' && <Search />}
+            <ConnectButton />
+          </div>
         </div>
       </div>
     </header>

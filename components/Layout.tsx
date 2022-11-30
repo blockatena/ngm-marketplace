@@ -28,7 +28,7 @@ const CurrentFooter = () => {
 const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex justify-center bg-gradient-to-r from-dark_mild to-dark_heavy">
-      <div className=" w-full max-w-[2000px] bg-fixed bg-cover bg-market">
+      <div className=" w-full max-w-[1920px] bg-fixed bg-cover bg-market">
         <Header />
         <Buffer />
         <Loading />

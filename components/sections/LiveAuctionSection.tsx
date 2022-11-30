@@ -6,6 +6,7 @@ import img_4 from '../../public/images/auction/auction_img_4.svg'
 import img_5 from '../../public/images/auction/auction_img_5.svg'
 import img_6 from '../../public/images/auction/auction_img_6.svg'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
+import { CONTAINER_PADDING } from '../../utils/constants'
 // import getCommast from '../../utils/getCommas'
 // import transformTimeLeft from '../../utils/transformTimeLeft'
 import AuctionCard from '../AuctionCard'
@@ -146,7 +147,9 @@ export const auctionData: AuctionCardProps[] = [
 const LiveAuctionSection: React.FC = () => {
   return (
     <section className="w-full min-h-screen pt-10">
-      <div className="w-[90%] md:w-[750px] lg:w-[950px] xl:w-[1200px] flex justify-start items-center mx-auto pb-12">
+      <div
+        className={`${CONTAINER_PADDING} w-full flex justify-start items-center mx-auto pb-12`}
+      >
         <motion.h2
           variants={fromLeftAnimation}
           initial="initial"
@@ -172,7 +175,7 @@ const LiveAuctionSection: React.FC = () => {
           duration: 0.5,
           delay: 0.9,
         }}
-        className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-20 w-full md:w-[500px] lg:w-[900px] xl:w-[1240px] bg-black mx-auto px-6 py-9 rounded-xl"
+        className={`${CONTAINER_PADDING} grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-20 w-full bg-black mx-auto py-9 rounded-xl`}
       >
         {auctionData.map((auction, index) => {
           return (

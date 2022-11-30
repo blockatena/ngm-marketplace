@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 
 import nft_hero_character from '../../public/images/hero/hero_image.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
+import { CONTAINER_PADDING } from '../../utils/constants'
 
 const HeroSection: React.FC = () => {
   const router = useRouter()
@@ -17,30 +18,10 @@ const HeroSection: React.FC = () => {
   }
 
   return (
-    <section className="bg-hero bg-cover bg-no-repeat bg-center min-h-screen">
+    <section className="bg-hero bg-cover bg-no-repeat bg-center min-h-screen 2xl:min-h-full">
       {/* <Header /> */}
 
-      <div className="w-[90%] md:w-[850px] l:w-[1150px] xl:w-[1229px] mx-auto ">
-        {/* <motion.div
-          variants={fromTopAnimation}
-          initial="initial"
-          animate="final"
-          transition={{
-            ease: 'easeInOut',
-            duration: 0.6,
-            delay: 0.4,
-          }}
-          className="flex flex-row pt-[15px] md:pt-[18px] lg:pt-[26px] w-full justify-between"
-        >
-          <NFTZoneLogo />
-          <button
-            className="btn-primary w-[140px] md:w-[158px] lg:w-[173px] h-[30px] md:h-[33px] lg:h-[39px] text-[14px] md:text-[16px] lg:text-[18px] cut-corners"
-            onClick={joinCommunityOnClick}
-          >
-            Join Community
-          </button>
-        </motion.div> */}
-        {/* <div className="flex flex-col-reverse lg:flex-row pt-[40px] md:pt-[60px] lg:pt-[120px] items-center w-full"> */}
+      <div className={` ${CONTAINER_PADDING} w-full mx-auto`}>
         <div className="flex flex-col-reverse lg:flex-row pt-[20px] md:pt-[30px] lg:pt-[60px] items-center w-full">
           <div className="w-full lg:w-[70%] xl:w-[60%] space-y-[25px] md:space-y-[30px] lg:space-y-[40px]">
             <motion.h1
