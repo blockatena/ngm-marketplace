@@ -2,7 +2,6 @@ import { ethers } from 'ethers'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import {
-  ChangeEvent,
   Dispatch,
   FC,
   SetStateAction,
@@ -30,15 +29,11 @@ const MakeOfferModal: FC<{
   accountBalance: any
 }> = ({ setIsOpen, nft, accountBalance }) => {
 
-  const initialFormState = {
-    end_date: ''
-  }
   const queryClient = useQueryClient()
   const { address } = useAccount()
   const [bidAmount, setBidAmount] = useState(0)
   const [loading, setLoading] = useState(false)
   // const [accountBalance, setAccountBalance] = useState('')
-  const [formData, setFormData] = useState(initialFormState)
 
   const { mutate, data, isLoading, isSuccess } = useMutation(makeOffer, {
     onSuccess: () => {
@@ -46,7 +41,7 @@ const MakeOfferModal: FC<{
     },
   })
 
-  const onBid = async () => {
+  const onMakeOffer = async () => {
     if (nft?.token_owner === address) {
       toast.dark('You own this NFT!', {
         type: 'error',
@@ -148,15 +143,6 @@ const MakeOfferModal: FC<{
     }
   }, [isSuccess, data?.data, setIsOpen])
 
-  const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }))
-
-    // console.log(formData.end_date)
-  }
 
   return (
     <ModalBase>
@@ -209,28 +195,12 @@ const MakeOfferModal: FC<{
               <span>WETH</span>
             </p>
           </div>
-          <br></br>
-          <div
-            className="flex flex-col md:flex-row items-center gap-4 h-[47px] rounded-lg bg-[#4D4D49] text-white 
-            font-poppins pl-4"
-          >
-            <p className="text-lg text-white"> OFFER EXPIRE : </p>
-            <div>
-              <input
-                type="datetime-local"
-                id="end_date"
-                name="end_date"
-                className="bg-[#4D4D49] text-white"
-                onChange={handleUserInput}
-              />
-            </div>
-          </div>
 
           <div className="grid place-items-center mt-8">
             <button
               className="btn-primary w-[200px] h-[40px] lg:w-[375px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]
             grid place-items-center"
-              onClick={() => onBid()}
+              onClick={() => onMakeOffer()}
               disabled={isLoading || loading}
             >
               {isLoading || loading ? <Spinner color="black" /> : 'Make Offer'}

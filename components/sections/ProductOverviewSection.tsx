@@ -34,7 +34,7 @@ const ProductOverviewSection: FC<{
   endTime: string
   sale: SaleType | undefined
   offers: OfferType[] | undefined
-}> = ({ nft, contractDetails, endTime, bids, auction, sale, offers }) => {
+}> = ({ nft, contractDetails, endTime, bids, auction, offers }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [isCancelBidModalOpen, setIsCancelBidModalOpen] = useState(false)
