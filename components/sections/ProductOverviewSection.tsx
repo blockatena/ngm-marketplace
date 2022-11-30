@@ -352,7 +352,7 @@ const ProductOverviewSection: FC<{
           {filters() && (
             <>
               <button
-                className="w-full lg:min-w-[327px] btn-primary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
+                className="w-full lg:min-w-[327px] btn-secondary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
                 onClick={handleClick}
               >
                 Cancel Offer
