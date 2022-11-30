@@ -222,3 +222,45 @@ export type NftSaleBodyType = {
   end_date: string
   price: string
 }
+
+export type NftOfferBodyType = {
+  contract_address: string
+  token_id: string
+  offer_price: string
+  offer_person_address: string
+}
+
+export type NftCancelOfferBodyType = {
+  contract_address: string
+  token_id: string
+  offer_person_address: any
+}
+
+export type OfferType = {
+  _id: string
+  sale_id: string
+  contract_address: string
+  token_id: string
+  offer_price: string
+  offer_person_address: string
+  createdAt: string
+  updatedAt: string
+  offer_status: string
+  __v: number
+}
+
+export type SaleType = {
+  _id: string
+  token_owner: string
+  contract_address: string
+  token_id: string
+  price: string
+  start_date: string
+  end_date: string
+  createdAt: string
+  updatedAt: string
+  status: string
+  __v: number
+}
+
+

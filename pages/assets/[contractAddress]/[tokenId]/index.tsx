@@ -15,6 +15,8 @@ import type {
   BidType,
   CrumbType,
   NftContractType,
+  OfferType,
+  SaleType,
 } from '../../../../interfaces'
 import leftVector from '../../../../public/images/others/left_vector.png'
 import rightVector from '../../../../public/images/others/right_vector.png'
@@ -51,6 +53,9 @@ const ViewAssetPage: NextPage = () => {
   const [endTime, setEndTime] = useState('')
   const [bids, setBids] = useState<BidType[]>()
   const [auctionDetails, setAuctionDetails] = useState<AuctionType>()
+  const [offers, setOffers] = useState<OfferType[]>()
+  const [saleDetails, setSaleDetails] = useState<SaleType>()
+
   const refetchtime: number = parseInt(
     process.env.NEXT_PUBLIC_REFETCH_TIME
       ? process.env.NEXT_PUBLIC_REFETCH_TIME
@@ -80,13 +85,27 @@ const ViewAssetPage: NextPage = () => {
   ]
 
   useEffect(() => {
-    setEndTime(data?.data?.auction?.end_date)
+    setEndTime(
+      data?.data?.auction?.end_date
+        ? data?.data?.auction?.end_date
+        : data?.data?.sale?.end_date 
+        ? data?.data?.sale?.end_date : ''
+    )
     setNft(data?.data.nft)
     // setAvatars(DATA?.data?.data?.nfts)
     setContractDetails(data?.data?.contract_details)
-    setBids(data?.data.bids)
+    setBids(data?.data?.bids)
     setAuctionDetails(data?.data.auction)
-  }, [data?.data?.contract_details, data?.data.nft, data])
+    setOffers(data?.data?.offers)
+    setSaleDetails(data?.data?.sale)
+  }, [
+    data?.data.auction,
+    data?.data?.bids,
+    data?.data?.contract_details,
+    data?.data.nft,
+    data?.data?.offers,
+    data?.data?.sale,
+  ])
 
   useEffect(() => {
     if (asPath) {
@@ -117,11 +136,13 @@ const ViewAssetPage: NextPage = () => {
           </div>
           <div className="col-span-10 flex justify-center">
             <ProductOverviewSection
+              offers={offers}
               endTime={endTime}
               nft={nft}
               contractDetails={contractDetails}
               bids={bids}
               auction={auctionDetails}
+              sale={saleDetails}
             />
           </div>
           <div className="col-span-1 flex justify-end ">
@@ -137,6 +158,8 @@ const ViewAssetPage: NextPage = () => {
           contractDetails={contractDetails}
           bids={bids}
           auction={auctionDetails}
+          offers={offers}
+          sale={saleDetails}
         />
         <ExploreSection contractAddress={contractAddress} tokenId={tokenId} />
       </div>
