@@ -15,7 +15,8 @@ const CancelOfferModal: FC<{
   contract_address:string
   token_id:string
   address: any
-}> = ({ setIsOpen, contract_address,token_id, address }) => {
+  caller:any
+}> = ({ setIsOpen, contract_address,token_id, address,caller }) => {
   const queryClient = useQueryClient()
   // const { address } = useAccount()
 
@@ -30,6 +31,7 @@ const CancelOfferModal: FC<{
       contract_address: contract_address,
       token_id: token_id,
       offer_person_address: address,
+      caller:caller
     }
     mutate(data)
     console.log(data)

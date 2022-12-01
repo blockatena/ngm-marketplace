@@ -16,8 +16,15 @@ const AcceptOfferModal: FC<{
   contract_address: string
   token_id: string
   offer_address: any
-  token_owner:string
-}> = ({ setIsOpen, contract_address, token_id, offer_address }) => {
+  token_owner: string
+  setActiveTabIndex: () => void
+}> = ({
+  setIsOpen,
+  contract_address,
+  token_id,
+  offer_address,
+  setActiveTabIndex,
+}) => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
 
@@ -32,7 +39,7 @@ const AcceptOfferModal: FC<{
       contract_address: contract_address,
       token_id: token_id,
       offer_person_address: offer_address,
-      token_owner: address? address : '',
+      token_owner: address ? address : '',
     }
     mutate(data)
     console.log(data)
@@ -47,9 +54,10 @@ const AcceptOfferModal: FC<{
         position: 'top-right',
         theme: 'dark',
       })
+      setActiveTabIndex()
       setIsOpen(false)
     }
-  }, [isSuccess, data?.data?.message, setIsOpen])
+  }, [isSuccess, data?.data?.message, setIsOpen, setActiveTabIndex])
 
   return (
     <ModalBase>

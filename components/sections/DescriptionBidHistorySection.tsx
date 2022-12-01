@@ -248,6 +248,11 @@ const onClickAddress = (user) => {
   window.open(url, '_blank')
 }
 
+const onClickTx = (hash) => {
+  let url = `https://mumbai.polygonscan.com/tx/${hash}`
+  window.open(url, '_blank')
+}
+
 const BidItem: FC<{
   bid: BidType
   auction: AuctionType | undefined
@@ -465,7 +470,7 @@ const ActivityItem: FC<{
   index: number
 }> = ({ activity, index }) => {
   let timePlaced = ''
-
+  const {address} = useAccount()
   if (activity?.createdAt) {
     let d = new Date(activity.createdAt)
     timePlaced = d.toLocaleString()
@@ -476,13 +481,26 @@ const ActivityItem: FC<{
     bgColor = 'bg-[#070707]'
   }
 
+  const isTo = activity?.to !== '----';
+  const isTx = activity?.transaction_hash
   const activityData = [
     {
       name: 'Type',
       value: activity?.event,
     },
-    { name: 'From', value: shortenString(activity?.from) },
-    { name: "To", value:activity?.to !=="----"? shortenString(activity?.to):'-' },
+    {
+      name: 'From',
+      value: activity?.from === address ? 'You' : shortenString(activity?.from),
+    },
+    {
+      name: 'To',
+      value:
+        activity?.to !== '----'
+          ? activity?.to === address
+            ? 'You'
+            : shortenString(activity?.to)
+          : '-',
+    },
     { name: 'Time', value: timePlaced },
   ]
 
@@ -505,10 +523,20 @@ const ActivityItem: FC<{
           className={
             activityData?.name === 'From'
               ? 'cursor-pointer underline hover:text-sky-500'
+              : isTo && activityData?.name === 'To'
+              ? 'cursor-pointer underline hover:text-sky-500'
+              : isTx && activityData?.name === 'Time'
+              ? 'cursor-pointer underline hover:text-sky-500'
               : 'h-16'
           }
           onClick={() =>
-            activityData?.name === 'From' ? onClickAddress(activity?.from) : ''
+            activityData?.name === 'From'
+              ? onClickAddress(activity?.from)
+              : isTo && activityData?.name === 'To'
+              ? onClickAddress(activity?.to)
+              : isTx && activityData?.name === 'Time'
+              ? onClickTx(activity?.transaction_hash)
+              : ''
           }
         >
           {activityData?.value}
@@ -522,7 +550,8 @@ const CurrentOffers: FC<{
   offers: OfferType[] | undefined
   sale: SaleType | undefined
   address: string
-}> = ({ offers, sale, address }) => {
+  setActiveTabIndex: () => void
+}> = ({ offers, sale, address, setActiveTabIndex }) => {
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
   const [isAcceptOfferModalOpen, setIsAcceptOfferModalOpen] = useState(false)
   const [offer_person_address, setoffer_person_address] = useState('')
@@ -541,7 +570,7 @@ const CurrentOffers: FC<{
         { name: 'Made At' },
       ]
 
-  const handleOffers = (offer_person_address, event ) => {
+  const handleOffers = (offer_person_address, event) => {
     setoffer_person_address(offer_person_address)
     if (ifOwner && event === 'accept') {
       setIsAcceptOfferModalOpen(true)
@@ -608,12 +637,14 @@ const CurrentOffers: FC<{
             contract_address={sale?.contract_address}
             token_id={sale?.token_id}
             address={offer_person_address}
+            caller={address}
           />
         )}
       </AnimatePresence>
       <AnimatePresence>
         {isAcceptOfferModalOpen && (
           <AcceptOfferModal
+            setActiveTabIndex={setActiveTabIndex}
             isOpen={isAcceptOfferModalOpen}
             setIsOpen={setIsAcceptOfferModalOpen}
             contract_address={sale?.contract_address}
@@ -634,7 +665,19 @@ const DescriptionBidHistorySection: FC<{
   offers: OfferType[] | undefined
   sale: SaleType | undefined
   activity: ActivityType | undefined
-}> = ({ nft, contractDetails, bids, auction, offers, sale, activity }) => {
+  currentTab: any
+  handleTabs:() => void
+}> = ({
+  nft,
+  contractDetails,
+  bids,
+  auction,
+  offers,
+  sale,
+  activity,
+  currentTab,
+  handleTabs,
+}) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0)
   const [tabUnderlineLeft, setTabUnderlineLeft] = useState(0)
@@ -644,6 +687,9 @@ const DescriptionBidHistorySection: FC<{
       label: 'Description',
     },
     {
+      label: 'Activity',
+    },
+    {
       label:
         nft?.is_in_auction === true
           ? 'Current Bids'
@@ -651,9 +697,7 @@ const DescriptionBidHistorySection: FC<{
           ? 'Current Offers'
           : '',
     },
-    {
-      label: 'Activity',
-    },
+
     // {
     //   label: 'Bid History',
     // },
@@ -661,6 +705,12 @@ const DescriptionBidHistorySection: FC<{
 
   const tabsRef = useRef([])
 
+  useEffect(() => {
+    if (currentTab === 0) {
+      setActiveTabIndex(0)
+      handleTabs()
+    }
+  },[currentTab,handleTabs])
   useEffect(() => {
     function setTabPosition() {
       const currentTab = tabsRef.current[activeTabIndex]
@@ -699,17 +749,23 @@ const DescriptionBidHistorySection: FC<{
       <div className="py-4">
         {activeTabIndex === 0 ? (
           <CharacterDescription nft={nft} contractDetails={contractDetails} />
-        ) : activeTabIndex === 1 ? (
+        ) : activeTabIndex === 2 ? (
           nft?.is_in_sale || offers ? (
-            <CurrentOffers offers={offers} sale={sale} address ={address}/>
+            <CurrentOffers
+              offers={offers}
+              sale={sale}
+              address={address}
+              setActiveTabIndex={setActiveTabIndex}
+            />
           ) : (
             <CurrentBids bids={bids} auction={auction} />
           )
+        ) : activeTabIndex === 1 ? (
+          <Activity activity={activity} address={address} />
         ) : (
-          <Activity activity={activity} />
+          ''
         )}
       </div>
-      
     </section>
   )
 }

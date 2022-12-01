@@ -57,6 +57,7 @@ const ViewAssetPage: NextPage = () => {
   const [offers, setOffers] = useState<OfferType[]>()
   const [saleDetails, setSaleDetails] = useState<SaleType>()
   const [activityDetails, setActivityDetails] = useState<ActivityType>()
+  const [currentTab,setCurrenttab] = useState<any>()
   const refetchtime: number = parseInt(
     process.env.NEXT_PUBLIC_REFETCH_TIME
       ? process.env.NEXT_PUBLIC_REFETCH_TIME
@@ -118,6 +119,17 @@ const ViewAssetPage: NextPage = () => {
     }
   }, [asPath])
 
+  const handleTabs = () => {
+    if(currentTab===0){
+      setCurrenttab('')
+    } else if(currentTab===''){
+      return
+    } else {
+      setCurrenttab(0)
+    }
+    
+  }
+
   return (
     <main className="min-h-screen p-2 pt-6 lg:px-16 mb-6">
       <div className="px-2 md:px-4 lg:px-0">
@@ -146,6 +158,7 @@ const ViewAssetPage: NextPage = () => {
               bids={bids}
               auction={auctionDetails}
               sale={saleDetails}
+              setActiveTabIndex={handleTabs}
             />
           </div>
           <div className="col-span-1 flex justify-end ">
@@ -164,6 +177,8 @@ const ViewAssetPage: NextPage = () => {
           offers={offers}
           sale={saleDetails}
           activity={activityDetails}
+          currentTab={currentTab}
+          handleTabs={handleTabs}
         />
         <ExploreSection contractAddress={contractAddress} tokenId={tokenId} />
       </div>

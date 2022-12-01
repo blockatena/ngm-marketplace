@@ -234,6 +234,7 @@ export type NftCancelOfferBodyType = {
   contract_address: string
   token_id: string
   offer_person_address: any
+  caller:string
 }
 
 export type OfferType = {
