@@ -189,7 +189,7 @@ const LiveAuctionSection: React.FC = () => {
           }}
           className="z-10 text-white leading-none font-popins font-medium text-[32px] md:text-[38px] lg:text-[50px] relative before:absolute before:w-[4px] before:h-[30px] before:md:h-[35px] before:lg:h-[48px] before:bg-[#FFDC20] before:-translate-x-2 before:md:-translate-x-3 before:lg:-translate-x-4 pt-10"
         >
-          Live Auction
+          Top Assets
         </motion.h2>
       </div>
       <motion.div
