@@ -3,7 +3,6 @@ import { FC, ReactNode } from 'react'
 import Footer from './Footer'
 
 import Header from './Header'
-import Loading from './Loading'
 
 interface LayoutProps {
   children: ReactNode
@@ -31,7 +30,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
       <div className=" w-full max-w-[1920px] bg-fixed bg-cover bg-market">
         <Header />
         <Buffer />
-        <Loading />
+        {/* <Loading /> */}
         {children}
         <CurrentFooter />
       </div>
