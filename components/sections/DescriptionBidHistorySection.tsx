@@ -9,22 +9,21 @@ import {
   Title,
   Tooltip,
 } from 'chart.js'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { FC, useEffect, useRef, useState } from 'react'
+import { useAccount } from 'wagmi'
 import {
+  ActivityType,
   AuctionType,
   AvatarType,
   BidType,
   NftContractType,
   OfferType,
   SaleType,
-  ActivityType,
 } from '../../interfaces'
 import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
-import { useAccount } from 'wagmi'
-import CancelOfferModal from '../modals/CancelOfferModal'
 import AcceptOfferModal from '../modals/AcceptOfferModal'
-import { AnimatePresence } from 'framer-motion'
+import CancelOfferModal from '../modals/CancelOfferModal'
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -34,7 +33,6 @@ ChartJS.register(
   Tooltip,
   Legend
 )
-
 
 export const AvatarData = [
   {
@@ -63,7 +61,6 @@ export const AvatarData = [
     allTimePrice: 2.5,
   },
 ]
-
 
 const DescriptionItem: FC<{
   name: string
@@ -120,7 +117,7 @@ const CharacterDescription: FC<{
   ]
 
   return (
-    <div className="p-4">
+    <div className="py-4 px-0">
       <motion.p
         className="font-poppins text-[#D7D7D7] max-w-[885px] mb-4"
         variants={opacityAnimation}
@@ -162,15 +159,20 @@ const CharacterDescription: FC<{
 }
 
 const Activity = (activity) => {
-  activity = activity.activity;
-  const tableHeadings = [{ name: 'Type' }, { name: 'From' }, { name: 'To' }, {name:'Time'}]
+  activity = activity.activity
+  const tableHeadings = [
+    { name: 'Type' },
+    { name: 'From' },
+    { name: 'To' },
+    { name: 'Time' },
+  ]
   return (
     // <div className="lg:w-[800px] 2xl:w-[75%] bg-[#121212] rounded-lg p-4">
     //   {/* <LineChart chartData={avatarData} /> */}
     // </div>
     <>
       <div
-        className="font-poppins text-[#D7D7D7] lg:text-lg px-2 lg:px-4 max-h-[300px] lg:overflow-x-hidden
+        className="font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-[300px] lg:overflow-x-hidden
     overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
       >
         {activity?.length && (
@@ -335,7 +337,7 @@ const CurrentBids: FC<{
   ]
   return (
     <div
-      className="font-poppins text-[#D7D7D7] lg:text-lg px-2 lg:px-4 max-h-[300px] lg:overflow-x-hidden
+      className="font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-[300px] lg:overflow-x-hidden
     overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
     >
       {bids?.[0] && (
@@ -376,7 +378,9 @@ const CurrentBids: FC<{
       )}
       {!auction && (
         // <tr>
-        <p className="text-center b text-3xl p-12">-The NFT don&lsquo;t have any offers-</p>
+        <p className="text-center b text-3xl p-12">
+          -The NFT don&lsquo;t have any offers-
+        </p>
         // </tr>
       )}
     </div>
@@ -389,7 +393,6 @@ const OfferItem: FC<{
   ifOwner: string
   handleOffers: () => void
 }> = ({ offer, index, ifOwner, handleOffers }) => {
-
   let timePlaced = ''
 
   if (offer?.createdAt) {
@@ -453,7 +456,7 @@ const OfferItem: FC<{
                 : offerData?.name === 'cancel'
                 ? handleOffers(offer?.offer_person_address, 'cancel')
                 : offerData?.name === 'accept'
-                ? handleOffers(offer?.offer_person_address,'accept')
+                ? handleOffers(offer?.offer_person_address, 'accept')
                 : ''
             }
           >
@@ -470,7 +473,7 @@ const ActivityItem: FC<{
   index: number
 }> = ({ activity, index }) => {
   let timePlaced = ''
-  const {address} = useAccount()
+  const { address } = useAccount()
   if (activity?.createdAt) {
     let d = new Date(activity.createdAt)
     timePlaced = d.toLocaleString()
@@ -481,7 +484,7 @@ const ActivityItem: FC<{
     bgColor = 'bg-[#070707]'
   }
 
-  const isTo = activity?.to !== '----';
+  const isTo = activity?.to !== '----'
   const isTx = activity?.transaction_hash
   const activityData = [
     {
@@ -584,7 +587,7 @@ const CurrentOffers: FC<{
 
   return (
     <div
-      className="font-poppins text-[#D7D7D7] lg:text-lg px-2 lg:px-4 max-h-[300px] lg:overflow-x-hidden
+      className="font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-[300px] lg:overflow-x-hidden
     overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
     >
       {offers?.length && (
@@ -666,7 +669,7 @@ const DescriptionBidHistorySection: FC<{
   sale: SaleType | undefined
   activity: ActivityType | undefined
   currentTab: any
-  handleTabs:() => void
+  handleTabs: () => void
 }> = ({
   nft,
   contractDetails,
@@ -710,7 +713,7 @@ const DescriptionBidHistorySection: FC<{
       setActiveTabIndex(0)
       handleTabs()
     }
-  },[currentTab,handleTabs])
+  }, [currentTab, handleTabs])
   useEffect(() => {
     function setTabPosition() {
       const currentTab = tabsRef.current[activeTabIndex]

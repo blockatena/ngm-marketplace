@@ -1,13 +1,8 @@
 import { ethers } from 'ethers'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import {
-  Dispatch,
-  FC,
-  SetStateAction,
-  useEffect,
-  useState,
-} from 'react'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
+import { AiOutlineClose } from 'react-icons/ai'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { useAccount } from 'wagmi'
@@ -16,6 +11,7 @@ import type { AvatarType, NftOfferBodyType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
 import { makeOffer } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
+import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 
@@ -28,11 +24,12 @@ const MakeOfferModal: FC<{
   nft: AvatarType
   accountBalance: any
 }> = ({ setIsOpen, nft, accountBalance }) => {
-
   const queryClient = useQueryClient()
+  const { width } = useWindowDimensions()
   const { address } = useAccount()
   const [bidAmount, setBidAmount] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [clientWidth, setClientWidth] = useState(1)
   // const [accountBalance, setAccountBalance] = useState('')
 
   const { mutate, data, isLoading, isSuccess } = useMutation(makeOffer, {
@@ -134,6 +131,10 @@ const MakeOfferModal: FC<{
   }
 
   useEffect(() => {
+    setClientWidth(width)
+  }, [width])
+
+  useEffect(() => {
     if (isSuccess) {
       toast.dark('Offer Made Successfully', {
         hideProgressBar: true,
@@ -142,7 +143,6 @@ const MakeOfferModal: FC<{
       setIsOpen(false)
     }
   }, [isSuccess, data?.data, setIsOpen])
-
 
   return (
     <ModalBase>
@@ -167,7 +167,7 @@ const MakeOfferModal: FC<{
               className="text-[#B2A4A4] font-thin cursor-pointer lg:text-[25px] font-poppins"
               onClick={() => setIsOpen(false)}
             >
-              X
+              <AiOutlineClose fontSize={30} />
             </p>
           </div>
         </div>
@@ -185,13 +185,17 @@ const MakeOfferModal: FC<{
               id="offer_amount"
               className="outline-none w-full h-full bg-[#585858] pl-[25%] text-white rounded-lg"
             />
-            <p className="text-white font-poppins font-semibold lg:text-[25px] absolute top-3 left-4">
+            <p
+              className="text-white font-poppins font-semibold lg:text-[25px] absolute lg:top-[0.35rem] top-3 
+            left-4"
+            >
               <Image
                 src="/images/icons/eth.svg"
-                width="14px"
-                height="20px"
+                width={clientWidth > 500 ? '14px' : '8px'}
+                height={clientWidth > 500 ? '20px' : '15px'}
                 alt="eth_logo"
-              />{'  '}
+              />
+              {'  '}
               <span>WETH</span>
             </p>
           </div>
