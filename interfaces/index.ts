@@ -263,4 +263,28 @@ export type SaleType = {
   __v: number
 }
 
+export type ActivityType = {
+  _id: string
+  event: string
+  item: {
+    name: string
+    contract_address: string
+    token_id: string
+    image:string
+  }
+  price: string
+  quantity: string
+  from: string
+  to: string
+  read: string
+  createdAt: string
+  updatedAt: string
+  __v: number
+}
 
+export type NftAcceptOfferBodyType = {
+  contract_address: string
+  token_id: string
+  offer_person_address: any
+  token_owner: string
+}

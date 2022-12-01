@@ -6,7 +6,8 @@ import type {
   nftCancelbidType,
   NftOfferBodyType,
   NftSaleBodyType,
-  NftCancelOfferBodyType
+  NftCancelOfferBodyType,
+  NftAcceptOfferBodyType,
 } from '../interfaces'
 
 
@@ -82,7 +83,10 @@ export const makeOffer = (data: NftOfferBodyType) => {
   return axiosInstance.post('/nft-marketplace/make-offer-to-nft', data)
 }
 
-
 export const cancelOffer = (data:NftCancelOfferBodyType) => {
   return axiosInstance.post('/nft-marketplace/cancel-offer',data)
+}
+
+export const acceptOffer = (data: NftAcceptOfferBodyType) => {
+  return axiosInstance.post('/nft-marketplace/accept-offer', data)
 }
