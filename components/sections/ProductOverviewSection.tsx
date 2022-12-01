@@ -359,13 +359,7 @@ const ProductOverviewSection: FC<{
               </button>
             </>
           )}
-          {!isShowable && (
-            <>
-              <div className="text-white">
-                <p>The Nft is niether in auction nor in sale.</p>
-              </div>
-            </>
-          )}
+          
         </div>
       </motion.div>
       <AnimatePresence>
@@ -420,7 +414,9 @@ const ProductOverviewSection: FC<{
           <CancelOfferModal
             isOpen={isCancelOfferModalOpen}
             setIsOpen={setIsCancelOfferModalOpen}
-            nft={nft}
+            contract_address={nft?.contract_address}
+            token_id={nft?.token_id}
+            address={address}
           />
         )}
       </AnimatePresence>

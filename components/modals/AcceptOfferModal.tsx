@@ -3,23 +3,25 @@ import { Dispatch, FC, SetStateAction, useEffect } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { QUERIES } from '../../react-query/constants'
-import { cancelOffer } from '../../react-query/queries'
+import { acceptOffer } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
+import { useAccount } from 'wagmi'
 
-const CancelOfferModal: FC<{
+const AcceptOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   // nft: AvatarType
-  contract_address:string
-  token_id:string
-  address: any
-}> = ({ setIsOpen, contract_address,token_id, address }) => {
+  contract_address: string
+  token_id: string
+  offer_address: any
+  token_owner:string
+}> = ({ setIsOpen, contract_address, token_id, offer_address }) => {
   const queryClient = useQueryClient()
-  // const { address } = useAccount()
+  const { address } = useAccount()
 
-  const { mutate, isSuccess, data, isLoading } = useMutation(cancelOffer, {
+  const { mutate, isSuccess, data, isLoading } = useMutation(acceptOffer, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
@@ -29,7 +31,8 @@ const CancelOfferModal: FC<{
     const data = {
       contract_address: contract_address,
       token_id: token_id,
-      offer_person_address: address,
+      offer_person_address: offer_address,
+      token_owner: address? address : '',
     }
     mutate(data)
     console.log(data)
@@ -37,7 +40,7 @@ const CancelOfferModal: FC<{
 
   useEffect(() => {
     if (isSuccess) {
-      toast('Offer Cancelled Successfully', {
+      toast('Offer Accepted Successfully', {
         hideProgressBar: true,
         autoClose: 3000,
         type: 'success',
@@ -72,7 +75,7 @@ const CancelOfferModal: FC<{
           </span>
         </p>
         <h2 className="text-white font-poppins text-[20px] lg:text-[30px] text-center my-4">
-          Are you sure you want to cancel this offer?
+          Are you sure you want to accpet this offer?
         </h2>
         {isLoading && (
           <div className="py-4 grid place-items-center">
@@ -103,4 +106,4 @@ const CancelOfferModal: FC<{
   )
 }
 
-export default CancelOfferModal
+export default AcceptOfferModal
