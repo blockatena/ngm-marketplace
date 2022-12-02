@@ -20,6 +20,7 @@ const CancelBidModal: FC<{
   const { mutate, isSuccess, data, isLoading } = useMutation(cancelBid, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
+      console.log(data)
     },
   })
     const { address } = useAccount()

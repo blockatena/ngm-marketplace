@@ -21,7 +21,8 @@ const PlaceBidModal: FC<{
   isOpen: boolean
   nft: AvatarType
   accountBalance: any
-}> = ({ setIsOpen, nft, accountBalance }) => {
+  status:string
+}> = ({ setIsOpen, nft, accountBalance ,status}) => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
   const [bidAmount, setBidAmount] = useState(0)
@@ -129,17 +130,22 @@ const PlaceBidModal: FC<{
 
   useEffect(() => {
     if (isSuccess) {
-      toast.dark(
-        (typeof data?.data === 'string' && data.data) ||
-          (data?.data?.status === 'started' && 'Bid Placed Successfully') ||
-          '',
-        {
-          hideProgressBar: true,
-        }
-      )
+      toast.success(
+        // (typeof data?.data === 'string' && data.data) ||
+        //   (data?.data?.status === 'started' && 'Bid Placed Successfully') ||
+        //   '',
+        // {
+        //
+        // }
+        (data?.data && status === 'update' && 'Bid Updated Successfully') ||
+          (data?.data && status === 'placed' && 'Bid Placed Successfully') || '',
+
+        { theme: 'dark', hideProgressBar: true }
+      ),
+      setIsOpen(false)
       data?.data?.status === 'started' && setIsOpen(false)
-    }
-  }, [isSuccess, data?.data, setIsOpen])
+      } 
+  }, [isSuccess, data?.data, setIsOpen,status])
 
   return (
     <ModalBase>
