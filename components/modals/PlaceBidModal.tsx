@@ -138,7 +138,7 @@ const PlaceBidModal: FC<{
         //
         // }
         (data?.data && status === 'update' && 'Bid Updated Successfully') ||
-          (data?.data && status === 'placed' && 'Bid Placed Successfully') || '',
+          (data?.data && status === 'place' && 'Bid Placed Successfully') || '',
 
         { theme: 'dark', hideProgressBar: true }
       ),
@@ -208,7 +208,7 @@ const PlaceBidModal: FC<{
               onClick={() => onBid()}
               disabled={isLoading || loading}
             >
-              {isLoading || loading ? <Spinner color="black" /> : 'Place Bid'}
+              {isLoading || loading ? <Spinner color="black" /> : status==='update'?'Update Bid':'Place Bid'}
             </button>
           </div>
         </div>
