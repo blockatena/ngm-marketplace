@@ -9,10 +9,11 @@ import {
   Title,
   Tooltip,
 } from 'chart.js'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { FC, useEffect, useRef, useState } from 'react'
-import { Line } from 'react-chartjs-2'
+import { useAccount } from 'wagmi'
 import {
+  ActivityType,
   AuctionType,
   AvatarType,
   BidType,
@@ -21,7 +22,8 @@ import {
   SaleType,
 } from '../../interfaces'
 import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
-
+import AcceptOfferModal from '../modals/AcceptOfferModal'
+import CancelOfferModal from '../modals/CancelOfferModal'
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -59,10 +61,6 @@ export const AvatarData = [
     allTimePrice: 2.5,
   },
 ]
-
-const LineChart = ({ chartData }) => {
-  return <Line data={chartData} />
-}
 
 const DescriptionItem: FC<{
   name: string
@@ -119,7 +117,7 @@ const CharacterDescription: FC<{
   ]
 
   return (
-    <div className="p-4">
+    <div className="py-4 px-0">
       <motion.p
         className="font-poppins text-[#D7D7D7] max-w-[885px] mb-4"
         variants={opacityAnimation}
@@ -160,23 +158,60 @@ const CharacterDescription: FC<{
   )
 }
 
-const BidHistory = () => {
-  const avatarData = {
-    labels: AvatarData.map((data) => data.year),
-    datasets: [
-      {
-        label: 'All Time Avg. Price',
-        data: AvatarData.map((data) => data.allTimePrice),
-        borderColor: '#C8B511',
-        borderWidth: 2,
-      },
-    ],
-  }
-
+const Activity = (activity) => {
+  activity = activity.activity
+  const tableHeadings = [
+    { name: 'Type' },
+    { name: 'From' },
+    { name: 'To' },
+    { name: 'Time' },
+  ]
   return (
-    <div className="lg:w-[800px] 2xl:w-[75%] bg-[#121212] rounded-lg p-4">
-      <LineChart chartData={avatarData} />
-    </div>
+    // <div className="lg:w-[800px] 2xl:w-[75%] bg-[#121212] rounded-lg p-4">
+    //   {/* <LineChart chartData={avatarData} /> */}
+    // </div>
+    <>
+      <div
+        className="font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-[300px] lg:overflow-x-hidden
+    overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
+      >
+        {activity?.length && (
+          <table className="w-full overflow-x-auto text-center">
+            <thead>
+              <tr className="h-16">
+                {tableHeadings.map((heading) => (
+                  <th key={heading.name} className="h-16">
+                    {heading.name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {activity?.length &&
+                activity.map((activity, index) => {
+                  return (
+                    <ActivityItem
+                      key={index}
+                      activity={activity}
+                      index={index}
+                    />
+                  )
+                })}
+              {activity?.length === 0 && (
+                // <tr>
+                <td>Activites</td>
+                // </tr>
+              )}
+            </tbody>
+          </table>
+        )}
+        {activity?.length === 0 && (
+          // <tr>
+          <p className="text-center b text-3xl p-12">- No Activities yet -</p>
+          // </tr>
+        )}
+      </div>
+    </>
   )
 }
 
@@ -184,7 +219,7 @@ const shortenString = (value: string) => {
   let shortenedString = ''
   if (value) {
     shortenedString =
-      value?.substring(0, 6) + '...' + value?.substring(value?.length - 4)
+      value?.substring(0, 5) + '...' + value?.substring(value?.length - 5)
   }
   return shortenedString
 }
@@ -212,6 +247,11 @@ const shortenString = (value: string) => {
 
 const onClickAddress = (user) => {
   let url = `https://mumbai.polygonscan.com/address/${user}`
+  window.open(url, '_blank')
+}
+
+const onClickTx = (hash) => {
+  let url = `https://mumbai.polygonscan.com/tx/${hash}`
   window.open(url, '_blank')
 }
 
@@ -297,7 +337,7 @@ const CurrentBids: FC<{
   ]
   return (
     <div
-      className="font-poppins text-[#D7D7D7] lg:text-lg px-2 lg:px-4 max-h-[300px] lg:overflow-x-hidden
+      className="font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-[300px] lg:overflow-x-hidden
     overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
     >
       {bids?.[0] && (
@@ -338,7 +378,9 @@ const CurrentBids: FC<{
       )}
       {!auction && (
         // <tr>
-        <p className="text-center b text-3xl p-12">-NFT not on auction-</p>
+        <p className="text-center b text-3xl p-12">
+          -The NFT don&lsquo;t have any offers-
+        </p>
         // </tr>
       )}
     </div>
@@ -348,7 +390,9 @@ const CurrentBids: FC<{
 const OfferItem: FC<{
   offer: OfferType
   index: number
-}> = ({ offer, index }) => {
+  ifOwner: string
+  handleOffers: () => void
+}> = ({ offer, index, ifOwner, handleOffers }) => {
   let timePlaced = ''
 
   if (offer?.createdAt) {
@@ -360,20 +404,113 @@ const OfferItem: FC<{
   if (index % 2 === 0) {
     bgColor = 'bg-[#070707]'
   }
+  const offerData = ifOwner
+    ? [
+        {
+          name: 'Buyer Address',
+          value: shortenString(offer?.offer_person_address),
+        },
+        { name: 'Bid Amount', value: offer?.offer_price },
+        { name: 'Made At', value: timePlaced },
+        { name: 'cancel', value: 'CANCEL' },
+        { name: 'accept', value: 'ACCEPT' },
+      ]
+    : [
+        {
+          name: 'Buyer Address',
+          value: shortenString(offer?.offer_person_address),
+        },
+        { name: 'Bid Amount', value: offer?.offer_price },
+        { name: 'Made At', value: timePlaced },
+      ]
 
-  const offerData = [
+  return (
+    <>
+      <motion.tr
+        className={`${bgColor} font-poppins text-[#D7D7D7] lg:text-lg py-2 h-16`}
+        variants={fromRightAnimation}
+        initial="initial"
+        whileInView="final"
+        viewport={{ once: true }}
+        transition={{
+          ease: 'easeInOut',
+          duration: 0.4,
+          delay: index < 6 ? 0.1 * index : 0,
+        }}
+      >
+        {offerData?.map((offerData, index) => (
+          <td
+            key={index}
+            className={
+              offerData?.name === 'Buyer Address'
+                ? 'cursor-pointer underline hover:text-sky-500'
+                : offerData?.name === 'cancel'
+                ? 'cursor-pointer hover:text-red-500'
+                : offerData?.name === 'accept'
+                ? 'cursor-pointer  hover:text-yellow-500'
+                : 'h-16'
+            }
+            onClick={() =>
+              offerData?.name === 'Buyer Address'
+                ? onClickAddress(offer?.offer_person_address)
+                : offerData?.name === 'cancel'
+                ? handleOffers(offer?.offer_person_address, 'cancel')
+                : offerData?.name === 'accept'
+                ? handleOffers(offer?.offer_person_address, 'accept')
+                : ''
+            }
+          >
+            {offerData?.value}
+          </td>
+        ))}
+      </motion.tr>
+    </>
+  )
+}
+
+const ActivityItem: FC<{
+  activity: ActivityType
+  index: number
+}> = ({ activity, index }) => {
+  let timePlaced = ''
+  const { address } = useAccount()
+  if (activity?.createdAt) {
+    let d = new Date(activity.createdAt)
+    timePlaced = d.toLocaleString()
+  }
+
+  let bgColor = 'bg-transparent'
+  if (index % 2 === 0) {
+    bgColor = 'bg-[#070707]'
+  }
+
+  const isTo = activity?.to !== '----'
+  const isTx = activity?.transaction_hash
+  const activityData = [
     {
-      name: 'Buyer Address',
-      value: shortenString(offer?.offer_person_address),
+      name: 'Type',
+      value: activity?.event,
     },
-    { name: 'Bid Amount', value: offer?.offer_price },
-    { name: 'Made At', value: timePlaced },
+    {
+      name: 'From',
+      value: activity?.from === address ? 'You' : shortenString(activity?.from),
+    },
+    {
+      name: 'To',
+      value:
+        activity?.to !== '----'
+          ? activity?.to === address
+            ? 'You'
+            : shortenString(activity?.to)
+          : '-',
+    },
+    { name: 'Time', value: timePlaced },
   ]
 
   return (
     <motion.tr
       className={`${bgColor} font-poppins text-[#D7D7D7] lg:text-lg py-2 h-16`}
-      variants={fromRightAnimation}
+      variants={opacityAnimation}
       initial="initial"
       whileInView="final"
       viewport={{ once: true }}
@@ -383,17 +520,29 @@ const OfferItem: FC<{
         delay: index < 6 ? 0.1 * index : 0,
       }}
     >
-      {offerData?.map((offerData, index) => (
+      {activityData?.map((activityData, index) => (
         <td
           key={index}
           className={
-            offerData?.name === 'Buyer Address'
+            activityData?.name === 'From'
+              ? 'cursor-pointer underline hover:text-sky-500'
+              : isTo && activityData?.name === 'To'
+              ? 'cursor-pointer underline hover:text-sky-500'
+              : isTx && activityData?.name === 'Time'
               ? 'cursor-pointer underline hover:text-sky-500'
               : 'h-16'
           }
-          onClick={() => onClickAddress(offer?.offer_person_address)}
+          onClick={() =>
+            activityData?.name === 'From'
+              ? onClickAddress(activity?.from)
+              : isTo && activityData?.name === 'To'
+              ? onClickAddress(activity?.to)
+              : isTx && activityData?.name === 'Time'
+              ? onClickTx(activity?.transaction_hash)
+              : ''
+          }
         >
-          {offerData?.value}
+          {activityData?.value}
         </td>
       ))}
     </motion.tr>
@@ -403,16 +552,42 @@ const OfferItem: FC<{
 const CurrentOffers: FC<{
   offers: OfferType[] | undefined
   sale: SaleType | undefined
-}> = ({ offers, sale }) => {
-  const tableHeadings = [
-    { name: 'Buyer Address' },
-    { name: 'Offer Amount (WETH)' },
-    { name: 'Made At' },
-  ]
+  address: string
+  setActiveTabIndex: () => void
+}> = ({ offers, sale, address, setActiveTabIndex }) => {
+  const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
+  const [isAcceptOfferModalOpen, setIsAcceptOfferModalOpen] = useState(false)
+  const [offer_person_address, setoffer_person_address] = useState('')
+  const ifOwner = sale?.token_owner === address
+  const tableHeadings = ifOwner
+    ? [
+        { name: 'Buyer Address' },
+        { name: 'Offer Amount (WETH)' },
+        { name: 'Made At' },
+        { name: 'Cancel' },
+        { name: 'Accept' },
+      ]
+    : [
+        { name: 'Buyer Address' },
+        { name: 'Offer Amount (WETH)' },
+        { name: 'Made At' },
+      ]
+
+  const handleOffers = (offer_person_address, event) => {
+    setoffer_person_address(offer_person_address)
+    if (ifOwner && event === 'accept') {
+      setIsAcceptOfferModalOpen(true)
+      return
+    }
+    if (ifOwner && event === 'cancel') {
+      setIsCancelOfferModalOpen(true)
+      return
+    }
+  }
 
   return (
     <div
-      className="font-poppins text-[#D7D7D7] lg:text-lg px-2 lg:px-4 max-h-[300px] lg:overflow-x-hidden
+      className="font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-[300px] lg:overflow-x-hidden
     overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
     >
       {offers?.length && (
@@ -429,11 +604,19 @@ const CurrentOffers: FC<{
           <tbody>
             {offers?.length &&
               offers.map((offer, index) => {
-                return <OfferItem key={index} offer={offer} index={index} />
+                return (
+                  <OfferItem
+                    handleOffers={handleOffers}
+                    key={index}
+                    offer={offer}
+                    index={index}
+                    ifOwner={ifOwner}
+                  />
+                )
               })}
             {offers?.length === 0 && (
               // <tr>
-              <td>Bids</td>
+              <p className="text-center b text-3xl p-12">- No offers yet -</p>
               // </tr>
             )}
           </tbody>
@@ -449,6 +632,30 @@ const CurrentOffers: FC<{
         <p className="text-center b text-3xl p-12">-NFT not on sale-</p>
         // </tr>
       )}
+      <AnimatePresence>
+        {isCancelOfferModalOpen && (
+          <CancelOfferModal
+            isOpen={isCancelOfferModalOpen}
+            setIsOpen={setIsCancelOfferModalOpen}
+            contract_address={sale?.contract_address}
+            token_id={sale?.token_id}
+            address={offer_person_address}
+            caller={address}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isAcceptOfferModalOpen && (
+          <AcceptOfferModal
+            setActiveTabIndex={setActiveTabIndex}
+            isOpen={isAcceptOfferModalOpen}
+            setIsOpen={setIsAcceptOfferModalOpen}
+            contract_address={sale?.contract_address}
+            token_id={sale?.token_id}
+            offer_address={offer_person_address}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -460,18 +667,40 @@ const DescriptionBidHistorySection: FC<{
   auction: AuctionType | undefined
   offers: OfferType[] | undefined
   sale: SaleType | undefined
-}> = ({ nft, contractDetails, bids, auction, offers, sale }) => {
+  activity: ActivityType | undefined
+  currentTab: any
+  handleTabs: () => void
+}> = ({
+  nft,
+  contractDetails,
+  bids,
+  auction,
+  offers,
+  sale,
+  activity,
+  currentTab,
+  handleTabs,
+}) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0)
   const [tabUnderlineLeft, setTabUnderlineLeft] = useState(0)
-
+  const { address } = useAccount()
   const tabsData = [
     {
       label: 'Description',
     },
     {
-      label: nft?.is_in_sale ? 'Current Offers' : 'Current Bids',
+      label: 'Activity',
     },
+    {
+      label:
+        nft?.is_in_auction === true
+          ? 'Current Bids'
+          : nft?.is_in_sale
+          ? 'Current Offers'
+          : '',
+    },
+
     // {
     //   label: 'Bid History',
     // },
@@ -479,6 +708,12 @@ const DescriptionBidHistorySection: FC<{
 
   const tabsRef = useRef([])
 
+  useEffect(() => {
+    if (currentTab === 0) {
+      setActiveTabIndex(0)
+      handleTabs()
+    }
+  }, [currentTab, handleTabs])
   useEffect(() => {
     function setTabPosition() {
       const currentTab = tabsRef.current[activeTabIndex]
@@ -517,14 +752,21 @@ const DescriptionBidHistorySection: FC<{
       <div className="py-4">
         {activeTabIndex === 0 ? (
           <CharacterDescription nft={nft} contractDetails={contractDetails} />
-        ) : activeTabIndex === 1 ? (
-          nft?.is_in_sale ? (
-            <CurrentOffers offers={offers} sale={sale} />
+        ) : activeTabIndex === 2 ? (
+          nft?.is_in_sale || offers ? (
+            <CurrentOffers
+              offers={offers}
+              sale={sale}
+              address={address}
+              setActiveTabIndex={setActiveTabIndex}
+            />
           ) : (
             <CurrentBids bids={bids} auction={auction} />
           )
+        ) : activeTabIndex === 1 ? (
+          <Activity activity={activity} address={address} />
         ) : (
-          <BidHistory />
+          ''
         )}
       </div>
     </section>

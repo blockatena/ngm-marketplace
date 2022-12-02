@@ -7,6 +7,7 @@ import { FaDiscord, FaLinkedinIn } from 'react-icons/fa'
 import bg_img from '../public/images/footer/bg_footer_final.png'
 import bottom_img from '../public/images/footer/bottom_footer.svg'
 import { fromRightAnimation } from '../utils/animations'
+import useIsMounted from '../utils/hooks/useIsMounted'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 import NFTZoneLogo from './NFTZoneLogo'
 
@@ -34,18 +35,19 @@ const HomeFooter: React.FC = () => {
   }
 
   const { width } = useWindowDimensions()
+  const isMounted = useIsMounted()
 
   let bellSize: number
-  if (width < 768) {
+  if (isMounted && width < 768) {
     bellSize = 24
-  } else if (width < 1024) {
+  } else if (isMounted && width < 1024) {
     bellSize = 32
   } else {
     bellSize = 38
   }
 
   return (
-    <footer className="w-full min-h-screen relative flex items-center">
+    <footer className="w-full min-h-screen 2xl:min-h-full 2xl:py-10 2xl:mt-10 relative flex items-center">
       <div className="flex items-center flex-col xl:flex-row w-full space-y-10 lg:space-y-0 lg:-translate-y-14">
         <div className="max-w-[800px] xl:max-w-[800px]">
           <Image alt="Background" src={bg_img} />
@@ -92,7 +94,7 @@ const HomeFooter: React.FC = () => {
       <div className="absolute -bottom-2 left-0 right-0 w-full">
         <Image src={bottom_img} alt="" />
       </div>
-      <div className="absolute bottom-0 left-0 right-0 px-10 pb-5 lg:px-24 lg:pb-10 flex flex-row justify-between items-center">
+      <div className="absolute bottom-0 left-0 right-0 px-10 pb-5 lg:px-24 lg:pb-10 2xl:mt-10 flex flex-row justify-between items-center">
         <NFTZoneLogo size="small" />
         <div className="flex flex-row justify-center items-center space-x-3 lg:space-x-6">
           <IconButton link="https://www.instagram.com/">

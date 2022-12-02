@@ -2,22 +2,33 @@ import { motion } from 'framer-motion'
 import { Dispatch, FC, SetStateAction, useEffect } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { AvatarType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
-import { cancelAuction } from '../../react-query/queries'
+import { acceptOffer } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
+import { useAccount } from 'wagmi'
 
-const CancelAuctionModal: FC<{
+const AcceptOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
-  nft: AvatarType
+  // nft: AvatarType
+  contract_address: string
+  token_id: string
+  offer_address: any
+  token_owner: string
   setActiveTabIndex: () => void
-}> = ({ setIsOpen, nft, setActiveTabIndex }) => {
+}> = ({
+  setIsOpen,
+  contract_address,
+  token_id,
+  offer_address,
+  setActiveTabIndex,
+}) => {
   const queryClient = useQueryClient()
+  const { address } = useAccount()
 
-  const { mutate, isSuccess, data, isLoading } = useMutation(cancelAuction, {
+  const { mutate, isSuccess, data, isLoading } = useMutation(acceptOffer, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
@@ -25,15 +36,18 @@ const CancelAuctionModal: FC<{
 
   const handleClick = () => {
     const data = {
-      contract_address: nft?.contract_address,
-      token_id: nft?.token_id,
+      contract_address: contract_address,
+      token_id: token_id,
+      offer_person_address: offer_address,
+      token_owner: address ? address : '',
     }
     mutate(data)
+    console.log(data)
   }
 
   useEffect(() => {
     if (isSuccess) {
-      toast('Auction Cancelled Successfully', {
+      toast('Offer Accepted Successfully', {
         hideProgressBar: true,
         autoClose: 3000,
         type: 'success',
@@ -43,7 +57,7 @@ const CancelAuctionModal: FC<{
       setActiveTabIndex()
       setIsOpen(false)
     }
-  }, [isSuccess, data?.data?.message, setIsOpen,setActiveTabIndex])
+  }, [isSuccess, data?.data?.message, setIsOpen, setActiveTabIndex])
 
   return (
     <ModalBase>
@@ -69,7 +83,7 @@ const CancelAuctionModal: FC<{
           </span>
         </p>
         <h2 className="text-white font-poppins text-[20px] lg:text-[30px] text-center my-4">
-          Are you sure you want to cancel this auction?
+          Are you sure you want to accpet this offer?
         </h2>
         {isLoading && (
           <div className="py-4 grid place-items-center">
@@ -100,4 +114,4 @@ const CancelAuctionModal: FC<{
   )
 }
 
-export default CancelAuctionModal
+export default AcceptOfferModal

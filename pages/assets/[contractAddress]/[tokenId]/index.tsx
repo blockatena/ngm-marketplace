@@ -17,6 +17,7 @@ import type {
   NftContractType,
   OfferType,
   SaleType,
+  ActivityType,
 } from '../../../../interfaces'
 import leftVector from '../../../../public/images/others/left_vector.png'
 import rightVector from '../../../../public/images/others/right_vector.png'
@@ -55,7 +56,8 @@ const ViewAssetPage: NextPage = () => {
   const [auctionDetails, setAuctionDetails] = useState<AuctionType>()
   const [offers, setOffers] = useState<OfferType[]>()
   const [saleDetails, setSaleDetails] = useState<SaleType>()
-
+  const [activityDetails, setActivityDetails] = useState<ActivityType>()
+  const [currentTab,setCurrenttab] = useState<any>()
   const refetchtime: number = parseInt(
     process.env.NEXT_PUBLIC_REFETCH_TIME
       ? process.env.NEXT_PUBLIC_REFETCH_TIME
@@ -85,7 +87,12 @@ const ViewAssetPage: NextPage = () => {
   ]
 
   useEffect(() => {
-    setEndTime(data?.data?.auction?.end_date)
+    setEndTime(
+      data?.data?.auction?.end_date
+        ? data?.data?.auction?.end_date
+        : data?.data?.sale?.end_date 
+        ? data?.data?.sale?.end_date : ''
+    )
     setNft(data?.data.nft)
     // setAvatars(DATA?.data?.data?.nfts)
     setContractDetails(data?.data?.contract_details)
@@ -93,6 +100,7 @@ const ViewAssetPage: NextPage = () => {
     setAuctionDetails(data?.data.auction)
     setOffers(data?.data?.offers)
     setSaleDetails(data?.data?.sale)
+    setActivityDetails(data?.data?.nft_activity)
   }, [
     data?.data.auction,
     data?.data?.bids,
@@ -100,6 +108,7 @@ const ViewAssetPage: NextPage = () => {
     data?.data.nft,
     data?.data?.offers,
     data?.data?.sale,
+    data?.data?.nft_activity
   ])
 
   useEffect(() => {
@@ -109,6 +118,17 @@ const ViewAssetPage: NextPage = () => {
       setTokenId(routeArr[routeArr.length - 1])
     }
   }, [asPath])
+
+  const handleTabs = () => {
+    if(currentTab===0){
+      setCurrenttab('')
+    } else if(currentTab===''){
+      return
+    } else {
+      setCurrenttab(0)
+    }
+    
+  }
 
   return (
     <main className="min-h-screen p-2 pt-6 lg:px-16 mb-6">
@@ -131,11 +151,14 @@ const ViewAssetPage: NextPage = () => {
           </div>
           <div className="col-span-10 flex justify-center">
             <ProductOverviewSection
+              offers={offers}
               endTime={endTime}
               nft={nft}
               contractDetails={contractDetails}
               bids={bids}
               auction={auctionDetails}
+              sale={saleDetails}
+              setActiveTabIndex={handleTabs}
             />
           </div>
           <div className="col-span-1 flex justify-end ">
@@ -153,6 +176,9 @@ const ViewAssetPage: NextPage = () => {
           auction={auctionDetails}
           offers={offers}
           sale={saleDetails}
+          activity={activityDetails}
+          currentTab={currentTab}
+          handleTabs={handleTabs}
         />
         <ExploreSection contractAddress={contractAddress} tokenId={tokenId} />
       </div>

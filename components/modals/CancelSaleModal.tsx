@@ -13,7 +13,8 @@ const CancelSaleModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   nft: AvatarType
-}> = ({ setIsOpen, nft }) => {
+  setActiveTabIndex: () => void
+}> = ({ setIsOpen, nft, setActiveTabIndex }) => {
   const queryClient = useQueryClient()
 
   const { mutate, isSuccess, data, isLoading } = useMutation(cancelSale, {
@@ -39,9 +40,10 @@ const CancelSaleModal: FC<{
         position: 'top-right',
         theme: 'dark',
       })
+      setActiveTabIndex()
       setIsOpen(false)
     }
-  }, [isSuccess, data?.data?.message, setIsOpen])
+  }, [isSuccess, data?.data?.message, setIsOpen, setActiveTabIndex])
 
   return (
     <ModalBase>

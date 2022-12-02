@@ -11,6 +11,8 @@ import {
   AvatarType,
   BidType,
   NftContractType,
+  SaleType,
+  OfferType
 } from '../../interfaces'
 // import ownerImg from '../../public/images/others/owner.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
@@ -19,6 +21,7 @@ import useIsMounted from '../../utils/hooks/useIsMounted'
 import CancelAuctionModal from '../modals/CancelAuctionModal'
 import CancelBidModal from '../modals/CancelBidModal'
 import CancelSaleModal from '../modals/CancelSaleModal'
+import CancelOfferModal from '../modals/CancelOfferModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
@@ -29,13 +32,25 @@ const ProductOverviewSection: FC<{
   bids: BidType[] | undefined
   auction: AuctionType | undefined
   endTime: string
-}> = ({ nft, contractDetails, endTime, bids, auction }) => {
+  sale: SaleType | undefined
+  offers: OfferType[] | undefined
+  setActiveTabIndex:() => void
+}> = ({
+  nft,
+  contractDetails,
+  endTime,
+  bids,
+  auction,
+  offers,
+  setActiveTabIndex,
+}) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
   const [isCancelBidModalOpen, setIsCancelBidModalOpen] = useState(false)
   const [isUserIsBidder, setIsUserIsBidder] = useState(false)
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
   const [isCancelSaleModalOpen, setIsCancelSaleModalOpen] = useState(false)
+  const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
   const { address } = useAccount()
   const isMounted = useIsMounted()
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
@@ -57,8 +72,12 @@ const ProductOverviewSection: FC<{
     nft?.token_owner &&
     nft.token_owner === address &&
     nft?.is_in_sale
-
   const isBidCancellable = isUserIsBidder && nft?.is_in_auction
+
+  const isShowable =
+    (nft?.token_owner !== DEAD_ADDRESS && nft?.is_in_sale) ||
+    nft?.is_in_auction ||
+    nft?.token_owner === address
 
   const getBalance = async (address: `0x${string}` | undefined) => {
     if (!address) return
@@ -76,6 +95,13 @@ const ProductOverviewSection: FC<{
     let balanceInEth: any = ethers.utils.formatEther(balance)
     balanceInEth = parseFloat(balanceInEth).toFixed(2)
     setAccountBalance(balanceInEth)
+  }
+
+  const filters = () => {
+    const fi = offers?.find((a) => {
+      return a.offer_person_address === address && a.offer_status == 'started'
+    })
+    return fi
   }
 
   useEffect(() => {
@@ -102,7 +128,8 @@ const ProductOverviewSection: FC<{
     }
   })
 
-  const handleClick = () => {
+
+  const handleClick = (event: string) => {
     // if (isMounted && nft?.token_owner === address && nft?.is_in_auction) {
     //   toast('You have already listed this NFT!', {
     //     hideProgressBar: true,
@@ -130,11 +157,15 @@ const ProductOverviewSection: FC<{
       return
     }
 
+    if (filters() && event === 'cancel') {
+      setIsCancelOfferModalOpen(true)
+      return
+    }
     nft?.is_in_auction && isUserIsBidder && setIsCancelBidModalOpen(true)
     nft?.is_in_auction === false && setIsOfferModalOpen(true)
     nft?.is_in_auction && !isUserIsBidder && setIsBidModalOpen(true)
   }
-  if (nft?.is_in_auction === true) {
+  if (nft?.is_in_auction || nft?.is_in_sale) {
     setInterval(() => {
       if (Date.parse(endTime) > Date.now()) {
         const Difference = (Date.parse(endTime) - Date.now()) / 1000
@@ -156,6 +187,11 @@ const ProductOverviewSection: FC<{
     }, 1000)
   } else {
     //
+  }
+
+  const onClickAddress = (owner: any) => {
+    let url = `https://mumbai.polygonscan.com/address/${owner}`
+    window.open(url, '_blank')
   }
 
   return (
@@ -248,18 +284,24 @@ const ProductOverviewSection: FC<{
                   <p className="font-medium text-white text-sm lg:text-base">
                     {/* SalvadorDali */}
                     <a
-                      href={`https://mumbai.polygonscan.com/address/${nft?.token_owner}`}
+                      // href={`https://mumbai.polygonscan.com/address/${nft?.token_owner}`}
+                      onClick={() =>
+                        onClickAddress(nft?.token_owner ? nft?.token_owner : '')
+                      }
                       target="_blank"
                       rel="noreferrer"
-                      className="underline hover:text-sky-500"
+                      className="underline hover:text-sky-500 cursor-pointer"
                     >
-                      {nft?.token_owner &&
-                        `${nft.token_owner.substring(
-                          0,
-                          5
-                        )}...${nft.token_owner.substring(
-                          nft.token_owner.length - 3
-                        )}`}
+                      {nft?.token_owner && nft?.token_owner === address
+                        ? 'You'
+                        : nft?.token_owner
+                        ? `${nft.token_owner.substring(
+                            0,
+                            5
+                          )}...${nft.token_owner.substring(
+                            nft.token_owner.length - 3
+                          )}`
+                        : ''}
                     </a>
                   </p>
                 </>
@@ -271,17 +313,18 @@ const ProductOverviewSection: FC<{
               )}
             </div>
           </div>
-          {nft?.is_in_auction && (
-            <div className="grid place-items-center">
-              <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
-                {D < 10 && <>0</>}
-                {D} : {H < 10 && <>0</>}
-                {H} : {M < 10 && <>0</>}
-                {M} : {S < 10 && <>0</>}
-                {S}
+          {nft?.is_in_auction ||
+            (nft?.is_in_sale && (
+              <div className="grid place-items-center">
+                <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
+                  {D < 10 && <>0</>}
+                  {D} : {H < 10 && <>0</>}
+                  {H} : {M < 10 && <>0</>}
+                  {M} : {S < 10 && <>0</>}
+                  {S}
+                </div>
               </div>
-            </div>
-          )}
+            ))}
         </div>
 
         <div className="flex flex-col md:flex-row justify-between gap-2 lg:gap-4">
@@ -291,10 +334,10 @@ const ProductOverviewSection: FC<{
           >
             Purchase Now
           </button> */}
-          {nft?.token_owner !== DEAD_ADDRESS && (
+          {isShowable && (
             <button
               className="w-full lg:min-w-[327px] btn-primary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
-              onClick={handleClick}
+              onClick={() => handleClick('ok')}
             >
               {isCancellable
                 ? 'Cancel Auction'
@@ -306,8 +349,22 @@ const ProductOverviewSection: FC<{
                 ? 'Cancel Bid'
                 : nft?.is_in_auction
                 ? 'Place Bid'
-                : 'Make Offer'}
+                : filters()
+                ? 'Update Offer'
+                : nft?.is_in_sale
+                ? 'Make Offer'
+                : ''}
             </button>
+          )}
+          {filters() && (
+            <>
+              <button
+                className="w-full lg:min-w-[327px] btn-secondary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
+                onClick={() => handleClick('cancel')}
+              >
+                Cancel Offer
+              </button>
+            </>
           )}
         </div>
       </motion.div>
@@ -343,6 +400,7 @@ const ProductOverviewSection: FC<{
       <AnimatePresence>
         {isCancelModalOpen && (
           <CancelAuctionModal
+            setActiveTabIndex={setActiveTabIndex}
             isOpen={isCancelModalOpen}
             setIsOpen={setIsCancelModalOpen}
             nft={nft}
@@ -352,9 +410,22 @@ const ProductOverviewSection: FC<{
       <AnimatePresence>
         {isCancelSaleModalOpen && (
           <CancelSaleModal
+            setActiveTabIndex={setActiveTabIndex}
             isOpen={isCancelSaleModalOpen}
             setIsOpen={setIsCancelSaleModalOpen}
             nft={nft}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isCancelOfferModalOpen && (
+          <CancelOfferModal
+            isOpen={isCancelOfferModalOpen}
+            setIsOpen={setIsCancelOfferModalOpen}
+            contract_address={nft?.contract_address}
+            token_id={nft?.token_id}
+            address={address}
+            caller={address}
           />
         )}
       </AnimatePresence>
