@@ -38,7 +38,7 @@ import {
 import useCurrentDateTime from '../../../../utils/hooks/useCurrentDateTime'
 
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
-const CHAINID = 80001
+const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 
 const initalNftState: AvatarType = {
   _id: '',
@@ -153,10 +153,11 @@ const ListAssetPage: NextPage = () => {
 
     const provider = new ethers.providers.Web3Provider(ethereum)
     const { chainId } = await provider.getNetwork()
-    if (chainId !== CHAINID) {
+    let chain = parseInt(CHAINID)
+    if (chainId !== chain) {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ethers.utils.hexValue(CHAINID) }], // chainId must be in hexadecimal numbers
+        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
       })
     }
     const walletAddress = accounts[0] // first account in MetaMask
@@ -181,6 +182,7 @@ const ListAssetPage: NextPage = () => {
       start_date: startDate,
       end_date: endDate,
       min_price: formData.min_price,
+      sign:''
     }
 
     const saleBody: NftSaleBodyType = {
@@ -189,11 +191,33 @@ const ListAssetPage: NextPage = () => {
       token_owner: nft?.token_owner,
       start_date: startDate,
       end_date: endDate,
-      price: String(formData.min_price),
+      price: formData.min_price,
+      sign:''
     }
 
+    let rawMsg = `{"contract_address":"${nft?.contract_address}","token_id":"${nft?.token_id}","token_owner":"${nft?.token_owner}","start_date":"${startDate}","end_date":"${endDate}","min_price":"${formData.min_price}"}`
+    let rawMsgSale = `{"contract_address":"${nft?.contract_address}","token_id":"${nft?.token_id}","token_owner":"${nft?.token_owner}","start_date":"${startDate}","end_date":"${endDate}","price":"${formData.min_price}"}`
     if (isApproved === true) {
       // POST DATA
+      // console.log(type === 'auction' ? rawMsg : rawMsgSale)
+      let hashMessage = await ethers.utils.hashMessage(
+        type === 'auction' ? rawMsg : rawMsgSale
+      )
+      // console.log(hashMessage)
+      await signer
+        .signMessage(hashMessage)
+        .then(async (sign) => {
+          // console.log(sign)
+          if (type === 'auction') {
+            requestData['sign'] = sign
+          } else {
+            saleBody['sign'] = sign
+          }
+        })
+        .catch((e) => {
+          console.log(e.message)
+          return
+        })
       type === 'auction' && mutate(requestData)
       type === 'fixed' && createSale(saleBody)
       setIsLoading(false)
@@ -206,9 +230,27 @@ const ListAssetPage: NextPage = () => {
         .setApprovalForAll(NGMMarketAddress, true)
         .then((tx: any) => {
           console.log('processing')
-          provider.waitForTransaction(tx.hash).then(() => {
+          provider.waitForTransaction(tx.hash).then(async () => {
             // console.log(tx.hash)
             //Axios data:POST
+            let hashMessage = await ethers.utils.hashMessage(
+              type === 'auction' ? rawMsg : rawMsgSale
+            )
+            // console.log(hashMessage)
+            await signer
+              .signMessage(hashMessage)
+              .then(async (sign) => {
+                // console.log(sign)
+                if (type === 'auction') {
+                  requestData['sign'] = sign
+                } else {
+                  saleBody['sign'] = sign
+                }
+              })
+              .catch((e) => {
+                console.log(e.message)
+                return
+              })
             type === 'auction' && mutate(requestData)
             type === 'fixed' && createSale(saleBody)
             // setIsSuccessModalOpen(true)

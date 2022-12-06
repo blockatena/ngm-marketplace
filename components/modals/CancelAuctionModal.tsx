@@ -8,7 +8,9 @@ import { cancelAuction } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
+import { ethers } from 'ethers'
 
+const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const CancelAuctionModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -23,11 +25,43 @@ const CancelAuctionModal: FC<{
     },
   })
 
-  const handleClick = () => {
+  const handleClick = async () => {
     const data = {
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
+      sign:''
     }
+    const ethereum = (window as any).ethereum
+    const accounts = await ethereum.request({
+      method: 'eth_requestAccounts',
+    })
+    const provider = new ethers.providers.Web3Provider(ethereum, 'any')
+    const { chainId } = await provider.getNetwork()
+    let chain = parseInt(CHAINID)
+    if (chainId !== chain) {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
+      })
+    }
+    const walletAddress = accounts[0] // first account in MetaMask
+    const signer = provider.getSigner(walletAddress)
+    let rawMsg = `{"contract_address":"${nft?.contract_address}","token_id":"${
+      nft?.token_id
+    }"}`
+    let hashMessage = await ethers.utils.hashMessage(rawMsg)
+    // console.log(hashMessage)
+    await signer
+      .signMessage(hashMessage)
+      .then(async (sign) => {
+        // console.log(sign)
+        data['sign'] = sign
+      })
+      .catch((e) => {
+        console.log(e.message)
+        setIsOpen(false)
+        return
+      })
     mutate(data)
   }
 

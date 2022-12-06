@@ -48,6 +48,7 @@ export const createNftAuction = (data: nftAuctionBodyType) => {
 export const cancelAuction = (data: {
   contract_address: string
   token_id: string
+  sign:string
 }) => {
   return axiosInstance.post('/nft-marketplace/cancel-auction', data)
 }
@@ -70,6 +71,7 @@ export const createNftSale = (data: NftSaleBodyType) => {
 export const cancelSale = (data: {
   contract_address: string
   token_id: string
+  sign:string
 }) => {
   return axiosInstance.post('/nft-marketplace/cancel-sale', data)
 }

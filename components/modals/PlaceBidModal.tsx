@@ -15,7 +15,7 @@ import Spinner from '../Spinner'
 
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
-const CHAINID = 80001
+const CHAINID:string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const PlaceBidModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -52,10 +52,11 @@ const PlaceBidModal: FC<{
 
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
     const { chainId } = await provider.getNetwork()
-    if (chainId !== CHAINID) {
+    let chain = parseInt(CHAINID)
+    if (chainId !== chain) {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ethers.utils.hexValue(CHAINID) }], // chainId must be in hexadecimal numbers
+        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
       })
     }
     const walletAddress = accounts[0] // first account in MetaMask
@@ -73,7 +74,13 @@ const PlaceBidModal: FC<{
       bidder_address: address ? address : '',
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
+      sign:''
     }
+    let rawMsg = `{"bid_amount":"${bidAmount}","bidder_address":"${
+      address ? address : ''
+    }","contract_address":"${nft?.contract_address}","token_id":"${
+      nft?.token_id
+    }"}`
     console.log(parseInt(inputAmt.toString()))
 
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
@@ -98,6 +105,19 @@ const PlaceBidModal: FC<{
       )
 
       if (parseInt(approvedAmt.toString()) > parseInt(Offer.toString())) {
+        let hashMessage = await ethers.utils.hashMessage(rawMsg)
+        // console.log(hashMessage)
+        await signer
+          .signMessage(hashMessage)
+          .then(async (sign) => {
+            // console.log(sign)
+            bidData['sign'] = sign
+          })
+          .catch((e) => {
+            console.log(e.message)
+            setIsOpen(false)
+            return
+          })
         mutate(bidData)
         setLoading(false)
       } else {
@@ -108,7 +128,20 @@ const PlaceBidModal: FC<{
           .approve(NGMMarketAddress, amount)
           .then((tx: any) => {
             toast.dark('Processing Transaction!')
-            provider.waitForTransaction(tx.hash).then(() => {
+            provider.waitForTransaction(tx.hash).then(async () => {
+              let hashMessage = await ethers.utils.hashMessage(rawMsg)
+              // console.log(hashMessage)
+              await signer
+                .signMessage(hashMessage)
+                .then(async (sign) => {
+                  // console.log(sign)
+                  bidData['sign'] = sign
+                })
+                .catch((e) => {
+                  console.log(e.message)
+                  setIsOpen(false)
+                  return
+                })
               mutate(bidData)
               setLoading(false)
             })
