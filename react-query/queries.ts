@@ -89,3 +89,15 @@ export const cancelOffer = (data: NftCancelOfferBodyType) => {
 export const acceptOffer = (data: NftAcceptOfferBodyType) => {
   return axiosInstance.post('/nft-marketplace/accept-offer', data)
 }
+
+export const createUser = (data: {
+  username: string
+  email: string
+  wallet_address: string
+}) => {
+  return axiosInstance.post('/users/create-user', data)
+}
+
+export const getUser = (wallet_address: string) => {
+  return axiosInstance.get(`/users/get-user/${wallet_address}`)
+}

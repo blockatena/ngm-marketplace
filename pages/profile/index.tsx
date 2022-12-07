@@ -3,14 +3,24 @@ import axios from 'axios'
 import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
 import Image from 'next/image'
-import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
+import {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { FaHamburger } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
+import { useQuery, useQueryClient } from 'react-query'
+import { toast } from 'react-toastify'
 import { useAccount, useMutation } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
 import Pagination from '../../components/Pagination'
+import Spinner from '../../components/Spinner'
 import withProtection from '../../components/withProtection'
-import { AvatarType, CollectionNftsBodyType } from '../../interfaces'
+import { AvatarType, CollectionNftsBodyType, UserType } from '../../interfaces'
 import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 import historyIcon from '../../public/images/icons/Activity.svg'
 import categoryIcon from '../../public/images/icons/Category.svg'
@@ -19,7 +29,13 @@ import collectionIcon from '../../public/images/icons/Folder.svg'
 import messageIcon from '../../public/images/icons/Message.svg'
 import settingsIcon from '../../public/images/icons/Setting.svg'
 import walletIcon from '../../public/images/icons/Wallet.svg'
-import { getCollectionNfts } from '../../react-query/queries'
+import { QUERIES } from '../../react-query/constants'
+import {
+  createUser,
+  getCollectionNfts,
+  getUser,
+} from '../../react-query/queries'
+import { shortenString } from '../../utils'
 import {
   fromLeftAnimation,
   fromRightAnimation,
@@ -237,10 +253,40 @@ const AssetsActivityTabs: FC<{
   )
 }
 
-const UserSettings = () => {
+const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
+  const { address } = useAccount()
+  const queryClient = useQueryClient()
+  const {
+    mutate: createUserMutation,
+    isSuccess,
+    isLoading,
+    data,
+  } = useMutation(createUser, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(QUERIES.getUser)
+    },
+  })
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!isSuccess) return
+    typeof data?.data !== 'string' &&
+      toast.dark('User Created Successfully', {
+        type: 'success',
+        hideProgressBar: true,
+      })
+
+    typeof data?.data === 'string' &&
+      toast.dark(data.data, {
+        type: 'error',
+        hideProgressBar: true,
+      })
+  }, [data?.data, isSuccess])
+
   const handleLogin = useGoogleLogin({
     onSuccess: async (respose) => {
       try {
+        setLoading(true)
         const res = await axios.get(
           'https://www.googleapis.com/oauth2/v3/userinfo',
           {
@@ -249,12 +295,40 @@ const UserSettings = () => {
             },
           }
         )
-        console.log('USER', res.data)
-      } catch (err) {
-        console.log(err)
+        if (res?.data?.email_verified && res?.data?.email && address) {
+          createUserMutation({
+            email: res.data.email,
+            wallet_address: String(address),
+            username: res.data?.name,
+          })
+        } else {
+          toast.dark('Email not verified', { type: 'error' })
+        }
+      } catch (error: unknown) {
+        const title =
+          error instanceof Error ? error.message : 'error connecting to server'
+        toast.dark(title, { type: 'error' })
+      } finally {
+        setLoading(false)
       }
     },
   })
+
+  const userInfo = useMemo(
+    () => [
+      { name: 'Linked Email', value: user?.email },
+      {
+        name: 'Wallet Address',
+        value: shortenString(user?.wallet_address || '', 4, 4),
+      },
+      {
+        name: 'Date Registered',
+        value: new Date(user?.createdAt || '').toLocaleString(),
+      },
+    ],
+    [user?.createdAt, user?.email, user?.wallet_address]
+  )
+
   return (
     <>
       <div className="text-white font-poppins text-[20px] pl-[25%] p-6">
@@ -266,18 +340,37 @@ const UserSettings = () => {
       >
         <FaHamburger className=" text-lg hover:text-custom_yellow text-[#E5E5E5]" />
       </div>
-      <div
-        className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
-gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
-      >
-        <div>
-          <button
-            onClick={() => handleLogin()}
-            className="btn-primary p-2 rounded-lg flex items-center gap-1"
-          >
-            <FcGoogle /> Sign In with Google
-          </button>
-        </div>
+      <div className="pb-20 md:px-4 bg-[#1F2021] rounded-lg w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll">
+        {!user && (
+          <div>
+            <button
+              onClick={() => handleLogin()}
+              className="btn-primary p-2 rounded-lg flex items-center gap-1"
+              disabled={isLoading || loading}
+            >
+              <FcGoogle /> Sign In with Google
+              {isLoading || loading ? <Spinner color="black" size="sm" /> : ''}
+            </button>
+          </div>
+        )}
+        {user &&
+          userInfo.map(({ name, value }, index) => (
+            <motion.div
+              key={index}
+              className="text-white font-poppins my-2"
+              variants={opacityAnimation}
+              initial="initial"
+              whileInView="final"
+              viewport={{ once: true }}
+              transition={{
+                ease: 'easeInOut',
+                duration: 0.6,
+                delay: index * 0.2,
+              }}
+            >
+              <span className="font-medium">{name}</span>: {value}
+            </motion.div>
+          ))}
       </div>
     </>
   )
@@ -290,6 +383,20 @@ const ORDER = 'NewToOld'
 const ProfilePage: NextPage = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [currentRoute, setCurrentRoute] = useState<RouteNameType>('category')
+  const [user, setUser] = useState<UserType | null>(null)
+  const { address } = useAccount()
+  const { data: userData } = useQuery(
+    [QUERIES.getUser, address],
+    () => getUser(String(address)),
+    {
+      enabled: !!address,
+    }
+  )
+
+  useEffect(() => {
+    if (userData && typeof userData?.data !== 'string') setUser(userData?.data)
+    else setUser(null)
+  }, [userData])
 
   return (
     <main className="p-4 pt-6 pb-0 lg:px-8 relative -bottom-8">
@@ -304,7 +411,8 @@ const ProfilePage: NextPage = () => {
           <Image src={editIcon} alt="edit" /> Edit
         </div>
         <motion.div
-          className="h-[126px] w-[151px] absolute -bottom-[63px]"
+          // className="h-[126px] w-[151px] absolute -bottom-[63px]"
+          className="h-[126px] absolute -bottom-[63px]"
           variants={opacityAnimation}
           initial="initial"
           animate="final"
@@ -316,7 +424,7 @@ const ProfilePage: NextPage = () => {
         >
           <Image src={heroIcon} alt="" />
           <p className="text-white text-center font-poppins text-[21px] font-medium">
-            Oliver Torsney
+            {user ? user.username : ''}
           </p>
         </motion.div>
       </div>
@@ -360,7 +468,7 @@ const ProfilePage: NextPage = () => {
             {currentRoute === 'category' && (
               <AssetsActivityTabs setIsDrawerOpen={setIsDrawerOpen} />
             )}
-            {currentRoute === 'settings' && <UserSettings />}
+            {currentRoute === 'settings' && <UserSettings user={user} />}
           </motion.div>
         </div>
       </div>
