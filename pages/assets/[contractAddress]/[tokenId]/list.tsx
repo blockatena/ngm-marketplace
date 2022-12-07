@@ -195,17 +195,34 @@ const ListAssetPage: NextPage = () => {
       sign:''
     }
 
-    let rawMsg = `{"contract_address":"${nft?.contract_address}","token_id":"${nft?.token_id}","token_owner":"${nft?.token_owner}","start_date":"${startDate}","end_date":"${endDate}","min_price":"${formData.min_price}"}`
-    let rawMsgSale = `{"contract_address":"${nft?.contract_address}","token_id":"${nft?.token_id}","token_owner":"${nft?.token_owner}","start_date":"${startDate}","end_date":"${endDate}","price":"${formData.min_price}"}`
+    let rawMsg = `{
+      "contract_address":"${nft?.contract_address}",
+      "token_id":"${nft?.token_id}",
+      "token_owner":"${nft?.token_owner}",
+      "start_date":"${startDate}",
+      "end_date":"${endDate}",
+      "min_price":"${formData.min_price}"
+    }`
+    let rawMsgSale = `{
+      "contract_address":"${nft?.contract_address}",
+      "token_id":"${nft?.token_id}",
+      "token_owner":"${nft?.token_owner}",
+      "start_date":"${startDate}",
+      "end_date":"${endDate}",
+      "price":"${formData.min_price}"
+    }`
     if (isApproved === true) {
       // POST DATA
       // console.log(type === 'auction' ? rawMsg : rawMsgSale)
       let hashMessage = await ethers.utils.hashMessage(
         type === 'auction' ? rawMsg : rawMsgSale
       )
+       let msg = type === 'auction' ? rawMsg : rawMsgSale
       // console.log(hashMessage)
       await signer
-        .signMessage(hashMessage)
+        .signMessage(
+          `Signing to ${type === 'auction'?"Create Auction":"Create Sale"} \n${msg}\n Hash : ${hashMessage}`
+        )
         .then(async (sign) => {
           // console.log(sign)
           if (type === 'auction') {
@@ -218,9 +235,13 @@ const ListAssetPage: NextPage = () => {
           console.log(e.message)
           return
         })
-      type === 'auction' && mutate(requestData)
-      type === 'fixed' && createSale(saleBody)
-      setIsLoading(false)
+      let sig = type === 'auction' ? requestData['sign'] : saleBody['sign']
+      if (sig) {
+        type === 'auction' && mutate(requestData)
+        type === 'fixed' && createSale(saleBody)
+        setIsLoading(false)
+      } else return setIsLoading(false)
+      
       // if (isSuccess) {
       //   setIsSuccessModalOpen(true)
       // }
@@ -236,9 +257,14 @@ const ListAssetPage: NextPage = () => {
             let hashMessage = await ethers.utils.hashMessage(
               type === 'auction' ? rawMsg : rawMsgSale
             )
+            let msg = type === 'auction' ? rawMsg : rawMsgSale
             // console.log(hashMessage)
             await signer
-              .signMessage(hashMessage)
+              .signMessage(
+                `Signing to ${
+                  type === 'auction' ? 'Create Auction' : 'Create Sale'
+                } \n${msg}\n Hash : ${hashMessage}`
+              )
               .then(async (sign) => {
                 // console.log(sign)
                 if (type === 'auction') {
@@ -251,10 +277,14 @@ const ListAssetPage: NextPage = () => {
                 console.log(e.message)
                 return
               })
-            type === 'auction' && mutate(requestData)
-            type === 'fixed' && createSale(saleBody)
+            let sig = type === 'auction'?requestData['sign']:saleBody['sign']
+            if(sig) {
+              type === 'auction' && mutate(requestData)
+              type === 'fixed' && createSale(saleBody)
+              setIsLoading(false)
+            } else return setIsLoading(false)
+            
             // setIsSuccessModalOpen(true)
-            setIsLoading(false)
           })
         })
         .catch((e: any) => {

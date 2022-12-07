@@ -76,11 +76,16 @@ const PlaceBidModal: FC<{
       token_id: nft?.token_id,
       sign:''
     }
-    let rawMsg = `{"bid_amount":"${bidAmount}","bidder_address":"${
+    let rawMsg = `{
+      "bid_amount":"${bidAmount}",
+      "bidder_address":"${
       address ? address : ''
-    }","contract_address":"${nft?.contract_address}","token_id":"${
+    }",
+    "contract_address":"${nft?.contract_address}",
+    "token_id":"${
       nft?.token_id
-    }"}`
+    }"
+  }`
     console.log(parseInt(inputAmt.toString()))
 
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
@@ -108,7 +113,9 @@ const PlaceBidModal: FC<{
         let hashMessage = await ethers.utils.hashMessage(rawMsg)
         // console.log(hashMessage)
         await signer
-          .signMessage(hashMessage)
+          .signMessage(
+            `Signing to Place Bid\n${rawMsg}\n Hash: \n${hashMessage}`
+          )
           .then(async (sign) => {
             // console.log(sign)
             bidData['sign'] = sign
@@ -118,8 +125,11 @@ const PlaceBidModal: FC<{
             setIsOpen(false)
             return
           })
-        mutate(bidData)
-        setLoading(false)
+        if (bidData['sign']) {
+          mutate(bidData)
+          setLoading(false)
+        } else return setLoading(false)
+        
       } else {
         // const approvedtokens: any = ethers.utils.formatEther(approvedAmt)
         const amt = 1000
@@ -132,7 +142,9 @@ const PlaceBidModal: FC<{
               let hashMessage = await ethers.utils.hashMessage(rawMsg)
               // console.log(hashMessage)
               await signer
-                .signMessage(hashMessage)
+                .signMessage(
+                  `Signing to Place Bid\n${rawMsg}\n Hash: \n${hashMessage}`
+                )
                 .then(async (sign) => {
                   // console.log(sign)
                   bidData['sign'] = sign
@@ -142,8 +154,10 @@ const PlaceBidModal: FC<{
                   setIsOpen(false)
                   return
                 })
-              mutate(bidData)
-              setLoading(false)
+              if (bidData['sign']) {
+                mutate(bidData)
+                setLoading(false)
+              } else return setLoading(false)
             })
           })
           .catch(() => {
@@ -163,18 +177,16 @@ const PlaceBidModal: FC<{
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success(
-        // (typeof data?.data === 'string' && data.data) ||
-        //   (data?.data?.status === 'started' && 'Bid Placed Successfully') ||
-        //   '',
-        // {
-        //
-        // }
-        (data?.data && status === 'update' && 'Bid Updated Successfully') ||
-          (data?.data && status === 'place' && 'Bid Placed Successfully') || '',
-
-        { theme: 'dark', hideProgressBar: true }
-      ),
+      let msg = data?.data?.message? data?.data?.message:(data?.data && status === 'update' && 'Bid Updated Successfully') ||
+          (data?.data && status === 'place' && 'Bid Placed Successfully') || '';
+        
+        toast(msg, {
+          hideProgressBar: true,
+          autoClose: 3000,
+          type:data?.data?.message?'error':'success',
+          position: 'top-right',
+          theme: 'dark',
+        })
       setIsOpen(false)
       data?.data?.status === 'started' && setIsOpen(false)
       } 

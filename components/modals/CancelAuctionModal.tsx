@@ -46,13 +46,14 @@ const CancelAuctionModal: FC<{
     }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
-    let rawMsg = `{"contract_address":"${nft?.contract_address}","token_id":"${
-      nft?.token_id
-    }"}`
+    let rawMsg = `{
+      "contract_address":"${nft?.contract_address}",
+      "token_id":"${nft?.token_id}"
+    }`
     let hashMessage = await ethers.utils.hashMessage(rawMsg)
     // console.log(hashMessage)
     await signer
-      .signMessage(hashMessage)
+      .signMessage(`Signing to Cancel Auction\n${rawMsg}\n Hash: \n${hashMessage}`)
       .then(async (sign) => {
         // console.log(sign)
         data['sign'] = sign
@@ -62,18 +63,25 @@ const CancelAuctionModal: FC<{
         setIsOpen(false)
         return
       })
-    mutate(data)
+    if (data['sign']) {
+      mutate(data)
+    } else return
   }
 
   useEffect(() => {
     if (isSuccess) {
-      toast('Auction Cancelled Successfully', {
-        hideProgressBar: true,
-        autoClose: 3000,
-        type: 'success',
-        position: 'top-right',
-        theme: 'dark',
-      })
+      toast(
+        data?.data?.message === 'Invalid User'
+          ? data?.data?.message
+          : 'Auction Cancelled Successfully',
+        {
+          hideProgressBar: true,
+          autoClose: 3000,
+          type: data?.data?.message === 'Invalid User' ? 'error' : 'success',
+          position: 'top-right',
+          theme: 'dark',
+        }
+      )
       setActiveTabIndex()
       setIsOpen(false)
     }

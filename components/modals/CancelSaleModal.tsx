@@ -46,13 +46,16 @@ const CancelSaleModal: FC<{
     }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
-    let rawMsg = `"contract_address":"${nft?.contract_address}","token_id":"${
+    let rawMsg = `{
+      "contract_address":"${nft?.contract_address}",
+      "token_id":"${
       nft?.token_id
-    }"}`
+    }"
+  }`
     let hashMessage = await ethers.utils.hashMessage(rawMsg)
     // console.log(hashMessage)
     await signer
-      .signMessage(hashMessage)
+      .signMessage(`Signing to Cancel Sale\n${rawMsg}\n Hash: \n${hashMessage}`)
       .then(async (sign) => {
         // console.log(sign)
         data['sign'] = sign
@@ -62,19 +65,22 @@ const CancelSaleModal: FC<{
         setIsOpen(false)
         return
       })
-    mutate(data)
+      if(data['sign']){
+        mutate(data)
+      } else return;
   }
 
   useEffect(() => {
     if (isSuccess) {
-      toast('Sale Cancelled Successfully', {
-        hideProgressBar: true,
-        autoClose: 3000,
-        type: 'success',
-        position: 'top-right',
-        theme: 'dark',
-      })
+      let msg = data?.data?.message? data?.data?.message:'Sale Cancelled Successfully'
       setActiveTabIndex()
+        toast(msg, {
+          hideProgressBar: true,
+          autoClose: 3000,
+          type:data?.data?.message?'error':'success',
+          position: 'top-right',
+          theme: 'dark',
+        })
       setIsOpen(false)
     }
   }, [isSuccess, data?.data?.message, setIsOpen, setActiveTabIndex])

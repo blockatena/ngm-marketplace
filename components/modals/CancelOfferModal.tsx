@@ -52,13 +52,18 @@ const CancelOfferModal: FC<{
     }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
-    let rawMsg = `{"offer_person_address":"${
+    let rawMsg = `{
+      "offer_person_address":"${
       address ? address : ''
-    }","contract_address":"${contract_address}","token_id":"${token_id}","caller":"${caller}"}`
+    }",
+    "contract_address":"${contract_address}",
+    "token_id":"${token_id}",
+    "caller":"${caller}"
+  }`
     let hashMessage = await ethers.utils.hashMessage(rawMsg)
     // console.log(hashMessage)
     await signer
-      .signMessage(hashMessage)
+      .signMessage(`Signing to Cancel Offer\n${rawMsg}\n Hash: \n${hashMessage}`)
       .then(async (sign) => {
         // console.log(sign)
         data['sign'] = sign
@@ -68,15 +73,17 @@ const CancelOfferModal: FC<{
         setIsOpen(false)
         return
       })
-    mutate(data)
+    if (data['sign']) {
+      mutate(data)
+    } else return
   }
 
   useEffect(() => {
     if (isSuccess) {
-      toast('Offer Cancelled Successfully', {
+      toast(data?.data?.message?data?.data?.message:'Offer Cancelled Successfully', {
         hideProgressBar: true,
         autoClose: 3000,
-        type: 'success',
+        type:data?.data?.message?'error':'success',
         position: 'top-right',
         theme: 'dark',
       })

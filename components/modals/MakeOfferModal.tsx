@@ -79,11 +79,16 @@ const MakeOfferModal: FC<{
       token_id: nft?.token_id,
       sign: '',
     }
-    let rawMsg = `{"offer_price":"${bidAmount}","offer_person_address":"${
+    let rawMsg = `{
+      "offer_price":"${bidAmount}",
+      "offer_person_address":"${
       address ? address : ''
-    }","contract_address":"${nft?.contract_address}","token_id":"${
+    }",
+    "contract_address":"${nft?.contract_address}",
+    "token_id":"${
       nft?.token_id
-    }"}`
+    }"
+  }`
 
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
       toast.dark(`Your offer is greater than your wallet balance`, {
@@ -110,7 +115,9 @@ const MakeOfferModal: FC<{
         let hashMessage = await ethers.utils.hashMessage(rawMsg)
         // console.log(hashMessage)
         await signer
-          .signMessage(hashMessage)
+          .signMessage(
+            `Signing to Make Offer\n${rawMsg}\n Hash: \n${hashMessage}`
+          )
           .then(async (sign) => {
             // console.log(sign)
             offerData['sign'] = sign
@@ -120,8 +127,10 @@ const MakeOfferModal: FC<{
             setIsOpen(false)
             return
           })
-        mutate(offerData)
-        setLoading(false)
+          if (offerData['sign']) {
+            mutate(offerData)
+            setLoading(false)
+          } else return setLoading(false)
       } else {
         // const approvedtokens: any = ethers.utils.formatEther(approvedAmt)
         const amt = 1000
@@ -134,7 +143,9 @@ const MakeOfferModal: FC<{
               let hashMessage = await ethers.utils.hashMessage(rawMsg)
               // console.log(hashMessage)
               await signer
-                .signMessage(hashMessage)
+                .signMessage(
+                  `Signing to Make Offer\n${rawMsg}\n Hash: \n${hashMessage}`
+                )
                 .then(async (sign) => {
                   // console.log(sign)
                   offerData['sign'] = sign
@@ -144,8 +155,10 @@ const MakeOfferModal: FC<{
                   setIsOpen(false)
                   return
                 })
-              mutate(offerData)
-              setLoading(false)
+              if (offerData['sign']) {
+                mutate(offerData)
+                setLoading(false)
+              } else return setLoading(false)
             })
           })
           .catch(() => {
@@ -169,9 +182,15 @@ const MakeOfferModal: FC<{
 
   useEffect(() => {
     if (isSuccess) {
-      toast.dark('Offer Made Successfully', {
+      let msg = data?.data?.message
+        ? data?.data?.message
+        : 'Offer Made Successfully'
+      toast(msg, {
         hideProgressBar: true,
-        type: 'success',
+        autoClose: 3000,
+        type: data?.data?.message ? 'error' : 'success',
+        position: 'top-right',
+        theme: 'dark',
       })
       setIsOpen(false)
     }

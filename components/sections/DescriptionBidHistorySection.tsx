@@ -487,7 +487,7 @@ const ActivityItem: FC<{
 
   const isTo = activity?.to !== '----'
   const isTx = activity?.transaction_hash
-  const price = activity?.price / (1000000000000000000)
+  const price = activity?.price
   
   const activityData = [
     {
