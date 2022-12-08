@@ -8,8 +8,10 @@ import { cancelBid } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
+import { ethers } from 'ethers'
 import { useAccount } from 'wagmi'
 
+const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const CancelBidModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -20,25 +22,68 @@ const CancelBidModal: FC<{
   const { mutate, isSuccess, data, isLoading } = useMutation(cancelBid, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
+
     },
   })
     const { address } = useAccount()
 
-  const handleClick = () => {
+  const handleClick = async () => {
     const data = {
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
-      bidder_address:address?address:''
+      bidder_address:address?address:'',
+      sign:''
     }
-    mutate(data)
+    const ethereum = (window as any).ethereum
+    const accounts = await ethereum.request({
+      method: 'eth_requestAccounts',
+    })
+    const provider = new ethers.providers.Web3Provider(ethereum, 'any')
+    const { chainId } = await provider.getNetwork()
+    let chain = parseInt(CHAINID)
+    if (chainId !== chain) {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
+      })
+    }
+    const walletAddress = accounts[0] // first account in MetaMask
+    const signer = provider.getSigner(walletAddress)
+    let rawMsg = `{
+      "bidder_address":"${
+      address ? address : ''
+    }",
+    "contract_address":"${nft?.contract_address}",
+    "token_id":"${
+      nft?.token_id
+    }"
+  }`
+    let hashMessage = await ethers.utils.hashMessage(rawMsg)
+    // console.log(hashMessage)
+    await signer
+      .signMessage(
+        `Signing to Cancel Bid\n${rawMsg}\n Hash: \n${hashMessage}`
+      )
+      .then(async (sign) => {
+        // console.log(sign)
+        data['sign'] = sign
+      })
+      .catch((e) => {
+        console.log(e.message)
+        setIsOpen(false)
+        return
+      })
+    if (data['sign']) {
+      mutate(data)
+    } else return
   }
 
   useEffect(() => {
     if (isSuccess) {
-      toast('Bid Cancelled Successfully', {
+      toast(data?.data?.message?data?.data?.message:'Bid Cancelled Successfully', {
         hideProgressBar: true,
         autoClose: 3000,
-        type: 'success',
+        type:data?.data?.message?'error':'success',
         position: 'top-right',
         theme: 'dark',
       })

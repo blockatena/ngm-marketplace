@@ -162,6 +162,7 @@ const Activity = (activity) => {
   activity = activity.activity
   const tableHeadings = [
     { name: 'Type' },
+    { name: 'Price' },
     { name: 'From' },
     { name: 'To' },
     { name: 'Time' },
@@ -486,10 +487,16 @@ const ActivityItem: FC<{
 
   const isTo = activity?.to !== '----'
   const isTx = activity?.transaction_hash
+  const price = activity?.price
+  
   const activityData = [
     {
       name: 'Type',
       value: activity?.event,
+    },
+    {
+      name: 'Price',
+      value: activity?.event === 'Transfer'?`${price} ETH`:`${activity?.price} ETH`
     },
     {
       name: 'From',

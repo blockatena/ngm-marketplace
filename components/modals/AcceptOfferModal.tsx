@@ -8,7 +8,9 @@ import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 import { useAccount } from 'wagmi'
+import { ethers } from 'ethers'
 
+const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const AcceptOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -34,26 +36,71 @@ const AcceptOfferModal: FC<{
     },
   })
 
-  const handleClick = () => {
+  const handleClick = async () => {
     const data = {
       contract_address: contract_address,
       token_id: token_id,
       offer_person_address: offer_address,
       token_owner: address ? address : '',
+      sign:''
     }
-    mutate(data)
-    console.log(data)
+    const ethereum = (window as any).ethereum
+    const accounts = await ethereum.request({
+      method: 'eth_requestAccounts',
+    })
+    const provider = new ethers.providers.Web3Provider(ethereum, 'any')
+    const { chainId } = await provider.getNetwork()
+    let chain = parseInt(CHAINID)
+    if (chainId !== chain) {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
+      })
+    }
+    const walletAddress = accounts[0] // first account in MetaMask
+    const signer = provider.getSigner(walletAddress)
+    let rawMsg = `{
+      "contract_address":"${contract_address}",
+      "token_id":"${token_id}",
+      "offer_person_address":"${offer_address}",
+      "token_owner":"${
+      address ? address : ''
+    }"
+  }`
+    let hashMessage = await ethers.utils.hashMessage(rawMsg)
+    // console.log(hashMessage)
+    await signer
+      .signMessage(
+        `Signing to Accept Offer\n${rawMsg}\n Hash: \n${hashMessage}`
+      )
+      .then(async (sign) => {
+        // console.log(sign)
+        data['sign'] = sign
+      })
+      .catch((e) => {
+        console.log(e.message)
+        setIsOpen(false)
+        return
+      })
+    if (data['sign']) {
+      mutate(data)
+    } else return
   }
 
   useEffect(() => {
     if (isSuccess) {
-      toast('Offer Accepted Successfully', {
-        hideProgressBar: true,
-        autoClose: 3000,
-        type: 'success',
-        position: 'top-right',
-        theme: 'dark',
-      })
+      toast(
+        data?.data?.message
+          ? data?.data?.message
+          : 'Offer Accepted Successfully',
+        {
+          hideProgressBar: true,
+          autoClose: 3000,
+          type: data?.data?.message ? 'error' : 'success',
+          position: 'top-right',
+          theme: 'dark',
+        }
+      )
       setActiveTabIndex()
       setIsOpen(false)
     }

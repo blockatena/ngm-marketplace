@@ -17,7 +17,7 @@ import Spinner from '../Spinner'
 
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
-const CHAINID = 80001
+const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const MakeOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -55,10 +55,11 @@ const MakeOfferModal: FC<{
 
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
     const { chainId } = await provider.getNetwork()
-    if (chainId !== CHAINID) {
+    let chain = parseInt(CHAINID)
+    if (chainId !== chain) {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ethers.utils.hexValue(CHAINID) }], // chainId must be in hexadecimal numbers
+        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
       })
     }
     const walletAddress = accounts[0] // first account in MetaMask
@@ -76,7 +77,18 @@ const MakeOfferModal: FC<{
       offer_price: String(bidAmount),
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
+      sign: '',
     }
+    let rawMsg = `{
+      "offer_price":"${bidAmount}",
+      "offer_person_address":"${
+      address ? address : ''
+    }",
+    "contract_address":"${nft?.contract_address}",
+    "token_id":"${
+      nft?.token_id
+    }"
+  }`
 
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
       toast.dark(`Your offer is greater than your wallet balance`, {
@@ -100,8 +112,25 @@ const MakeOfferModal: FC<{
       )
 
       if (parseInt(approvedAmt.toString()) > parseInt(Offer.toString())) {
-        mutate(offerData)
-        setLoading(false)
+        let hashMessage = await ethers.utils.hashMessage(rawMsg)
+        // console.log(hashMessage)
+        await signer
+          .signMessage(
+            `Signing to Make Offer\n${rawMsg}\n Hash: \n${hashMessage}`
+          )
+          .then(async (sign) => {
+            // console.log(sign)
+            offerData['sign'] = sign
+          })
+          .catch((e) => {
+            console.log(e.message)
+            setIsOpen(false)
+            return
+          })
+          if (offerData['sign']) {
+            mutate(offerData)
+            setLoading(false)
+          } else return setLoading(false)
       } else {
         // const approvedtokens: any = ethers.utils.formatEther(approvedAmt)
         const amt = 1000
@@ -110,9 +139,26 @@ const MakeOfferModal: FC<{
           .approve(NGMMarketAddress, amount)
           .then((tx: any) => {
             toast.dark('Processing Transaction!')
-            provider.waitForTransaction(tx.hash).then(() => {
-              mutate(offerData)
-              setLoading(false)
+            provider.waitForTransaction(tx.hash).then(async () => {
+              let hashMessage = await ethers.utils.hashMessage(rawMsg)
+              // console.log(hashMessage)
+              await signer
+                .signMessage(
+                  `Signing to Make Offer\n${rawMsg}\n Hash: \n${hashMessage}`
+                )
+                .then(async (sign) => {
+                  // console.log(sign)
+                  offerData['sign'] = sign
+                })
+                .catch((e) => {
+                  console.log(e.message)
+                  setIsOpen(false)
+                  return
+                })
+              if (offerData['sign']) {
+                mutate(offerData)
+                setLoading(false)
+              } else return setLoading(false)
             })
           })
           .catch(() => {
@@ -136,9 +182,15 @@ const MakeOfferModal: FC<{
 
   useEffect(() => {
     if (isSuccess) {
-      toast.dark('Offer Made Successfully', {
+      let msg = data?.data?.message
+        ? data?.data?.message
+        : 'Offer Made Successfully'
+      toast(msg, {
         hideProgressBar: true,
-        type: 'success',
+        autoClose: 3000,
+        type: data?.data?.message ? 'error' : 'success',
+        position: 'top-right',
+        theme: 'dark',
       })
       setIsOpen(false)
     }
