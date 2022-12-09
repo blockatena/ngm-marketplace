@@ -72,7 +72,7 @@ const ProductOverviewSection: FC<{
     nft?.token_owner &&
     nft.token_owner === address &&
     nft?.is_in_sale
-  const isBidCancellable = isUserIsBidder && nft?.is_in_auction
+  // const isBidCancellable = isUserIsBidder && nft?.is_in_auction
 
   const isShowable =
     (nft?.token_owner !== DEAD_ADDRESS && nft?.is_in_sale) ||
@@ -86,7 +86,7 @@ const ProductOverviewSection: FC<{
       method: 'eth_requestAccounts',
     })
     const provider = new ethers.providers.JsonRpcProvider(
-      'https://rpc-mumbai.maticvigil.com/'
+      process.env.NEXT_PUBLIC_PROVIDER?process.env.NEXT_PUBLIC_PROVIDER:''
     )
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
@@ -100,6 +100,13 @@ const ProductOverviewSection: FC<{
   const filters = () => {
     const fi = offers?.find((a) => {
       return a.offer_person_address === address && a.offer_status == 'started'
+    })
+    return fi
+  }
+
+  const filterAuction = () => {
+    const fi = bids?.find((a) => {
+      return a.bidder_address === address && a.status == 'started'
     })
     return fi
   }
@@ -128,8 +135,14 @@ const ProductOverviewSection: FC<{
     }
   })
 
-
+  const isCancelBtn = () => {
+    if(filters() || filterAuction()) return true;
+    return false;
+  }
+  let displayTime = nft?.is_in_auction || nft?.is_in_sale
   const handleClick = (event: string) => {
+
+    console.log(event)
     // if (isMounted && nft?.token_owner === address && nft?.is_in_auction) {
     //   toast('You have already listed this NFT!', {
     //     hideProgressBar: true,
@@ -140,10 +153,10 @@ const ProductOverviewSection: FC<{
     //   })
     //   return
     // }
-    if (isBidCancellable) {
-      setIsCancelBidModalOpen(true)
-      return
-    }
+    // if (isBidCancellable) {
+    //   setIsCancelBidModalOpen(true)
+    //   return
+    // }
     if (isCancellable) {
       setIsCancelModalOpen(true)
       return
@@ -161,7 +174,13 @@ const ProductOverviewSection: FC<{
       setIsCancelOfferModalOpen(true)
       return
     }
-    nft?.is_in_auction && isUserIsBidder && setIsCancelBidModalOpen(true)
+
+    if (filterAuction() && event === 'cancel') {
+      setIsCancelBidModalOpen(true)
+      return
+    }
+    nft?.is_in_auction && filterAuction() && setIsBidModalOpen(true)
+    // nft?.is_in_auction && isUserIsBidder && setIsCancelBidModalOpen(true)
     nft?.is_in_auction === false && setIsOfferModalOpen(true)
     nft?.is_in_auction && !isUserIsBidder && setIsBidModalOpen(true)
   }
@@ -313,18 +332,17 @@ const ProductOverviewSection: FC<{
               )}
             </div>
           </div>
-          {nft?.is_in_auction ||
-            (nft?.is_in_sale && (
-              <div className="grid place-items-center">
-                <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
-                  {D < 10 && <>0</>}
-                  {D} : {H < 10 && <>0</>}
-                  {H} : {M < 10 && <>0</>}
-                  {M} : {S < 10 && <>0</>}
-                  {S}
-                </div>
+          {displayTime && (
+            <div className="grid place-items-center">
+              <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
+                {D < 10 && <>0</>}
+                {D} : {H < 10 && <>0</>}
+                {H} : {M < 10 && <>0</>}
+                {M} : {S < 10 && <>0</>}
+                {S}
               </div>
-            ))}
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col md:flex-row justify-between gap-2 lg:gap-4">
@@ -345,24 +363,28 @@ const ProductOverviewSection: FC<{
                 ? 'Cancel Sale'
                 : isMounted && nft?.token_owner && nft.token_owner === address
                 ? 'Sell'
-                : isBidCancellable
-                ? 'Cancel Bid'
-                : nft?.is_in_auction
-                ? 'Place Bid'
                 : filters()
                 ? 'Update Offer'
+                : filterAuction()
+                ? 'Update Bid'
+                : nft?.is_in_auction
+                ? 'Place Bid'
                 : nft?.is_in_sale
                 ? 'Make Offer'
                 : ''}
             </button>
           )}
-          {filters() && (
+          {isCancelBtn() && (
             <>
               <button
                 className="w-full lg:min-w-[327px] btn-secondary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
                 onClick={() => handleClick('cancel')}
               >
-                Cancel Offer
+                {filters()
+                  ? 'Cancel Offer'
+                  : filterAuction()
+                  ? 'Cancel Bid'
+                  : ''}
               </button>
             </>
           )}
@@ -371,6 +393,7 @@ const ProductOverviewSection: FC<{
       <AnimatePresence>
         {isBidModalOpen && (
           <PlaceBidModal
+           status={filterAuction()?'update':'place'}
             isOpen={isBidModalOpen}
             setIsOpen={setIsBidModalOpen}
             nft={nft}

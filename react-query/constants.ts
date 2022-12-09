@@ -6,4 +6,6 @@ export const QUERIES = {
   getSingleNft: 'getSingleNft',
   getUserNfts: 'getUserNfts',
   getCollectionDetails: 'getCollectionDetails',
+  getAllCollectionNfts: 'getAllCollectionNfts',
+  getUser: 'getUser',
 }

@@ -161,6 +161,7 @@ export type nftAuctionBodyType = {
   start_date: string
   end_date: string
   min_price: number
+  sign: string
 }
 
 export type NftBidBodyType = {
@@ -168,6 +169,7 @@ export type NftBidBodyType = {
   contract_address: string
   token_id: string
   bid_amount: number
+  sign: string
 }
 
 export type BidType = {
@@ -202,6 +204,7 @@ export type nftCancelbidType = {
   bidder_address: string
   token_id: string
   contract_address: string
+  sign: string
 }
 
 export type CollectionNftsBodyType = {
@@ -220,7 +223,8 @@ export type NftSaleBodyType = {
   token_id: string
   start_date: string
   end_date: string
-  price: string
+  price: number
+  sign: string
 }
 
 export type NftOfferBodyType = {
@@ -228,13 +232,15 @@ export type NftOfferBodyType = {
   token_id: string
   offer_price: string
   offer_person_address: string
+  sign: string
 }
 
 export type NftCancelOfferBodyType = {
   contract_address: string
   token_id: string
   offer_person_address: any
-  caller:string
+  caller: string
+  sign: string
 }
 
 export type OfferType = {
@@ -271,7 +277,7 @@ export type ActivityType = {
     name: string
     contract_address: string
     token_id: string
-    image:string
+    image: string
   }
   price: string
   quantity: string
@@ -288,4 +294,14 @@ export type NftAcceptOfferBodyType = {
   token_id: string
   offer_person_address: any
   token_owner: string
+}
+
+export type UserType = {
+  _id: string
+  username: string
+  wallet_address: string
+  email: string
+  createdAt: string
+  updatedAt: string
+  __v: number
 }
