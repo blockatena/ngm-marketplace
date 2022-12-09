@@ -151,7 +151,7 @@ const ListAssetPage: NextPage = () => {
       method: 'eth_requestAccounts',
     })
 
-    const provider = new ethers.providers.Web3Provider(ethereum)
+    let provider = new ethers.providers.Web3Provider(ethereum)
     const { chainId } = await provider.getNetwork()
     let chain = parseInt(CHAINID)
     if (chainId !== chain) {
@@ -159,6 +159,7 @@ const ListAssetPage: NextPage = () => {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
       })
+      provider = new ethers.providers.Web3Provider(ethereum)
     }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
