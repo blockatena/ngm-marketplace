@@ -1,9 +1,13 @@
 import { axiosInstance, nftInstance } from '../axiosInstance'
 import type {
+  CollectionNftsBodyType,
+  NftAcceptOfferBodyType,
   nftAuctionBodyType,
   NftBidBodyType,
   nftCancelbidType,
-  UserNftsBodyType,
+  NftCancelOfferBodyType,
+  NftOfferBodyType,
+  NftSaleBodyType,
 } from '../interfaces'
 
 export const getCollections = (
@@ -15,8 +19,8 @@ export const getCollections = (
   )
 }
 
-export const getCollectionNFTs = (ContractAddress: any) => {
-  return axiosInstance.get(`/nft/collection/${ContractAddress}`)
+export const getAllCollectionNfts = (contractAddress: string) => {
+  return axiosInstance.get(`/nft/collection/${contractAddress}`)
 }
 
 export const getCollectionInfo = (ContractAddress: any) => {
@@ -44,6 +48,7 @@ export const createNftAuction = (data: nftAuctionBodyType) => {
 export const cancelAuction = (data: {
   contract_address: string
   token_id: string
+  sign:string
 }) => {
   return axiosInstance.post('/nft-marketplace/cancel-auction', data)
 }
@@ -56,5 +61,45 @@ export const cancelBid = (data: nftCancelbidType) => {
   return axiosInstance.post('/nft-marketplace/cancel-bid', data)
 }
 
-export const getUserNfts = (data: UserNftsBodyType) =>
+export const getCollectionNfts = (data: CollectionNftsBodyType) =>
   axiosInstance.post(`/nft/get-nfts-listed-collection`, data)
+
+export const createNftSale = (data: NftSaleBodyType) => {
+  return axiosInstance.post('/nft-marketplace/create-sale', data)
+}
+
+export const cancelSale = (data: {
+  contract_address: string
+  token_id: string
+  sign:string
+}) => {
+  return axiosInstance.post('/nft-marketplace/cancel-sale', data)
+}
+
+export const getCollectionDetails = (contractAddress: string) => {
+  return axiosInstance.get(`/nft/collection/${contractAddress}`)
+}
+
+export const makeOffer = (data: NftOfferBodyType) => {
+  return axiosInstance.post('/nft-marketplace/make-offer-to-nft', data)
+}
+
+export const cancelOffer = (data: NftCancelOfferBodyType) => {
+  return axiosInstance.post('/nft-marketplace/cancel-offer', data)
+}
+
+export const acceptOffer = (data: NftAcceptOfferBodyType) => {
+  return axiosInstance.post('/nft-marketplace/accept-offer', data)
+}
+
+export const createUser = (data: {
+  username: string
+  email: string
+  wallet_address: string
+}) => {
+  return axiosInstance.post('/users/create-user', data)
+}
+
+export const getUser = (wallet_address: string) => {
+  return axiosInstance.get(`/users/get-user/${wallet_address}`)
+}

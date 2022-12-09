@@ -2,36 +2,39 @@ import { motion } from 'framer-motion'
 import { Dispatch, FC, SetStateAction, useEffect } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { AvatarType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
-import { cancelBid } from '../../react-query/queries'
+import { cancelOffer } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 import { ethers } from 'ethers'
-import { useAccount } from 'wagmi'
 
 const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
-const CancelBidModal: FC<{
+
+const CancelOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
-  nft: AvatarType
-}> = ({ setIsOpen, nft }) => {
+  // nft: AvatarType
+  contract_address:string
+  token_id:string
+  address: any
+  caller:any
+}> = ({ setIsOpen, contract_address,token_id, address,caller }) => {
   const queryClient = useQueryClient()
+  // const { address } = useAccount()
 
-  const { mutate, isSuccess, data, isLoading } = useMutation(cancelBid, {
+  const { mutate, isSuccess, data, isLoading } = useMutation(cancelOffer, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
-
     },
   })
-    const { address } = useAccount()
 
   const handleClick = async () => {
     const data = {
-      contract_address: nft?.contract_address,
-      token_id: nft?.token_id,
-      bidder_address:address?address:'',
+      contract_address: contract_address,
+      token_id: token_id,
+      offer_person_address: address,
+      caller:caller,
       sign:''
     }
     const ethereum = (window as any).ethereum
@@ -50,20 +53,17 @@ const CancelBidModal: FC<{
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
     let rawMsg = `{
-      "bidder_address":"${
+      "offer_person_address":"${
       address ? address : ''
     }",
-    "contract_address":"${nft?.contract_address}",
-    "token_id":"${
-      nft?.token_id
-    }"
+    "contract_address":"${contract_address}",
+    "token_id":"${token_id}",
+    "caller":"${caller}"
   }`
     let hashMessage = await ethers.utils.hashMessage(rawMsg)
     // console.log(hashMessage)
     await signer
-      .signMessage(
-        `Signing to Cancel Bid\n${rawMsg}\n Hash: \n${hashMessage}`
-      )
+      .signMessage(`Signing to Cancel Offer\n${rawMsg}\n Hash: \n${hashMessage}`)
       .then(async (sign) => {
         // console.log(sign)
         data['sign'] = sign
@@ -80,7 +80,7 @@ const CancelBidModal: FC<{
 
   useEffect(() => {
     if (isSuccess) {
-      toast(data?.data?.message?data?.data?.message:'Bid Cancelled Successfully', {
+      toast(data?.data?.message?data?.data?.message:'Offer Cancelled Successfully', {
         hideProgressBar: true,
         autoClose: 3000,
         type:data?.data?.message?'error':'success',
@@ -115,7 +115,7 @@ const CancelBidModal: FC<{
           </span>
         </p>
         <h2 className="text-white font-poppins text-[20px] lg:text-[30px] text-center my-4">
-          Are you sure you want to cancel this bid?
+          Are you sure you want to cancel this offer?
         </h2>
         {isLoading && (
           <div className="py-4 grid place-items-center">
@@ -146,4 +146,4 @@ const CancelBidModal: FC<{
   )
 }
 
-export default CancelBidModal
+export default CancelOfferModal

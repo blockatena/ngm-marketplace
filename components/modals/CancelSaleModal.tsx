@@ -4,34 +4,31 @@ import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { AvatarType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
-import { cancelBid } from '../../react-query/queries'
+import { cancelSale } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 import { ethers } from 'ethers'
-import { useAccount } from 'wagmi'
 
 const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
-const CancelBidModal: FC<{
+const CancelSaleModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   nft: AvatarType
-}> = ({ setIsOpen, nft }) => {
+  setActiveTabIndex: () => void
+}> = ({ setIsOpen, nft, setActiveTabIndex }) => {
   const queryClient = useQueryClient()
 
-  const { mutate, isSuccess, data, isLoading } = useMutation(cancelBid, {
+  const { mutate, isSuccess, data, isLoading } = useMutation(cancelSale, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
-
     },
   })
-    const { address } = useAccount()
 
   const handleClick = async () => {
     const data = {
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
-      bidder_address:address?address:'',
       sign:''
     }
     const ethereum = (window as any).ethereum
@@ -50,20 +47,15 @@ const CancelBidModal: FC<{
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
     let rawMsg = `{
-      "bidder_address":"${
-      address ? address : ''
-    }",
-    "contract_address":"${nft?.contract_address}",
-    "token_id":"${
+      "contract_address":"${nft?.contract_address}",
+      "token_id":"${
       nft?.token_id
     }"
   }`
     let hashMessage = await ethers.utils.hashMessage(rawMsg)
     // console.log(hashMessage)
     await signer
-      .signMessage(
-        `Signing to Cancel Bid\n${rawMsg}\n Hash: \n${hashMessage}`
-      )
+      .signMessage(`Signing to Cancel Sale\n${rawMsg}\n Hash: \n${hashMessage}`)
       .then(async (sign) => {
         // console.log(sign)
         data['sign'] = sign
@@ -73,23 +65,25 @@ const CancelBidModal: FC<{
         setIsOpen(false)
         return
       })
-    if (data['sign']) {
-      mutate(data)
-    } else return
+      if(data['sign']){
+        mutate(data)
+      } else return;
   }
 
   useEffect(() => {
     if (isSuccess) {
-      toast(data?.data?.message?data?.data?.message:'Bid Cancelled Successfully', {
-        hideProgressBar: true,
-        autoClose: 3000,
-        type:data?.data?.message?'error':'success',
-        position: 'top-right',
-        theme: 'dark',
-      })
+      let msg = data?.data?.message? data?.data?.message:'Sale Cancelled Successfully'
+      setActiveTabIndex()
+        toast(msg, {
+          hideProgressBar: true,
+          autoClose: 3000,
+          type:data?.data?.message?'error':'success',
+          position: 'top-right',
+          theme: 'dark',
+        })
       setIsOpen(false)
     }
-  }, [isSuccess, data?.data?.message, setIsOpen])
+  }, [isSuccess, data?.data?.message, setIsOpen, setActiveTabIndex])
 
   return (
     <ModalBase>
@@ -115,7 +109,7 @@ const CancelBidModal: FC<{
           </span>
         </p>
         <h2 className="text-white font-poppins text-[20px] lg:text-[30px] text-center my-4">
-          Are you sure you want to cancel this bid?
+          Are you sure you want to cancel this sale?
         </h2>
         {isLoading && (
           <div className="py-4 grid place-items-center">
@@ -146,4 +140,4 @@ const CancelBidModal: FC<{
   )
 }
 
-export default CancelBidModal
+export default CancelSaleModal

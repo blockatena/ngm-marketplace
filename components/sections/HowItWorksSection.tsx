@@ -39,7 +39,7 @@ const Card: React.FC<CardProps> = ({ children, index }) => {
 
 const HowItWorksSection: React.FC = () => {
   return (
-    <section className="w-full md:px-5 lg:px-10 xl:px-14 min-h-[50vh] flex flex-col lg:flex-row items-center lg:justify-between space-y-10 lg:space-y-0 xl:max-w-[1500px] xl:mx-auto pt-14">
+    <section className="w-full md:px-5 lg:px-10 xl:px-14 min-h-[50vh] 2xl:min-h-full flex flex-col lg:flex-row items-center lg:justify-between space-y-10 lg:space-y-0 xl:mx-auto pt-14">
       <div className="w-fit text-center text-white font-popins z-10 max-w-[90%] md:max-w-[390px] lg:max-w-[400px] xl:max-w-[454px]">
         <motion.h3
           variants={fromLeftAnimation}

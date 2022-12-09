@@ -7,6 +7,7 @@ import {
   fromRightAnimation,
   opacityAnimation,
 } from '../../utils/animations'
+import useIsMounted from '../../utils/hooks/useIsMounted'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 
 const JoinCommunitySection: React.FC = () => {
@@ -15,11 +16,12 @@ const JoinCommunitySection: React.FC = () => {
   }
 
   const { width } = useWindowDimensions()
+  const isMounted = useIsMounted()
 
   let discordSize: number
-  if (width < 768) {
+  if (isMounted && width < 768) {
     discordSize = 28
-  } else if (width < 1024) {
+  } else if (isMounted && width < 1024) {
     discordSize = 32
   } else {
     discordSize = 38

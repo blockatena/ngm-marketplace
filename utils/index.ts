@@ -16,3 +16,18 @@ export const handleAnimationDelay = (
     else return index * 0.2
   }
 }
+
+export const shortenString = (
+  value: string,
+  leftDigits: number,
+  rightDigits: number
+) => {
+  let shortenedString = ''
+  if (value) {
+    shortenedString =
+      value?.substring(0, leftDigits) +
+      '...' +
+      value?.substring(value?.length - rightDigits)
+  }
+  return shortenedString
+}

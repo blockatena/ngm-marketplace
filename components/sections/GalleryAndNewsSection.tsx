@@ -1,44 +1,46 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
+import { useRouter } from 'next/router'
+import { Dispatch, ReactNode, SetStateAction, useEffect, useState } from 'react'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
-import behind_1 from '../../public/images/gallery/behind_img_1.svg'
-import img_1 from '../../public/images/gallery/img_1.svg'
-import img_2 from '../../public/images/gallery/img_2.svg'
-import img_3 from '../../public/images/gallery/img_3.svg'
+import { useQuery } from 'react-query'
+import type { CollectionCardType } from '../../interfaces'
 import news_img_1 from '../../public/images/news/news_img_1.svg'
 import news_img_2 from '../../public/images/news/news_img_2.svg'
+import { QUERIES } from '../../react-query/constants'
+import { getCollections } from '../../react-query/queries'
 import {
   fromBottomAnimation,
   fromLeftAnimation,
   fromRightAnimation,
 } from '../../utils/animations'
+import { CONTAINER_PADDING } from '../../utils/constants'
 import getDescription from '../../utils/getDescription'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 
-interface GalleryCardProps {
-  title: string
-  imgUrl: any
-  behindImgUrl: any
+interface GalleryCardProps extends CollectionCardType {
+  // title: string
+  // imgUrl: any
+  // behindImgUrl: any
 }
 
-const galleryData: GalleryCardProps[] = [
-  {
-    title: 'Apex Legends',
-    behindImgUrl: behind_1,
-    imgUrl: img_1,
-  },
-  {
-    title: 'Free Fire',
-    behindImgUrl: behind_1,
-    imgUrl: img_2,
-  },
-  {
-    title: 'PUBG',
-    behindImgUrl: behind_1,
-    imgUrl: img_3,
-  },
-]
+// const galleryData: GalleryCardProps[] = [
+//   {
+//     title: 'Apex Legends',
+//     behindImgUrl: behind_1,
+//     imgUrl: img_1,
+//   },
+//   {
+//     title: 'Free Fire',
+//     behindImgUrl: behind_1,
+//     imgUrl: img_2,
+//   },
+//   {
+//     title: 'PUBG',
+//     behindImgUrl: behind_1,
+//     imgUrl: img_3,
+//   },
+// ]
 
 const cardVariants = {
   initial: {
@@ -55,13 +57,17 @@ const cardVariants = {
   }),
 }
 
+const placeholderImg = '/images/collections/placeholder.jpg'
+
 const GalleryCard: React.FC<
-  GalleryCardProps & { onClick: () => void; index: number }
-> = ({ title, imgUrl, behindImgUrl, onClick, index }) => {
+  // GalleryCardProps & { onClick: () => void; index: number }
+  GalleryCardProps & { index: number }
+> = ({ imageuri, contract_address, collection_name, index }) => {
+  const router = useRouter()
   return (
     <motion.div
       className="relative cursor-pointer w-[297px] mx-auto h-[425px] hover:z-20"
-      onClick={onClick}
+      onClick={() => router.push(`/collections/${contract_address}`)}
       custom={index}
       variants={cardVariants}
       initial="initial"
@@ -69,16 +75,52 @@ const GalleryCard: React.FC<
       viewport={{ once: true }}
     >
       <div className="w-full h-full flex flex-col pt-2 bg-white/[0.1] rotate-3 rounded-lg border-[3px] border-[#A4950C] absolute top-0 left-3">
-        <div className="-rotate-3 mx-auto">
-          <Image src={behindImgUrl} alt="behind image" />
+        <div className="p-2 h-full w-full">
+          <div className="mx-auto w-full h-full relative">
+            {/* <Image src={behindImgUrl} alt="behind image" /> */}
+            {imageuri?.[1] ? (
+              <Image
+                loader={() => imageuri[1]}
+                src={imageuri[1]}
+                alt="collection_img"
+                layout="fill"
+                className="rounded-lg"
+              />
+            ) : (
+              <Image
+                src={placeholderImg}
+                alt="collection_img"
+                layout="fill"
+                className="rounded-lg"
+              />
+            )}
+          </div>
         </div>
       </div>
-      <div className="w-full h-full flex flex-col pt-2 bg-white/[0.1] rounded-lg border-[3px] border-[#A4950C] absolute top-2 left-0 backdrop-blur-lg hover:-rotate-12 hover:translate-y-32 transition-all ease-in-out duration-300">
-        <div className="mx-auto ">
-          <Image src={imgUrl} alt="Main image" />
+      <div className="w-full h-full flex flex-col pt-2 pb-4 bg-white/[0.1] rounded-lg border-[3px] border-[#A4950C] absolute top-2 left-0 backdrop-blur-lg hover:-rotate-12 hover:translate-y-32 transition-all ease-in-out duration-300">
+        <div className="p-2 bg-transparent h-full w-full">
+          <div className="mx-auto relative h-full w-full rounded-lg">
+            {/* <Image src={imgUrl} alt="Main image" /> */}
+            {imageuri?.[0] ? (
+              <Image
+                loader={() => imageuri[0]}
+                src={imageuri[0]}
+                alt="collection_img"
+                layout="fill"
+                className="rounded-lg"
+              />
+            ) : (
+              <Image
+                src={placeholderImg}
+                alt="collection_img"
+                layout="fill"
+                className="rounded-lg"
+              />
+            )}
+          </div>
         </div>
-        <h4 className="text-white w-full text-center font-roboto font-medium text-[24px] pt-4">
-          {title}
+        <h4 className="text-white w-full text-center font-roboto font-medium text-[24px] pt-4 capitalize">
+          {collection_name}
         </h4>
       </div>
     </motion.div>
@@ -243,9 +285,18 @@ const ArrowGoldenBtns: React.FC<ArrowGoldenBtnsProps> = ({ icon, onClick }) => {
   )
 }
 
+const CURRENT_PAGE = 1
+
 const GalleryAndNewsSection: React.FC = () => {
+  const router = useRouter()
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [collections, setCollections] = useState<CollectionCardType[]>([])
+
   const { width } = useWindowDimensions()
+
+  const { data } = useQuery([QUERIES.getCollections, CURRENT_PAGE], () =>
+    getCollections(CURRENT_PAGE)
+  )
 
   let maxNum = newsData.length - 1
   if (width > 1024 && width < 1280 && newsData.length >= 2) {
@@ -256,8 +307,14 @@ const GalleryAndNewsSection: React.FC = () => {
   }
 
   const viewMoreClick = () => {
-    console.log('VIEW MORE')
+    router.push('/collections')
   }
+
+  useEffect(() => {
+    if (data?.data?.collections.length) {
+      setCollections(data.data.collections)
+    }
+  }, [data?.data])
 
   return (
     <section className="min-h-screen w-full py-10">
@@ -271,7 +328,7 @@ const GalleryAndNewsSection: React.FC = () => {
           duration: 0.5,
           delay: 0.6,
         }}
-        className="w-[90%] md:w-[750px] lg:w-[950px] xl:w-[1200px] flex items-end justify-between mx-auto"
+        className={`${CONTAINER_PADDING} w-full  flex items-end justify-between mx-auto`}
       >
         <h2 className="z-10 text-white leading-none font-popins font-medium text-[32px] md:text-[38px] lg:text-[50px] relative before:absolute before:w-[4px] before:h-[30px] before:md:h-[35px] before:lg:h-[48px] before:bg-[#FFDC20] before:-translate-x-2 before:md:-translate-x-3 before:lg:-translate-x-4 pt-10">
           Top Galleries
@@ -280,19 +337,23 @@ const GalleryAndNewsSection: React.FC = () => {
           className="z-10 font-roboto text-white text-[16px] md:text-[18px] lg:text-[20px] w-[110px] md:w-[120px] lg:w-[135px]  h-[28px] md:h-[32px] lg:h-[35px] bg-zinc-700 hover:bg-zinc-800 active:bg-zinc-900 transition-all ease-in-out duration-200"
           onClick={viewMoreClick}
         >
-          view more
+          View More
         </button>
       </motion.div>
-      <div className="w-[90%] md:w-[700px] lg:w-[1000px] xl:w-[1100px] flex flex-col lg:flex-row items-center justify-between mx-auto pt-14 lg:pt-16 space-y-24 lg:space-y-0">
-        {galleryData.map((data, index) => {
-          return (
-            <GalleryCard
-              key={index}
-              index={index}
-              onClick={() => console.log(`card number ${index + 1}`)}
-              {...data}
-            />
-          )
+      <div
+        className={`${CONTAINER_PADDING} w-full flex flex-col lg:flex-row items-center justify-between mx-auto pt-14 space-y-24 lg:space-y-0`}
+      >
+        {collections?.map((data, index) => {
+          if (index > 8 && index < 12) {
+            return (
+              <GalleryCard
+                key={index}
+                index={index}
+                // onClick={() => console.log(`card number ${index + 1}`)}
+                {...data}
+              />
+            )
+          }
         })}
       </div>
       <div className="flex items-center justify-center mx-auto mt-32">
@@ -311,7 +372,7 @@ const GalleryAndNewsSection: React.FC = () => {
           Latest News
         </motion.h2>
       </div>
-      <div className="w-[90%] md:w-[750px] lg:w-[790px] xl:w-[1193px] flex justify-end mx-auto">
+      <div className={`${CONTAINER_PADDING} w-full flex justify-end mx-auto`}>
         <motion.div
           variants={fromRightAnimation}
           initial="initial"
