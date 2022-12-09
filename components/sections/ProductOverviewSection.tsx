@@ -86,7 +86,7 @@ const ProductOverviewSection: FC<{
       method: 'eth_requestAccounts',
     })
     const provider = new ethers.providers.JsonRpcProvider(
-      'https://rpc-mumbai.maticvigil.com/'
+      process.env.NEXT_PUBLIC_PROVIDER
     )
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
