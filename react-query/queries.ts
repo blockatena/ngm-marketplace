@@ -1,4 +1,8 @@
-import { axiosInstance, nftInstance } from '../axiosInstance'
+import {
+  axiosInstance,
+  createAxiosInstance,
+  nftInstance,
+} from '../axiosInstance'
 import type {
   CollectionNftsBodyType,
   NftAcceptOfferBodyType,
@@ -9,6 +13,8 @@ import type {
   NftOfferBodyType,
   NftSaleBodyType,
 } from '../interfaces'
+
+const axiosFileInstance = createAxiosInstance('form-data')
 
 export const getCollections = (
   page_number: number,
@@ -48,7 +54,7 @@ export const createNftAuction = (data: nftAuctionBodyType) => {
 export const cancelAuction = (data: {
   contract_address: string
   token_id: string
-  sign:string
+  sign: string
 }) => {
   return axiosInstance.post('/nft-marketplace/cancel-auction', data)
 }
@@ -71,7 +77,7 @@ export const createNftSale = (data: NftSaleBodyType) => {
 export const cancelSale = (data: {
   contract_address: string
   token_id: string
-  sign:string
+  sign: string
 }) => {
   return axiosInstance.post('/nft-marketplace/cancel-sale', data)
 }
@@ -102,4 +108,8 @@ export const createUser = (data: {
 
 export const getUser = (wallet_address: string) => {
   return axiosInstance.get(`/users/get-user/${wallet_address}`)
+}
+
+export const uploadProfileImg = (data: FormData) => {
+  return axiosFileInstance.post('/users/uploadFile', data)
 }

@@ -7,11 +7,14 @@ import {
   Dispatch,
   FC,
   SetStateAction,
+  useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
-import { FaHamburger } from 'react-icons/fa'
+import { BsFillPersonFill } from 'react-icons/bs'
+import { FaEdit, FaHamburger } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
 import { useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
@@ -21,7 +24,7 @@ import Pagination from '../../components/Pagination'
 import Spinner from '../../components/Spinner'
 import withProtection from '../../components/withProtection'
 import { AvatarType, CollectionNftsBodyType, UserType } from '../../interfaces'
-import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
+// import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 import historyIcon from '../../public/images/icons/Activity.svg'
 import categoryIcon from '../../public/images/icons/Category.svg'
 import editIcon from '../../public/images/icons/edit.svg'
@@ -34,6 +37,7 @@ import {
   createUser,
   getCollectionNfts,
   getUser,
+  uploadProfileImg,
 } from '../../react-query/queries'
 import { shortenString } from '../../utils'
 import {
@@ -269,7 +273,7 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (!isSuccess) return
+    if (!isSuccess || !data) return
     typeof data?.data !== 'string' &&
       toast.dark('User Created Successfully', {
         type: 'success',
@@ -281,7 +285,7 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
         type: 'error',
         hideProgressBar: true,
       })
-  }, [data?.data, isSuccess])
+  }, [data, isSuccess])
 
   const handleLogin = useGoogleLogin({
     onSuccess: async (respose) => {
@@ -381,9 +385,16 @@ const ALPHABETICAL_ORDER = 'AtoZ'
 const ORDER = 'NewToOld'
 
 const ProfilePage: NextPage = () => {
+  const queryClient = useQueryClient()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [currentRoute, setCurrentRoute] = useState<RouteNameType>('category')
   const [user, setUser] = useState<UserType | null>(null)
+  const uploadBtnRef = useRef<HTMLInputElement | null>(null)
+  const profilePicRef = useRef<HTMLInputElement | null>(null)
+  const [bgFiles, setBgFiles] = useState<FileList | null>(null)
+  const [profilePicFiles, setProfilePicFiles] = useState<FileList | null>(null)
+  const [isProfilePicHovered, setIsProfilePicHovered] = useState(false)
+
   const { address } = useAccount()
   const { data: userData } = useQuery(
     [QUERIES.getUser, address],
@@ -393,26 +404,110 @@ const ProfilePage: NextPage = () => {
     }
   )
 
+  type UploadOptionType = 'banner' | 'profile'
+
+  const {
+    mutate: uploadImage,
+    isSuccess: isUploadSuccess,
+    isLoading,
+    isError,
+    error,
+  } = useMutation(uploadProfileImg, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(QUERIES.getUser)
+    },
+  })
+
+  const handleChooseFile = (type: 'bgImg' | 'profilePic') => {
+    if (!user) {
+      toast.dark('Sign in to edit profile', {
+        type: 'info',
+        hideProgressBar: true,
+      })
+      setCurrentRoute('settings')
+      return
+    }
+    if (uploadBtnRef.current && type === 'bgImg') {
+      uploadBtnRef.current.click()
+    }
+    if (profilePicRef.current && type === 'profilePic') {
+      profilePicRef.current.click()
+    }
+  }
+
+  const handleUpload = useCallback(() => {
+    if ((!bgFiles && !profilePicFiles) || !address) return
+    let uploadType: UploadOptionType = 'banner'
+    const formData = new FormData()
+    formData.append('wallet_address', String(address))
+
+    if (bgFiles) {
+      formData.append('file', bgFiles[0])
+      formData.append('type', uploadType)
+    } else if (profilePicFiles) {
+      uploadType = 'profile'
+      formData.append('file', profilePicFiles[0])
+      formData.append('type', uploadType)
+    }
+    uploadImage(formData)
+  }, [address, bgFiles, profilePicFiles, uploadImage])
+
+  useEffect(() => {
+    if (!isUploadSuccess) return
+    setBgFiles(null)
+    setProfilePicFiles(null)
+  }, [isUploadSuccess])
+
   useEffect(() => {
     if (userData && typeof userData?.data !== 'string') setUser(userData?.data)
     else setUser(null)
   }, [userData])
 
+  useEffect(() => {
+    handleUpload()
+  }, [handleUpload])
+
+  useEffect(() => {
+    if (!isError) return
+    error instanceof Error
+      ? toast.dark(error?.message, { type: 'error', hideProgressBar: true })
+      : toast.dark('error connecting to server', {
+          type: 'error',
+          hideProgressBar: true,
+        })
+  }, [isError, error])
+
   return (
     <main className="p-4 pt-6 pb-0 lg:px-8 relative -bottom-8">
       <div
-        className="w-full h-[351px] bg-cover rounded-t-lg relative flex justify-center mb-40"
-        style={{ backgroundImage: "url('/images/hero/product_page_hero.png')" }}
+        className="w-full h-[351px] bg-cover rounded-t-lg relative flex justify-center mb-40 bg-custom_gray_light"
+        // style={{ backgroundImage: "url('/images/hero/product_page_hero.png')" }}
+        style={
+          user?.banner_image
+            ? { backgroundImage: `url(${user?.banner_image})` }
+            : {}
+        }
       >
         <div
           className="text-[#E5E5E5] font-inter lg:text-[19px] absolute bottom-4 right-6 
         bg-[#2B3137] opacity-80 p-2 cursor-pointer rounded-lg flex items-end gap-2"
         >
-          <Image src={editIcon} alt="edit" /> Edit
+          <Image
+            src={editIcon}
+            alt="edit"
+            onClick={() => handleChooseFile('bgImg')}
+          />{' '}
+          <span onClick={() => handleChooseFile('bgImg')}>Edit</span>
+          <input
+            type="file"
+            ref={uploadBtnRef}
+            className="hidden"
+            onChange={(e) => setBgFiles(e.target.files)}
+          />
         </div>
         <motion.div
           // className="h-[126px] w-[151px] absolute -bottom-[63px]"
-          className="h-[126px] absolute -bottom-[63px]"
+          className="profile-pic-clip h-[126px] lg:h-[150px] absolute -bottom-[63px]"
           variants={opacityAnimation}
           initial="initial"
           animate="final"
@@ -421,12 +516,46 @@ const ProfilePage: NextPage = () => {
             duration: 1,
             delay: 0.4,
           }}
+          onMouseEnter={() => setIsProfilePicHovered(true)}
+          onMouseLeave={() => setIsProfilePicHovered(false)}
+          onClick={() => setIsProfilePicHovered((prev) => !prev)}
         >
-          <Image src={heroIcon} alt="" />
-          <p className="text-white text-center font-poppins text-[21px] font-medium">
-            {user ? user.username : ''}
-          </p>
+          {/* <Image src={heroIcon} alt="" /> */}
+          {user?.profile_image ? (
+            <div className=" bg-custom_gray_dark h-[126px] lg:h-[150px] w-[150px] grid place-items-center">
+              <Image
+                loader={() => user.profile_image ?? ''}
+                src={user.profile_image}
+                alt="profile_img"
+                layout="fill"
+              />
+            </div>
+          ) : (
+            <div className=" bg-custom_gray_dark h-[126px] lg:h-[150px] w-[150px] grid place-items-center">
+              <BsFillPersonFill fontSize={60} />
+            </div>
+          )}
+          <div
+            className="text-[#E6E6E6] font-inter lg:text-[19px] absolute bottom-4 right-[40%] 
+        bg-[#2B3137] opacity-80 p-1 cursor-pointer rounded-lg flex items-end gap-2"
+          >
+            {isProfilePicHovered && (
+              <FaEdit
+                fontSize={16}
+                onClick={() => handleChooseFile('profilePic')}
+              />
+            )}
+            <input
+              type="file"
+              ref={profilePicRef}
+              className="hidden"
+              onChange={(e) => setProfilePicFiles(e.target.files)}
+            />
+          </div>{' '}
         </motion.div>
+        <p className="text-white text-center font-poppins text-[21px] font-medium absolute -bottom-[110px]">
+          {user ? user.username : ''}
+        </p>
       </div>
       <div className="grid place-items-center w-full">
         <div className="grid grid-cols-12 gap-4 w-full">
@@ -472,6 +601,11 @@ const ProfilePage: NextPage = () => {
           </motion.div>
         </div>
       </div>
+      {isLoading && (
+        <div className="p-8  fixed left-[50%] top-[50%] z-50">
+          <Spinner />
+        </div>
+      )}
       <AnimatePresence>
         {isDrawerOpen && (
           <motion.div

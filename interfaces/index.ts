@@ -303,5 +303,7 @@ export type UserType = {
   email: string
   createdAt: string
   updatedAt: string
+  banner_image?: string
+  profile_image?: string
   __v: number
 }
