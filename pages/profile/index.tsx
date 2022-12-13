@@ -357,11 +357,18 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
             </button>
           </div>
         )}
+        {user && (
+          <h1 className="font-poppins text-white lg:text-3xl font-medium mb-4">
+            Account Details
+          </h1>
+        )}
         {user &&
           userInfo.map(({ name, value }, index) => (
             <motion.div
               key={index}
-              className="text-white font-poppins my-2"
+              className={`text-white font-poppins ${
+                index % 2 === 0 ? 'bg-[#070707]' : 'bg-transparent'
+              } h-16 lg:h-12 flex items-center p-1`}
               variants={opacityAnimation}
               initial="initial"
               whileInView="final"
