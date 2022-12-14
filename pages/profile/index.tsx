@@ -13,6 +13,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { AiOutlineSend } from 'react-icons/ai'
 import { BsFillPersonFill } from 'react-icons/bs'
 import { FaEdit, FaHamburger } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
@@ -37,9 +38,10 @@ import {
   createUser,
   getCollectionNfts,
   getUser,
+  updateUser,
   uploadProfileImg,
 } from '../../react-query/queries'
-import { shortenString } from '../../utils'
+import { handleError, shortenString } from '../../utils'
 import {
   fromLeftAnimation,
   fromRightAnimation,
@@ -401,6 +403,9 @@ const ProfilePage: NextPage = () => {
   const [bgFiles, setBgFiles] = useState<FileList | null>(null)
   const [profilePicFiles, setProfilePicFiles] = useState<FileList | null>(null)
   const [isProfilePicHovered, setIsProfilePicHovered] = useState(false)
+  const [isUsernameUpdate, setIsUsernameUpdate] = useState(false)
+  const [username, setUsername] = useState('')
+  const [isUsernameHovered, setIsUsernameHovered] = useState(false)
 
   const { address } = useAccount()
   const { data: userData } = useQuery(
@@ -424,6 +429,23 @@ const ProfilePage: NextPage = () => {
       queryClient.invalidateQueries(QUERIES.getUser)
     },
   })
+
+  const {
+    mutate: usernameMutation,
+    isLoading: isUserMutationLoading,
+    isSuccess: isUserMutationSuccess,
+    isError: isUserMutationError,
+    error: userMutationError,
+  } = useMutation(updateUser, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(QUERIES.getUser)
+    },
+  })
+
+  const handleUsernameMutation = () => {
+    if (!username || !address) return
+    usernameMutation({ username, wallet_address: String(address) })
+  }
 
   const handleChooseFile = (type: 'bgImg' | 'profilePic') => {
     if (!user) {
@@ -475,14 +497,18 @@ const ProfilePage: NextPage = () => {
   }, [handleUpload])
 
   useEffect(() => {
-    if (!isError) return
-    error instanceof Error
-      ? toast.dark(error?.message, { type: 'error', hideProgressBar: true })
-      : toast.dark('error connecting to server', {
-          type: 'error',
-          hideProgressBar: true,
-        })
-  }, [isError, error])
+    if (!isError && !isUserMutationError) return
+    handleError(error || userMutationError)
+  }, [isError, error, isUserMutationError, userMutationError])
+
+  useEffect(() => {
+    if (!isUserMutationSuccess) return
+    toast.dark('Username updated successfully', {
+      type: 'success',
+      hideProgressBar: true,
+    })
+    setIsUsernameUpdate(false)
+  }, [isUserMutationSuccess])
 
   return (
     <main className="p-4 pt-6 pb-0 lg:px-8 relative -bottom-8">
@@ -560,9 +586,34 @@ const ProfilePage: NextPage = () => {
             />
           </div>{' '}
         </motion.div>
-        <p className="text-white text-center font-poppins text-[21px] font-medium absolute -bottom-[110px]">
-          {user ? user.username : ''}
-        </p>
+        {!isUsernameUpdate && (
+          <p
+            className="text-white text-center font-poppins text-[21px] font-medium absolute 
+          -bottom-[110px] flex cursor-pointer"
+            onClick={() => setIsUsernameUpdate(true)}
+            onMouseEnter={() => setIsUsernameHovered(true)}
+            onMouseLeave={() => setIsUsernameHovered(false)}
+          >
+            {user ? user.username : ''}
+            {isUsernameHovered && user?.username && <FaEdit fontSize={16} />}
+          </p>
+        )}
+        {isUsernameUpdate && (
+          <p className="font-poppins absolute -bottom-[110px]">
+            <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full pl-1 pr-7 focus:border focus:border-custom_yellow focus:outline-none
+               bg-custom_grey rounded"
+            />
+            {/* <button className="absolute top-[10%] right-2">Go</button> */}
+            <AiOutlineSend
+              fontSize={16}
+              className="absolute top-[15%] right-2 cursor-pointer"
+              onClick={handleUsernameMutation}
+            />
+          </p>
+        )}
       </div>
       <div className="grid place-items-center w-full">
         <div className="grid grid-cols-12 gap-4 w-full">
@@ -608,7 +659,7 @@ const ProfilePage: NextPage = () => {
           </motion.div>
         </div>
       </div>
-      {isLoading && (
+      {(isLoading || isUserMutationLoading) && (
         <div className="p-8  fixed left-[50%] top-[50%] z-50">
           <Spinner />
         </div>

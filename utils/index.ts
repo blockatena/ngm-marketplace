@@ -1,3 +1,5 @@
+import { toast } from 'react-toastify'
+
 export const handleAnimationDelay = (
   index: number,
   screenWidth: number
@@ -30,4 +32,13 @@ export const shortenString = (
       value?.substring(value?.length - rightDigits)
   }
   return shortenedString
+}
+
+export const handleError = (error: unknown) => {
+  error instanceof Error
+    ? toast.dark(error?.message, { type: 'error', hideProgressBar: true })
+    : toast.dark('error connecting to server', {
+        type: 'error',
+        hideProgressBar: true,
+      })
 }

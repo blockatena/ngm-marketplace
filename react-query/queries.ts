@@ -113,3 +113,10 @@ export const getUser = (wallet_address: string) => {
 export const uploadProfileImg = (data: FormData) => {
   return axiosFileInstance.post('/users/uploadFile', data)
 }
+
+export const updateUser = (data: {
+  username: string
+  wallet_address: string
+}) => {
+  return axiosInstance.patch('/users/update-user', data)
+}
