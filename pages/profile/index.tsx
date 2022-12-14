@@ -464,6 +464,30 @@ const ProfilePage: NextPage = () => {
     }
   }
 
+  const handleFileValidation = (files: FileList): boolean => {
+    if (!files) return false
+    const fileName = files[0]?.name
+    const fileSize = files[0]?.size / 1024 / 1024 //file size in MBs
+    // const allowedFileTypesRegex = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png)$/i;
+    const allowedFileTypesRegex = /(\.jpg|\.jpeg)$/i
+
+    if (fileSize > 1.5) {
+      toast.dark('File must be under 1.5MB', {
+        type: 'error',
+        hideProgressBar: true,
+      })
+      return false
+    }
+    if (!allowedFileTypesRegex.exec(fileName)) {
+      toast.dark('Please upload a jpg image', {
+        type: 'error',
+        hideProgressBar: true,
+      })
+      return false
+    }
+    return true
+  }
+
   const handleUpload = useCallback(() => {
     if ((!bgFiles && !profilePicFiles) || !address) return
     let uploadType: UploadOptionType = 'banner'
@@ -471,9 +495,11 @@ const ProfilePage: NextPage = () => {
     formData.append('wallet_address', String(address))
 
     if (bgFiles) {
+      if (!handleFileValidation(bgFiles)) return
       formData.append('file', bgFiles[0])
       formData.append('type', uploadType)
     } else if (profilePicFiles) {
+      if (!handleFileValidation(profilePicFiles)) return
       uploadType = 'profile'
       formData.append('file', profilePicFiles[0])
       formData.append('type', uploadType)
@@ -606,7 +632,6 @@ const ProfilePage: NextPage = () => {
               className="w-full pl-1 pr-7 focus:border focus:border-custom_yellow focus:outline-none
                bg-custom_grey rounded"
             />
-            {/* <button className="absolute top-[10%] right-2">Go</button> */}
             <AiOutlineSend
               fontSize={16}
               className="absolute top-[15%] right-2 cursor-pointer"
