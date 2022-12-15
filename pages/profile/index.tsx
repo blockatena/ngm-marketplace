@@ -21,6 +21,7 @@ import { useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { useAccount, useMutation } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
+import AccountConfirmationModal from '../../components/modals/AccountConfirmationModal'
 import Pagination from '../../components/Pagination'
 import Spinner from '../../components/Spinner'
 import withProtection from '../../components/withProtection'
@@ -439,14 +440,21 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
     },
   })
   const [loading, setLoading] = useState(false)
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+  const [userGoogleInfo, setUserGoogleInfo] = useState({
+    username: '',
+    email: '',
+  })
 
   useEffect(() => {
     if (!isSuccess || !data) return
-    typeof data?.data !== 'string' &&
+    if (typeof data?.data !== 'string') {
       toast.dark('User Created Successfully', {
         type: 'success',
         hideProgressBar: true,
       })
+      setIsConfirmModalOpen(false)
+    }
 
     typeof data?.data === 'string' &&
       toast.dark(data.data, {
@@ -454,6 +462,18 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
         hideProgressBar: true,
       })
   }, [data, isSuccess])
+
+  const handleCreateUser = (
+    email: string,
+    wallet_address: string,
+    username: string
+  ) => {
+    createUserMutation({
+      email,
+      wallet_address,
+      username,
+    })
+  }
 
   const handleLogin = useGoogleLogin({
     onSuccess: async (respose) => {
@@ -468,11 +488,17 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
           }
         )
         if (res?.data?.email_verified && res?.data?.email && address) {
-          createUserMutation({
-            email: res.data.email,
-            wallet_address: String(address),
+          setUserGoogleInfo((prev) => ({
+            ...prev,
+            email: res?.data?.email,
             username: res.data?.name,
-          })
+          }))
+          setIsConfirmModalOpen(true)
+          // createUserMutation({
+          //   email: res.data.email,
+          //   wallet_address: String(address),
+          //   username: res.data?.name,
+          // })
         } else {
           toast.dark('Email not verified', { type: 'error' })
         }
@@ -502,7 +528,7 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
   )
 
   return (
-    <>
+    <div>
       <div className="text-white font-poppins text-[20px] pl-[25%] p-6">
         <span className="border-b-2 border-custom_yellow">Settings</span>
       </div>
@@ -551,7 +577,18 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
             </motion.div>
           ))}
       </div>
-    </>
+      <AnimatePresence>
+        {isConfirmModalOpen && (
+          <AccountConfirmationModal
+            isOpen={isConfirmModalOpen}
+            setIsOpen={setIsConfirmModalOpen}
+            user={userGoogleInfo}
+            createUser={handleCreateUser}
+            isLoading={isLoading}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
 
