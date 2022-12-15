@@ -24,6 +24,9 @@ import {
 import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
 import AcceptOfferModal from '../modals/AcceptOfferModal'
 import CancelOfferModal from '../modals/CancelOfferModal'
+const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
+const explorer =
+    CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -68,9 +71,11 @@ const DescriptionItem: FC<{
   contract: string
   tokenUri: string
 }> = ({ name, value, contract, tokenUri }) => {
+
+
   const clickC = () => {
     if (name === 'Contract Address') {
-      let url = `https://mumbai.polygonscan.com/token/${contract}`
+      let url = `https://${explorer}/token/${contract}`
       window.open(url, '_blank')
     } else if (name === 'Token ID') {
       let url = tokenUri
@@ -246,13 +251,14 @@ const shortenString = (value: string) => {
 //   )
 // }
 
+
 const onClickAddress = (user) => {
-  let url = `https://mumbai.polygonscan.com/address/${user}`
+  let url = `https://${explorer}/address/${user}`
   window.open(url, '_blank')
 }
 
 const onClickTx = (hash) => {
-  let url = `https://mumbai.polygonscan.com/tx/${hash}`
+  let url = `https://${explorer}/tx/${hash}`
   window.open(url, '_blank')
 }
 

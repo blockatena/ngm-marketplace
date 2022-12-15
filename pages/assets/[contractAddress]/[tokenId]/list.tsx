@@ -36,6 +36,7 @@ import {
   opacityAnimation,
 } from '../../../../utils/animations'
 import useCurrentDateTime from '../../../../utils/hooks/useCurrentDateTime'
+import { useNetwork, useSwitchNetwork } from 'wagmi'
 
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
@@ -69,6 +70,8 @@ const ListAssetPage: NextPage = () => {
     end_date: '',
     min_price: 0,
   }
+  const { chain } = useNetwork()
+  const {  switchNetwork } = useSwitchNetwork()
   const [contractAddress, setContractAddress] = useState('')
   const [tokenId, setTokenId] = useState('')
   const [NFTABI, setNFTABI] = useState<any>()
@@ -77,8 +80,8 @@ const ListAssetPage: NextPage = () => {
   const [contractDetails, setContractDetails] = useState<NftContractType>()
   const [formData, setFormData] = useState(initialFormState)
   const [isLoading, setIsLoading] = useState(false)
+  const [isChainCorrect,setIsChainCorrect] = useState(true)
   const [type, setType] = useState<'fixed' | 'auction'>('auction')
-
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId),
@@ -110,6 +113,19 @@ const ListAssetPage: NextPage = () => {
     },
   ]
 
+  useEffect(()=> {
+    if (chain?.id === parseInt(CHAINID)) {
+      setIsChainCorrect(true)
+      return
+    } else {
+      setIsChainCorrect(false)
+      return
+    }
+  },[chain])
+
+  const onSwitchNetwork=async ()=> {
+    await switchNetwork?.(parseInt(CHAINID))
+  }
   const onlisting = async () => {
     if (!formData.end_date || !formData.min_price) {
       toast('Please fill all required fields', {
@@ -172,9 +188,12 @@ const ListAssetPage: NextPage = () => {
       NGMMarketAddress
     )
     // console.log(isApproved)
-
+    let startPrt = formData?.end_date.split('-')
+    let n1 = startPrt[0].slice(0, 4)
+    let newEndDate: any = `${n1}-${startPrt[1]}-${startPrt[2]}`
+    formData['end_date']= newEndDate
     let startDate = new Date(formData.start_date).toISOString()
-    let endDate = new Date(formData.end_date).toISOString()
+    let endDate = new Date(formData?.end_date).toISOString()
 
     const requestData: nftAuctionBodyType = {
       contract_address: nft?.contract_address,
@@ -603,10 +622,22 @@ const ListAssetPage: NextPage = () => {
                 className="btn-primary grid place-items-center w-[200px] h-[40px] lg:w-[618px] lg:h-[57px] 
                 rounded-lg font-poppins lg:text-[25px]"
                 // onClick={() => setIsSuccessModalOpen(true)}
-                onClick={() => onlisting()}
+                onClick={() =>
+                  isChainCorrect ? onlisting() : onSwitchNetwork()
+                }
                 disabled={isLoading}
               >
-                {!isLoading ? 'Complete Listing' : <Spinner color="black" />}
+                <>
+                  {!isLoading ? (
+                    isChainCorrect ? (
+                      'Complete Listing'
+                    ) : (
+                      'Switch Network'
+                    )
+                  ) : (
+                    <Spinner color="black" />
+                  )}
+                </>
               </button>
             </motion.div>
 

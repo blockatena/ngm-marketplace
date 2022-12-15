@@ -12,7 +12,7 @@ import { placeBid } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
-
+import { useNetwork, useSwitchNetwork } from 'wagmi'
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
 const CHAINID:string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
@@ -28,13 +28,27 @@ const PlaceBidModal: FC<{
   const [bidAmount, setBidAmount] = useState(0)
   const [loading, setLoading] = useState(false)
   // const [accountBalance, setAccountBalance] = useState('')
-
+  const { chain } = useNetwork()
+  const { switchNetwork } = useSwitchNetwork()
+  const [isChainCorrect, setIsChainCorrect] = useState(true)
   const { mutate, data, isLoading, isSuccess } = useMutation(placeBid, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
   })
+  useEffect(() => {
+    if (chain?.id === parseInt(CHAINID)) {
+      setIsChainCorrect(true)
+      return
+    } else {
+      setIsChainCorrect(false)
+      return
+    }
+  }, [chain])
 
+  const onSwitchNetwork = async () => {
+    await switchNetwork?.(parseInt(CHAINID))
+  }
   const onBid = async () => {
     if (nft?.token_owner === address) {
       toast.dark('You own this NFT!', {
@@ -250,10 +264,18 @@ const PlaceBidModal: FC<{
             <button
               className="btn-primary w-[200px] h-[40px] lg:w-[375px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]
             grid place-items-center"
-              onClick={() => onBid()}
+              onClick={() => (isChainCorrect ? onBid() : onSwitchNetwork())}
               disabled={isLoading || loading}
             >
-              {isLoading || loading ? <Spinner color="black" /> : status==='update'?'Update Bid':'Place Bid'}
+              {isLoading || loading ? (
+                <Spinner color="black" />
+              ) :!isChainCorrect? (
+                'Switch Network'
+              ) : status === 'update' ? (
+                'Update Bid'
+              ) : (
+                'Place Bid'
+              )}
             </button>
           </div>
         </div>

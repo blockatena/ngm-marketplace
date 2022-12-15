@@ -3,7 +3,10 @@ import Image from 'next/image'
 import { Dispatch, FC, SetStateAction, useState } from 'react'
 import { Connector, useConnect } from 'wagmi'
 import { fromLeftAnimation, fromRightAnimation } from '../utils/animations'
+import { ethers } from 'ethers'
 import Spinner from './Spinner'
+const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
+
 type WalletOptionType = {
   img: string
   title: WalletType
@@ -17,9 +20,10 @@ type WalletType = 'MetaMask'
 interface CardProps {
   connector: Connector<any, any, any>
   setMessage: Dispatch<SetStateAction<string>>
+  switchSet: () => void
 }
 
-const walletOptions: WalletOptionType[] = [
+const switchNetworks: WalletOptionType[] = [
   {
     img: '/images/icons/metamask.png',
     title: 'MetaMask',
@@ -28,17 +32,30 @@ const walletOptions: WalletOptionType[] = [
   },
 ]
 
-const Card: FC<CardProps> = ({ connector, setMessage }) => {
-  const { connect, isLoading } = useConnect()
+const Card: FC<CardProps> = ({ connector, setMessage, switchSet }) => {
+  //   const { connect, isLoading, pendingConnector } = useConnect()
   const { name } = connector
-  const wallet = walletOptions.find((option) => option.title === name)
-
-  const handleClick = () => {
+  const wallet = switchNetworks.find((option) => option.title === name)
+  const [loading, setLoading] = useState(false)
+  const handleClick = async () => {
     if (name === 'MetaMask' && !window.ethereum) {
       setMessage('Please Install MetaMask')
       return
     }
-    connect({ connector })
+    let chain = parseInt(CHAINID)
+    setLoading(true)
+    await window.ethereum
+      .request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
+      })
+      .then(() => {
+        setLoading(false)
+        switchSet()
+      })
+      .catch(() => {
+        setLoading(false)
+      })
   }
 
   return (
@@ -47,7 +64,7 @@ const Card: FC<CardProps> = ({ connector, setMessage }) => {
       onClick={handleClick}
       whileHover={{ scale: 1.1 }}
     >
-      {/* {isLoading && connector.id === pendingConnector?.id && (
+      {/* {loading &&  (
         <div className="flex gap-2 py-1 items-center">
           <p className="rounded-full border-2 border-custom_yellow border-dotted  animate-spin h-6 w-6 lg:h-6 lg:w-6"></p>
           <p className="text-white font-poppins">Connecting</p>
@@ -72,15 +89,15 @@ const Card: FC<CardProps> = ({ connector, setMessage }) => {
             grid place-items-center"
         // onClick={() => setIsSuccessModalOpen(true)}
         onClick={() => handleClick()}
-        disabled={isLoading}
+        disabled={loading}
       >
-        <>{!isLoading ? 'Connect Wallet' : <Spinner color="black" />}</>
+        <>{!loading ? 'Switch Network' : <Spinner color="black" />}</>
       </button>
     </motion.div>
   )
 }
 
-const WalletOptions: FC = () => {
+const SwitchNetworks: FC<{ switchSet: () => void }> = ({ switchSet }) => {
   const { connectors, error } = useConnect()
   const [message, setMessage] = useState('')
 
@@ -117,7 +134,11 @@ const WalletOptions: FC = () => {
               delay: (index + 1) / 2,
             }}
           >
-            <Card connector={connector} setMessage={setMessage} />
+            <Card
+              connector={connector}
+              switchSet={switchSet}
+              setMessage={setMessage}
+            />
           </motion.div>
         ))}
       </div>
@@ -125,4 +146,4 @@ const WalletOptions: FC = () => {
   )
 }
 
-export default WalletOptions
+export default SwitchNetworks
