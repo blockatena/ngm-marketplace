@@ -120,3 +120,7 @@ export const updateUser = (data: {
 }) => {
   return axiosInstance.patch('/users/update-user', data)
 }
+
+export const getUserActivity = (wallet_address: string) => {
+  return axiosInstance.get(`/activity/get-user-activity/${wallet_address}`)
+}

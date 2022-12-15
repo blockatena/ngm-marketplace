@@ -24,7 +24,12 @@ import AvatarCard from '../../components/AvatarCard'
 import Pagination from '../../components/Pagination'
 import Spinner from '../../components/Spinner'
 import withProtection from '../../components/withProtection'
-import { AvatarType, CollectionNftsBodyType, UserType } from '../../interfaces'
+import {
+  ActivityType,
+  AvatarType,
+  CollectionNftsBodyType,
+  UserType,
+} from '../../interfaces'
 // import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 import historyIcon from '../../public/images/icons/Activity.svg'
 import categoryIcon from '../../public/images/icons/Category.svg'
@@ -38,6 +43,7 @@ import {
   createUser,
   getCollectionNfts,
   getUser,
+  getUserActivity,
   updateUser,
   uploadProfileImg,
 } from '../../react-query/queries'
@@ -50,7 +56,7 @@ import {
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 
 type RouteNameType =
-  | 'category'
+  | 'overview'
   | 'messages'
   | 'my collection'
   | 'wallet'
@@ -60,7 +66,7 @@ type RouteNameType =
 type RouteType = { name: RouteNameType; route: string; icon: any }
 
 const routes: RouteType[] = [
-  { name: 'category', route: '/', icon: categoryIcon },
+  { name: 'overview', route: '/', icon: categoryIcon },
   { name: 'messages', route: '/', icon: messageIcon },
   { name: 'my collection', route: '/', icon: collectionIcon },
   { name: 'wallet', route: '/', icon: walletIcon },
@@ -127,13 +133,173 @@ const Drawer: FC<{
   )
 }
 
+const ActivityItem: FC<{
+  activity: ActivityType
+  index: number
+}> = ({ activity, index }) => {
+  let timePlaced = ''
+  const { address } = useAccount()
+  if (activity?.createdAt) {
+    let d = new Date(activity.createdAt)
+    timePlaced = d.toLocaleString()
+  }
+
+  const isTo = activity?.to !== '----'
+  // const isTx = activity?.transaction_hash
+  const isTx = undefined
+  const price = activity?.price
+
+  const activityData = [
+    {
+      name: 'Type',
+      value: activity?.event,
+    },
+    {
+      name: 'Price',
+      value:
+        activity?.event === 'Transfer'
+          ? `${price} ETH`
+          : `${activity?.price} ETH`,
+    },
+    {
+      name: 'From',
+      value:
+        activity?.from === address
+          ? 'You'
+          : shortenString(activity?.from, 3, 3),
+    },
+    {
+      name: 'To',
+      value:
+        activity?.to !== '----'
+          ? activity?.to === address
+            ? 'You'
+            : shortenString(activity?.to, 3, 3)
+          : '-',
+    },
+    { name: 'Time', value: timePlaced },
+  ]
+
+  const onClickAddress = (user: string) => {
+    let url = `https://mumbai.polygonscan.com/address/${user}`
+    window.open(url, '_blank')
+  }
+
+  const onClickTx = (hash: string) => {
+    let url = `https://mumbai.polygonscan.com/tx/${hash}`
+    window.open(url, '_blank')
+  }
+
+  return (
+    <motion.tr
+      className={`${
+        index % 2 === 0 ? 'bg-[#070707]' : 'bg-transparent'
+      } font-poppins text-[#D7D7D7] lg:text-lg py-2 h-16`}
+      variants={opacityAnimation}
+      initial="initial"
+      whileInView="final"
+      viewport={{ once: true }}
+      transition={{
+        ease: 'easeInOut',
+        duration: 0.4,
+        delay: index < 6 ? 0.1 * index : 0,
+      }}
+    >
+      {activityData?.map((activityData, index) => (
+        <td
+          key={index}
+          className={
+            activityData?.name === 'From'
+              ? 'cursor-pointer underline hover:text-sky-500'
+              : isTo && activityData?.name === 'To'
+              ? 'cursor-pointer underline hover:text-sky-500'
+              : isTx && activityData?.name === 'Time'
+              ? 'cursor-pointer underline hover:text-sky-500'
+              : 'h-16'
+          }
+          onClick={() =>
+            activityData?.name === 'From'
+              ? onClickAddress(activity?.from)
+              : isTo && activityData?.name === 'To'
+              ? onClickAddress(activity?.to)
+              : isTx && activityData?.name === 'Time'
+              ? // ? onClickTx(activity?.transaction_hash)
+                onClickTx('')
+              : ''
+          }
+        >
+          {activityData?.value}
+        </td>
+      ))}
+    </motion.tr>
+  )
+}
+
 const UserActivity = () => {
+  const { address } = useAccount()
+  const { data } = useQuery(
+    [QUERIES.getUserActivity, address],
+    () => getUserActivity(String(address)),
+    {
+      enabled: !!address,
+    }
+  )
+
+  const activity: ActivityType[] | undefined = data?.data
+
+  const tableHeadings = [
+    { name: 'Type' },
+    { name: 'Price' },
+    { name: 'From' },
+    { name: 'To' },
+    { name: 'Time' },
+  ]
+
   return (
     <div
-      className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
-gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
+      className="pb-20 md:px-4 bg-[#1F2021] rounded-lg 
+gap-20 w-full  max-w-full mx-auto px-2 lg:px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
     >
-      <h2 className="font-poppins text-white text-center">User Activity</h2>
+      <div
+        className="w-full font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-full 
+    overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
+      >
+        {activity?.length && (
+          <table className="w-full overflow-x-auto text-center">
+            <thead>
+              <tr className="h-16">
+                {tableHeadings.map((heading) => (
+                  <th key={heading.name} className="h-16">
+                    {heading.name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {activity?.length &&
+                activity.map((activity, index) => {
+                  return (
+                    <ActivityItem
+                      key={index}
+                      activity={activity}
+                      index={index}
+                    />
+                  )
+                })}
+              {activity?.length === 0 && (
+                // <tr>
+                <td>Activites</td>
+                // </tr>
+              )}
+            </tbody>
+          </table>
+        )}
+        {activity?.length === 0 && (
+          // <tr>
+          <p className="text-center b text-3xl p-12">- No Activities yet -</p>
+          // </tr>
+        )}
+      </div>
     </div>
   )
 }
@@ -360,7 +526,7 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
           </div>
         )}
         {user && (
-          <h1 className="font-poppins text-white lg:text-3xl font-medium mb-4">
+          <h1 className="font-poppins text-white lg:text-3xl font-medium mb-4 text-center">
             Account Details
           </h1>
         )}
@@ -396,7 +562,7 @@ const ORDER = 'NewToOld'
 const ProfilePage: NextPage = () => {
   const queryClient = useQueryClient()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [currentRoute, setCurrentRoute] = useState<RouteNameType>('category')
+  const [currentRoute, setCurrentRoute] = useState<RouteNameType>('overview')
   const [user, setUser] = useState<UserType | null>(null)
   const uploadBtnRef = useRef<HTMLInputElement | null>(null)
   const profilePicRef = useRef<HTMLInputElement | null>(null)
@@ -677,7 +843,7 @@ const ProfilePage: NextPage = () => {
               delay: 0.8,
             }}
           >
-            {currentRoute === 'category' && (
+            {currentRoute === 'overview' && (
               <AssetsActivityTabs setIsDrawerOpen={setIsDrawerOpen} />
             )}
             {currentRoute === 'settings' && <UserSettings user={user} />}
