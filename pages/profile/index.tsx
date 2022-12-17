@@ -3,6 +3,7 @@ import axios from 'axios'
 import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import {
   Dispatch,
   FC,
@@ -138,8 +139,10 @@ const ActivityItem: FC<{
   activity: ActivityType
   index: number
 }> = ({ activity, index }) => {
-  let timePlaced = ''
+  const router = useRouter()
   const { address } = useAccount()
+
+  let timePlaced = ''
   if (activity?.createdAt) {
     let d = new Date(activity.createdAt)
     timePlaced = d.toLocaleString()
@@ -155,6 +158,7 @@ const ActivityItem: FC<{
       name: 'Type',
       value: activity?.event,
     },
+    { name: 'Asset Name', value: activity?.item?.name, item: activity?.item },
     {
       name: 'Price',
       value:
@@ -191,6 +195,10 @@ const ActivityItem: FC<{
     window.open(url, '_blank')
   }
 
+  const handleAssetNameClick = (contractAddress: string, id: string) => {
+    router.push(`/assets/${contractAddress}/${id}`)
+  }
+
   return (
     <motion.tr
       className={`${
@@ -210,11 +218,10 @@ const ActivityItem: FC<{
         <td
           key={index}
           className={
-            activityData?.name === 'From'
-              ? 'cursor-pointer underline hover:text-sky-500'
-              : isTo && activityData?.name === 'To'
-              ? 'cursor-pointer underline hover:text-sky-500'
-              : isTx && activityData?.name === 'Time'
+            activityData?.name === 'From' ||
+            (isTo && activityData?.name === 'To') ||
+            (isTx && activityData?.name === 'Time') ||
+            activityData?.name === 'Asset Name'
               ? 'cursor-pointer underline hover:text-sky-500'
               : 'h-16'
           }
@@ -226,6 +233,13 @@ const ActivityItem: FC<{
               : isTx && activityData?.name === 'Time'
               ? // ? onClickTx(activity?.transaction_hash)
                 onClickTx('')
+              : activityData?.name === 'Asset Name'
+              ? activityData?.item?.contract_address &&
+                activityData?.item?.token_id &&
+                handleAssetNameClick(
+                  activityData.item.contract_address,
+                  activityData.item.token_id
+                )
               : ''
           }
         >
@@ -250,6 +264,7 @@ const UserActivity = () => {
 
   const tableHeadings = [
     { name: 'Type' },
+    { name: 'Asset Name' },
     { name: 'Price' },
     { name: 'From' },
     { name: 'To' },
@@ -832,12 +847,12 @@ const ProfilePage: NextPage = () => {
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full pl-1 pr-7 focus:border focus:border-custom_yellow focus:outline-none
-               bg-custom_grey rounded"
+              className="w-full pl-1 pr-7 h-8 focus:border focus:border-custom_yellow focus:outline-none
+               bg-[#f5f5f5] rounded"
             />
             <AiOutlineSend
               fontSize={16}
-              className="absolute top-[15%] right-2 cursor-pointer"
+              className="absolute top-[25%] right-2 cursor-pointer"
               onClick={handleUsernameMutation}
             />
           </p>
