@@ -1,6 +1,6 @@
 
 import { FC, useEffect,useState } from 'react'
-import { useNetwork, useSwitchNetwork } from 'wagmi'
+import { useNetwork, useSwitchNetwork, useAccount } from 'wagmi'
 import { ethers } from 'ethers'
 const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const Detector: FC = () => {
@@ -12,22 +12,25 @@ const Detector: FC = () => {
   const [msg3,setMsg3] = useState('')
   const [msg4, setMsg4] = useState('')
   const [url,setUrl] = useState('')
-  // const [current, setCurrent] = useState()
+  const { isConnected } = useAccount()
+  const [currentChainId,setCurrentChainId] = useState('')
   const targetNetworkId = ['80001', '137']
-  // const [color,setColor] = useState("red")
-
-    // useEffect(() => {
-    //   if (chain?.id === parseInt(CHAINID)) {
-    //     setIsChainCorrect(true)
-    //     return
-    //   } else {
-    //     setIsChainCorrect(false)
-    //     return
-    //   }
-    // }, [chain])
 
     const onSwitchNetwork = async () => {
-      await switchNetwork?.(parseInt(CHAINID))
+      const ethereum = (window as any).ethereum
+      if(isConnected){
+        await switchNetwork?.(parseInt(CHAINID))
+      } else {
+        const provider = new ethers.providers.Web3Provider(ethereum, 'any')
+        const { chainId } = await provider.getNetwork()
+        let chain = parseInt(CHAINID)
+        if (chainId !== chain) {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
+          })
+        }
+      }
     }
 
     useEffect(() => {
@@ -38,17 +41,21 @@ const Detector: FC = () => {
     }, [chain])
 
   const detectNetwork = () => {
-    
+    if(showAlert !== ''){
+      window.ethereum.on('networkChanged', function (networkId: any) {
+        setCurrentChainId(networkId)
+        return networkId
+      })
+    } 
     let currentChainId = window.ethereum.networkVersion
+    setCurrentChainId(currentChainId)
     return currentChainId
   }
 
-  const check = async ()=> {
-    const provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
-    provider.on('chainChanged', (network) => {
-      console.log(network.chainId)
-      if(`${network.chainId}` === targetNetworkId[0] ||
-      `${network.chainId}` === targetNetworkId[1]){
+  async function listenNetwork() {
+    window.ethereum.on('networkChanged', function (networkId: any) {
+      // console.log(networkId)
+      if (targetNetworkId.includes(networkId)) {
         setShowAlert('false')
       } else {
         setShowAlert('true')
@@ -56,30 +63,11 @@ const Detector: FC = () => {
     })
   }
 
-    // const provider = new ethers.providers.Web3Provider(window.ethereum, 'any')
-    // provider.on('chainChanged', (network) => {
-    //   console.log(network.chainId)
-    //   if (
-    //     `${network.chainId}` === targetNetworkId[0] ||
-    //     `${network.chainId}` === targetNetworkId[1]
-    //   ) {
-    //     setShowAlert('false')
-    //   } else {
-    //     setShowAlert('true')
-    //   }
-    // })
-
   
-  const handleAlert =async()=> {
-    if(showAlert !=='') return;
-    let currentChainId = await detectNetwork()
-    console.log(currentChainId)
-    if (
-      currentChainId === targetNetworkId[0] ||
-      currentChainId === targetNetworkId[1]
-    ) {
+  const handleAlert = async ()=> {
+    if (targetNetworkId.includes(currentChainId)) {
       if (currentChainId === CHAINID) {
-        console.log('On Correct Network')
+        // console.log('On Correct Network')
         setShowAlert('false')
         return
       } else {
@@ -97,13 +85,15 @@ const Detector: FC = () => {
         setMsg3('or Visit to')
         setMsg4(CHAINID === '80001' ? 'Mainnet' : 'Testnet')
         setShowAlert('true')
-        return;
+        return
       }
     } else {
       setMsg1(`Wrong Network Detected, Switch Network to `)
       setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
+      setMsg3('')
+      setMsg4('')
       setShowAlert('true')
-      return;
+      return
     }
   }
 
@@ -112,7 +102,7 @@ const Detector: FC = () => {
     }
 
   useEffect(()=> {
-    check()
+    listenNetwork()
     detectNetwork()
     handleAlert()
   })
@@ -121,12 +111,12 @@ const Detector: FC = () => {
     <>
       {showAlert === 'true' ? (
         <div
-          className={`text-white px-6 py-4 border-0 rounded relative mb-4 bg-yellow-500`}
+          className={`text-black text-sm text-center px-6 py-1 border-0 rounded relative mb-4 bg-yellow-400`}
         >
-          <span className="text-xl inline-block mr-5 align-middle">
+          <span className="text-xl inline-block mr-16 align-middle">
             <i className="fas fa-bell" />
           </span>
-          <span className="inline-block align-middle mr-8">
+          <span className="inline-block align-middle mr-16">
             <b className="capitalize">{'Warning'}! </b>
             {msg1}{' '}
             <a
@@ -141,7 +131,7 @@ const Detector: FC = () => {
             </a>
           </span>
           <button
-            className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-4 mr-6 outline-none focus:outline-none"
+            className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-0.5 mr-6 outline-none focus:outline-none"
             onClick={() => setShowAlert('false')}
           >
             <span>×</span>
