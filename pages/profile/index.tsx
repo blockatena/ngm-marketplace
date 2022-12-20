@@ -250,17 +250,44 @@ const ActivityItem: FC<{
   )
 }
 
+type InitialActivityStateType = {
+  activity: ActivityType[] | undefined
+  totalPages: number
+  currentPage: number
+}
+
+const INITIAL_ACTIVITY_STATE: InitialActivityStateType = {
+  activity: undefined,
+  totalPages: 1,
+  currentPage: 1,
+}
+
 const UserActivity = () => {
   const { address } = useAccount()
+  const [{ activity, totalPages, currentPage }, setActivityState] = useState(
+    INITIAL_ACTIVITY_STATE
+  )
   const { data } = useQuery(
-    [QUERIES.getUserActivity, address],
-    () => getUserActivity(String(address)),
+    [QUERIES.getUserActivity, address, currentPage],
+    () => getUserActivity(String(address), currentPage),
     {
       enabled: !!address,
     }
   )
 
-  const activity: ActivityType[] | undefined = data?.data
+  const handlePaginate = (pageNumber: number) => {
+    setActivityState((prev) => ({ ...prev, currentPage: pageNumber }))
+  }
+
+  useEffect(() => {
+    if (!data?.data) return
+    setActivityState((prev) => ({
+      ...prev,
+      activity: data?.data?.activity_data,
+      totalPages: data?.data?.total_pages,
+      currentPage: +data?.data?.current_page,
+    }))
+  }, [data?.data])
 
   const tableHeadings = [
     { name: 'Type' },
@@ -272,51 +299,60 @@ const UserActivity = () => {
   ]
 
   return (
-    <div
-      className="pb-20 md:px-4 bg-[#1F2021] rounded-lg 
-gap-20 w-full  max-w-full mx-auto px-2 lg:px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
-    >
+    <>
       <div
-        className="w-full font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-full 
-    overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
+        className="pb-20 md:px-4 bg-[#1F2021] rounded-lg
+gap-20 w-full  max-w-full mx-auto px-2 lg:px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
       >
-        {activity?.length && (
-          <table className="w-full overflow-x-auto text-center">
-            <thead>
-              <tr className="h-16">
-                {tableHeadings.map((heading) => (
-                  <th key={heading.name} className="h-16">
-                    {heading.name}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {activity?.length &&
-                activity.map((activity, index) => {
-                  return (
-                    <ActivityItem
-                      key={index}
-                      activity={activity}
-                      index={index}
-                    />
-                  )
-                })}
-              {activity?.length === 0 && (
-                // <tr>
-                <td>Activites</td>
-                // </tr>
-              )}
-            </tbody>
-          </table>
-        )}
-        {activity?.length === 0 && (
-          // <tr>
-          <p className="text-center b text-3xl p-12">- No Activities yet -</p>
-          // </tr>
-        )}
+        <div
+          className="w-full font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-full 
+    overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
+        >
+          {activity?.length && (
+            <table className="w-full overflow-x-auto text-center">
+              <thead>
+                <tr className="h-16">
+                  {tableHeadings.map((heading) => (
+                    <th key={heading.name} className="h-16">
+                      {heading.name}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {activity?.length &&
+                  activity.map((activity, index) => {
+                    return (
+                      <ActivityItem
+                        key={index}
+                        activity={activity}
+                        index={index}
+                      />
+                    )
+                  })}
+                {activity?.length === 0 && (
+                  // <tr>
+                  <td>Activites</td>
+                  // </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+          {activity?.length === 0 && (
+            // <tr>
+            <p className="text-center b text-3xl p-12">- No Activities yet -</p>
+            // </tr>
+          )}
+        </div>
       </div>
-    </div>
+      <div className="flex justify-end p-4 pb-10">
+        <Pagination
+          totalPages={totalPages}
+          paginate={handlePaginate}
+          currentPage={currentPage}
+        />
+      </div>
+    </>
   )
 }
 
