@@ -1,0 +1,101 @@
+import { motion } from 'framer-motion'
+import { FC, useEffect, useState } from 'react'
+import { useMutation } from 'react-query'
+import { AvatarType, CollectionNftsBodyType } from '../interfaces'
+import { getCollectionNfts } from '../react-query/queries'
+import { opacityAnimation } from '../utils/animations'
+import useWindowDimensions from '../utils/hooks/useWindowDimensions'
+import AvatarCard from './AvatarCard'
+import Pagination from './Pagination'
+// import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
+
+const ITEMS_PER_PAGE = 12
+const ALPHABETICAL_ORDER = 'AtoZ'
+const ORDER = 'NewToOld'
+
+const UserAssets: FC<{ address: string | undefined }> = ({ address }) => {
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [nfts, setNfts] = useState<AvatarType[]>()
+  const { width } = useWindowDimensions()
+  const { mutate, data } = useMutation(getCollectionNfts)
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+
+  useEffect(() => {
+    let body: CollectionNftsBodyType = {
+      token_owner: address,
+      page_number: currentPage,
+      items_per_page: ITEMS_PER_PAGE,
+      alphabetical_order: ALPHABETICAL_ORDER,
+      order: ORDER,
+    }
+    address && mutate(body)
+  }, [mutate, address, currentPage])
+
+  useEffect(() => {
+    if (data?.data?.nfts) {
+      setNfts(data.data.nfts)
+      setCurrentPage(data.data.currentPage)
+      setTotalPages(data.data.total_pages)
+    }
+  }, [data?.data])
+
+  const handleDelay = (index: number): number => {
+    if (width >= 1536) {
+      if (index < 8) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else if (width >= 1280) {
+      if (index < 3) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else if (width >= 768) {
+      if (index < 4) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else {
+      if (index < 1) return 1.2 + index * 0.2
+      else return index * 0.2
+    }
+  }
+
+  return (
+    <>
+      <div
+        className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
+  gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
+      >
+        {nfts?.length &&
+          nfts.map((cardData, index) => (
+            <motion.div
+              className="flex justify-center"
+              key={index}
+              variants={opacityAnimation}
+              initial="initial"
+              whileInView="final"
+              viewport={{ once: true }}
+              transition={{
+                ease: 'easeInOut',
+                duration: 0.6,
+                delay: handleDelay(index),
+              }}
+            >
+              <AvatarCard {...cardData} />
+            </motion.div>
+          ))}
+        {nfts?.length === 0 && (
+          <p className="text-white font-poppins p-4">
+            No NFTs owned by this user
+          </p>
+        )}
+      </div>
+      <div className="flex justify-end p-4 pb-10">
+        <Pagination
+          totalPages={totalPages}
+          paginate={paginate}
+          currentPage={currentPage}
+        />
+      </div>
+    </>
+  )
+}
+
+export default UserAssets
