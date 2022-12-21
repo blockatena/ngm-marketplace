@@ -53,6 +53,7 @@ const Detector: FC = () => {
   }
 
   async function listenNetwork() {
+    if(isConnected){
     window.ethereum.on('networkChanged', function (networkId: any) {
       // console.log(networkId)
       if (targetNetworkId.includes(networkId)) {
@@ -62,9 +63,11 @@ const Detector: FC = () => {
       }
     })
   }
+  }
 
   
   const handleAlert = async ()=> {
+    if(!isConnected) return;
     if (targetNetworkId.includes(currentChainId)) {
       if (currentChainId === CHAINID) {
         // console.log('On Correct Network')
@@ -79,7 +82,7 @@ const Detector: FC = () => {
         setMsg1(
           `You are on ${
             CHAINID === '80001' ? 'Mainnet' : 'Testnet'
-          } Switch Network to`
+          } Switch Network to `
         )
         setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
         setMsg3('or Visit to')
