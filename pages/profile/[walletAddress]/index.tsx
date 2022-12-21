@@ -141,7 +141,7 @@ const UserProfilePage: NextPage = () => {
   const [currentRoute, setCurrentRoute] = useState<RouteNameType>('overview')
   const [user, setUser] = useState<UserType | null>(null)
 
-  const address = router?.query?.contractAddress
+  const address = router?.query?.walletAddress
   const { address: connectedAddress } = useAccount()
 
   const { data: userData } = useQuery(
