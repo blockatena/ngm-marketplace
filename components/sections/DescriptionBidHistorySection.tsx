@@ -24,6 +24,9 @@ import {
 import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
 import AcceptOfferModal from '../modals/AcceptOfferModal'
 import CancelOfferModal from '../modals/CancelOfferModal'
+const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
+const explorer =
+    CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -68,9 +71,11 @@ const DescriptionItem: FC<{
   contract: string
   tokenUri: string
 }> = ({ name, value, contract, tokenUri }) => {
+
+
   const clickC = () => {
     if (name === 'Contract Address') {
-      let url = `https://mumbai.polygonscan.com/token/${contract}`
+      let url = `https://${explorer}/token/${contract}`
       window.open(url, '_blank')
     } else if (name === 'Token ID') {
       let url = tokenUri
@@ -246,13 +251,14 @@ const shortenString = (value: string) => {
 //   )
 // }
 
+
 const onClickAddress = (user) => {
-  let url = `https://mumbai.polygonscan.com/address/${user}`
+  let url = `https://${explorer}/address/${user}`
   window.open(url, '_blank')
 }
 
 const onClickTx = (hash) => {
-  let url = `https://mumbai.polygonscan.com/tx/${hash}`
+  let url = `https://${explorer}/tx/${hash}`
   window.open(url, '_blank')
 }
 
@@ -488,6 +494,8 @@ const ActivityItem: FC<{
   const isTo = activity?.to !== '----'
   const isTx = activity?.transaction_hash
   const price = activity?.price
+
+  const isInitial = activity?.event === '-'
   
   const activityData = [
     {
@@ -496,11 +504,21 @@ const ActivityItem: FC<{
     },
     {
       name: 'Price',
-      value: activity?.event === 'Transfer'?`${price} ETH`:`${activity?.price} ETH`
+      value:
+        activity?.event === 'Transfer'
+          ? `${price} ETH`
+          : activity?.event === ' '
+          ? ' '
+          : `${activity?.price} ETH`,
     },
     {
       name: 'From',
-      value: activity?.from === address ? 'You' : shortenString(activity?.from),
+      value:
+        activity?.from === address
+          ? 'You'
+          : activity?.to === ' '
+          ? ' '
+          : shortenString(activity?.from),
     },
     {
       name: 'To',
@@ -508,10 +526,12 @@ const ActivityItem: FC<{
         activity?.to !== '----'
           ? activity?.to === address
             ? 'You'
+            : activity?.to === ' '
+            ? ' '
             : shortenString(activity?.to)
           : '-',
     },
-    { name: 'Time', value: timePlaced },
+    { name: 'Time', value: timePlaced === 'Invalid Date' ? ' ' : timePlaced },
   ]
 
   return (
@@ -531,12 +551,13 @@ const ActivityItem: FC<{
         <td
           key={index}
           className={
-            activityData?.name === 'From'
+            isInitial?'h-16':
+            activityData?.name === 'From' 
               ? 'cursor-pointer underline hover:text-sky-500'
-              : isTo && activityData?.name === 'To'
+              : (isTo && activityData?.name === 'To') ||
+                (isTx && activityData?.name === 'Time')
               ? 'cursor-pointer underline hover:text-sky-500'
-              : isTx && activityData?.name === 'Time'
-              ? 'cursor-pointer underline hover:text-sky-500'
+              
               : 'h-16'
           }
           onClick={() =>
@@ -677,6 +698,8 @@ const DescriptionBidHistorySection: FC<{
   activity: ActivityType | undefined
   currentTab: any
   handleTabs: () => void
+  state:()=> void
+  states: ()=> void
 }> = ({
   nft,
   contractDetails,
@@ -687,6 +710,8 @@ const DescriptionBidHistorySection: FC<{
   activity,
   currentTab,
   handleTabs,
+  state,
+  states
 }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0)
@@ -714,6 +739,14 @@ const DescriptionBidHistorySection: FC<{
   ]
 
   const tabsRef = useRef([])
+
+  useEffect(()=> {
+    if(activeTabIndex === 1) {
+      state()
+    } else {
+      states()
+    }
+  })
 
   useEffect(() => {
     if (currentTab === 0) {

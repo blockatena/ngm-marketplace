@@ -1,19 +1,69 @@
 import { motion } from 'framer-motion'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useLayoutEffect } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import WalletOptions from '../../components/WalletOptions'
 import { opacityAnimation } from '../../utils/animations'
+import SwitchNetworks from '../../components/SwitchNetwork'
 
 const ConnectPage: NextPage = () => {
   const router = useRouter()
+  const [isChainCorrect,setIsChainCorrect] = useState<boolean>()
   const { isConnected } = useAccount()
 
   useLayoutEffect(() => {
     isConnected && router.back()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected])
+
+const targetNetworkId = ['80001' , '137','0x89', '0x13881']
+const switchSet = ()=> {
+  setIsChainCorrect(true)
+}
+const checkNetwork = async (id:string) => {
+  if(isChainCorrect) return
+  if(id==='')
+  if (window.ethereum) {
+    
+    const currentChainId = id
+      ? id !== ''
+        ? id
+        : window.ethereum.networkVersion
+      : window.ethereum.networkVersion
+    console.log(currentChainId)
+    // return true if network id is the same
+    if (
+      currentChainId === targetNetworkId[0] ||
+      currentChainId === targetNetworkId[1] ||
+      currentChainId === targetNetworkId[2] ||
+      currentChainId === targetNetworkId[3]
+    ) {
+      setIsChainCorrect(true)
+      return true
+    }
+    // return false is network id is different
+    setIsChainCorrect(false)
+    return false;
+
+  }  
+};
+
+useEffect(()=> {
+  if (window.ethereum) {
+    window.ethereum.on('chainChanged', (chainId: any) => {
+      // Handle the new chain.
+      // Correctly handling chain changes can be complicated.
+      // We recommend reloading the page unless you have good reason not to.
+      // window.location.reload()
+      checkNetwork(chainId)
+      return
+    })
+    // return 
+  }
+  checkNetwork('')
+})
+
 
   return (
     <main className="p-4 pt-6 lg:px-16 min-h-screen">
@@ -50,7 +100,8 @@ const ConnectPage: NextPage = () => {
           </div>
         </div>
       </motion.div>
-      <WalletOptions />
+      {isChainCorrect && <WalletOptions />}
+      {!isChainCorrect && <SwitchNetworks switchSet={switchSet} />}
     </main>
   )
 }

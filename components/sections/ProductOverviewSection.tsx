@@ -25,7 +25,7 @@ import CancelOfferModal from '../modals/CancelOfferModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
-
+const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const ProductOverviewSection: FC<{
   nft: AvatarType
   contractDetails: NftContractType | undefined
@@ -141,8 +141,6 @@ const ProductOverviewSection: FC<{
   }
   let displayTime = nft?.is_in_auction || nft?.is_in_sale
   const handleClick = (event: string) => {
-
-    console.log(event)
     // if (isMounted && nft?.token_owner === address && nft?.is_in_auction) {
     //   toast('You have already listed this NFT!', {
     //     hideProgressBar: true,
@@ -207,9 +205,10 @@ const ProductOverviewSection: FC<{
   } else {
     //
   }
-
+  const explorer =
+    CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
   const onClickAddress = (owner: any) => {
-    let url = `https://mumbai.polygonscan.com/address/${owner}`
+    let url = `https://${explorer}/address/${owner}`
     window.open(url, '_blank')
   }
 
