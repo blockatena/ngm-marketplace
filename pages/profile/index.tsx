@@ -1,5 +1,3 @@
-import { useGoogleLogin } from '@react-oauth/google'
-import axios from 'axios'
 import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
 import Image from 'next/image'
@@ -9,69 +7,57 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react'
 import { AiOutlineSend } from 'react-icons/ai'
 import { BsFillPersonFill } from 'react-icons/bs'
 import { FaEdit, FaHamburger } from 'react-icons/fa'
-import { FcGoogle } from 'react-icons/fc'
-import { useQuery, useQueryClient } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { useAccount, useMutation } from 'wagmi'
-import AvatarCard from '../../components/AvatarCard'
-import AccountConfirmationModal from '../../components/modals/AccountConfirmationModal'
-import Pagination from '../../components/Pagination'
+import { useAccount } from 'wagmi'
 import Spinner from '../../components/Spinner'
+import UserActivity from '../../components/UserActivity'
+import UserAssets from '../../components/UserAssets'
+import UserSettings from '../../components/UserSettings'
 import withProtection from '../../components/withProtection'
-import {
-  ActivityType,
-  AvatarType,
-  CollectionNftsBodyType,
-  UserType,
-} from '../../interfaces'
-// import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
-import historyIcon from '../../public/images/icons/Activity.svg'
+import { UserType } from '../../interfaces'
+// import historyIcon from '../../public/images/icons/Activity.svg'
 import categoryIcon from '../../public/images/icons/Category.svg'
 import editIcon from '../../public/images/icons/edit.svg'
-import collectionIcon from '../../public/images/icons/Folder.svg'
-import messageIcon from '../../public/images/icons/Message.svg'
+// import collectionIcon from '../../public/images/icons/Folder.svg'
+// import messageIcon from '../../public/images/icons/Message.svg'
 import settingsIcon from '../../public/images/icons/Setting.svg'
-import walletIcon from '../../public/images/icons/Wallet.svg'
+// import walletIcon from '../../public/images/icons/Wallet.svg'
 import { QUERIES } from '../../react-query/constants'
 import {
-  createUser,
-  getCollectionNfts,
   getUser,
-  getUserActivity,
   updateUser,
   uploadProfileImg,
 } from '../../react-query/queries'
-import { handleError, shortenString } from '../../utils'
 import {
   fromLeftAnimation,
   fromRightAnimation,
   opacityAnimation,
 } from '../../utils/animations'
-import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
+// import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 
 type RouteNameType =
   | 'overview'
-  | 'messages'
-  | 'my collection'
-  | 'wallet'
-  | 'history'
+  // | 'messages'
+  // | 'my collection'
+  // | 'wallet'
+  // | 'history'
   | 'settings'
 
 type RouteType = { name: RouteNameType; route: string; icon: any }
 
 const routes: RouteType[] = [
   { name: 'overview', route: '/', icon: categoryIcon },
-  { name: 'messages', route: '/', icon: messageIcon },
-  { name: 'my collection', route: '/', icon: collectionIcon },
-  { name: 'wallet', route: '/', icon: walletIcon },
-  { name: 'history', route: '/', icon: historyIcon },
+  // { name: 'messages', route: '/', icon: messageIcon },
+  // { name: 'my collection', route: '/', icon: collectionIcon },
+  // { name: 'wallet', route: '/', icon: walletIcon },
+  // { name: 'history', route: '/', icon: historyIcon },
   { name: 'settings', route: '/', icon: settingsIcon },
 ]
 
@@ -134,266 +120,10 @@ const Drawer: FC<{
   )
 }
 
-const ActivityItem: FC<{
-  activity: ActivityType
-  index: number
-}> = ({ activity, index }) => {
-  let timePlaced = ''
-  const { address } = useAccount()
-  if (activity?.createdAt) {
-    let d = new Date(activity.createdAt)
-    timePlaced = d.toLocaleString()
-  }
-
-  const isTo = activity?.to !== '----'
-  // const isTx = activity?.transaction_hash
-  const isTx = undefined
-  const price = activity?.price
-
-  const activityData = [
-    {
-      name: 'Type',
-      value: activity?.event,
-    },
-    {
-      name: 'Price',
-      value:
-        activity?.event === 'Transfer'
-          ? `${price} ETH`
-          : `${activity?.price} ETH`,
-    },
-    {
-      name: 'From',
-      value:
-        activity?.from === address
-          ? 'You'
-          : shortenString(activity?.from, 3, 3),
-    },
-    {
-      name: 'To',
-      value:
-        activity?.to !== '----'
-          ? activity?.to === address
-            ? 'You'
-            : shortenString(activity?.to, 3, 3)
-          : '-',
-    },
-    { name: 'Time', value: timePlaced },
-  ]
-
-  const onClickAddress = (user: string) => {
-    let url = `https://mumbai.polygonscan.com/address/${user}`
-    window.open(url, '_blank')
-  }
-
-  const onClickTx = (hash: string) => {
-    let url = `https://mumbai.polygonscan.com/tx/${hash}`
-    window.open(url, '_blank')
-  }
-
-  return (
-    <motion.tr
-      className={`${
-        index % 2 === 0 ? 'bg-[#070707]' : 'bg-transparent'
-      } font-poppins text-[#D7D7D7] lg:text-lg py-2 h-16`}
-      variants={opacityAnimation}
-      initial="initial"
-      whileInView="final"
-      viewport={{ once: true }}
-      transition={{
-        ease: 'easeInOut',
-        duration: 0.4,
-        delay: index < 6 ? 0.1 * index : 0,
-      }}
-    >
-      {activityData?.map((activityData, index) => (
-        <td
-          key={index}
-          className={
-            activityData?.name === 'From'
-              ? 'cursor-pointer underline hover:text-sky-500'
-              : isTo && activityData?.name === 'To'
-              ? 'cursor-pointer underline hover:text-sky-500'
-              : isTx && activityData?.name === 'Time'
-              ? 'cursor-pointer underline hover:text-sky-500'
-              : 'h-16'
-          }
-          onClick={() =>
-            activityData?.name === 'From'
-              ? onClickAddress(activity?.from)
-              : isTo && activityData?.name === 'To'
-              ? onClickAddress(activity?.to)
-              : isTx && activityData?.name === 'Time'
-              ? // ? onClickTx(activity?.transaction_hash)
-                onClickTx('')
-              : ''
-          }
-        >
-          {activityData?.value}
-        </td>
-      ))}
-    </motion.tr>
-  )
-}
-
-const UserActivity = () => {
-  const { address } = useAccount()
-  const { data } = useQuery(
-    [QUERIES.getUserActivity, address],
-    () => getUserActivity(String(address)),
-    {
-      enabled: !!address,
-    }
-  )
-
-  const activity: ActivityType[] | undefined = data?.data
-
-  const tableHeadings = [
-    { name: 'Type' },
-    { name: 'Price' },
-    { name: 'From' },
-    { name: 'To' },
-    { name: 'Time' },
-  ]
-
-  return (
-    <div
-      className="pb-20 md:px-4 bg-[#1F2021] rounded-lg 
-gap-20 w-full  max-w-full mx-auto px-2 lg:px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
-    >
-      <div
-        className="w-full font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-full 
-    overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
-      >
-        {activity?.length && (
-          <table className="w-full overflow-x-auto text-center">
-            <thead>
-              <tr className="h-16">
-                {tableHeadings.map((heading) => (
-                  <th key={heading.name} className="h-16">
-                    {heading.name}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {activity?.length &&
-                activity.map((activity, index) => {
-                  return (
-                    <ActivityItem
-                      key={index}
-                      activity={activity}
-                      index={index}
-                    />
-                  )
-                })}
-              {activity?.length === 0 && (
-                // <tr>
-                <td>Activites</td>
-                // </tr>
-              )}
-            </tbody>
-          </table>
-        )}
-        {activity?.length === 0 && (
-          // <tr>
-          <p className="text-center b text-3xl p-12">- No Activities yet -</p>
-          // </tr>
-        )}
-      </div>
-    </div>
-  )
-}
-
-const UserAssets = () => {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [nfts, setNfts] = useState<AvatarType[]>()
-  const { width } = useWindowDimensions()
-  const { address } = useAccount()
-  const { mutate, data } = useMutation(getCollectionNfts)
-
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
-
-  useEffect(() => {
-    let body: CollectionNftsBodyType = {
-      token_owner: address,
-      page_number: currentPage,
-      items_per_page: ITEMS_PER_PAGE,
-      alphabetical_order: ALPHABETICAL_ORDER,
-      order: ORDER,
-    }
-    address && mutate(body)
-  }, [mutate, address, currentPage])
-
-  useEffect(() => {
-    if (data?.data?.nfts) {
-      setNfts(data.data.nfts)
-      setCurrentPage(data.data.currentPage)
-      setTotalPages(data.data.total_pages)
-    }
-  }, [data?.data])
-
-  const handleDelay = (index: number): number => {
-    if (width >= 1536) {
-      if (index < 8) return 1.2 + index * 0.2
-      else return index * 0.2
-    } else if (width >= 1280) {
-      if (index < 3) return 1.2 + index * 0.2
-      else return index * 0.2
-    } else if (width >= 768) {
-      if (index < 4) return 1.2 + index * 0.2
-      else return index * 0.2
-    } else {
-      if (index < 1) return 1.2 + index * 0.2
-      else return index * 0.2
-    }
-  }
-
-  return (
-    <>
-      <div
-        className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
-gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
-      >
-        {nfts?.length &&
-          nfts.map((cardData, index) => (
-            <motion.div
-              className="flex justify-center"
-              key={index}
-              variants={opacityAnimation}
-              initial="initial"
-              whileInView="final"
-              viewport={{ once: true }}
-              transition={{
-                ease: 'easeInOut',
-                duration: 0.6,
-                delay: handleDelay(index),
-              }}
-            >
-              <AvatarCard {...cardData} />
-            </motion.div>
-          ))}
-        {nfts?.length === 0 && (
-          <p className="text-white font-poppins p-4">
-            No NFTs owned by this user
-          </p>
-        )}
-      </div>
-      <div className="flex justify-end p-4 pb-10">
-        <Pagination
-          totalPages={totalPages}
-          paginate={paginate}
-          currentPage={currentPage}
-        />
-      </div>
-    </>
-  )
-}
-
 const AssetsActivityTabs: FC<{
   setIsDrawerOpen: Dispatch<SetStateAction<boolean>>
 }> = ({ setIsDrawerOpen }) => {
+  const { address } = useAccount()
   const [currentTab, setCurrentTab] = useState<'assets' | 'activity'>('assets')
 
   return (
@@ -421,183 +151,18 @@ const AssetsActivityTabs: FC<{
       >
         <FaHamburger className=" text-lg hover:text-custom_yellow text-[#E5E5E5]" />
       </div>
-      {currentTab === 'activity' ? <UserActivity /> : <UserAssets />}
+      {currentTab === 'activity' ? (
+        <UserActivity address={address} />
+      ) : (
+        <UserAssets address={address} />
+      )}
     </>
   )
 }
 
-const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
-  const { address } = useAccount()
-  const queryClient = useQueryClient()
-  const {
-    mutate: createUserMutation,
-    isSuccess,
-    isLoading,
-    data,
-  } = useMutation(createUser, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(QUERIES.getUser)
-    },
-  })
-  const [loading, setLoading] = useState(false)
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
-  const [userGoogleInfo, setUserGoogleInfo] = useState({
-    username: '',
-    email: '',
-  })
-
-  useEffect(() => {
-    if (!isSuccess || !data) return
-    if (typeof data?.data !== 'string') {
-      toast.dark('User Created Successfully', {
-        type: 'success',
-        hideProgressBar: true,
-      })
-      setIsConfirmModalOpen(false)
-    }
-
-    typeof data?.data === 'string' &&
-      toast.dark(data.data, {
-        type: 'error',
-        hideProgressBar: true,
-      })
-  }, [data, isSuccess])
-
-  const handleCreateUser = (
-    email: string,
-    wallet_address: string,
-    username: string
-  ) => {
-    createUserMutation({
-      email,
-      wallet_address,
-      username,
-    })
-  }
-
-  const handleLogin = useGoogleLogin({
-    onSuccess: async (respose) => {
-      try {
-        setLoading(true)
-        const res = await axios.get(
-          'https://www.googleapis.com/oauth2/v3/userinfo',
-          {
-            headers: {
-              Authorization: `Bearer ${respose.access_token}`,
-            },
-          }
-        )
-        if (res?.data?.email_verified && res?.data?.email && address) {
-          setUserGoogleInfo((prev) => ({
-            ...prev,
-            email: res?.data?.email,
-            username: res.data?.name,
-          }))
-          setIsConfirmModalOpen(true)
-          // createUserMutation({
-          //   email: res.data.email,
-          //   wallet_address: String(address),
-          //   username: res.data?.name,
-          // })
-        } else {
-          toast.dark('Email not verified', { type: 'error' })
-        }
-      } catch (error: unknown) {
-        const title =
-          error instanceof Error ? error.message : 'error connecting to server'
-        toast.dark(title, { type: 'error' })
-      } finally {
-        setLoading(false)
-      }
-    },
-  })
-
-  const userInfo = useMemo(
-    () => [
-      { name: 'Linked Email', value: user?.email },
-      {
-        name: 'Wallet Address',
-        value: shortenString(user?.wallet_address || '', 4, 4),
-      },
-      {
-        name: 'Date Registered',
-        value: new Date(user?.createdAt || '').toLocaleString(),
-      },
-    ],
-    [user?.createdAt, user?.email, user?.wallet_address]
-  )
-
-  return (
-    <div>
-      <div className="text-white font-poppins text-[20px] pl-[25%] p-6">
-        <span className="border-b-2 border-custom_yellow">Settings</span>
-      </div>
-      <div
-        // onClick={() => setIsDrawerOpen(true)}
-        className="text-white p-4 lg:hidden"
-      >
-        <FaHamburger className=" text-lg hover:text-custom_yellow text-[#E5E5E5]" />
-      </div>
-      <div className="pb-20 md:px-4 bg-[#1F2021] rounded-lg w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll">
-        {!user && (
-          <div>
-            <button
-              onClick={() => handleLogin()}
-              className="btn-primary p-2 rounded-lg flex items-center gap-1"
-              disabled={isLoading || loading}
-            >
-              <FcGoogle /> Sign In with Google
-              {isLoading || loading ? <Spinner color="black" size="sm" /> : ''}
-            </button>
-          </div>
-        )}
-        {user && (
-          <h1 className="font-poppins text-white lg:text-3xl font-medium mb-4 text-center">
-            Account Details
-          </h1>
-        )}
-        {user &&
-          userInfo.map(({ name, value }, index) => (
-            <motion.div
-              key={index}
-              className={`text-white font-poppins ${
-                index % 2 === 0 ? 'bg-[#070707]' : 'bg-transparent'
-              } h-16 lg:h-12 flex items-center p-1`}
-              variants={opacityAnimation}
-              initial="initial"
-              whileInView="final"
-              viewport={{ once: true }}
-              transition={{
-                ease: 'easeInOut',
-                duration: 0.6,
-                delay: index * 0.2,
-              }}
-            >
-              <span className="font-medium">{name}</span>: {value}
-            </motion.div>
-          ))}
-      </div>
-      <AnimatePresence>
-        {isConfirmModalOpen && (
-          <AccountConfirmationModal
-            isOpen={isConfirmModalOpen}
-            setIsOpen={setIsConfirmModalOpen}
-            user={userGoogleInfo}
-            createUser={handleCreateUser}
-            isLoading={isLoading}
-          />
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
-
-const ITEMS_PER_PAGE = 12
-const ALPHABETICAL_ORDER = 'AtoZ'
-const ORDER = 'NewToOld'
-
 const ProfilePage: NextPage = () => {
   const queryClient = useQueryClient()
+  const { address } = useAccount()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [currentRoute, setCurrentRoute] = useState<RouteNameType>('overview')
   const [user, setUser] = useState<UserType | null>(null)
@@ -610,7 +175,8 @@ const ProfilePage: NextPage = () => {
   const [username, setUsername] = useState('')
   const [isUsernameHovered, setIsUsernameHovered] = useState(false)
 
-  const { address } = useAccount()
+  type UploadOptionType = 'banner' | 'profile'
+
   const { data: userData } = useQuery(
     [QUERIES.getUser, address],
     () => getUser(String(address)),
@@ -619,14 +185,10 @@ const ProfilePage: NextPage = () => {
     }
   )
 
-  type UploadOptionType = 'banner' | 'profile'
-
   const {
     mutate: uploadImage,
     isSuccess: isUploadSuccess,
     isLoading,
-    isError,
-    error,
   } = useMutation(uploadProfileImg, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getUser)
@@ -637,8 +199,6 @@ const ProfilePage: NextPage = () => {
     mutate: usernameMutation,
     isLoading: isUserMutationLoading,
     isSuccess: isUserMutationSuccess,
-    isError: isUserMutationError,
-    error: userMutationError,
   } = useMutation(updateUser, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getUser)
@@ -674,13 +234,6 @@ const ProfilePage: NextPage = () => {
     // const allowedFileTypesRegex = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png)$/i;
     const allowedFileTypesRegex = /(\.jpg|\.jpeg)$/i
 
-    if (fileSize > 1.5) {
-      toast.dark('File must be under 1.5MB', {
-        type: 'error',
-        hideProgressBar: true,
-      })
-      return false
-    }
     if (!allowedFileTypesRegex.exec(fileName)) {
       toast.dark('Please upload a jpg image', {
         type: 'error',
@@ -688,6 +241,15 @@ const ProfilePage: NextPage = () => {
       })
       return false
     }
+
+    if (fileSize > 1.5) {
+      toast.dark('File must be under 1.5MB', {
+        type: 'error',
+        hideProgressBar: true,
+      })
+      return false
+    }
+
     return true
   }
 
@@ -724,11 +286,6 @@ const ProfilePage: NextPage = () => {
   useEffect(() => {
     handleUpload()
   }, [handleUpload])
-
-  useEffect(() => {
-    if (!isError && !isUserMutationError) return
-    handleError(error || userMutationError)
-  }, [isError, error, isUserMutationError, userMutationError])
 
   useEffect(() => {
     if (!isUserMutationSuccess) return
@@ -832,12 +389,12 @@ const ProfilePage: NextPage = () => {
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full pl-1 pr-7 focus:border focus:border-custom_yellow focus:outline-none
-               bg-custom_grey rounded"
+              className="w-full pl-1 pr-7 h-8 focus:border focus:border-custom_yellow focus:outline-none
+               bg-[#f5f5f5] rounded"
             />
             <AiOutlineSend
               fontSize={16}
-              className="absolute top-[15%] right-2 cursor-pointer"
+              className="absolute top-[25%] right-2 cursor-pointer"
               onClick={handleUsernameMutation}
             />
           </p>
@@ -883,6 +440,7 @@ const ProfilePage: NextPage = () => {
             {currentRoute === 'overview' && (
               <AssetsActivityTabs setIsDrawerOpen={setIsDrawerOpen} />
             )}
+
             {currentRoute === 'settings' && <UserSettings user={user} />}
           </motion.div>
         </div>

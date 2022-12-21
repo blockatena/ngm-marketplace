@@ -38,7 +38,24 @@ const ConnectButton: FC = () => {
   }
 
   return (
-    <div className="relative">
+    <div className="relative flex items-center gap-2">
+      {isMounted && isConnected && (
+        <motion.div
+          variants={fromRightAnimation}
+          initial="initial"
+          animate="final"
+          transition={{
+            ease: 'easeIn',
+            duration: 0.2,
+            delay: 1,
+          }}
+        >
+          <CgProfile
+            className="text-custom_yellow text-lg lg:text-3xl cursor-pointer"
+            onClick={handleProfile}
+          />
+        </motion.div>
+      )}
       <motion.button
         className="btn-primary cut-corners w-[120px] md:w-[158px] lg:w-[173px] h-[29px] md:h-[33px] lg:h-[39px] 
       text-xs md:text-sm lg:text-base disabled:bg-gray-500"
@@ -65,19 +82,19 @@ const ConnectButton: FC = () => {
       </motion.button>
       {isOpen && (
         <div
-          className="absolute z-50 right-0 left-0 -bottom-[4.75rem] bg-gradient-to-b from-custom-yellow to-custom-orange
+          className="absolute z-50 right-0 left-0 -bottom-[3rem] bg-gradient-to-b from-custom-yellow to-custom-orange
          font-nunito p-2 rounded"
         >
-          <p
+          {/* <p
             onClick={handleProfile}
             className="flex items-center gap-1 text-black cursor-pointer hover:scale-105 transition-transform"
           >
             <CgProfile fontSize={20} />
             <span>Profile</span>
-          </p>
+          </p> */}
           <p
             onClick={handleDisconnect}
-            className="mt-1 flex items-center gap-1 text-black cursor-pointer hover:scale-105 transition-transform"
+            className="flex items-center gap-1 text-black cursor-pointer hover:scale-105 transition-transform"
           >
             <AiOutlineDisconnect fontSize={20} />
             <span>Disconnect</span>

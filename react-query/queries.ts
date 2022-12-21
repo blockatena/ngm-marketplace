@@ -121,6 +121,12 @@ export const updateUser = (data: {
   return axiosInstance.patch('/users/update-user', data)
 }
 
-export const getUserActivity = (wallet_address: string) => {
-  return axiosInstance.get(`/activity/get-user-activity/${wallet_address}`)
+export const getUserActivity = (
+  wallet_address: string,
+  page_number: number,
+  items_per_page: number = 12
+) => {
+  return axiosInstance.get(
+    `/activity/get-user-activity/${wallet_address}/${page_number}/${items_per_page}`
+  )
 }
