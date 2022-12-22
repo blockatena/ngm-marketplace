@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { useAccount } from 'wagmi'
@@ -14,6 +15,7 @@ const ActivityItem: FC<{
   index: number
   address: string | undefined
 }> = ({ activity, index, address }) => {
+  const router = useRouter()
   const { address: connectedAddress } = useAccount()
 
   const { data: userData } = useQuery(
@@ -50,11 +52,20 @@ const ActivityItem: FC<{
           ? `${price} ETH`
           : `${activity?.price} ETH`,
     },
+    // {
+    //   name: 'From',
+    //   value:
+    //     activity?.from === address &&
+    //     String(connectedAddress) === String(address)
+    //       ? 'You'
+    //       : activity?.from === address
+    //       ? user?.username || shortenString(activity?.from, 4, 4)
+    //       : shortenString(activity?.from, 3, 3),
+    // },
     {
       name: 'From',
       value:
-        activity?.from === address &&
-        String(connectedAddress) === String(address)
+        String(connectedAddress) === activity?.from
           ? 'You'
           : activity?.from === address
           ? user?.username || shortenString(activity?.from, 4, 4)
@@ -63,18 +74,31 @@ const ActivityItem: FC<{
     {
       name: 'To',
       value:
-        activity?.to !== '----'
-          ? activity?.to === address
-            ? 'User'
-            : shortenString(activity?.to, 3, 3)
+        // activity?.to !== '----'
+        activity?.to === String(connectedAddress)
+          ? 'You'
+          : activity?.to === address
+          ? user?.username || shortenString(activity?.to, 3, 3)
+          : activity?.to !== '----'
+          ? shortenString(activity?.to, 3, 3)
           : '-',
     },
+    // {
+    //   name: 'To',
+    //   value:
+    //     activity?.to !== '----'
+    //       ? activity?.to === address
+    //         ? 'User'
+    //         : shortenString(activity?.to, 3, 3)
+    //       : '-',
+    // },
     { name: 'Time', value: timePlaced },
   ]
 
   const onClickAddress = (user: string) => {
-    let url = `https://mumbai.polygonscan.com/address/${user}`
-    window.open(url, '_blank')
+    // let url = `https://mumbai.polygonscan.com/address/${user}`
+    // window.open(url, '_blank')
+    router.push(`/profile/${user}`)
   }
 
   const onClickTx = (hash: string) => {
@@ -83,8 +107,8 @@ const ActivityItem: FC<{
   }
 
   const handleAssetNameClick = (contractAddress: string, id: string) => {
-    // router.push(`/assets/${contractAddress}/${id}`)
-    window.open(`/assets/${contractAddress}/${id}`, '_blank')
+    router.push(`/assets/${contractAddress}/${id}`)
+    // window.open(`/assets/${contractAddress}/${id}`, '_blank')
   }
 
   return (
