@@ -218,9 +218,9 @@ const ProductOverviewSection: FC<{
   }
 
   return (
-    <section className="flex flex-col xl:flex-row gap-4 lg:gap-0 2xl:gap-32 xl:justify-between p-0">
+    <section className="flex flex-col xl:flex-row gap-4 lg:gap-4 2xl:gap-32 xl:justify-between p-0">
       <motion.div
-        className="flex justify-between"
+        className="flex justify-between lg:pl-4"
         variants={fromLeftAnimation}
         initial="initial"
         whileInView="final"
@@ -232,7 +232,7 @@ const ProductOverviewSection: FC<{
         }}
       >
         <AvatarCard variant="lg" noCta {...nft} />
-        <div className="lg:hidden grid place-items-center">
+        <div className="lg:hidden grid place-items-center pl-4">
           <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
             <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
               {contractDetails?.collection_name}
@@ -244,7 +244,7 @@ const ProductOverviewSection: FC<{
         </div>
       </motion.div>
       <motion.div
-        className="p-4 flex flex-col justify-evenly lg:pl-12 gap-4 xl:gap-0"
+        className="p-4 flex flex-col justify-evenly lg:pl-4 2xl:pl-12 gap-4 xl:gap-0 lg:min-w-[500px]"
         variants={fromRightAnimation}
         initial="initial"
         whileInView="final"
