@@ -35,6 +35,7 @@ import {
   updateUser,
   uploadProfileImg,
 } from '../../react-query/queries'
+import { shortenString } from '../../utils'
 import {
   fromLeftAnimation,
   fromRightAnimation,
@@ -171,6 +172,7 @@ const ProfilePage: NextPage = () => {
   const [bgFiles, setBgFiles] = useState<FileList | null>(null)
   const [profilePicFiles, setProfilePicFiles] = useState<FileList | null>(null)
   const [isProfilePicHovered, setIsProfilePicHovered] = useState(false)
+  const [isBgHovered, setIsBgHovered] = useState(false)
   const [isUsernameUpdate, setIsUsernameUpdate] = useState(false)
   const [username, setUsername] = useState('')
   const [isUsernameHovered, setIsUsernameHovered] = useState(false)
@@ -306,24 +308,29 @@ const ProfilePage: NextPage = () => {
             ? { backgroundImage: `url(${user?.banner_image})` }
             : {}
         }
+        onMouseEnter={() => setIsBgHovered(true)}
+        onMouseLeave={() => setIsBgHovered(false)}
+        onClick={() => setIsBgHovered(true)}
       >
-        <div
-          className="text-[#E5E5E5] font-inter lg:text-[19px] absolute bottom-4 right-6 
+        {isBgHovered && (
+          <div
+            className="text-[#E5E5E5] font-inter lg:text-[19px] absolute bottom-4 right-6 
         bg-[#2B3137] opacity-80 p-2 cursor-pointer rounded-lg flex items-end gap-2"
-        >
-          <Image
-            src={editIcon}
-            alt="edit"
-            onClick={() => handleChooseFile('bgImg')}
-          />{' '}
-          <span onClick={() => handleChooseFile('bgImg')}>Edit</span>
-          <input
-            type="file"
-            ref={uploadBtnRef}
-            className="hidden"
-            onChange={(e) => setBgFiles(e.target.files)}
-          />
-        </div>
+          >
+            <Image
+              src={editIcon}
+              alt="edit"
+              onClick={() => handleChooseFile('bgImg')}
+            />{' '}
+            <span onClick={() => handleChooseFile('bgImg')}>Edit</span>
+            <input
+              type="file"
+              ref={uploadBtnRef}
+              className="hidden"
+              onChange={(e) => setBgFiles(e.target.files)}
+            />
+          </div>
+        )}
         <motion.div
           // className="h-[126px] w-[151px] absolute -bottom-[63px]"
           className="profile-pic-clip h-[126px] lg:h-[150px] absolute -bottom-[63px]"
@@ -380,7 +387,7 @@ const ProfilePage: NextPage = () => {
             onMouseEnter={() => setIsUsernameHovered(true)}
             onMouseLeave={() => setIsUsernameHovered(false)}
           >
-            {user ? user.username : ''}
+            {user ? user.username : shortenString(String(address), 4, 4)}
             {isUsernameHovered && user?.username && <FaEdit fontSize={16} />}
           </p>
         )}

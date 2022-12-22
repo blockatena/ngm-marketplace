@@ -2,9 +2,9 @@ import { motion } from 'framer-motion'
 import { FC, useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { useAccount } from 'wagmi'
-import { ActivityType } from '../interfaces'
+import { ActivityType, UserType } from '../interfaces'
 import { QUERIES } from '../react-query/constants'
-import { getUserActivity } from '../react-query/queries'
+import { getUser, getUserActivity } from '../react-query/queries'
 import { shortenString } from '../utils'
 import { opacityAnimation } from '../utils/animations'
 import Pagination from './Pagination'
@@ -15,6 +15,16 @@ const ActivityItem: FC<{
   address: string | undefined
 }> = ({ activity, index, address }) => {
   const { address: connectedAddress } = useAccount()
+
+  const { data: userData } = useQuery(
+    [QUERIES.getUser, address],
+    () => getUser(String(address)),
+    {
+      enabled: !!address,
+    }
+  )
+
+  const user: UserType | undefined = userData?.data
 
   let timePlaced = ''
   if (activity?.createdAt) {
@@ -47,7 +57,7 @@ const ActivityItem: FC<{
         String(connectedAddress) === String(address)
           ? 'You'
           : activity?.from === address
-          ? 'User'
+          ? user?.username || shortenString(activity?.from, 4, 4)
           : shortenString(activity?.from, 3, 3),
     },
     {
@@ -185,7 +195,7 @@ const UserActivity: FC<{ address: string | undefined }> = ({ address }) => {
           className="w-full font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-full 
       overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
         >
-          {activity?.length && (
+          {activity?.length ? (
             <table className="w-full overflow-x-auto text-center">
               <thead>
                 <tr className="h-16">
@@ -208,9 +218,11 @@ const UserActivity: FC<{ address: string | undefined }> = ({ address }) => {
                       />
                     )
                   })}
-                {activity?.length === 0 && <td>Activites</td>}
+                {/* {activity?.length === 0 && <td>Activites</td>} */}
               </tbody>
             </table>
+          ) : (
+            ''
           )}
           {activity?.length === 0 && (
             <p className="text-center b text-3xl p-12">- No Activities yet -</p>
