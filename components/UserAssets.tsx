@@ -63,26 +63,27 @@ const UserAssets: FC<{ address: string | undefined }> = ({ address }) => {
         className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
   gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
       >
-        {nfts?.length &&
-          nfts.map((cardData, index) => (
-            <motion.div
-              className="flex justify-center"
-              key={index}
-              variants={opacityAnimation}
-              initial="initial"
-              whileInView="final"
-              viewport={{ once: true }}
-              transition={{
-                ease: 'easeInOut',
-                duration: 0.6,
-                delay: handleDelay(index),
-              }}
-            >
-              <AvatarCard {...cardData} />
-            </motion.div>
-          ))}
+        {nfts?.length
+          ? nfts.map((cardData, index) => (
+              <motion.div
+                className="flex justify-center"
+                key={index}
+                variants={opacityAnimation}
+                initial="initial"
+                whileInView="final"
+                viewport={{ once: true }}
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 0.6,
+                  delay: handleDelay(index),
+                }}
+              >
+                <AvatarCard {...cardData} />
+              </motion.div>
+            ))
+          : ''}
         {nfts?.length === 0 && (
-          <p className="text-white font-poppins p-4">
+          <p className="text-white font-poppins p-4 text-center">
             No NFTs owned by this user
           </p>
         )}

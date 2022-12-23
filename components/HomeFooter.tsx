@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { ReactNode } from 'react'
 import { BiBell } from 'react-icons/bi'
 import { BsInstagram, BsTwitter } from 'react-icons/bs'
-import { FaDiscord, FaLinkedinIn } from 'react-icons/fa'
+import { FaDiscord, FaTelegram } from 'react-icons/fa'
 import bg_img from '../public/images/footer/bg_footer_final.png'
 import bottom_img from '../public/images/footer/bottom_footer.svg'
 import { fromRightAnimation } from '../utils/animations'
@@ -97,17 +97,17 @@ const HomeFooter: React.FC = () => {
       <div className="absolute bottom-0 left-0 right-0 px-10 pb-5 lg:px-24 lg:pb-10 2xl:mt-10 flex flex-row justify-between items-center">
         <NFTZoneLogo size="small" />
         <div className="flex flex-row justify-center items-center space-x-3 lg:space-x-6">
-          <IconButton link="https://www.instagram.com/">
+          <IconButton link="https://www.instagram.com/gamestoweb3">
             <BsInstagram />
           </IconButton>
-          <IconButton link="https://twitter.com/">
+          <IconButton link="https://twitter.com/gamestoweb3">
             <BsTwitter />
           </IconButton>
-          <IconButton link="https://discord.com/">
+          <IconButton link="https://discord.gg/Uy63DSnByG">
             <FaDiscord />
           </IconButton>
-          <IconButton link="https://www.linkedin.com/">
-            <FaLinkedinIn />
+          <IconButton link="https://t.me/gamestoweb3">
+            <FaTelegram />
           </IconButton>
         </div>
       </div>

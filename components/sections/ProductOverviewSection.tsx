@@ -1,7 +1,6 @@
+import { ethers } from 'ethers'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/router'
-// import Image from 'next/image'
-import { ethers } from 'ethers'
 import { FC, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import AvatarCard from '../../components/AvatarCard'
@@ -11,20 +10,23 @@ import {
   AvatarType,
   BidType,
   NftContractType,
+  OfferType,
   SaleType,
-  OfferType
+  UserType,
 } from '../../interfaces'
-// import ownerImg from '../../public/images/others/owner.png'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
 import { DEAD_ADDRESS } from '../../utils/constants'
 import useIsMounted from '../../utils/hooks/useIsMounted'
 import CancelAuctionModal from '../modals/CancelAuctionModal'
 import CancelBidModal from '../modals/CancelBidModal'
-import CancelSaleModal from '../modals/CancelSaleModal'
 import CancelOfferModal from '../modals/CancelOfferModal'
+import CancelSaleModal from '../modals/CancelSaleModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
+// import ownerImg from '../../public/images/others/owner.png'
+
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
+// const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 
 const ProductOverviewSection: FC<{
   nft: AvatarType
@@ -34,7 +36,8 @@ const ProductOverviewSection: FC<{
   endTime: string
   sale: SaleType | undefined
   offers: OfferType[] | undefined
-  setActiveTabIndex:() => void
+  setActiveTabIndex: () => void
+  owner: UserType | undefined
 }> = ({
   nft,
   contractDetails,
@@ -43,6 +46,7 @@ const ProductOverviewSection: FC<{
   auction,
   offers,
   setActiveTabIndex,
+  owner: tokenOwner,
 }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
@@ -86,7 +90,7 @@ const ProductOverviewSection: FC<{
       method: 'eth_requestAccounts',
     })
     const provider = new ethers.providers.JsonRpcProvider(
-      process.env.NEXT_PUBLIC_PROVIDER?process.env.NEXT_PUBLIC_PROVIDER:''
+      process.env.NEXT_PUBLIC_PROVIDER ? process.env.NEXT_PUBLIC_PROVIDER : ''
     )
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
@@ -136,13 +140,11 @@ const ProductOverviewSection: FC<{
   })
 
   const isCancelBtn = () => {
-    if(filters() || filterAuction()) return true;
-    return false;
+    if (filters() || filterAuction()) return true
+    return false
   }
   let displayTime = nft?.is_in_auction || nft?.is_in_sale
   const handleClick = (event: string) => {
-
-    console.log(event)
     // if (isMounted && nft?.token_owner === address && nft?.is_in_auction) {
     //   toast('You have already listed this NFT!', {
     //     hideProgressBar: true,
@@ -207,16 +209,18 @@ const ProductOverviewSection: FC<{
   } else {
     //
   }
-
-  const onClickAddress = (owner: any) => {
-    let url = `https://mumbai.polygonscan.com/address/${owner}`
-    window.open(url, '_blank')
+  // const explorer =
+  //   CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
+  const onClickAddress = (owner: string) => {
+    // let url = `https://${explorer}/address/${owner}`
+    // window.open(url, '_blank')
+    router.push(`/profile/${owner}`)
   }
 
   return (
-    <section className="flex flex-col xl:flex-row gap-4 lg:gap-0 2xl:gap-32 xl:justify-between p-0">
+    <section className="flex flex-col xl:flex-row gap-4 lg:gap-4 2xl:gap-32 xl:justify-between p-0">
       <motion.div
-        className="flex justify-between"
+        className="flex justify-between lg:pl-4"
         variants={fromLeftAnimation}
         initial="initial"
         whileInView="final"
@@ -228,7 +232,7 @@ const ProductOverviewSection: FC<{
         }}
       >
         <AvatarCard variant="lg" noCta {...nft} />
-        <div className="lg:hidden grid place-items-center">
+        <div className="lg:hidden grid place-items-center pl-4">
           <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
             <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
               {contractDetails?.collection_name}
@@ -240,7 +244,7 @@ const ProductOverviewSection: FC<{
         </div>
       </motion.div>
       <motion.div
-        className="p-4 flex flex-col justify-evenly lg:pl-12 gap-4 xl:gap-0"
+        className="p-4 flex flex-col justify-evenly lg:pl-4 2xl:pl-12 gap-4 xl:gap-0 lg:min-w-[500px]"
         variants={fromRightAnimation}
         initial="initial"
         whileInView="final"
@@ -304,15 +308,15 @@ const ProductOverviewSection: FC<{
                     {/* SalvadorDali */}
                     <a
                       // href={`https://mumbai.polygonscan.com/address/${nft?.token_owner}`}
-                      onClick={() =>
-                        onClickAddress(nft?.token_owner ? nft?.token_owner : '')
-                      }
+                      onClick={() => onClickAddress(nft?.token_owner ?? '')}
                       target="_blank"
                       rel="noreferrer"
                       className="underline hover:text-sky-500 cursor-pointer"
                     >
                       {nft?.token_owner && nft?.token_owner === address
                         ? 'You'
+                        : tokenOwner?.username
+                        ? tokenOwner.username
                         : nft?.token_owner
                         ? `${nft.token_owner.substring(
                             0,
@@ -393,7 +397,7 @@ const ProductOverviewSection: FC<{
       <AnimatePresence>
         {isBidModalOpen && (
           <PlaceBidModal
-           status={filterAuction()?'update':'place'}
+            status={filterAuction() ? 'update' : 'place'}
             isOpen={isBidModalOpen}
             setIsOpen={setIsBidModalOpen}
             nft={nft}

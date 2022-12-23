@@ -5,11 +5,13 @@ import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import BreadCrumb from '../../../../components/BreadCrumb'
 import PageHeading from '../../../../components/PageHeading'
+import Pagination from '../../../../components/Pagination'
 import DescriptionBidHistorySection from '../../../../components/sections/DescriptionBidHistorySection'
 import ExploreSection from '../../../../components/sections/ExploreSection'
 import ProductOverviewSection from '../../../../components/sections/ProductOverviewSection'
 import withProtection from '../../../../components/withProtection'
 import type {
+  ActivityType,
   AuctionType,
   AvatarType,
   BidType,
@@ -17,12 +19,12 @@ import type {
   NftContractType,
   OfferType,
   SaleType,
-  ActivityType,
+  UserType,
 } from '../../../../interfaces'
 import leftVector from '../../../../public/images/others/left_vector.png'
 import rightVector from '../../../../public/images/others/right_vector.png'
 import { QUERIES } from '../../../../react-query/constants'
-import { getSingleNft } from '../../../../react-query/queries'
+import { getNftActivity, getSingleNft } from '../../../../react-query/queries'
 
 const initalNftState: AvatarType = {
   _id: '',
@@ -45,6 +47,189 @@ const initalNftState: AvatarType = {
   },
 }
 
+const initialActivity: any = [
+  {
+    _id: ' ',
+    event: ' ',
+    item: {
+      name: ' ',
+      contract_address: ' ',
+      token_id: ' ',
+      image: ' ',
+    },
+    price: ' ',
+    quantity: ' ',
+    from: ' ',
+    to: ' ',
+    read: ' ',
+    createdAt: ' ',
+    updatedAt: ' ',
+    __v: 0,
+  },
+  {
+    _id: ' ',
+    event: ' ',
+    item: {
+      name: ' ',
+      contract_address: ' ',
+      token_id: ' ',
+      image: ' ',
+    },
+    price: ' ',
+    quantity: ' ',
+    from: ' ',
+    to: ' ',
+    read: ' ',
+    createdAt: ' ',
+    updatedAt: ' ',
+    __v: 0,
+  },
+  {
+    _id: ' ',
+    event: ' ',
+    item: {
+      name: ' ',
+      contract_address: ' ',
+      token_id: ' ',
+      image: ' ',
+    },
+    price: ' ',
+    quantity: ' ',
+    from: ' ',
+    to: ' ',
+    read: ' ',
+    createdAt: ' ',
+    updatedAt: ' ',
+    __v: 0,
+  },
+  {
+    _id: ' ',
+    event: ' ',
+    item: {
+      name: ' ',
+      contract_address: ' ',
+      token_id: ' ',
+      image: ' ',
+    },
+    price: ' ',
+    quantity: ' ',
+    from: ' ',
+    to: ' ',
+    read: ' ',
+    createdAt: ' ',
+    updatedAt: ' ',
+    __v: 0,
+  },
+  // {
+  //   _id: '-',
+  //   event: '-',
+  //   item: {
+  //     name: '-',
+  //     contract_address: '-',
+  //     token_id: '-',
+  //     image: '-',
+  //   },
+  //   price: '-',
+  //   quantity: '-',
+  //   from: '-',
+  //   to: '-',
+  //   read: '-',
+  //   createdAt: '-',
+  //   updatedAt: '-',
+  //   __v: 0,
+  // },
+  // {
+  //   _id: '-',
+  //   event: '-',
+  //   item: {
+  //     name: '-',
+  //     contract_address: '-',
+  //     token_id: '-',
+  //     image: '-',
+  //   },
+  //   price: '-',
+  //   quantity: '-',
+  //   from: '-',
+  //   to: '-',
+  //   read: '-',
+  //   createdAt: '-',
+  //   updatedAt: '-',
+  //   __v: 0,
+  // },
+  // {
+  //   _id: '-',
+  //   event: '-',
+  //   item: {
+  //     name: '-',
+  //     contract_address: '-',
+  //     token_id: '-',
+  //     image: '-',
+  //   },
+  //   price: '-',
+  //   quantity: '-',
+  //   from: '-',
+  //   to: '-',
+  //   read: '-',
+  //   createdAt: '-',
+  //   updatedAt: '-',
+  //   __v: 0,
+  // },
+  // {
+  //   _id: '-',
+  //   event: '-',
+  //   item: {
+  //     name: '-',
+  //     contract_address: '-',
+  //     token_id: '-',
+  //     image: '-',
+  //   },
+  //   price: '-',
+  //   quantity: '-',
+  //   from: '-',
+  //   to: '-',
+  //   read: '-',
+  //   createdAt: '-',
+  //   updatedAt: '-',
+  //   __v: 0,
+  // },
+  // {
+  //   _id: '-',
+  //   event: '-',
+  //   item: {
+  //     name: '-',
+  //     contract_address: '-',
+  //     token_id: '-',
+  //     image: '-',
+  //   },
+  //   price: '-',
+  //   quantity: '-',
+  //   from: '-',
+  //   to: '-',
+  //   read: '-',
+  //   createdAt: '-',
+  //   updatedAt: '-',
+  //   __v: 0,
+  // },
+  {
+    _id: ' ',
+    event: ' ',
+    item: {
+      name: ' ',
+      contract_address: ' ',
+      token_id: ' ',
+      image: ' ',
+    },
+    price: ' ',
+    quantity: ' ',
+    from: ' ',
+    to: ' ',
+    read: ' ',
+    createdAt: ' ',
+    updatedAt: ' ',
+    __v: 0,
+  },
+]
+
 const ViewAssetPage: NextPage = () => {
   const [contractAddress, setContractAddress] = useState('')
   const [tokenId, setTokenId] = useState('')
@@ -55,14 +240,29 @@ const ViewAssetPage: NextPage = () => {
   const [bids, setBids] = useState<BidType[]>()
   const [auctionDetails, setAuctionDetails] = useState<AuctionType>()
   const [offers, setOffers] = useState<OfferType[]>()
+  const [ownerDetails, setOwnerDetails] = useState<UserType>()
   const [saleDetails, setSaleDetails] = useState<SaleType>()
   const [activityDetails, setActivityDetails] = useState<ActivityType>()
-  const [currentTab,setCurrenttab] = useState<any>()
+  const [currentTab, setCurrenttab] = useState<any>()
+  const [totalPages, setTotalpges] = useState<any>()
+  const [section, setSection] = useState<boolean>()
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+  const [page_number, setCurrentPage] = useState<number>(1)
   const refetchtime: number = parseInt(
     process.env.NEXT_PUBLIC_REFETCH_TIME
       ? process.env.NEXT_PUBLIC_REFETCH_TIME
       : '30000'
   )
+  const activities = useQuery(
+    [QUERIES.getNftActivity, contractAddress, tokenId, page_number],
+    () => getNftActivity(contractAddress, tokenId, page_number, 10),
+    {
+      enabled: !!contractAddress && !!tokenId,
+      refetchInterval: refetchtime,
+      refetchIntervalInBackground: true,
+    }
+  )
+
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId),
@@ -72,6 +272,14 @@ const ViewAssetPage: NextPage = () => {
       refetchIntervalInBackground: true,
     }
   )
+
+  const state = () => {
+    setSection(true)
+  }
+
+  const states = () => {
+    setSection(false)
+  }
   const { asPath } = useRouter()
 
   const crumbData: CrumbType[] = [
@@ -90,8 +298,9 @@ const ViewAssetPage: NextPage = () => {
     setEndTime(
       data?.data?.auction?.end_date
         ? data?.data?.auction?.end_date
-        : data?.data?.sale?.end_date 
-        ? data?.data?.sale?.end_date : ''
+        : data?.data?.sale?.end_date
+        ? data?.data?.sale?.end_date
+        : ''
     )
     setNft(data?.data.nft)
     // setAvatars(DATA?.data?.data?.nfts)
@@ -99,17 +308,14 @@ const ViewAssetPage: NextPage = () => {
     setBids(data?.data?.bids)
     setAuctionDetails(data?.data.auction)
     setOffers(data?.data?.offers)
+    setOwnerDetails(data?.data?.token_owner_info)
     setSaleDetails(data?.data?.sale)
-    setActivityDetails(data?.data?.nft_activity)
-  }, [
-    data?.data.auction,
-    data?.data?.bids,
-    data?.data?.contract_details,
-    data?.data.nft,
-    data?.data?.offers,
-    data?.data?.sale,
-    data?.data?.nft_activity
-  ])
+    setActivityDetails(activities.data?.data.activity_data)
+    setTotalpges(activities.data?.data?.total_pages)
+    if (activities.isLoading) {
+      setActivityDetails(initialActivity)
+    }
+  }, [data, activities])
 
   useEffect(() => {
     if (asPath) {
@@ -120,14 +326,13 @@ const ViewAssetPage: NextPage = () => {
   }, [asPath])
 
   const handleTabs = () => {
-    if(currentTab===0){
+    if (currentTab === 0) {
       setCurrenttab('')
-    } else if(currentTab===''){
+    } else if (currentTab === '') {
       return
     } else {
       setCurrenttab(0)
     }
-    
   }
 
   return (
@@ -159,6 +364,7 @@ const ViewAssetPage: NextPage = () => {
               auction={auctionDetails}
               sale={saleDetails}
               setActiveTabIndex={handleTabs}
+              owner={ownerDetails}
             />
           </div>
           <div className="col-span-1 flex justify-end ">
@@ -179,7 +385,18 @@ const ViewAssetPage: NextPage = () => {
           activity={activityDetails}
           currentTab={currentTab}
           handleTabs={handleTabs}
+          state={state}
+          states={states}
         />
+        {section && (
+          <div className="flex justify-end mb-12">
+            <Pagination
+              totalPages={totalPages}
+              paginate={paginate}
+              currentPage={page_number}
+            />
+          </div>
+        )}
         <ExploreSection contractAddress={contractAddress} tokenId={tokenId} />
       </div>
     </main>

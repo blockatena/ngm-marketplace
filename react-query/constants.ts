@@ -9,4 +9,5 @@ export const QUERIES = {
   getAllCollectionNfts: 'getAllCollectionNfts',
   getUser: 'getUser',
   getUserActivity: 'getUserActivity',
+  getNftActivity: 'getNftActivity',
 }

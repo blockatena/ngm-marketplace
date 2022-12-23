@@ -3,6 +3,7 @@ import { FC, ReactNode } from 'react'
 import Footer from './Footer'
 
 import Header from './Header'
+import Detector from './NetworkDetector'
 
 interface LayoutProps {
   children: ReactNode
@@ -28,6 +29,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <div className="flex justify-center bg-gradient-to-r from-dark_mild to-dark_heavy">
       <div className=" w-full max-w-[1920px] bg-fixed bg-cover bg-market">
+        <Detector />
         <Header />
         <Buffer />
         {/* <Loading /> */}
