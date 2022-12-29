@@ -19,22 +19,24 @@ import UserAssets from '../../../components/UserAssets'
 import withProtection from '../../../components/withProtection'
 import { UserType } from '../../../interfaces'
 import categoryIcon from '../../../public/images/icons/Category.svg'
+import collectionIcon from '../../../public/images/icons/collection.svg'
 import { QUERIES } from '../../../react-query/constants'
-import { getUser } from '../../../react-query/queries'
+import { getUser, getUserCollections } from '../../../react-query/queries'
 import { shortenString } from '../../../utils'
 import {
   fromLeftAnimation,
   fromRightAnimation,
   opacityAnimation,
 } from '../../../utils/animations'
+import UserCollections from '../../../components/UserCollections'
 
-type RouteNameType = 'overview'
+type RouteNameType = 
+| 'overview'
+| 'my collections'
 
 type RouteType = { name: RouteNameType; route: string; icon: any }
 
-const routes: RouteType[] = [
-  { name: 'overview', route: '/', icon: categoryIcon },
-]
+
 
 const NavRoute: FC<{
   icon: string
@@ -67,7 +69,8 @@ const Drawer: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   setCurrentRoute: Dispatch<SetStateAction<RouteNameType>>
   currentRoute: RouteNameType
-}> = ({ setIsOpen, setCurrentRoute, currentRoute }) => {
+  routes: RouteType[]
+}> = ({ setIsOpen, setCurrentRoute, currentRoute, routes }) => {
   const handleClick = () => {
     setIsOpen(false)
   }
@@ -135,14 +138,59 @@ const AssetsActivityTabs: FC<{
   )
 }
 
+const CollectionTab: FC<{
+  setIsDrawerOpen: Dispatch<SetStateAction<boolean>>
+  address: string | undefined
+}> = ({ setIsDrawerOpen, address }) => {
+  // collection_name,
+  // contract_address,
+  // __v,
+  // _id,
+  // imageuri,
+
+  return (
+    <>
+      <div className="text-white font-poppins text-[20px] pl-[25%] p-6">
+        <span className="border-b-2 border-custom_yellow">My Collections</span>
+      </div>
+      <div
+        onClick={() => setIsDrawerOpen(true)}
+        className="text-white p-4 lg:hidden"
+      >
+        <FaHamburger className=" text-lg hover:text-custom_yellow text-[#E5E5E5]" />
+      </div>
+      <UserCollections
+        address={address}
+      />
+    </>
+  )
+}
+
 const UserProfilePage: NextPage = () => {
   const router = useRouter()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [currentRoute, setCurrentRoute] = useState<RouteNameType>('overview')
   const [user, setUser] = useState<UserType | null>(null)
-
-  const address = router?.query?.walletAddress
+  const [HasCollections, setHasCollections] = useState(false)
+  const address:any = router?.query?.walletAddress
   const { address: connectedAddress } = useAccount()
+
+  const collections = useQuery(
+    [QUERIES.getUserCollections, address],
+    () => getUserCollections(address,1,1),
+    {
+      enabled: !!address,
+      refetchIntervalInBackground: true,
+    }
+  )
+// console.log(collections?.data?.data?.total)
+  useEffect(()=> {
+    if (collections?.data?.data?.total===0) {
+      setHasCollections(false)
+    } else {
+      setHasCollections(true)
+    }
+  },[collections])
 
   const { data: userData } = useQuery(
     [QUERIES.getUser, address],
@@ -164,6 +212,14 @@ const UserProfilePage: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, connectedAddress])
 
+  const routes: RouteType[] = HasCollections
+    ? [
+        { name: 'overview', route: '/', icon: categoryIcon },
+        { name: 'my collections', route: '/', icon: collectionIcon },
+      ]
+    : [
+        { name: 'overview', route: '/', icon: categoryIcon },
+      ]
   return (
     <main className="p-4 pt-6 pb-0 lg:px-8 relative -bottom-8">
       <div
@@ -214,7 +270,7 @@ const UserProfilePage: NextPage = () => {
       <div className="grid place-items-center w-full">
         <div className="grid grid-cols-12 gap-4 w-full">
           <motion.div
-            className="hidden lg:block lg:col-span-3 h-[928px] p-10 bg-[#1F2021]  rounded-lg"
+            className="hidden lg:block lg:col-span-3 h-[928px] p-10 bg-[#1F2021]  rounded-lg mt-20"
             variants={fromLeftAnimation}
             initial="initial"
             whileInView="final"
@@ -254,6 +310,13 @@ const UserProfilePage: NextPage = () => {
                 address={address ? String(address) : undefined}
               />
             )}
+            {HasCollections && currentRoute === 'my collections' && (
+              <CollectionTab
+                setIsDrawerOpen={setIsDrawerOpen}
+                address={address ? String(address) : undefined}
+
+              />
+            )}
           </motion.div>
         </div>
       </div>
@@ -280,6 +343,7 @@ const UserProfilePage: NextPage = () => {
               setIsOpen={setIsDrawerOpen}
               setCurrentRoute={setCurrentRoute}
               currentRoute={currentRoute}
+              routes={routes}
             />
           </motion.div>
         )}

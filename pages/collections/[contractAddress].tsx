@@ -532,6 +532,8 @@ const CollectionPage: NextPage = () => {
     }
   }
 
+  console.log(avatars)
+
   // useEffect(() => {
   //   setAvatars(data?.data.nfts)
   //   setDataUnsorted(data?.data.nfts)

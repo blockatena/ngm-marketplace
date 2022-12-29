@@ -212,9 +212,8 @@ const ProductOverviewSection: FC<{
   // const explorer =
   //   CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
   const onClickAddress = (owner: string) => {
-    // let url = `https://${explorer}/address/${owner}`
-    // window.open(url, '_blank')
-    router.push(`/profile/${owner}`)
+      let profile = owner === address ? `/profile` : `/profile/${owner}`
+      router.push(profile)
   }
 
   return (

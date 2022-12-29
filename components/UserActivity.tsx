@@ -9,7 +9,9 @@ import { getUser, getUserActivity } from '../react-query/queries'
 import { shortenString } from '../utils'
 import { opacityAnimation } from '../utils/animations'
 import Pagination from './Pagination'
-
+const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
+const explorer =
+  CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
 const ActivityItem: FC<{
   activity: ActivityType
   index: number
@@ -95,14 +97,13 @@ const ActivityItem: FC<{
     { name: 'Time', value: timePlaced },
   ]
 
-  const onClickAddress = (user: string) => {
-    // let url = `https://mumbai.polygonscan.com/address/${user}`
-    // window.open(url, '_blank')
-    router.push(`/profile/${user}`)
+const onClickAddress = (user:string) => {
+    let profile = user === connectedAddress ? `/profile` : `/profile/${user}`
+    router.push(profile)
   }
 
   const onClickTx = (hash: string) => {
-    let url = `https://mumbai.polygonscan.com/tx/${hash}`
+    let url = `https://${explorer}/tx/${hash}`
     window.open(url, '_blank')
   }
 
