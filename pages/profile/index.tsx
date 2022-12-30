@@ -321,7 +321,7 @@ const ProfilePage: NextPage = () => {
   }, [isUploadSuccess])
 
   useEffect(() => {
-    if (userData && typeof userData?.data !== 'string') setUser(userData?.data)
+    if (userData && typeof userData?.data !== 'string') setUser(userData?.data?.success?userData?.data?.success:'')
     else setUser(null)
   }, [userData])
 

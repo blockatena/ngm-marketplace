@@ -125,7 +125,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
         fetch(url)
           .then((response) => response.json())
           .then((data) => {
-            console.log(data)
+            // console.log(data)
             setAuctionTime(data?.auction?.end_date)
             setAuctionAmount(data?.auction?.min_price)
           })

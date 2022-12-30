@@ -14,7 +14,7 @@ const Detector: FC = () => {
   const [url,setUrl] = useState('')
   const { isConnected } = useAccount()
   const [currentChainId,setCurrentChainId] = useState('')
-  const targetNetworkId = ['80001', '137']
+  const targetNetworkId = ['80001', '137','1','5']
 
     const onSwitchNetwork = async () => {
       const ethereum = (window as any).ethereum
@@ -75,24 +75,24 @@ const Detector: FC = () => {
         return
       } else {
         setUrl(
-          CHAINID === '80001'
+          (CHAINID === '80001' || CHAINID === '5')
             ? 'https://www.gamestoweb3.com'
             : 'https://testnets.gamestoweb3.com'
         )
         setMsg1(
           `You are on ${
-            CHAINID === '80001' ? 'Mainnet' : 'Testnet'
+            CHAINID === '80001' || CHAINID === '5' ? 'Mainnet' : 'Testnet'
           } Switch Network to `
         )
-        setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
+        setMsg2(CHAINID === '80001' || CHAINID === '5' ? 'Testnet' : 'Mainnet')
         setMsg3('or Visit to')
-        setMsg4(CHAINID === '80001' ? 'Mainnet' : 'Testnet')
+        setMsg4(CHAINID === '80001' || CHAINID === '5' ? 'Mainnet' : 'Testnet')
         setShowAlert('true')
         return
       }
     } else {
       setMsg1(`Wrong Network Detected, Switch Network to `)
-      setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
+      setMsg2(CHAINID === '80001' || CHAINID === '5' ? 'Testnet' : 'Mainnet')
       setMsg3('')
       setMsg4('')
       setShowAlert('true')

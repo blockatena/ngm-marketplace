@@ -17,7 +17,7 @@ const ConnectPage: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected])
 
-const targetNetworkId = ['80001' , '137','0x89', '0x13881']
+const targetNetworkId = ['80001' , '137','1', '5']
 const switchSet = ()=> {
   setIsChainCorrect(true)
 }
@@ -33,12 +33,7 @@ const checkNetwork = async (id:string) => {
       : window.ethereum.networkVersion
     console.log(currentChainId)
     // return true if network id is the same
-    if (
-      currentChainId === targetNetworkId[0] ||
-      currentChainId === targetNetworkId[1] ||
-      currentChainId === targetNetworkId[2] ||
-      currentChainId === targetNetworkId[3]
-    ) {
+    if (targetNetworkId.includes(currentChainId)) {
       setIsChainCorrect(true)
       return true
     }

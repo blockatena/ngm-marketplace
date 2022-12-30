@@ -532,7 +532,7 @@ const CollectionPage: NextPage = () => {
     }
   }
 
-  console.log(avatars)
+  // console.log(avatars)
 
   // useEffect(() => {
   //   setAvatars(data?.data.nfts)
