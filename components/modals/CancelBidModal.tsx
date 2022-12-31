@@ -11,12 +11,12 @@ import Spinner from '../Spinner'
 import { ethers } from 'ethers'
 import { useAccount } from 'wagmi'
 import { useNetwork, useSwitchNetwork } from 'wagmi'
-const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const CancelBidModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   nft: AvatarType
-}> = ({ setIsOpen, nft }) => {
+  chainID:any
+}> = ({ setIsOpen, nft,chainID }) => {
   const queryClient = useQueryClient()
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
@@ -28,19 +28,20 @@ const CancelBidModal: FC<{
     },
   })
     const { address } = useAccount()
-  useEffect(() => {
-    if (chain?.id === parseInt(CHAINID)) {
-      setIsChainCorrect(true)
-      return
-    } else {
-      setIsChainCorrect(false)
-      return
-    }
-  }, [chain])
-
-  const onSwitchNetwork = async () => {
-    await switchNetwork?.(parseInt(CHAINID))
+useEffect(() => {
+  if (!chainID) return
+  if (chain?.id === parseInt(chainID)) {
+    setIsChainCorrect(true)
+    return
+  } else {
+    setIsChainCorrect(false)
+    return
   }
+}, [chain, chainID])
+
+const onSwitchNetwork = async () => {
+  await switchNetwork?.(parseInt(chainID))
+}
   const handleClick = async () => {
     const data = {
       contract_address: nft?.contract_address,
@@ -53,14 +54,6 @@ const CancelBidModal: FC<{
       method: 'eth_requestAccounts',
     })
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
-    const { chainId } = await provider.getNetwork()
-    let chain = parseInt(CHAINID)
-    if (chainId !== chain) {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
-      })
-    }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
     let rawMsg = `{

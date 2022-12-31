@@ -10,13 +10,13 @@ import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 import { ethers } from 'ethers'
 import { useNetwork, useSwitchNetwork } from 'wagmi'
-const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const CancelAuctionModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   nft: AvatarType
   setActiveTabIndex: () => void
-}> = ({ setIsOpen, nft, setActiveTabIndex }) => {
+  chainID:any
+}> = ({ setIsOpen, nft, setActiveTabIndex, chainID}) => {
   const queryClient = useQueryClient()
   const { chain } = useNetwork()
   const {  switchNetwork } = useSwitchNetwork()
@@ -26,19 +26,20 @@ const CancelAuctionModal: FC<{
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
   })
-  useEffect(() => {
-    if (chain?.id === parseInt(CHAINID)) {
-      setIsChainCorrect(true)
-      return
-    } else {
-      setIsChainCorrect(false)
-      return
-    }
-  }, [chain])
-
-  const onSwitchNetwork = async () => {
-    await switchNetwork?.(parseInt(CHAINID))
+useEffect(() => {
+  if (!chainID) return
+  if (chain?.id === parseInt(chainID)) {
+    setIsChainCorrect(true)
+    return
+  } else {
+    setIsChainCorrect(false)
+    return
   }
+}, [chain, chainID])
+
+const onSwitchNetwork = async () => {
+  await switchNetwork?.(parseInt(chainID))
+}
   const handleClick = async () => {
     const data = {
       contract_address: nft?.contract_address,
@@ -50,14 +51,6 @@ const CancelAuctionModal: FC<{
       method: 'eth_requestAccounts',
     })
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
-    const { chainId } = await provider.getNetwork()
-    let chain = parseInt(CHAINID)
-    if (chainId !== chain) {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
-      })
-    }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
     let rawMsg = `{

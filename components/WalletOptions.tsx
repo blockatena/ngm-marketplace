@@ -32,7 +32,7 @@ const Card: FC<CardProps> = ({ connector, setMessage }) => {
   const { connect, isLoading } = useConnect()
   const { name } = connector
   const wallet = walletOptions.find((option) => option.title === name)
-
+  console.log(connector)
   const handleClick = () => {
     if (name === 'MetaMask' && !window.ethereum) {
       setMessage('Please Install MetaMask')

@@ -10,61 +10,52 @@ import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 import { ethers } from 'ethers'
 import { useNetwork, useSwitchNetwork } from 'wagmi'
-const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const CancelSaleModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   nft: AvatarType
   setActiveTabIndex: () => void
-}> = ({ setIsOpen, nft, setActiveTabIndex }) => {
+  chainID:any
+}> = ({ setIsOpen, nft, setActiveTabIndex, chainID }) => {
   const queryClient = useQueryClient()
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
-    const [isChainCorrect, setIsChainCorrect] = useState(true)  
+  const [isChainCorrect, setIsChainCorrect] = useState(true)
   const { mutate, isSuccess, data, isLoading } = useMutation(cancelSale, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
   })
   useEffect(() => {
-    if (chain?.id === parseInt(CHAINID)) {
+    if (!chainID) return
+    if (chain?.id === parseInt(chainID)) {
       setIsChainCorrect(true)
       return
     } else {
       setIsChainCorrect(false)
       return
     }
-  }, [chain])
+  }, [chain, chainID])
 
   const onSwitchNetwork = async () => {
-    await switchNetwork?.(parseInt(CHAINID))
+    await switchNetwork?.(parseInt(chainID))
   }
   const handleClick = async () => {
     const data = {
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
-      sign:''
+      sign: '',
     }
     const ethereum = (window as any).ethereum
     const accounts = await ethereum.request({
       method: 'eth_requestAccounts',
     })
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
-    const { chainId } = await provider.getNetwork()
-    let chain = parseInt(CHAINID)
-    if (chainId !== chain) {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
-      })
-    }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
     let rawMsg = `{
       "contract_address":"${nft?.contract_address}",
-      "token_id":"${
-      nft?.token_id
-    }"
+      "token_id":"${nft?.token_id}"
   }`
     let hashMessage = await ethers.utils.hashMessage(rawMsg)
     // console.log(hashMessage)
@@ -79,22 +70,24 @@ const CancelSaleModal: FC<{
         setIsOpen(false)
         return
       })
-      if(data['sign']){
-        mutate(data)
-      } else return;
+    if (data['sign']) {
+      mutate(data)
+    } else return
   }
 
   useEffect(() => {
     if (isSuccess) {
-      let msg = data?.data?.message? data?.data?.message:'Sale Cancelled Successfully'
+      let msg = data?.data?.message
+        ? data?.data?.message
+        : 'Sale Cancelled Successfully'
       setActiveTabIndex()
-        toast(msg, {
-          hideProgressBar: true,
-          autoClose: 3000,
-          type:data?.data?.message?'error':'success',
-          position: 'top-right',
-          theme: 'dark',
-        })
+      toast(msg, {
+        hideProgressBar: true,
+        autoClose: 3000,
+        type: data?.data?.message ? 'error' : 'success',
+        position: 'top-right',
+        theme: 'dark',
+      })
       setIsOpen(false)
     }
   }, [isSuccess, data?.data?.message, setIsOpen, setActiveTabIndex])
@@ -123,7 +116,9 @@ const CancelSaleModal: FC<{
           </span>
         </p>
         <h2 className="text-white font-poppins text-[20px] lg:text-[30px] text-center my-4">
-          {!isChainCorrect?'Wrong network detected':'Are you sure you want to cancel this sale?'}
+          {!isChainCorrect
+            ? 'Wrong network detected'
+            : 'Are you sure you want to cancel this sale?'}
         </h2>
         {isLoading && (
           <div className="py-4 grid place-items-center">

@@ -120,7 +120,8 @@ const CharacterDescription: FC<{
     { name: 'Contract Address', value: address || '' },
     { name: 'Token ID', value: nft?.token_id || '' },
     { name: 'Token Standard', value: nft?.contract_type || '' },
-    { name: 'Blockchain', value: contractDetails?.chain || '' },
+    { name: 'Chain ID', value: contractDetails?.chain?.id || '' },
+    { name: 'Network', value: contractDetails?.chain?.name || '' },
   ]
 
   return (
@@ -595,7 +596,15 @@ const CurrentOffers: FC<{
   address: string
   setActiveTabIndex: () => void
   onClickAddress: () => void
-}> = ({ offers, sale, address, setActiveTabIndex, onClickAddress }) => {
+  chainID: any
+}> = ({
+  offers,
+  sale,
+  address,
+  setActiveTabIndex,
+  onClickAddress,
+  chainID,
+}) => {
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
   const [isAcceptOfferModalOpen, setIsAcceptOfferModalOpen] = useState(false)
   const [offer_person_address, setoffer_person_address] = useState('')
@@ -613,7 +622,7 @@ const CurrentOffers: FC<{
         { name: 'Offer Amount (WETH)' },
         { name: 'Made At' },
       ]
-
+console.log(chainID)
   const handleOffers = (offer_person_address, event) => {
     setoffer_person_address(offer_person_address)
     if (ifOwner && event === 'accept') {
@@ -683,6 +692,7 @@ const CurrentOffers: FC<{
             token_id={sale?.token_id}
             address={offer_person_address}
             caller={address}
+            chainID={chainID}
           />
         )}
       </AnimatePresence>
@@ -695,6 +705,7 @@ const CurrentOffers: FC<{
             contract_address={sale?.contract_address}
             token_id={sale?.token_id}
             offer_address={offer_person_address}
+            chainID={chainID}
           />
         )}
       </AnimatePresence>
@@ -820,6 +831,7 @@ const DescriptionBidHistorySection: FC<{
               address={address}
               setActiveTabIndex={setActiveTabIndex}
               onClickAddress={onClickAddress}
+              chainID={contractDetails?.chain?.id}
             />
           ) : (
             <CurrentBids

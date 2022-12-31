@@ -203,7 +203,6 @@ const ViewAssetPage: NextPage = () => {
       route: `/assets/${contractAddress}/${tokenId}`,
     },
   ]
-
   useEffect(() => {
     setEndTime(
       data?.data?.auction?.end_date
