@@ -135,3 +135,7 @@ export const getUserActivity = (
 export const getNftActivity = (contract_address:string,token_id:string,page_number:number,items_per_page:number) => {
   return axiosInstance.get(`/activity/get-item-activity/${contract_address}/${token_id}/${page_number}/${items_per_page}`)
 }
+
+export const getUserCollections = (address:string,page_number:number,items_per_page:number) => {
+  return axiosInstance.get(`/nft/collections-owned/${address}/${page_number}/${items_per_page}`)
+}

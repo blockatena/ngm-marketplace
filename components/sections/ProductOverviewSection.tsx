@@ -63,6 +63,7 @@ const ProductOverviewSection: FC<{
   const [M, setM] = useState(0)
   const [S, setS] = useState(0)
   const [accountBalance, setAccountBalance] = useState('')
+    const [chainID, setChainID] = useState('')
   // const meta_data_url = nft?.nft.meta_data_url || ''
 
   const isCancellable =
@@ -101,6 +102,9 @@ const ProductOverviewSection: FC<{
     setAccountBalance(balanceInEth)
   }
 
+  useEffect(()=> {
+    setChainID(contractDetails?.chain?.id)
+  },[contractDetails])
   const filters = () => {
     const fi = offers?.find((a) => {
       return a.offer_person_address === address && a.offer_status == 'started'
@@ -212,9 +216,8 @@ const ProductOverviewSection: FC<{
   // const explorer =
   //   CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
   const onClickAddress = (owner: string) => {
-    // let url = `https://${explorer}/address/${owner}`
-    // window.open(url, '_blank')
-    router.push(`/profile/${owner}`)
+      let profile = owner === address ? `/profile` : `/profile/${owner}`
+      router.push(profile)
   }
 
   return (
@@ -402,6 +405,7 @@ const ProductOverviewSection: FC<{
             setIsOpen={setIsBidModalOpen}
             nft={nft}
             accountBalance={accountBalance}
+            chainID={chainID}
           />
         )}
       </AnimatePresence>
@@ -411,6 +415,7 @@ const ProductOverviewSection: FC<{
             isOpen={isCancelBidModalOpen}
             setIsOpen={setIsCancelBidModalOpen}
             nft={nft}
+            chainID={chainID}
           />
         )}
       </AnimatePresence>
@@ -421,6 +426,7 @@ const ProductOverviewSection: FC<{
             setIsOpen={setIsOfferModalOpen}
             nft={nft}
             accountBalance={accountBalance}
+            chainID={chainID}
           />
         )}
       </AnimatePresence>
@@ -431,6 +437,7 @@ const ProductOverviewSection: FC<{
             isOpen={isCancelModalOpen}
             setIsOpen={setIsCancelModalOpen}
             nft={nft}
+            chainID={chainID}
           />
         )}
       </AnimatePresence>
@@ -441,6 +448,7 @@ const ProductOverviewSection: FC<{
             isOpen={isCancelSaleModalOpen}
             setIsOpen={setIsCancelSaleModalOpen}
             nft={nft}
+            chainID={chainID}
           />
         )}
       </AnimatePresence>
@@ -453,6 +461,7 @@ const ProductOverviewSection: FC<{
             token_id={nft?.token_id}
             address={address}
             caller={address}
+            chainID={chainID}
           />
         )}
       </AnimatePresence>

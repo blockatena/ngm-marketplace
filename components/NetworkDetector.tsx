@@ -3,6 +3,7 @@ import { FC, useEffect,useState } from 'react'
 import { useNetwork, useSwitchNetwork, useAccount } from 'wagmi'
 import { ethers } from 'ethers'
 const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
+const CHAINID2: string = process.env.NEXT_PUBLIC_CHAIN_ID2 || ''
 const Detector: FC = () => {
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
@@ -14,7 +15,7 @@ const Detector: FC = () => {
   const [url,setUrl] = useState('')
   const { isConnected } = useAccount()
   const [currentChainId,setCurrentChainId] = useState('')
-  const targetNetworkId = ['80001', '137']
+  const targetNetworkId = ['80001', '137','1','5']
 
     const onSwitchNetwork = async () => {
       const ethereum = (window as any).ethereum
@@ -24,7 +25,8 @@ const Detector: FC = () => {
         const provider = new ethers.providers.Web3Provider(ethereum, 'any')
         const { chainId } = await provider.getNetwork()
         let chain = parseInt(CHAINID)
-        if (chainId !== chain) {
+        let chain2 = parseInt(CHAINID2)
+        if (chainId !== chain && chainId !== chain2) {
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
@@ -67,15 +69,18 @@ const Detector: FC = () => {
 
   
   const handleAlert = async ()=> {
+    // console.log(isConnected)
+    // console.log(currentChainId)
     if(!isConnected) return;
     if (targetNetworkId.includes(currentChainId)) {
-      if (currentChainId === CHAINID) {
+
+      if (currentChainId === CHAINID || currentChainId === CHAINID2) {
         // console.log('On Correct Network')
         setShowAlert('false')
         return
       } else {
         setUrl(
-          CHAINID === '80001'
+          (CHAINID === '80001')
             ? 'https://www.gamestoweb3.com'
             : 'https://testnets.gamestoweb3.com'
         )
@@ -84,7 +89,7 @@ const Detector: FC = () => {
             CHAINID === '80001' ? 'Mainnet' : 'Testnet'
           } Switch Network to `
         )
-        setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
+        setMsg2(CHAINID === '80001'? 'Testnet' : 'Mainnet')
         setMsg3('or Visit to')
         setMsg4(CHAINID === '80001' ? 'Mainnet' : 'Testnet')
         setShowAlert('true')

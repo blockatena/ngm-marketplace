@@ -16,7 +16,7 @@ import { getAllNFts } from '../../react-query/queries'
 import { handleAnimationDelay } from '../../utils'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
-
+import withProtection from '../../components/withProtection'
 const crumbData: CrumbType[] = [
   { name: 'home', route: '/' },
   { name: 'assets', route: '/assets' },
@@ -418,4 +418,4 @@ const AssetsPage: NextPage = () => {
   )
 }
 
-export default AssetsPage
+export default withProtection(AssetsPage)

@@ -120,96 +120,6 @@ const initialActivity: any = [
     updatedAt: ' ',
     __v: 0,
   },
-  // {
-  //   _id: '-',
-  //   event: '-',
-  //   item: {
-  //     name: '-',
-  //     contract_address: '-',
-  //     token_id: '-',
-  //     image: '-',
-  //   },
-  //   price: '-',
-  //   quantity: '-',
-  //   from: '-',
-  //   to: '-',
-  //   read: '-',
-  //   createdAt: '-',
-  //   updatedAt: '-',
-  //   __v: 0,
-  // },
-  // {
-  //   _id: '-',
-  //   event: '-',
-  //   item: {
-  //     name: '-',
-  //     contract_address: '-',
-  //     token_id: '-',
-  //     image: '-',
-  //   },
-  //   price: '-',
-  //   quantity: '-',
-  //   from: '-',
-  //   to: '-',
-  //   read: '-',
-  //   createdAt: '-',
-  //   updatedAt: '-',
-  //   __v: 0,
-  // },
-  // {
-  //   _id: '-',
-  //   event: '-',
-  //   item: {
-  //     name: '-',
-  //     contract_address: '-',
-  //     token_id: '-',
-  //     image: '-',
-  //   },
-  //   price: '-',
-  //   quantity: '-',
-  //   from: '-',
-  //   to: '-',
-  //   read: '-',
-  //   createdAt: '-',
-  //   updatedAt: '-',
-  //   __v: 0,
-  // },
-  // {
-  //   _id: '-',
-  //   event: '-',
-  //   item: {
-  //     name: '-',
-  //     contract_address: '-',
-  //     token_id: '-',
-  //     image: '-',
-  //   },
-  //   price: '-',
-  //   quantity: '-',
-  //   from: '-',
-  //   to: '-',
-  //   read: '-',
-  //   createdAt: '-',
-  //   updatedAt: '-',
-  //   __v: 0,
-  // },
-  // {
-  //   _id: '-',
-  //   event: '-',
-  //   item: {
-  //     name: '-',
-  //     contract_address: '-',
-  //     token_id: '-',
-  //     image: '-',
-  //   },
-  //   price: '-',
-  //   quantity: '-',
-  //   from: '-',
-  //   to: '-',
-  //   read: '-',
-  //   createdAt: '-',
-  //   updatedAt: '-',
-  //   __v: 0,
-  // },
   {
     _id: ' ',
     event: ' ',
@@ -293,7 +203,6 @@ const ViewAssetPage: NextPage = () => {
       route: `/assets/${contractAddress}/${tokenId}`,
     },
   ]
-
   useEffect(() => {
     setEndTime(
       data?.data?.auction?.end_date
@@ -354,7 +263,7 @@ const ViewAssetPage: NextPage = () => {
           <div className="col-span-1 w-3 lg:w-7 flex">
             <Image src={leftVector} alt="" />
           </div>
-          <div className="col-span-10 flex justify-center">
+          <div className="col-span-10 flex justify-left">
             <ProductOverviewSection
               offers={offers}
               endTime={endTime}

@@ -142,7 +142,10 @@ export type NftContractType = {
   symbol: string
   owner_address: string
   collection_name: string
-  chain: string
+  chain: {
+    id:any,
+    name:string
+  }
   type: string
   transactionhash: string
   contract_address: string
