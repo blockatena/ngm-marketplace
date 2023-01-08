@@ -20,7 +20,7 @@ import {
 import { handleAnimationDelay } from '../../utils'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
-
+import withProtection from '../../components/withProtection'
 interface HeroSectionProps {
   name: string
   img: any
@@ -532,6 +532,8 @@ const CollectionPage: NextPage = () => {
     }
   }
 
+  // console.log(avatars)
+
   // useEffect(() => {
   //   setAvatars(data?.data.nfts)
   //   setDataUnsorted(data?.data.nfts)
@@ -696,4 +698,4 @@ const CollectionPage: NextPage = () => {
   )
 }
 
-export default CollectionPage
+export default withProtection(CollectionPage)

@@ -142,7 +142,10 @@ export type NftContractType = {
   symbol: string
   owner_address: string
   collection_name: string
-  chain: string
+  chain: {
+    id:any,
+    name:string
+  }
   type: string
   transactionhash: string
   contract_address: string
@@ -209,7 +212,7 @@ export type nftCancelbidType = {
 
 export type CollectionNftsBodyType = {
   contract_address?: string
-  token_owner?: `0x${string}` | undefined
+  token_owner?: string
   listed_in?: string
   page_number: number
   items_per_page: number
@@ -303,5 +306,7 @@ export type UserType = {
   email: string
   createdAt: string
   updatedAt: string
+  banner_image?: string
+  profile_image?: string
   __v: number
 }

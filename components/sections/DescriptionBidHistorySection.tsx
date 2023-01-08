@@ -24,6 +24,10 @@ import {
 import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
 import AcceptOfferModal from '../modals/AcceptOfferModal'
 import CancelOfferModal from '../modals/CancelOfferModal'
+import { useRouter } from 'next/router'
+const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
+const explorer =
+    CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -33,6 +37,7 @@ ChartJS.register(
   Tooltip,
   Legend
 )
+
 
 export const AvatarData = [
   {
@@ -68,9 +73,11 @@ const DescriptionItem: FC<{
   contract: string
   tokenUri: string
 }> = ({ name, value, contract, tokenUri }) => {
+
+
   const clickC = () => {
     if (name === 'Contract Address') {
-      let url = `https://mumbai.polygonscan.com/token/${contract}`
+      let url = `https://${explorer}/token/${contract}`
       window.open(url, '_blank')
     } else if (name === 'Token ID') {
       let url = tokenUri
@@ -113,7 +120,8 @@ const CharacterDescription: FC<{
     { name: 'Contract Address', value: address || '' },
     { name: 'Token ID', value: nft?.token_id || '' },
     { name: 'Token Standard', value: nft?.contract_type || '' },
-    { name: 'Blockchain', value: contractDetails?.chain || '' },
+    { name: 'Chain ID', value: contractDetails?.chain?.id || '' },
+    { name: 'Network', value: contractDetails?.chain?.name || '' },
   ]
 
   return (
@@ -158,8 +166,14 @@ const CharacterDescription: FC<{
   )
 }
 
-const Activity = (activity) => {
-  activity = activity.activity
+const Activity: FC<{ 
+  activity:ActivityType
+   onClickAddress: () => void }> = (
+  {activity,
+  onClickAddress}
+  ) => {
+
+  // activity = activity.activity
   const tableHeadings = [
     { name: 'Type' },
     { name: 'Price' },
@@ -195,6 +209,7 @@ const Activity = (activity) => {
                       key={index}
                       activity={activity}
                       index={index}
+                      onClickAddress={onClickAddress}
                     />
                   )
                 })}
@@ -246,13 +261,11 @@ const shortenString = (value: string) => {
 //   )
 // }
 
-const onClickAddress = (user) => {
-  let url = `https://mumbai.polygonscan.com/address/${user}`
-  window.open(url, '_blank')
-}
+
+
 
 const onClickTx = (hash) => {
-  let url = `https://mumbai.polygonscan.com/tx/${hash}`
+  let url = `https://${explorer}/tx/${hash}`
   window.open(url, '_blank')
 }
 
@@ -260,9 +273,11 @@ const BidItem: FC<{
   bid: BidType
   auction: AuctionType | undefined
   index: number
+  onClickAddress: () => void
 }> = ({
   bid,
   index,
+  onClickAddress,
   // auction,
 }) => {
   let timePlaced = ''
@@ -326,7 +341,8 @@ const BidItem: FC<{
 const CurrentBids: FC<{
   bids: BidType[]
   auction: AuctionType | undefined
-}> = ({ bids, auction }) => {
+  onClickAddress: () => void
+}> = ({ bids, auction, onClickAddress }) => {
   const tableHeadings = [
     { name: 'Bidder Address' },
     { name: 'Bid Amount (WETH)' },
@@ -361,6 +377,7 @@ const CurrentBids: FC<{
                     bid={bid}
                     auction={auction}
                     index={index}
+                    onClickAddress={onClickAddress}
                   />
                 )
               })}
@@ -393,7 +410,8 @@ const OfferItem: FC<{
   index: number
   ifOwner: string
   handleOffers: () => void
-}> = ({ offer, index, ifOwner, handleOffers }) => {
+  onClickAddress:()=> void
+}> = ({ offer, index, ifOwner, handleOffers, onClickAddress }) => {
   let timePlaced = ''
 
   if (offer?.createdAt) {
@@ -472,7 +490,8 @@ const OfferItem: FC<{
 const ActivityItem: FC<{
   activity: ActivityType
   index: number
-}> = ({ activity, index }) => {
+  onClickAddress: () => void
+}> = ({ activity, index, onClickAddress }) => {
   let timePlaced = ''
   const { address } = useAccount()
   if (activity?.createdAt) {
@@ -488,7 +507,9 @@ const ActivityItem: FC<{
   const isTo = activity?.to !== '----'
   const isTx = activity?.transaction_hash
   const price = activity?.price
-  
+
+  const isInitial = activity?.event === '-'
+
   const activityData = [
     {
       name: 'Type',
@@ -496,11 +517,21 @@ const ActivityItem: FC<{
     },
     {
       name: 'Price',
-      value: activity?.event === 'Transfer'?`${price} ETH`:`${activity?.price} ETH`
+      value:
+        activity?.event === 'Transfer'
+          ? `${price} ETH`
+          : activity?.event === ' '
+          ? ' '
+          : `${activity?.price} ETH`,
     },
     {
       name: 'From',
-      value: activity?.from === address ? 'You' : shortenString(activity?.from),
+      value:
+        activity?.from === address
+          ? 'You'
+          : activity?.to === ' '
+          ? ' '
+          : shortenString(activity?.from),
     },
     {
       name: 'To',
@@ -508,10 +539,12 @@ const ActivityItem: FC<{
         activity?.to !== '----'
           ? activity?.to === address
             ? 'You'
+            : activity?.to === ' '
+            ? ' '
             : shortenString(activity?.to)
           : '-',
     },
-    { name: 'Time', value: timePlaced },
+    { name: 'Time', value: timePlaced === 'Invalid Date' ? ' ' : timePlaced },
   ]
 
   return (
@@ -531,11 +564,12 @@ const ActivityItem: FC<{
         <td
           key={index}
           className={
-            activityData?.name === 'From'
+            isInitial
+              ? 'h-16'
+              : activityData?.name === 'From'
               ? 'cursor-pointer underline hover:text-sky-500'
-              : isTo && activityData?.name === 'To'
-              ? 'cursor-pointer underline hover:text-sky-500'
-              : isTx && activityData?.name === 'Time'
+              : (isTo && activityData?.name === 'To') ||
+                (isTx && activityData?.name === 'Time')
               ? 'cursor-pointer underline hover:text-sky-500'
               : 'h-16'
           }
@@ -561,7 +595,16 @@ const CurrentOffers: FC<{
   sale: SaleType | undefined
   address: string
   setActiveTabIndex: () => void
-}> = ({ offers, sale, address, setActiveTabIndex }) => {
+  onClickAddress: () => void
+  chainID: any
+}> = ({
+  offers,
+  sale,
+  address,
+  setActiveTabIndex,
+  onClickAddress,
+  chainID,
+}) => {
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
   const [isAcceptOfferModalOpen, setIsAcceptOfferModalOpen] = useState(false)
   const [offer_person_address, setoffer_person_address] = useState('')
@@ -579,7 +622,7 @@ const CurrentOffers: FC<{
         { name: 'Offer Amount (WETH)' },
         { name: 'Made At' },
       ]
-
+console.log(chainID)
   const handleOffers = (offer_person_address, event) => {
     setoffer_person_address(offer_person_address)
     if (ifOwner && event === 'accept') {
@@ -618,6 +661,7 @@ const CurrentOffers: FC<{
                     offer={offer}
                     index={index}
                     ifOwner={ifOwner}
+                    onClickAddress={onClickAddress}
                   />
                 )
               })}
@@ -648,6 +692,7 @@ const CurrentOffers: FC<{
             token_id={sale?.token_id}
             address={offer_person_address}
             caller={address}
+            chainID={chainID}
           />
         )}
       </AnimatePresence>
@@ -660,6 +705,7 @@ const CurrentOffers: FC<{
             contract_address={sale?.contract_address}
             token_id={sale?.token_id}
             offer_address={offer_person_address}
+            chainID={chainID}
           />
         )}
       </AnimatePresence>
@@ -677,6 +723,8 @@ const DescriptionBidHistorySection: FC<{
   activity: ActivityType | undefined
   currentTab: any
   handleTabs: () => void
+  state:()=> void
+  states: ()=> void
 }> = ({
   nft,
   contractDetails,
@@ -687,11 +735,14 @@ const DescriptionBidHistorySection: FC<{
   activity,
   currentTab,
   handleTabs,
+  state,
+  states
 }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0)
   const [tabUnderlineLeft, setTabUnderlineLeft] = useState(0)
   const { address } = useAccount()
+  const router = useRouter()
   const tabsData = [
     {
       label: 'Description',
@@ -713,7 +764,20 @@ const DescriptionBidHistorySection: FC<{
     // },
   ]
 
+  const onClickAddress = (user) => {
+    let profile = user === address ? `/profile`:`/profile/${user}`
+    router.push(profile)
+  }
+
   const tabsRef = useRef([])
+
+  useEffect(()=> {
+    if(activeTabIndex === 1) {
+      state()
+    } else {
+      states()
+    }
+  })
 
   useEffect(() => {
     if (currentTab === 0) {
@@ -766,12 +830,22 @@ const DescriptionBidHistorySection: FC<{
               sale={sale}
               address={address}
               setActiveTabIndex={setActiveTabIndex}
+              onClickAddress={onClickAddress}
+              chainID={contractDetails?.chain?.id}
             />
           ) : (
-            <CurrentBids bids={bids} auction={auction} />
+            <CurrentBids
+              bids={bids}
+              auction={auction}
+              onClickAddress={onClickAddress}
+            />
           )
         ) : activeTabIndex === 1 ? (
-          <Activity activity={activity} address={address} />
+          <Activity
+            activity={activity}
+            address={address}
+            onClickAddress={onClickAddress}
+          />
         ) : (
           ''
         )}

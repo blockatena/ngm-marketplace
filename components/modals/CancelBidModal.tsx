@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Dispatch, FC, SetStateAction, useEffect } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect,useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { AvatarType } from '../../interfaces'
@@ -10,15 +10,17 @@ import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 import { ethers } from 'ethers'
 import { useAccount } from 'wagmi'
-
-const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
+import { useNetwork, useSwitchNetwork } from 'wagmi'
 const CancelBidModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   nft: AvatarType
-}> = ({ setIsOpen, nft }) => {
+  chainID:any
+}> = ({ setIsOpen, nft,chainID }) => {
   const queryClient = useQueryClient()
-
+  const { chain } = useNetwork()
+  const { switchNetwork } = useSwitchNetwork()
+    const [isChainCorrect, setIsChainCorrect] = useState(true)
   const { mutate, isSuccess, data, isLoading } = useMutation(cancelBid, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
@@ -26,7 +28,20 @@ const CancelBidModal: FC<{
     },
   })
     const { address } = useAccount()
+useEffect(() => {
+  if (!chainID) return
+  if (chain?.id === parseInt(chainID)) {
+    setIsChainCorrect(true)
+    return
+  } else {
+    setIsChainCorrect(false)
+    return
+  }
+}, [chain, chainID])
 
+const onSwitchNetwork = async () => {
+  await switchNetwork?.(parseInt(chainID))
+}
   const handleClick = async () => {
     const data = {
       contract_address: nft?.contract_address,
@@ -39,14 +54,6 @@ const CancelBidModal: FC<{
       method: 'eth_requestAccounts',
     })
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
-    const { chainId } = await provider.getNetwork()
-    let chain = parseInt(CHAINID)
-    if (chainId !== chain) {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
-      })
-    }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
     let rawMsg = `{
@@ -115,7 +122,9 @@ const CancelBidModal: FC<{
           </span>
         </p>
         <h2 className="text-white font-poppins text-[20px] lg:text-[30px] text-center my-4">
-          Are you sure you want to cancel this bid?
+          {!isChainCorrect
+            ? 'Wrong network detected'
+            : 'Are you sure you want to cancel this bid?'}
         </h2>
         {isLoading && (
           <div className="py-4 grid place-items-center">
@@ -125,20 +134,33 @@ const CancelBidModal: FC<{
 
         <div className="mt-8">
           <div className="flex flex-col md:flex-row justify-between gap-2 lg:gap-4 lg:pt-10">
-            <button
-              className="btn-secondary w-full md:w-1/2 h-[42px] md:h-16 text-sm lg:text-[21px]"
-              onClick={() => setIsOpen(false)}
-              disabled={isLoading}
-            >
-              No
-            </button>
-            <button
-              className="w-full btn-primary md:w-1/2 rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
-              onClick={handleClick}
-              disabled={isLoading}
-            >
-              Yes
-            </button>
+            {isChainCorrect && (
+              <>
+                <button
+                  className="btn-secondary w-full md:w-1/2 h-[42px] md:h-16 text-sm lg:text-[21px]"
+                  onClick={() => setIsOpen(false)}
+                  disabled={isLoading}
+                >
+                  No
+                </button>
+                <button
+                  className="w-full btn-primary md:w-1/2 rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
+                  onClick={handleClick}
+                  disabled={isLoading}
+                >
+                  Yes
+                </button>
+              </>
+            )}
+            {!isChainCorrect && (
+              <button
+                className="w-full btn-primary md:w-full rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
+                onClick={onSwitchNetwork}
+                disabled={isLoading}
+              >
+                Switch Network
+              </button>
+            )}
           </div>
         </div>
       </motion.div>

@@ -12,29 +12,44 @@ import { placeBid } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
-
+import { useNetwork, useSwitchNetwork } from 'wagmi'
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
-const CHAINID:string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const PlaceBidModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   nft: AvatarType
   accountBalance: any
-  status:string
-}> = ({ setIsOpen, nft, accountBalance ,status}) => {
+  status: string
+  chainID:any
+}> = ({ setIsOpen, nft, accountBalance, status, chainID }) => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
   const [bidAmount, setBidAmount] = useState(0)
   const [loading, setLoading] = useState(false)
   // const [accountBalance, setAccountBalance] = useState('')
-
+  const { chain } = useNetwork()
+  const { switchNetwork } = useSwitchNetwork()
+  const [isChainCorrect, setIsChainCorrect] = useState(true)
   const { mutate, data, isLoading, isSuccess } = useMutation(placeBid, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
   })
+  useEffect(() => {
+    if (!chainID) return
+    if (chain?.id === parseInt(chainID)) {
+      setIsChainCorrect(true)
+      return
+    } else {
+      setIsChainCorrect(false)
+      return
+    }
+  }, [chain, chainID])
 
+  const onSwitchNetwork = async () => {
+    await switchNetwork?.(parseInt(chainID))
+  }
   const onBid = async () => {
     if (nft?.token_owner === address) {
       toast.dark('You own this NFT!', {
@@ -51,14 +66,6 @@ const PlaceBidModal: FC<{
     })
 
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
-    const { chainId } = await provider.getNetwork()
-    let chain = parseInt(CHAINID)
-    if (chainId !== chain) {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
-      })
-    }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
     const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
@@ -74,17 +81,13 @@ const PlaceBidModal: FC<{
       bidder_address: address ? address : '',
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
-      sign:''
+      sign: '',
     }
     let rawMsg = `{
       "bid_amount":"${bidAmount}",
-      "bidder_address":"${
-      address ? address : ''
-    }",
+      "bidder_address":"${address ? address : ''}",
     "contract_address":"${nft?.contract_address}",
-    "token_id":"${
-      nft?.token_id
-    }"
+    "token_id":"${nft?.token_id}"
   }`
     console.log(parseInt(inputAmt.toString()))
 
@@ -129,7 +132,6 @@ const PlaceBidModal: FC<{
           mutate(bidData)
           setLoading(false)
         } else return setLoading(false)
-        
       } else {
         // const approvedtokens: any = ethers.utils.formatEther(approvedAmt)
         const amt = 1000
@@ -177,20 +179,23 @@ const PlaceBidModal: FC<{
 
   useEffect(() => {
     if (isSuccess) {
-      let msg = data?.data?.message? data?.data?.message:(data?.data && status === 'update' && 'Bid Updated Successfully') ||
-          (data?.data && status === 'place' && 'Bid Placed Successfully') || '';
-        
-        toast(msg, {
-          hideProgressBar: true,
-          autoClose: 3000,
-          type:data?.data?.message?'error':'success',
-          position: 'top-right',
-          theme: 'dark',
-        })
+      let msg = data?.data?.message
+        ? data?.data?.message
+        : (data?.data && status === 'update' && 'Bid Updated Successfully') ||
+          (data?.data && status === 'place' && 'Bid Placed Successfully') ||
+          ''
+
+      toast(msg, {
+        hideProgressBar: true,
+        autoClose: 3000,
+        type: data?.data?.message ? 'error' : 'success',
+        position: 'top-right',
+        theme: 'dark',
+      })
       setIsOpen(false)
       data?.data?.status === 'started' && setIsOpen(false)
-      } 
-  }, [isSuccess, data?.data, setIsOpen,status])
+    }
+  }, [isSuccess, data?.data, setIsOpen, status])
 
   return (
     <ModalBase>
@@ -250,10 +255,18 @@ const PlaceBidModal: FC<{
             <button
               className="btn-primary w-[200px] h-[40px] lg:w-[375px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]
             grid place-items-center"
-              onClick={() => onBid()}
+              onClick={() => (isChainCorrect ? onBid() : onSwitchNetwork())}
               disabled={isLoading || loading}
             >
-              {isLoading || loading ? <Spinner color="black" /> : status==='update'?'Update Bid':'Place Bid'}
+              {isLoading || loading ? (
+                <Spinner color="black" />
+              ) : !isChainCorrect ? (
+                'Switch Network'
+              ) : status === 'update' ? (
+                'Update Bid'
+              ) : (
+                'Place Bid'
+              )}
             </button>
           </div>
         </div>

@@ -14,16 +14,16 @@ import { fromTopAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
-
+import { useNetwork, useSwitchNetwork } from 'wagmi'
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
-const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const MakeOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   nft: AvatarType
   accountBalance: any
-}> = ({ setIsOpen, nft, accountBalance }) => {
+  chainID:any
+}> = ({ setIsOpen, nft, accountBalance, chainID }) => {
   const queryClient = useQueryClient()
   const { width } = useWindowDimensions()
   const { address } = useAccount()
@@ -31,13 +31,28 @@ const MakeOfferModal: FC<{
   const [loading, setLoading] = useState(false)
   const [clientWidth, setClientWidth] = useState(1)
   // const [accountBalance, setAccountBalance] = useState('')
-
+  const { chain } = useNetwork()
+  const { switchNetwork } = useSwitchNetwork()
+  const [isChainCorrect, setIsChainCorrect] = useState(true)
   const { mutate, data, isLoading, isSuccess } = useMutation(makeOffer, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
   })
+  useEffect(() => {
+    if (!chainID) return
+    if (chain?.id === parseInt(chainID)) {
+      setIsChainCorrect(true)
+      return
+    } else {
+      setIsChainCorrect(false)
+      return
+    }
+  }, [chain, chainID])
 
+  const onSwitchNetwork = async () => {
+    await switchNetwork?.(parseInt(chainID))
+  }
   const onMakeOffer = async () => {
     if (nft?.token_owner === address) {
       toast.dark('You own this NFT!', {
@@ -54,14 +69,6 @@ const MakeOfferModal: FC<{
     })
 
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
-    const { chainId } = await provider.getNetwork()
-    let chain = parseInt(CHAINID)
-    if (chainId !== chain) {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
-      })
-    }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
     const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
@@ -81,13 +88,9 @@ const MakeOfferModal: FC<{
     }
     let rawMsg = `{
       "offer_price":"${bidAmount}",
-      "offer_person_address":"${
-      address ? address : ''
-    }",
+      "offer_person_address":"${address ? address : ''}",
     "contract_address":"${nft?.contract_address}",
-    "token_id":"${
-      nft?.token_id
-    }"
+    "token_id":"${nft?.token_id}"
   }`
 
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
@@ -127,10 +130,10 @@ const MakeOfferModal: FC<{
             setIsOpen(false)
             return
           })
-          if (offerData['sign']) {
-            mutate(offerData)
-            setLoading(false)
-          } else return setLoading(false)
+        if (offerData['sign']) {
+          mutate(offerData)
+          setLoading(false)
+        } else return setLoading(false)
       } else {
         // const approvedtokens: any = ethers.utils.formatEther(approvedAmt)
         const amt = 1000
@@ -256,10 +259,18 @@ const MakeOfferModal: FC<{
             <button
               className="btn-primary w-[200px] h-[40px] lg:w-[375px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]
             grid place-items-center"
-              onClick={() => onMakeOffer()}
+              onClick={() =>
+                isChainCorrect ? onMakeOffer() : onSwitchNetwork()
+              }
               disabled={isLoading || loading}
             >
-              {isLoading || loading ? <Spinner color="black" /> : 'Make Offer'}
+              {isLoading || loading ? (
+                <Spinner color="black" />
+              ) : !isChainCorrect ? (
+                'Switch Network'
+              ) : (
+                'Make Offer'
+              )}
             </button>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Dispatch, FC, SetStateAction, useEffect } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect,useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { QUERIES } from '../../react-query/constants'
@@ -8,54 +8,59 @@ import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 import { ethers } from 'ethers'
-
-const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
+import { useNetwork, useSwitchNetwork } from 'wagmi'
 
 const CancelOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   // nft: AvatarType
-  contract_address:string
-  token_id:string
+  contract_address: string
+  token_id: string
   address: any
-  caller:any
-}> = ({ setIsOpen, contract_address,token_id, address,caller }) => {
+  caller: any
+  chainID:any
+}> = ({ setIsOpen, contract_address, token_id, address, caller, chainID }) => {
   const queryClient = useQueryClient()
   // const { address } = useAccount()
-
+  const { chain } = useNetwork()
+  const { switchNetwork } = useSwitchNetwork()
+  const [isChainCorrect, setIsChainCorrect] = useState(true)
   const { mutate, isSuccess, data, isLoading } = useMutation(cancelOffer, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
   })
+  useEffect(() => {
+    if (!chainID) return
+    if (chain?.id === parseInt(chainID)) {
+      setIsChainCorrect(true)
+      return
+    } else {
+      setIsChainCorrect(false)
+      return
+    }
+  }, [chain, chainID])
 
+  const onSwitchNetwork = async () => {
+    await switchNetwork?.(parseInt(chainID))
+  }
   const handleClick = async () => {
     const data = {
       contract_address: contract_address,
       token_id: token_id,
       offer_person_address: address,
-      caller:caller,
-      sign:''
+      caller: caller,
+      sign: '',
     }
     const ethereum = (window as any).ethereum
     const accounts = await ethereum.request({
       method: 'eth_requestAccounts',
     })
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
-    const { chainId } = await provider.getNetwork()
-    let chain = parseInt(CHAINID)
-    if (chainId !== chain) {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
-      })
-    }
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
     let rawMsg = `{
-      "offer_person_address":"${
-      address ? address : ''
-    }",
+      "offer_person_address":"${address ? address : ''}",
     "contract_address":"${contract_address}",
     "token_id":"${token_id}",
     "caller":"${caller}"
@@ -63,7 +68,9 @@ const CancelOfferModal: FC<{
     let hashMessage = await ethers.utils.hashMessage(rawMsg)
     // console.log(hashMessage)
     await signer
-      .signMessage(`Signing to Cancel Offer\n${rawMsg}\n Hash: \n${hashMessage}`)
+      .signMessage(
+        `Signing to Cancel Offer\n${rawMsg}\n Hash: \n${hashMessage}`
+      )
       .then(async (sign) => {
         // console.log(sign)
         data['sign'] = sign
@@ -80,13 +87,18 @@ const CancelOfferModal: FC<{
 
   useEffect(() => {
     if (isSuccess) {
-      toast(data?.data?.message?data?.data?.message:'Offer Cancelled Successfully', {
-        hideProgressBar: true,
-        autoClose: 3000,
-        type:data?.data?.message?'error':'success',
-        position: 'top-right',
-        theme: 'dark',
-      })
+      toast(
+        data?.data?.message
+          ? data?.data?.message
+          : 'Offer Cancelled Successfully',
+        {
+          hideProgressBar: true,
+          autoClose: 3000,
+          type: data?.data?.message ? 'error' : 'success',
+          position: 'top-right',
+          theme: 'dark',
+        }
+      )
       setIsOpen(false)
     }
   }, [isSuccess, data?.data?.message, setIsOpen])
@@ -115,7 +127,9 @@ const CancelOfferModal: FC<{
           </span>
         </p>
         <h2 className="text-white font-poppins text-[20px] lg:text-[30px] text-center my-4">
-          Are you sure you want to cancel this offer?
+          {!isChainCorrect
+            ? 'Wrong network detected'
+            : 'Are you sure you want to cancel this offer?'}
         </h2>
         {isLoading && (
           <div className="py-4 grid place-items-center">
@@ -125,20 +139,33 @@ const CancelOfferModal: FC<{
 
         <div className="mt-8">
           <div className="flex flex-col md:flex-row justify-between gap-2 lg:gap-4 lg:pt-10">
-            <button
-              className="btn-secondary w-full md:w-1/2 h-[42px] md:h-16 text-sm lg:text-[21px]"
-              onClick={() => setIsOpen(false)}
-              disabled={isLoading}
-            >
-              No
-            </button>
-            <button
-              className="w-full btn-primary md:w-1/2 rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
-              onClick={handleClick}
-              disabled={isLoading}
-            >
-              Yes
-            </button>
+            {isChainCorrect && (
+              <>
+                <button
+                  className="btn-secondary w-full md:w-1/2 h-[42px] md:h-16 text-sm lg:text-[21px]"
+                  onClick={() => setIsOpen(false)}
+                  disabled={isLoading}
+                >
+                  No
+                </button>
+                <button
+                  className="w-full btn-primary md:w-1/2 rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
+                  onClick={handleClick}
+                  disabled={isLoading}
+                >
+                  Yes
+                </button>
+              </>
+            )}
+            {!isChainCorrect && (
+              <button
+                className="w-full btn-primary md:w-full rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
+                onClick={onSwitchNetwork}
+                disabled={isLoading}
+              >
+                Switch Network
+              </button>
+            )}
           </div>
         </div>
       </motion.div>
