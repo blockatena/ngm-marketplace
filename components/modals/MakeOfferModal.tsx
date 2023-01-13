@@ -5,7 +5,7 @@ import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
 import { NGM20ABI } from '../../contracts/nftabi'
 import type { AvatarType, NftOfferBodyType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
@@ -14,7 +14,6 @@ import { fromTopAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
-import { useNetwork, useSwitchNetwork } from 'wagmi'
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
 const MakeOfferModal: FC<{
@@ -22,7 +21,7 @@ const MakeOfferModal: FC<{
   isOpen: boolean
   nft: AvatarType
   accountBalance: any
-  chainID:any
+  chainID: any
 }> = ({ setIsOpen, nft, accountBalance, chainID }) => {
   const queryClient = useQueryClient()
   const { width } = useWindowDimensions()
@@ -202,7 +201,7 @@ const MakeOfferModal: FC<{
   return (
     <ModalBase>
       <motion.div
-        className="w-full max-w-[866px] lg:h-[350px] py-4 px-4 lg:px-10 
+        className="w-full max-w-[866px] lg:h-[400px] py-4 px-4 lg:px-10 
     rounded-lg skew-y-1 -skew-x-1 bg-gradient-to-b from-[#494A4A] via-[#222324] to-[#030507]"
         variants={fromTopAnimation}
         initial="initial"
@@ -254,7 +253,19 @@ const MakeOfferModal: FC<{
               <span>WETH</span>
             </p>
           </div>
-
+          <div className="font-poppins lg:text-[20px] flex justify-between mb-2 mt-3">
+            <label htmlFor="quantity" className="text-white">
+              Quantity
+            </label>
+          </div>
+          <div className="h-[47px] relative rounded-lg">
+            <input
+              // onChange={() => null }
+              type="number"
+              id="quantity"
+              className="outline-none w-full h-full bg-[#585858] px-[5%] text-white rounded-lg"
+            />
+          </div>
           <div className="grid place-items-center mt-8">
             <button
               className="btn-primary w-[200px] h-[40px] lg:w-[375px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]

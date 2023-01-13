@@ -7,6 +7,7 @@ import { ChangeEvent, useEffect, useState } from 'react'
 import { AiFillCheckSquare, AiOutlineClockCircle } from 'react-icons/ai'
 import { useMutation, useQuery } from 'react-query'
 import { toast } from 'react-toastify'
+import { useNetwork, useSwitchNetwork } from 'wagmi'
 import AvatarCard from '../../../../components/AvatarCard'
 import BreadCrumb from '../../../../components/BreadCrumb'
 import ListingSuccessModal from '../../../../components/modals/ListingSuccessModal'
@@ -37,7 +38,6 @@ import {
   opacityAnimation,
 } from '../../../../utils/animations'
 import useCurrentDateTime from '../../../../utils/hooks/useCurrentDateTime'
-import { useNetwork, useSwitchNetwork } from 'wagmi'
 
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 
@@ -71,7 +71,7 @@ const ListAssetPage: NextPage = () => {
     min_price: 0,
   }
   const { chain } = useNetwork()
-  const {  switchNetwork } = useSwitchNetwork()
+  const { switchNetwork } = useSwitchNetwork()
   const [contractAddress, setContractAddress] = useState('')
   const [tokenId, setTokenId] = useState('')
   const [NFTABI, setNFTABI] = useState<any>()
@@ -80,9 +80,9 @@ const ListAssetPage: NextPage = () => {
   const [contractDetails, setContractDetails] = useState<NftContractType>()
   const [formData, setFormData] = useState(initialFormState)
   const [isLoading, setIsLoading] = useState(false)
-  const [isChainCorrect,setIsChainCorrect] = useState(true)
+  const [isChainCorrect, setIsChainCorrect] = useState(true)
   const [type, setType] = useState<'fixed' | 'auction'>('auction')
-  const [chainID,setChainID] = useState('')
+  const [chainID, setChainID] = useState('')
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId),
@@ -115,7 +115,7 @@ const ListAssetPage: NextPage = () => {
   ]
 
   useEffect(() => {
-    if(!chainID) return;
+    if (!chainID) return
     if (chain?.id === parseInt(chainID)) {
       setIsChainCorrect(true)
       return
@@ -125,7 +125,7 @@ const ListAssetPage: NextPage = () => {
     }
   }, [chain, chainID])
 
-  const onSwitchNetwork= async ()=> {
+  const onSwitchNetwork = async () => {
     await switchNetwork?.(parseInt(chainID))
   }
   const onlisting = async () => {
@@ -185,7 +185,7 @@ const ListAssetPage: NextPage = () => {
     let startPrt = formData?.end_date.split('-')
     let n1 = startPrt[0].slice(0, 4)
     let newEndDate: any = `${n1}-${startPrt[1]}-${startPrt[2]}`
-    formData['end_date']= newEndDate
+    formData['end_date'] = newEndDate
     let startDate = new Date(formData.start_date).toISOString()
     let endDate = new Date(formData?.end_date).toISOString()
 
@@ -196,7 +196,7 @@ const ListAssetPage: NextPage = () => {
       start_date: startDate,
       end_date: endDate,
       min_price: formData.min_price,
-      sign:''
+      sign: '',
     }
 
     const saleBody: NftSaleBodyType = {
@@ -206,7 +206,7 @@ const ListAssetPage: NextPage = () => {
       start_date: startDate,
       end_date: endDate,
       price: formData.min_price,
-      sign:''
+      sign: '',
     }
 
     let rawMsg = `{
@@ -231,11 +231,13 @@ const ListAssetPage: NextPage = () => {
       let hashMessage = await ethers.utils.hashMessage(
         type === 'auction' ? rawMsg : rawMsgSale
       )
-       let msg = type === 'auction' ? rawMsg : rawMsgSale
+      let msg = type === 'auction' ? rawMsg : rawMsgSale
       // console.log(hashMessage)
       await signer
         .signMessage(
-          `Signing to ${type === 'auction'?"Create Auction":"Create Sale"} \n${msg}\n Hash : ${hashMessage}`
+          `Signing to ${
+            type === 'auction' ? 'Create Auction' : 'Create Sale'
+          } \n${msg}\n Hash : ${hashMessage}`
         )
         .then(async (sign) => {
           // console.log(sign)
@@ -255,7 +257,7 @@ const ListAssetPage: NextPage = () => {
         type === 'fixed' && createSale(saleBody)
         setIsLoading(false)
       } else return setIsLoading(false)
-      
+
       // if (isSuccess) {
       //   setIsSuccessModalOpen(true)
       // }
@@ -291,13 +293,14 @@ const ListAssetPage: NextPage = () => {
                 console.log(e.message)
                 return
               })
-            let sig = type === 'auction'?requestData['sign']:saleBody['sign']
-            if(sig) {
+            let sig =
+              type === 'auction' ? requestData['sign'] : saleBody['sign']
+            if (sig) {
               type === 'auction' && mutate(requestData)
               type === 'fixed' && createSale(saleBody)
               setIsLoading(false)
             } else return setIsLoading(false)
-            
+
             // setIsSuccessModalOpen(true)
           })
         })
@@ -516,6 +519,41 @@ const ListAssetPage: NextPage = () => {
               <p className="font-poppins lg:text-[21px] text-white text-end mt-2">
                 0.0001 ETH{' '}
               </p>
+            </motion.div>
+
+            <motion.div
+              className="mt-8"
+              variants={opacityAnimation}
+              initial="initial"
+              whileInView="final"
+              viewport={{ once: true }}
+              transition={{
+                ease: 'easeInOut',
+                duration: 1,
+                delay: 0.4,
+              }}
+            >
+              <h5
+                className="text-[#F6F6F6] lg:text-[31px] font-medium font-poppins lg:leading-[24px]
+            mb-6"
+              >
+                Quantity
+              </h5>
+              <div
+                className="flex flex-col md:flex-row items-center gap-4 h-[47px] rounded-lg bg-[#4D4D49] text-white 
+            font-poppins"
+              >
+                <input
+                  type="number"
+                  id="quantity"
+                  name="quantity"
+                  className="w-full h-full bg-[#585858] outline-none rounded-lg text-white font-poppins 
+                  px-2 border border-[#E5E4E4]"
+                  // onChange={() => null}
+                  // value={}
+                  // disabled
+                />
+              </div>
             </motion.div>
 
             <motion.div
