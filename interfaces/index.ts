@@ -2,6 +2,8 @@ export type CrumbType = { name: string; route: string }
 
 export type addressType = `0x${string}`
 
+export type NftType = 'NGM1155' | 'NGM721PSI'
+
 export type CollectionCardType = {
   chain: string
   collection_name: string
@@ -143,8 +145,8 @@ export type NftContractType = {
   owner_address: string
   collection_name: string
   chain: {
-    id:any,
-    name:string
+    id: any
+    name: string
   }
   type: string
   transactionhash: string
@@ -218,6 +220,7 @@ export type CollectionNftsBodyType = {
   items_per_page: number
   order: 'NewToOld' | 'OldToNew'
   alphabetical_order: 'AtoZ' | 'ZtoA'
+  nftType?: NftType
 }
 
 export type NftSaleBodyType = {

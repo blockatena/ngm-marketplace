@@ -10,17 +10,22 @@ import Drawer from '../../components/Drawer'
 import NavAccordion from '../../components/NavAccordion'
 import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
-import type { AvatarType, CollectionNftsBodyType } from '../../interfaces'
+import withProtection from '../../components/withProtection'
+import type {
+  AvatarType,
+  CollectionNftsBodyType,
+  NftType,
+} from '../../interfaces'
 import { CrumbType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
 import {
   getCollectionDetails,
   getCollectionNfts,
+  getCollectionType,
 } from '../../react-query/queries'
 import { handleAnimationDelay } from '../../utils'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
-import withProtection from '../../components/withProtection'
 interface HeroSectionProps {
   name: string
   img: any
@@ -389,10 +394,23 @@ const CollectionPage: NextPage = () => {
 
   const { mutate, data, isSuccess } = useMutation(getCollectionNfts)
 
+  const { data: contractType } = useQuery(
+    [QUERIES.getCollectionType, contractAddress],
+    () => getCollectionType(contractAddress),
+    { enabled: !!contractAddress }
+  )
+
+  const nftType: NftType | undefined = contractType?.data?.type
+
+  console.log({ nftType })
+
   const { data: collectionDetails } = useQuery(
     QUERIES.getCollectionDetails,
     () => getCollectionDetails(contractAddress),
-    { enabled: !!contractAddress && contractAddress !== 'undefined' }
+    {
+      enabled:
+        !!contractAddress && contractAddress !== 'undefined' && !!nftType,
+    }
   )
 
   useEffect(() => {
@@ -402,9 +420,10 @@ const CollectionPage: NextPage = () => {
       items_per_page: ITEMS_PER_PAGE,
       alphabetical_order: ALPHABETICAL_ORDER,
       order: ORDER,
+      nftType,
     }
-    contractAddress !== 'undefined' && mutate(body)
-  }, [mutate, contractAddress, currentPage])
+    contractAddress !== 'undefined' && nftType && mutate(body)
+  }, [mutate, contractAddress, currentPage, nftType])
 
   // const { data, refetch, isSuccess } = useQuery(
   //   QUERIES.getCollectionNFTs,

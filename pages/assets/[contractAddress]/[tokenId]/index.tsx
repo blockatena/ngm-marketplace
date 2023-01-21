@@ -17,6 +17,7 @@ import type {
   BidType,
   CrumbType,
   NftContractType,
+  NftType,
   OfferType,
   SaleType,
   UserType,
@@ -24,7 +25,11 @@ import type {
 import leftVector from '../../../../public/images/others/left_vector.png'
 import rightVector from '../../../../public/images/others/right_vector.png'
 import { QUERIES } from '../../../../react-query/constants'
-import { getNftActivity, getSingleNft } from '../../../../react-query/queries'
+import {
+  getCollectionType,
+  getNftActivity,
+  getSingleNft,
+} from '../../../../react-query/queries'
 
 const initalNftState: AvatarType = {
   _id: '',
@@ -163,21 +168,29 @@ const ViewAssetPage: NextPage = () => {
       ? process.env.NEXT_PUBLIC_REFETCH_TIME
       : '30000'
   )
+
+  const { data: contractType } = useQuery(
+    [QUERIES.getCollectionType, contractAddress],
+    () => getCollectionType(contractAddress),
+    { enabled: !!contractAddress }
+  )
+  const nftType: NftType | undefined = contractType?.data?.type
+
   const activities = useQuery(
     [QUERIES.getNftActivity, contractAddress, tokenId, page_number],
     () => getNftActivity(contractAddress, tokenId, page_number, 10),
     {
-      enabled: !!contractAddress && !!tokenId,
+      enabled: !!contractAddress && !!tokenId && !!nftType,
       refetchInterval: refetchtime,
       refetchIntervalInBackground: true,
     }
   )
 
   const { data } = useQuery(
-    [QUERIES.getSingleNft, contractAddress, tokenId],
-    () => getSingleNft(contractAddress, tokenId),
+    [QUERIES.getSingleNft, contractAddress, tokenId, nftType],
+    () => getSingleNft(contractAddress, tokenId, nftType),
     {
-      enabled: !!contractAddress && !!tokenId,
+      enabled: !!contractAddress && !!tokenId && !!nftType,
       refetchInterval: refetchtime,
       refetchIntervalInBackground: true,
     }
@@ -211,7 +224,7 @@ const ViewAssetPage: NextPage = () => {
         ? data?.data?.sale?.end_date
         : ''
     )
-    setNft(data?.data.nft)
+    setNft(data?.data?.nft || data?.data?.nft1155)
     // setAvatars(DATA?.data?.data?.nfts)
     setContractDetails(data?.data?.contract_details)
     setBids(data?.data?.bids)
@@ -225,6 +238,8 @@ const ViewAssetPage: NextPage = () => {
       setActivityDetails(initialActivity)
     }
   }, [data, activities])
+
+  const owners: any[] | undefined = data?.data?.owners
 
   useEffect(() => {
     if (asPath) {
@@ -274,6 +289,8 @@ const ViewAssetPage: NextPage = () => {
               sale={saleDetails}
               setActiveTabIndex={handleTabs}
               owner={ownerDetails}
+              nftType={nftType}
+              owners={owners}
             />
           </div>
           <div className="col-span-1 flex justify-end ">

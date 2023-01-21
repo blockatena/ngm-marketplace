@@ -12,6 +12,7 @@ import type {
   NftCancelOfferBodyType,
   NftOfferBodyType,
   NftSaleBodyType,
+  NftType,
 } from '../interfaces'
 
 const axiosFileInstance = createAxiosInstance('form-data')
@@ -44,8 +45,16 @@ export const getAllNFts = (
   return axiosInstance.get(`/nft/Get-all-nfts/${page_number}/${items_per_page}`)
 }
 
-export const getSingleNft = (contractAddress: string, tokenId: string) =>
-  axiosInstance.get(`/nft/get-nft/${contractAddress}/${tokenId}`)
+export const getSingleNft = (
+  contractAddress: string,
+  tokenId: string,
+  nftType?: NftType
+) => {
+  if (nftType === 'NGM1155') {
+    return axiosInstance.get(`/nft/g2w3-1155/${contractAddress}/${tokenId}`)
+  }
+  return axiosInstance.get(`/nft/get-nft/${contractAddress}/${tokenId}`)
+}
 
 export const createNftAuction = (data: nftAuctionBodyType) => {
   return axiosInstance.post('/nft-marketplace/create-nft-auction', data)
@@ -67,8 +76,12 @@ export const cancelBid = (data: nftCancelbidType) => {
   return axiosInstance.post('/nft-marketplace/cancel-bid', data)
 }
 
-export const getCollectionNfts = (data: CollectionNftsBodyType) =>
-  axiosInstance.post(`/nft/get-nfts-listed-collection`, data)
+export const getCollectionNfts = (data: CollectionNftsBodyType) => {
+  if (data.nftType === 'NGM1155') {
+    return axiosInstance.post(`/nft/get-nfts-1155-collection`, data)
+  }
+  return axiosInstance.post(`/nft/get-nfts-listed-collection`, data)
+}
 
 export const createNftSale = (data: NftSaleBodyType) => {
   return axiosInstance.post('/nft-marketplace/create-sale', data)
@@ -131,11 +144,37 @@ export const getUserActivity = (
   )
 }
 
-
-export const getNftActivity = (contract_address:string,token_id:string,page_number:number,items_per_page:number) => {
-  return axiosInstance.get(`/activity/get-item-activity/${contract_address}/${token_id}/${page_number}/${items_per_page}`)
+export const getNftActivity = (
+  contract_address: string,
+  token_id: string,
+  page_number: number,
+  items_per_page: number
+) => {
+  return axiosInstance.get(
+    `/activity/get-item-activity/${contract_address}/${token_id}/${page_number}/${items_per_page}`
+  )
 }
 
-export const getUserCollections = (address:string,page_number:number,items_per_page:number) => {
-  return axiosInstance.get(`/nft/collections-owned/${address}/${page_number}/${items_per_page}`)
+export const getUserCollections = (
+  address: string,
+  page_number: number,
+  items_per_page: number
+) => {
+  return axiosInstance.get(
+    `/nft/collections-owned/${address}/${page_number}/${items_per_page}`
+  )
+}
+
+export const getNumberOfTokensForAddress = (
+  token_owner: string,
+  contract_address: string,
+  token_id: string
+) => {
+  return axiosInstance.get(
+    `/nft/g2w3-1155/${token_owner}/${contract_address}/${token_id}`
+  )
+}
+
+export const getCollectionType = (contract_address: string) => {
+  return axiosInstance.get(`/nft/get-type-of-nft/${contract_address}`)
 }

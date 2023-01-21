@@ -69,6 +69,7 @@ const ListAssetPage: NextPage = () => {
     start_date: `${date}T${time}`,
     end_date: '',
     min_price: 0,
+    quantity: 1,
   }
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
@@ -83,6 +84,7 @@ const ListAssetPage: NextPage = () => {
   const [isChainCorrect, setIsChainCorrect] = useState(true)
   const [type, setType] = useState<'fixed' | 'auction'>('auction')
   const [chainID, setChainID] = useState('')
+
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId),
@@ -216,6 +218,7 @@ const ListAssetPage: NextPage = () => {
       "start_date":"${startDate}",
       "end_date":"${endDate}",
       "min_price":"${formData.min_price}"
+      "quantity":"${formData.quantity}"
     }`
     let rawMsgSale = `{
       "contract_address":"${nft?.contract_address}",
@@ -224,6 +227,7 @@ const ListAssetPage: NextPage = () => {
       "start_date":"${startDate}",
       "end_date":"${endDate}",
       "price":"${formData.min_price}"
+      "quantity":"${formData.quantity}"
     }`
     if (isApproved === true) {
       // POST DATA
@@ -549,9 +553,8 @@ const ListAssetPage: NextPage = () => {
                   name="quantity"
                   className="w-full h-full bg-[#585858] outline-none rounded-lg text-white font-poppins 
                   px-2 border border-[#E5E4E4]"
-                  // onChange={() => null}
-                  // value={}
-                  // disabled
+                  onChange={handleUserInput}
+                  value={formData.quantity}
                 />
               </div>
             </motion.div>

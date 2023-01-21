@@ -10,6 +10,7 @@ import {
   AvatarType,
   BidType,
   NftContractType,
+  NftType,
   OfferType,
   SaleType,
   UserType,
@@ -23,6 +24,7 @@ import CancelOfferModal from '../modals/CancelOfferModal'
 import CancelSaleModal from '../modals/CancelSaleModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
+import ViewOwnersModal from '../modals/ViewOwnersModal'
 // import ownerImg from '../../public/images/others/owner.png'
 
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
@@ -38,6 +40,8 @@ const ProductOverviewSection: FC<{
   offers: OfferType[] | undefined
   setActiveTabIndex: () => void
   owner: UserType | undefined
+  nftType?: NftType
+  owners?: any[]
 }> = ({
   nft,
   contractDetails,
@@ -47,6 +51,8 @@ const ProductOverviewSection: FC<{
   offers,
   setActiveTabIndex,
   owner: tokenOwner,
+  nftType,
+  owners,
 }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
@@ -55,6 +61,7 @@ const ProductOverviewSection: FC<{
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
   const [isCancelSaleModalOpen, setIsCancelSaleModalOpen] = useState(false)
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
+  const [isViewOwnersModalOpen, setIsViewOwnersModalOpen] = useState(false)
   const { address } = useAccount()
   const isMounted = useIsMounted()
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
@@ -63,7 +70,7 @@ const ProductOverviewSection: FC<{
   const [M, setM] = useState(0)
   const [S, setS] = useState(0)
   const [accountBalance, setAccountBalance] = useState('')
-    const [chainID, setChainID] = useState('')
+  const [chainID, setChainID] = useState('')
   // const meta_data_url = nft?.nft.meta_data_url || ''
 
   const isCancellable =
@@ -102,9 +109,9 @@ const ProductOverviewSection: FC<{
     setAccountBalance(balanceInEth)
   }
 
-  useEffect(()=> {
+  useEffect(() => {
     setChainID(contractDetails?.chain?.id)
-  },[contractDetails])
+  }, [contractDetails])
   const filters = () => {
     const fi = offers?.find((a) => {
       return a.offer_person_address === address && a.offer_status == 'started'
@@ -216,8 +223,8 @@ const ProductOverviewSection: FC<{
   // const explorer =
   //   CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
   const onClickAddress = (owner: string) => {
-      let profile = owner === address ? `/profile` : `/profile/${owner}`
-      router.push(profile)
+    let profile = owner === address ? `/profile` : `/profile/${owner}`
+    router.push(profile)
   }
 
   return (
@@ -306,7 +313,19 @@ const ProductOverviewSection: FC<{
             <div className="font-poppins">
               {nft?.token_owner !== DEAD_ADDRESS && (
                 <>
-                  <p className="text-gray-600 text-sm lg:text-base">Owner</p>
+                  {nftType === 'NGM721PSI' && (
+                    <p className="text-gray-600 text-sm lg:text-base">Owner</p>
+                  )}
+                  {nftType === 'NGM1155' && (
+                    <p className="text-gray-600 text-sm lg:text-base">
+                      <span
+                        onClick={() => setIsViewOwnersModalOpen(true)}
+                        className="cursor-pointer hover:text-custom_yellow"
+                      >
+                        {`${owners?.length} Owners`}
+                      </span>
+                    </p>
+                  )}
                   <p className="font-medium text-white text-sm lg:text-base">
                     {/* SalvadorDali */}
                     <a
@@ -462,6 +481,15 @@ const ProductOverviewSection: FC<{
             address={address}
             caller={address}
             chainID={chainID}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isViewOwnersModalOpen && (
+          <ViewOwnersModal
+            isOpen={isViewOwnersModalOpen}
+            setIsOpen={setIsViewOwnersModalOpen}
+            owners={owners}
           />
         )}
       </AnimatePresence>
