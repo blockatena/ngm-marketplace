@@ -116,7 +116,7 @@ const CharacterDescription: FC<{
   const description = [
     { name: 'Contract Address', value: address || '' },
     { name: 'Token ID', value: nft?.token_id || '' },
-    { name: 'Quantity', value: 1 },
+    { name: 'Total Supply', value: nft?.number_of_tokens || 1 },
     { name: 'Token Standard', value: nft?.contract_type || '' },
     { name: 'Chain ID', value: contractDetails?.chain?.id || '' },
     { name: 'Network', value: contractDetails?.chain?.name || '' },
