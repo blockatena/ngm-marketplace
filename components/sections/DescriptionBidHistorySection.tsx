@@ -119,7 +119,7 @@ const CharacterDescription: FC<{
       name: 'Token ID',
       value: nft?.token_id === 0 ? '0' : nft?.token_id || '',
     },
-    { name: 'Quantity', value: nft?.number_of_tokens },
+    { name: 'Total Supply', value: nft?.number_of_tokens || 1 },
     { name: 'Token Standard', value: nft?.contract_type || '' },
     { name: 'Chain ID', value: contractDetails?.chain?.id || '' },
     { name: 'Network', value: contractDetails?.chain?.name || '' },
