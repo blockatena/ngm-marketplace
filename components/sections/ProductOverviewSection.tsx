@@ -322,7 +322,7 @@ const ProductOverviewSection: FC<{
                         onClick={() => setIsViewOwnersModalOpen(true)}
                         className="cursor-pointer hover:text-custom_yellow"
                       >
-                        {`${owners?.length} Owners`}
+                        {`${owners?.length} Owner(s)`}
                       </span>
                     </p>
                   )}

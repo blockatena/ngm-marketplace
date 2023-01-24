@@ -226,7 +226,7 @@ const ViewAssetPage: NextPage = () => {
     )
     setNft(data?.data?.nft || data?.data?.nft1155)
     // setAvatars(DATA?.data?.data?.nfts)
-    setContractDetails(data?.data?.contract_details)
+    setContractDetails(data?.data?.contract_details || data?.data?.collection)
     setBids(data?.data?.bids)
     setAuctionDetails(data?.data.auction)
     setOffers(data?.data?.offers)

@@ -523,7 +523,7 @@ const ActivityItem: FC<{
     },
     {
       name: 'Quantity',
-      value: 1,
+      value: activity?.quantity,
     },
     {
       name: 'From',
