@@ -451,7 +451,8 @@ const CollectionPage: NextPage = () => {
   let bestOffer = collectionDetails?.data.best_offer
   let totalvolume = collectionDetails?.data.collection?.trade_volume
   let owners = collectionDetails?.data.owners
-  let totalsupply = collectionDetails?.data.nfts.length
+  let totalNfts = collectionDetails?.data?.nfts?.total_nfts
+  let totalsupply = totalNfts ? totalNfts : collectionDetails?.data.nfts.length
   let createddate = collectionDetails?.data?.collection?.createdAt
   createddate = createddate?.substring(0, 10)
   let bannerurl = '/images/collections/static.jpg'

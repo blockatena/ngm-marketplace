@@ -51,7 +51,7 @@ export const getSingleNft = (
   nftType?: NftType
 ) => {
   if (nftType === 'NGM1155') {
-    return axiosInstance.get(`/nft/g2w3-1155/${contractAddress}/${tokenId}`)
+    return axiosInstance.get(`/nft/get-1155-nft/${contractAddress}/${tokenId}`)
   }
   return axiosInstance.get(`/nft/get-nft/${contractAddress}/${tokenId}`)
 }
