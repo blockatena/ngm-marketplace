@@ -119,15 +119,16 @@ const AvatarCard: FC<AvatarCardProps> = ({
 
   // console.log(nftinfo.name)
   const ifInauction = () => {
-    if (!auctionAmount && !inputTime) {
+    if (is_in_auction && !auctionAmount && !inputTime) {
       let url = `${BaseURL}/nft/get-nft/${contract_address}/${token_id}`
       if (is_in_auction) {
         fetch(url)
           .then((response) => response.json())
           .then((data) => {
-            // console.log(data)
+            if(data?.auction){
             setAuctionTime(data?.auction?.end_date)
             setAuctionAmount(data?.auction?.min_price)
+            }
           })
       }
     }

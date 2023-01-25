@@ -32,6 +32,7 @@ import {
   createNftAuction,
   createNftSale,
   getSingleNft,
+  getCollectionType,
 } from '../../../../react-query/queries'
 import {
   fromLeftAnimation,
@@ -85,6 +86,12 @@ const ListAssetPage: NextPage = () => {
   const [type, setType] = useState<'fixed' | 'auction'>('auction')
   const [chainID, setChainID] = useState('')
 
+  const { data: contractType } = useQuery(
+    [QUERIES.getCollectionType, contractAddress],
+    () => getCollectionType(contractAddress),
+    { enabled: !!contractAddress }
+  )
+console.log(contractType?.data.type)
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId),
@@ -218,9 +225,17 @@ const ListAssetPage: NextPage = () => {
       "start_date":"${startDate}",
       "end_date":"${endDate}",
       "min_price":"${formData.min_price}"
-      "quantity":"${formData.quantity}"
     }`
     let rawMsgSale = `{
+      "contract_address":"${nft?.contract_address}",
+      "token_id":"${nft?.token_id}",
+      "token_owner":"${nft?.token_owner}",
+      "start_date":"${startDate}",
+      "end_date":"${endDate}",
+      "price":"${formData.min_price}"
+    }`
+
+    let rawMsg1155Sale = `{
       "contract_address":"${nft?.contract_address}",
       "token_id":"${nft?.token_id}",
       "token_owner":"${nft?.token_owner}",
@@ -525,7 +540,7 @@ const ListAssetPage: NextPage = () => {
               </p>
             </motion.div>
 
-            <motion.div
+            {contractType?.data.type==='NGM1155' && <motion.div
               className="mt-8"
               variants={opacityAnimation}
               initial="initial"
@@ -557,7 +572,7 @@ const ListAssetPage: NextPage = () => {
                   value={formData.quantity}
                 />
               </div>
-            </motion.div>
+            </motion.div>}
 
             <motion.div
               className="mt-8"
