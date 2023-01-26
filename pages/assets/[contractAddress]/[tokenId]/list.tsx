@@ -7,7 +7,7 @@ import { ChangeEvent, useEffect, useState } from 'react'
 import { AiFillCheckSquare, AiOutlineClockCircle } from 'react-icons/ai'
 import { useMutation, useQuery } from 'react-query'
 import { toast } from 'react-toastify'
-import { useNetwork, useSwitchNetwork } from 'wagmi'
+import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
 import AvatarCard from '../../../../components/AvatarCard'
 import BreadCrumb from '../../../../components/BreadCrumb'
 import ListingSuccessModal from '../../../../components/modals/ListingSuccessModal'
@@ -23,16 +23,20 @@ import {
 import type {
   AvatarType,
   CrumbType,
+  Nft1155SaleBodyType,
   nftAuctionBodyType,
   NftContractType,
   NftSaleBodyType,
+  NftType,
 } from '../../../../interfaces'
 import { QUERIES } from '../../../../react-query/constants'
 import {
+  create1155NftSale,
   createNftAuction,
   createNftSale,
-  getSingleNft,
   getCollectionType,
+  getSingleNft,
+  getUserTokenNumber,
 } from '../../../../react-query/queries'
 import {
   fromLeftAnimation,
@@ -72,6 +76,7 @@ const ListAssetPage: NextPage = () => {
     min_price: 0,
     quantity: 1,
   }
+  const { address } = useAccount()
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
   const [contractAddress, setContractAddress] = useState('')
@@ -91,17 +96,28 @@ const ListAssetPage: NextPage = () => {
     () => getCollectionType(contractAddress),
     { enabled: !!contractAddress }
   )
-console.log(contractType?.data.type)
+
+  const nftType: NftType | undefined = contractType?.data?.type
+
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId),
     { enabled: !!contractAddress && !!tokenId }
   )
 
+  const { data: userTokenNumber } = useQuery(
+    [QUERIES.getUserTokenNumber, contractAddress, tokenId, address],
+    () => getUserTokenNumber(String(address), contractAddress, tokenId),
+    { enabled: !!contractAddress && !!tokenId && !!address }
+  )
+
   const { mutate, isSuccess } = useMutation(createNftAuction)
 
   const { mutate: createSale, isSuccess: isSaleSuccess } =
     useMutation(createNftSale)
+
+  const { mutate: create1155Sale, isSuccess: is1155SaleSuccess } =
+    useMutation(create1155NftSale)
 
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -122,6 +138,10 @@ console.log(contractType?.data.type)
       route: `/assets/${contractAddress}/${tokenId}`,
     },
   ]
+
+  useEffect(() => {
+    if (nftType === 'NGM1155') setType('fixed')
+  }, [nftType])
 
   useEffect(() => {
     if (!chainID) return
@@ -218,6 +238,17 @@ console.log(contractType?.data.type)
       sign: '',
     }
 
+    const sale1155Body: Nft1155SaleBodyType = {
+      contract_address: nft?.contract_address,
+      token_id: Number(nft?.token_id),
+      token_owner: String(address),
+      start_date: startDate,
+      end_date: endDate,
+      per_unit_price: formData.min_price,
+      number_of_tokens: formData.quantity,
+      // sign: '',
+    }
+
     let rawMsg = `{
       "contract_address":"${nft?.contract_address}",
       "token_id":"${nft?.token_id}",
@@ -248,9 +279,18 @@ console.log(contractType?.data.type)
       // POST DATA
       // console.log(type === 'auction' ? rawMsg : rawMsgSale)
       let hashMessage = await ethers.utils.hashMessage(
-        type === 'auction' ? rawMsg : rawMsgSale
+        nftType === 'NGM1155'
+          ? rawMsg1155Sale
+          : type === 'auction'
+          ? rawMsg
+          : rawMsgSale
       )
-      let msg = type === 'auction' ? rawMsg : rawMsgSale
+      let msg =
+        nftType === 'NGM1155'
+          ? rawMsg1155Sale
+          : type === 'auction'
+          ? rawMsg
+          : rawMsgSale
       // console.log(hashMessage)
       await signer
         .signMessage(
@@ -272,8 +312,11 @@ console.log(contractType?.data.type)
         })
       let sig = type === 'auction' ? requestData['sign'] : saleBody['sign']
       if (sig) {
-        type === 'auction' && mutate(requestData)
-        type === 'fixed' && createSale(saleBody)
+        nftType === 'NGM721PSI' && type === 'auction' && mutate(requestData)
+        nftType === 'NGM721PSI' && type === 'fixed' && createSale(saleBody)
+        nftType === 'NGM1155' &&
+          type === 'fixed' &&
+          create1155Sale(sale1155Body)
         setIsLoading(false)
       } else return setIsLoading(false)
 
@@ -290,9 +333,18 @@ console.log(contractType?.data.type)
             // console.log(tx.hash)
             //Axios data:POST
             let hashMessage = await ethers.utils.hashMessage(
-              type === 'auction' ? rawMsg : rawMsgSale
+              nftType === 'NGM1155'
+                ? rawMsg1155Sale
+                : type === 'auction'
+                ? rawMsg
+                : rawMsgSale
             )
-            let msg = type === 'auction' ? rawMsg : rawMsgSale
+            let msg =
+              nftType === 'NGM1155'
+                ? rawMsg1155Sale
+                : type === 'auction'
+                ? rawMsg
+                : rawMsgSale
             // console.log(hashMessage)
             await signer
               .signMessage(
@@ -315,8 +367,15 @@ console.log(contractType?.data.type)
             let sig =
               type === 'auction' ? requestData['sign'] : saleBody['sign']
             if (sig) {
-              type === 'auction' && mutate(requestData)
-              type === 'fixed' && createSale(saleBody)
+              nftType === 'NGM721PSI' &&
+                type === 'auction' &&
+                mutate(requestData)
+              nftType === 'NGM721PSI' &&
+                type === 'fixed' &&
+                createSale(saleBody)
+              nftType === 'NGM1155' &&
+                type === 'fixed' &&
+                create1155Sale(sale1155Body)
               setIsLoading(false)
             } else return setIsLoading(false)
 
@@ -366,8 +425,9 @@ console.log(contractType?.data.type)
     //   })
     //   return
     // }
-    ;(isSuccess || isSaleSuccess) && setIsSuccessModalOpen(true)
-  }, [isSuccess, isSaleSuccess])
+    ;(isSuccess || isSaleSuccess || is1155SaleSuccess) &&
+      setIsSuccessModalOpen(true)
+  }, [isSuccess, isSaleSuccess, is1155SaleSuccess])
 
   return (
     <main className="min-h-screen p-2 pt-6 lg:px-16 mb-6">
@@ -426,12 +486,17 @@ console.log(contractType?.data.type)
             lg:text-[28px] flex p-1 border border-[#4D4D49] shadow-inner"
               >
                 <div
-                  className={`flex items-center justify-center gap-2 w-1/2  cursor-pointer transition-all duration-500
+                  className={`flex items-center justify-center gap-2 w-1/2  ${
+                    type === 'auction' && 'cursor-pointer'
+                  } transition-all duration-500
                 ${
                   type === 'auction' &&
                   'rounded-l-2xl rounded-r-2xl bg-[#4D4D49]'
                 }`}
-                  onClick={() => setType('auction')}
+                  onClick={() => {
+                    if (nftType === 'NGM1155') return
+                    setType('auction')
+                  }}
                 >
                   <p>
                     {/* <Image
@@ -511,7 +576,10 @@ console.log(contractType?.data.type)
                 htmlFor="starting_price"
                 className="font-poppins lg:text-[31px] text-white"
               >
-                {type === 'auction' && 'Starting'} Price
+                {nftType === 'NGM1155'
+                  ? 'Unit'
+                  : type === 'auction' && 'Starting'}{' '}
+                Price
               </label>
               <div className="flex gap-4 justify-between mt-2">
                 <div
@@ -540,39 +608,44 @@ console.log(contractType?.data.type)
               </p>
             </motion.div>
 
-            {contractType?.data.type==='NGM1155' && <motion.div
-              className="mt-8"
-              variants={opacityAnimation}
-              initial="initial"
-              whileInView="final"
-              viewport={{ once: true }}
-              transition={{
-                ease: 'easeInOut',
-                duration: 1,
-                delay: 0.4,
-              }}
-            >
-              <h5
-                className="text-[#F6F6F6] lg:text-[31px] font-medium font-poppins lg:leading-[24px]
+            {nftType === 'NGM1155' && (
+              <motion.div
+                className="mt-8"
+                variants={opacityAnimation}
+                initial="initial"
+                whileInView="final"
+                viewport={{ once: true }}
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 1,
+                  delay: 0.4,
+                }}
+              >
+                <h5
+                  className="text-[#F6F6F6] lg:text-[31px] font-medium font-poppins lg:leading-[24px]
             mb-6"
-              >
-                Quantity
-              </h5>
-              <div
-                className="flex flex-col md:flex-row items-center gap-4 h-[47px] rounded-lg bg-[#4D4D49] text-white 
+                >
+                  Quantity{' '}
+                  <span className="text-xs">
+                    (You own {userTokenNumber?.data?.tokens} tokens)
+                  </span>
+                </h5>
+                <div
+                  className="flex flex-col md:flex-row items-center gap-4 h-[47px] rounded-lg bg-[#4D4D49] text-white 
             font-poppins"
-              >
-                <input
-                  type="number"
-                  id="quantity"
-                  name="quantity"
-                  className="w-full h-full bg-[#585858] outline-none rounded-lg text-white font-poppins 
+                >
+                  <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    className="w-full h-full bg-[#585858] outline-none rounded-lg text-white font-poppins 
                   px-2 border border-[#E5E4E4]"
-                  onChange={handleUserInput}
-                  value={formData.quantity}
-                />
-              </div>
-            </motion.div>}
+                    onChange={handleUserInput}
+                    value={formData.quantity}
+                  />
+                </div>
+              </motion.div>
+            )}
 
             <motion.div
               className="mt-8"

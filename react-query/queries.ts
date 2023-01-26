@@ -5,6 +5,7 @@ import {
 } from '../axiosInstance'
 import type {
   CollectionNftsBodyType,
+  Nft1155SaleBodyType,
   NftAcceptOfferBodyType,
   nftAuctionBodyType,
   NftBidBodyType,
@@ -88,12 +89,24 @@ export const createNftSale = (data: NftSaleBodyType) => {
   return axiosInstance.post('/nft-marketplace/create-sale', data)
 }
 
+export const create1155NftSale = (data: Nft1155SaleBodyType) => {
+  return axiosInstance.post('/nft-marketplace/create-sale-1155', data)
+}
+
 export const cancelSale = (data: {
   contract_address: string
   token_id: string
   sign: string
 }) => {
   return axiosInstance.post('/nft-marketplace/cancel-sale', data)
+}
+
+export const cancel1155Sale = (data: {
+  contract_address: string
+  token_id: string
+  token_owner: string
+}) => {
+  return axiosInstance.post('/nft-marketplace/cancel-sale-1155', data)
 }
 
 export const getCollectionDetails = (contractAddress: string) => {
@@ -178,4 +191,14 @@ export const getNumberOfTokensForAddress = (
 
 export const getCollectionType = (contract_address: string) => {
   return axiosInstance.get(`/nft/get-type-of-nft/${contract_address}`)
+}
+
+export const getUserTokenNumber = (
+  token_owner: string,
+  contract_address: string,
+  token_id: string
+) => {
+  return axiosInstance.get(
+    `/nft/g2w3-1155/${token_owner}/${contract_address}/${token_id}`
+  )
 }

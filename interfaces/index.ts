@@ -234,6 +234,16 @@ export type NftSaleBodyType = {
   sign: string
 }
 
+export type Nft1155SaleBodyType = {
+  token_owner: string
+  contract_address: string
+  token_id: number
+  number_of_tokens: number
+  start_date: string
+  end_date: string
+  per_unit_price: number
+}
+
 export type NftOfferBodyType = {
   contract_address: string
   token_id: string

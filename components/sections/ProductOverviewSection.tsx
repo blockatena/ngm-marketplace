@@ -81,15 +81,22 @@ const ProductOverviewSection: FC<{
 
   const isSaleCancellable =
     isMounted &&
-    nft?.token_owner &&
-    nft.token_owner === address &&
+    // nft?.token_owner &&
+    (nft?.token_owner === address ||
+      owners?.some((owner) => owner.token_owner === address)) &&
     nft?.is_in_sale
   // const isBidCancellable = isUserIsBidder && nft?.is_in_auction
 
   const isShowable =
     (nft?.token_owner !== DEAD_ADDRESS && nft?.is_in_sale) ||
     nft?.is_in_auction ||
-    nft?.token_owner === address
+    nft?.token_owner === address ||
+    owners?.some((owner) => owner.token_owner === address)
+
+  const isSellable =
+    isMounted &&
+    ((nft?.token_owner && nft.token_owner === address) ||
+      owners?.some((owner) => owner.token_owner === address))
 
   const getBalance = async (address: `0x${string}` | undefined) => {
     if (!address) return
@@ -178,7 +185,7 @@ const ProductOverviewSection: FC<{
       setIsCancelSaleModalOpen(true)
       return
     }
-    if (isMounted && nft?.token_owner === address) {
+    if (isSellable) {
       router.push(`${router.asPath}/list`)
       return
     }
@@ -387,7 +394,7 @@ const ProductOverviewSection: FC<{
                 ? 'Cancel Auction'
                 : isSaleCancellable
                 ? 'Cancel Sale'
-                : isMounted && nft?.token_owner && nft.token_owner === address
+                : isSellable
                 ? 'Sell'
                 : filters()
                 ? 'Update Offer'
@@ -468,6 +475,7 @@ const ProductOverviewSection: FC<{
             setIsOpen={setIsCancelSaleModalOpen}
             nft={nft}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
