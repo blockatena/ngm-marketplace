@@ -157,6 +157,7 @@ const ViewAssetPage: NextPage = () => {
   const [offers, setOffers] = useState<OfferType[]>()
   const [ownerDetails, setOwnerDetails] = useState<UserType>()
   const [saleDetails, setSaleDetails] = useState<SaleType>()
+  const [sales,setSales] = useState<any[]>()
   const [activityDetails, setActivityDetails] = useState<ActivityType>()
   const [currentTab, setCurrenttab] = useState<any>()
   const [totalPages, setTotalpges] = useState<any>()
@@ -232,6 +233,7 @@ const ViewAssetPage: NextPage = () => {
     setOffers(data?.data?.offers)
     setOwnerDetails(data?.data?.token_owner_info)
     setSaleDetails(data?.data?.sale)
+    setSales(data?.data?.sales)
     setActivityDetails(activities.data?.data.activity_data)
     setTotalpges(activities.data?.data?.total_pages)
     if (activities.isLoading) {
@@ -287,6 +289,7 @@ const ViewAssetPage: NextPage = () => {
               bids={bids}
               auction={auctionDetails}
               sale={saleDetails}
+              sales={sales}
               setActiveTabIndex={handleTabs}
               owner={ownerDetails}
               nftType={nftType}
@@ -310,6 +313,8 @@ const ViewAssetPage: NextPage = () => {
           sale={saleDetails}
           activity={activityDetails}
           currentTab={currentTab}
+          owners={owners}
+          nftType={nftType}
           handleTabs={handleTabs}
           state={state}
           states={states}

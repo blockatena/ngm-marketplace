@@ -3,7 +3,7 @@ import { Dispatch, FC, SetStateAction, useEffect,useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { QUERIES } from '../../react-query/constants'
-import { cancelOffer } from '../../react-query/queries'
+import { cancelOffer, cancel1155Offer } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
@@ -19,13 +19,36 @@ const CancelOfferModal: FC<{
   address: any
   caller: any
   chainID:any
-}> = ({ setIsOpen, contract_address, token_id, address, caller, chainID }) => {
+  nftType:any
+}> = ({ setIsOpen, contract_address, token_id, address, caller, chainID, nftType }) => {
   const queryClient = useQueryClient()
   // const { address } = useAccount()
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
-  const { mutate, isSuccess, data, isLoading } = useMutation(cancelOffer, {
+  // const { mutate, isSuccess, data, isLoading } = useMutation(cancelOffer, {
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries(QUERIES.getSingleNft)
+  //   },
+  // })
+
+  const {
+    mutate: CancelOffer,
+    data: cancelOfferData,
+    isLoading: isOfferLoading,
+    isSuccess: isOfferSuccess,
+  } = useMutation(cancelOffer, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(QUERIES.getSingleNft)
+    },
+  })
+
+  const {
+    mutate: Cancel1155Offer,
+    data: cancel1155OfferData,
+    isLoading: isOffer1155Loading,
+    isSuccess: is1155OfferSuccess,
+  } = useMutation(cancel1155Offer, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
@@ -52,6 +75,13 @@ const CancelOfferModal: FC<{
       caller: caller,
       sign: '',
     }
+    const data1155 = {
+      contract_address: contract_address,
+      token_id: parseInt(token_id),
+      offer_person_address: address,
+      caller: caller,
+      sign: '',
+    }
     const ethereum = (window as any).ethereum
     const accounts = await ethereum.request({
       method: 'eth_requestAccounts',
@@ -73,6 +103,7 @@ const CancelOfferModal: FC<{
       )
       .then(async (sign) => {
         // console.log(sign)
+        data1155['sign'] = sign
         data['sign'] = sign
       })
       .catch((e) => {
@@ -81,27 +112,52 @@ const CancelOfferModal: FC<{
         return
       })
     if (data['sign']) {
-      mutate(data)
+      if(nftType==='NGM1155'){
+        Cancel1155Offer(data1155)
+      } else {
+      CancelOffer(data)
+      }
     } else return
   }
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isOfferSuccess) {
       toast(
-        data?.data?.message
-          ? data?.data?.message
+        cancelOfferData?.data?.message
+          ? cancelOfferData?.data?.message
           : 'Offer Cancelled Successfully',
         {
           hideProgressBar: true,
           autoClose: 3000,
-          type: data?.data?.message ? 'error' : 'success',
+          type: cancelOfferData?.data?.message ? 'error' : 'success',
           position: 'top-right',
           theme: 'dark',
         }
       )
       setIsOpen(false)
     }
-  }, [isSuccess, data?.data?.message, setIsOpen])
+    if (is1155OfferSuccess) {
+      toast(
+        cancel1155OfferData?.data?.message
+          ? cancel1155OfferData?.data?.message
+          : 'Offer Cancelled Successfully',
+        {
+          hideProgressBar: true,
+          autoClose: 3000,
+          type: cancel1155OfferData?.data?.message ? 'error' : 'success',
+          position: 'top-right',
+          theme: 'dark',
+        }
+      )
+      setIsOpen(false)
+    }
+  }, [
+    isOfferSuccess,
+    cancelOfferData?.data?.message,
+    is1155OfferSuccess,
+    cancel1155OfferData?.data?.message,
+    setIsOpen,
+  ])
 
   return (
     <ModalBase>
@@ -121,7 +177,9 @@ const CancelOfferModal: FC<{
           <span
             className="cursor-pointer"
             role="buton"
-            onClick={() => !isLoading && setIsOpen(false)}
+            onClick={() =>
+              !isOfferLoading || (!isOffer1155Loading && setIsOpen(false))
+            }
           >
             x
           </span>
@@ -131,11 +189,12 @@ const CancelOfferModal: FC<{
             ? 'Wrong network detected'
             : 'Are you sure you want to cancel this offer?'}
         </h2>
-        {isLoading && (
-          <div className="py-4 grid place-items-center">
-            <Spinner />
-          </div>
-        )}
+        {isOfferLoading ||
+          (isOffer1155Loading && (
+            <div className="py-4 grid place-items-center">
+              <Spinner />
+            </div>
+          ))}
 
         <div className="mt-8">
           <div className="flex flex-col md:flex-row justify-between gap-2 lg:gap-4 lg:pt-10">
@@ -144,14 +203,14 @@ const CancelOfferModal: FC<{
                 <button
                   className="btn-secondary w-full md:w-1/2 h-[42px] md:h-16 text-sm lg:text-[21px]"
                   onClick={() => setIsOpen(false)}
-                  disabled={isLoading}
+                  disabled={isOfferLoading || isOffer1155Loading}
                 >
                   No
                 </button>
                 <button
                   className="w-full btn-primary md:w-1/2 rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
                   onClick={handleClick}
-                  disabled={isLoading}
+                  disabled={isOfferLoading || isOffer1155Loading}
                 >
                   Yes
                 </button>
@@ -161,7 +220,7 @@ const CancelOfferModal: FC<{
               <button
                 className="w-full btn-primary md:w-full rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
                 onClick={onSwitchNetwork}
-                disabled={isLoading}
+                disabled={isOfferLoading || isOffer1155Loading}
               >
                 Switch Network
               </button>

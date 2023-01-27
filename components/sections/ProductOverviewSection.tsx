@@ -13,6 +13,7 @@ import {
   NftType,
   OfferType,
   SaleType,
+  Sale1155Type,
   UserType,
 } from '../../interfaces'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
@@ -42,6 +43,7 @@ const ProductOverviewSection: FC<{
   owner: UserType | undefined
   nftType?: NftType
   owners?: any[]
+  sales?: Sale1155Type[] | undefined
 }> = ({
   nft,
   contractDetails,
@@ -53,6 +55,7 @@ const ProductOverviewSection: FC<{
   owner: tokenOwner,
   nftType,
   owners,
+  sales,
 }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
@@ -72,6 +75,15 @@ const ProductOverviewSection: FC<{
   const [accountBalance, setAccountBalance] = useState('')
   const [chainID, setChainID] = useState('')
   // const meta_data_url = nft?.nft.meta_data_url || ''
+    const userSales = () => {
+      if (nftType !== 'NGM1155') return false
+      const fi = sales?.find((a) => {
+        if (nftType === 'NGM1155') {
+          return a.token_owner === address && a.status == 'started'
+        } else return false
+      })
+      return fi
+    }
 
   const isCancellable =
     isMounted &&
@@ -80,24 +92,31 @@ const ProductOverviewSection: FC<{
     nft?.is_in_auction
 
   const isSaleCancellable =
-    isMounted &&
-    // nft?.token_owner &&
-    (nft?.token_owner === address ||
-      owners?.some((owner) => owner.token_owner === address)) &&
-    nft?.is_in_sale
+    nftType === 'NGM1155'
+      ? isMounted &&
+        // nft?.token_owner &&
+        (nft?.token_owner === address ||
+          owners?.some((owner) => owner.token_owner === address)) &&
+        nft?.is_in_sale &&
+        userSales()
+      : isMounted &&
+        // nft?.token_owner &&
+        nft?.token_owner === address &&
+        nft?.is_in_sale
+  
   // const isBidCancellable = isUserIsBidder && nft?.is_in_auction
 
+  const isSecondBtn = nftType === 'NGM1155' && sales && owners?.some((owner) => owner.token_owner === address)
+console.log(isSecondBtn)
   const isShowable =
     (nft?.token_owner !== DEAD_ADDRESS && nft?.is_in_sale) ||
     nft?.is_in_auction ||
     nft?.token_owner === address ||
     owners?.some((owner) => owner.token_owner === address)
-
   const isSellable =
     isMounted &&
     ((nft?.token_owner && nft.token_owner === address) ||
       owners?.some((owner) => owner.token_owner === address))
-
   const getBalance = async (address: `0x${string}` | undefined) => {
     if (!address) return
     const ethereum = (window as any).ethereum
@@ -121,7 +140,11 @@ const ProductOverviewSection: FC<{
   }, [contractDetails])
   const filters = () => {
     const fi = offers?.find((a) => {
-      return a.offer_person_address === address && a.offer_status == 'started'
+      if (nftType === 'NGM1155') {
+        return a.offer_person_address === address && a.status == 'started'
+      } else {
+        return a.offer_person_address === address && a.offer_status == 'started'
+      }
     })
     return fi
   }
@@ -177,10 +200,13 @@ const ProductOverviewSection: FC<{
     //   setIsCancelBidModalOpen(true)
     //   return
     // }
-    if (isCancellable) {
-      setIsCancelModalOpen(true)
-      return
+    if (isSecondBtn && event === 'secondOk') {
+      return setIsOfferModalOpen(true)
     }
+    if (isCancellable) {
+        setIsCancelModalOpen(true)
+        return
+      }
     if (isSaleCancellable) {
       setIsCancelSaleModalOpen(true)
       return
@@ -407,20 +433,21 @@ const ProductOverviewSection: FC<{
                 : ''}
             </button>
           )}
-          {isCancelBtn() && (
-            <>
-              <button
-                className="w-full lg:min-w-[327px] btn-secondary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
-                onClick={() => handleClick('cancel')}
-              >
-                {filters()
-                  ? 'Cancel Offer'
-                  : filterAuction()
-                  ? 'Cancel Bid'
-                  : ''}
-              </button>
-            </>
-          )}
+          {isCancelBtn() ||
+            (isSecondBtn && (
+              <>
+                <button
+                  className="w-full lg:min-w-[327px] btn-secondary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
+                  onClick={() => isSecondBtn?handleClick('secondOk'): handleClick('cancel')}
+                >
+                  {filters()
+                    ? 'Cancel Offer'
+                    : filterAuction()
+                    ? 'Cancel Bid'
+                    : isSecondBtn ? 'Make Offer':''}
+                </button>
+              </>
+            ))}
         </div>
       </motion.div>
       <AnimatePresence>
@@ -453,6 +480,7 @@ const ProductOverviewSection: FC<{
             nft={nft}
             accountBalance={accountBalance}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -489,6 +517,7 @@ const ProductOverviewSection: FC<{
             address={address}
             caller={address}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>

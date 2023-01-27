@@ -427,8 +427,11 @@ const OfferItem: FC<{
           name: 'Buyer Address',
           value: shortenString(offer?.offer_person_address),
         },
-        { name: 'Bid Amount', value: offer?.offer_price },
-        { name: 'Quantity', value: 1 },
+        {
+          name: 'Bid Amount',
+          value: offer?.offer_price || offer?.per_unit_price,
+        },
+        { name: 'Quantity', value: offer?.number_of_tokens },
         { name: 'Made At', value: timePlaced },
         { name: 'cancel', value: 'CANCEL' },
         { name: 'accept', value: 'ACCEPT' },
@@ -438,8 +441,11 @@ const OfferItem: FC<{
           name: 'Buyer Address',
           value: shortenString(offer?.offer_person_address),
         },
-        { name: 'Bid Amount', value: offer?.offer_price },
-        { name: 'Quantity', value: 1 },
+        {
+          name: 'Bid Amount',
+          value: offer?.offer_price || offer?.per_unit_price,
+        },
+        { name: 'Quantity', value: offer?.number_of_tokens },
         { name: 'Made At', value: timePlaced },
       ]
 
@@ -473,9 +479,19 @@ const OfferItem: FC<{
               offerData?.name === 'Buyer Address'
                 ? onClickAddress(offer?.offer_person_address)
                 : offerData?.name === 'cancel'
-                ? handleOffers(offer?.offer_person_address, 'cancel')
+                ? handleOffers(
+                    offer?.offer_person_address,
+                    offer?.contract_address,
+                    offer?.token_id,
+                    'cancel'
+                  )
                 : offerData?.name === 'accept'
-                ? handleOffers(offer?.offer_person_address, 'accept')
+                ? handleOffers(
+                    offer?.offer_person_address,
+                    offer?.contract_address,
+                    offer?.token_id,
+                    'accept'
+                  )
                 : ''
             }
           >
@@ -601,6 +617,8 @@ const CurrentOffers: FC<{
   setActiveTabIndex: () => void
   onClickAddress: () => void
   chainID: any
+  nftType:any
+  owners:any[]
 }> = ({
   offers,
   sale,
@@ -608,11 +626,17 @@ const CurrentOffers: FC<{
   setActiveTabIndex,
   onClickAddress,
   chainID,
+  nftType,
+  owners
 }) => {
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
   const [isAcceptOfferModalOpen, setIsAcceptOfferModalOpen] = useState(false)
   const [offer_person_address, setoffer_person_address] = useState('')
-  const ifOwner = sale?.token_owner === address
+  const [contract_address,setContract_address] = useState('')
+  const [token_id,setToken_id] = useState('')
+  const ifOwner =
+    sale?.token_owner === address ||
+    owners?.some((owner) => owner.token_owner === address)
   const tableHeadings = ifOwner
     ? [
         { name: 'Buyer Address' },
@@ -629,8 +653,10 @@ const CurrentOffers: FC<{
         { name: 'Made At' },
       ]
 
-  const handleOffers = (offer_person_address, event) => {
+  const handleOffers = (offer_person_address, contract_address, token_id, event) => {
     setoffer_person_address(offer_person_address)
+    setContract_address(contract_address)
+    setToken_id(token_id)
     if (ifOwner && event === 'accept') {
       setIsAcceptOfferModalOpen(true)
       return
@@ -640,7 +666,6 @@ const CurrentOffers: FC<{
       return
     }
   }
-
   return (
     <div
       className="font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-[300px] lg:overflow-x-hidden
@@ -694,11 +719,12 @@ const CurrentOffers: FC<{
           <CancelOfferModal
             isOpen={isCancelOfferModalOpen}
             setIsOpen={setIsCancelOfferModalOpen}
-            contract_address={sale?.contract_address}
-            token_id={sale?.token_id}
+            contract_address={contract_address}
+            token_id={token_id}
             address={offer_person_address}
             caller={address}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -708,10 +734,11 @@ const CurrentOffers: FC<{
             setActiveTabIndex={setActiveTabIndex}
             isOpen={isAcceptOfferModalOpen}
             setIsOpen={setIsAcceptOfferModalOpen}
-            contract_address={sale?.contract_address}
-            token_id={sale?.token_id}
+            contract_address={contract_address}
+            token_id={token_id}
             offer_address={offer_person_address}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -728,6 +755,8 @@ const DescriptionBidHistorySection: FC<{
   sale: SaleType | undefined
   activity: ActivityType | undefined
   currentTab: any
+  owners?:any[]
+  nftType?:any
   handleTabs: () => void
   state: () => void
   states: () => void
@@ -740,6 +769,8 @@ const DescriptionBidHistorySection: FC<{
   sale,
   activity,
   currentTab,
+  owners,
+  nftType,
   handleTabs,
   state,
   states,
@@ -838,6 +869,8 @@ const DescriptionBidHistorySection: FC<{
               setActiveTabIndex={setActiveTabIndex}
               onClickAddress={onClickAddress}
               chainID={contractDetails?.chain?.id}
+              nftType={nftType}
+              owners={owners}
             />
           ) : (
             <CurrentBids

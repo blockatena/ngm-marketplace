@@ -125,6 +125,7 @@ export type AvatarType = {
   token_id: string
   meta_data_url: string
   number_of_tokens?: number
+  listed_tokens?:number
   is_in_auction: boolean
   is_in_sale: boolean
   token_owner: string
@@ -270,6 +271,7 @@ export type OfferType = {
   createdAt: string
   updatedAt: string
   offer_status: string
+  status:string
   __v: number
 }
 
@@ -287,6 +289,21 @@ export type SaleType = {
   __v: number
 }
 
+
+export type Sale1155Type = {
+  _id: string
+  token_owner: string
+  contract_address: string
+  token_id: string
+  number_of_tokens: number
+  start_date: string
+  end_date: string
+  per_unit_price: number
+  createdAt: string
+  updatedAt: string
+  status: string
+  __v: number
+}
 export type ActivityType = {
   _id: string
   event: string
@@ -323,4 +340,31 @@ export type UserType = {
   banner_image?: string
   profile_image?: string
   __v: number
+}
+
+
+export type Make1155Offer = {
+  offer_person_address: string
+  contract_address: string
+  token_id: number
+  number_of_tokens: number
+  per_unit_price: number
+  // sign:string
+}
+
+export type Cancel1155Offer = {
+  offer_person_address: string
+  contract_address: string
+  token_id: number
+  caller: string
+  sign: string
+}
+
+export type Accept1155Offer = {
+  offer_person_address: string
+  contract_address: string
+  token_owner: string
+  token_id: number
+  number_of_tokens: number
+  sign: string
 }

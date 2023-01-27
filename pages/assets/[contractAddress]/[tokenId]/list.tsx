@@ -485,33 +485,35 @@ const ListAssetPage: NextPage = () => {
                 className="w-full h-[68px] rounded-lg text-white font-poppins 
             lg:text-[28px] flex p-1 border border-[#4D4D49] shadow-inner"
               >
-                <div
-                  className={`flex items-center justify-center gap-2 w-1/2  ${
-                    type === 'auction' && 'cursor-pointer'
-                  } transition-all duration-500
+                {nftType !== 'NGM1155' && (
+                  <div
+                    className={`flex items-center justify-center gap-2 w-1/2  ${
+                      type === 'auction' && 'cursor-pointer'
+                    } transition-all duration-500
                 ${
                   type === 'auction' &&
                   'rounded-l-2xl rounded-r-2xl bg-[#4D4D49]'
                 }`}
-                  onClick={() => {
-                    if (nftType === 'NGM1155') return
-                    setType('auction')
-                  }}
-                >
-                  <p>
-                    {/* <Image
+                    onClick={() => {
+                      // if (nftType === 'NGM1155') return
+                      setType('auction')
+                    }}
+                  >
+                    <p>
+                      {/* <Image
                       src="/images/icons/clock.svg"
                       alt="icon"
                       width="24px"
                       height="24px"
                     /> */}
-                    <AiOutlineClockCircle fontSize={24} />
-                  </p>
-                  <p>Time Auction</p>
-                </div>
+                      <AiOutlineClockCircle fontSize={24} />
+                    </p>
+                    <p>Time Auction</p>
+                  </div>
+                )}
                 <div
                   // className={`flex items-center justify-center gap-2 w-1/2 cursor-pointer`}
-                  className={`flex items-center justify-center gap-2 w-1/2  cursor-pointer 
+                  className={`flex items-center justify-center gap-2 ${nftType === 'NGM1155'?'w-full':'w-1/2'} cursor-pointer 
                 ${
                   type === 'fixed' && 'rounded-l-2xl rounded-r-2xl bg-[#4D4D49]'
                 }`}

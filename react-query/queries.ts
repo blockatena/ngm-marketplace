@@ -14,6 +14,9 @@ import type {
   NftOfferBodyType,
   NftSaleBodyType,
   NftType,
+  Make1155Offer,
+  Accept1155Offer,
+  Cancel1155Offer,
 } from '../interfaces'
 
 const axiosFileInstance = createAxiosInstance('form-data')
@@ -123,6 +126,18 @@ export const cancelOffer = (data: NftCancelOfferBodyType) => {
 
 export const acceptOffer = (data: NftAcceptOfferBodyType) => {
   return axiosInstance.post('/nft-marketplace/accept-offer', data)
+}
+
+export const make1155Offer = (data: Make1155Offer) => {
+  return axiosInstance.post('/nft-marketplace/make-offer-1155', data)
+}
+
+export const cancel1155Offer = (data: Cancel1155Offer) => {
+  return axiosInstance.post('/nft-marketplace/cancel-offer-1155', data)
+}
+
+export const accept1155Offer = (data: Accept1155Offer) => {
+  return axiosInstance.post('/nft-marketplace/accept-offer-1155', data)
 }
 
 export const createUser = (data: {
