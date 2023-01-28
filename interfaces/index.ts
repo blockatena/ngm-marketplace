@@ -2,7 +2,7 @@ export type CrumbType = { name: string; route: string }
 
 export type addressType = `0x${string}`
 
-export type NftType = 'NGM1155' | 'NGM721PSI'
+export type NftType = 'NGM1155' | 'NGM721PSI' | 'NGMTINY721'
 
 export type CollectionCardType = {
   chain: string
@@ -125,7 +125,7 @@ export type AvatarType = {
   token_id: string
   meta_data_url: string
   number_of_tokens?: number
-  listed_tokens?:number
+  listed_tokens?: number
   is_in_auction: boolean
   is_in_sale: boolean
   token_owner: string
@@ -271,7 +271,7 @@ export type OfferType = {
   createdAt: string
   updatedAt: string
   offer_status: string
-  status:string
+  status: string
   __v: number
 }
 
@@ -288,7 +288,6 @@ export type SaleType = {
   status: string
   __v: number
 }
-
 
 export type Sale1155Type = {
   _id: string
@@ -341,7 +340,6 @@ export type UserType = {
   profile_image?: string
   __v: number
 }
-
 
 export type Make1155Offer = {
   offer_person_address: string

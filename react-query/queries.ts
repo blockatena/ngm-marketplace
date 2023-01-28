@@ -4,7 +4,10 @@ import {
   nftInstance,
 } from '../axiosInstance'
 import type {
+  Accept1155Offer,
+  Cancel1155Offer,
   CollectionNftsBodyType,
+  Make1155Offer,
   Nft1155SaleBodyType,
   NftAcceptOfferBodyType,
   nftAuctionBodyType,
@@ -14,9 +17,6 @@ import type {
   NftOfferBodyType,
   NftSaleBodyType,
   NftType,
-  Make1155Offer,
-  Accept1155Offer,
-  Cancel1155Offer,
 } from '../interfaces'
 
 const axiosFileInstance = createAxiosInstance('form-data')
@@ -215,5 +215,15 @@ export const getUserTokenNumber = (
 ) => {
   return axiosInstance.get(
     `/nft/g2w3-1155/${token_owner}/${contract_address}/${token_id}`
+  )
+}
+
+export const getUser1155Nfts = (
+  owner_address: string,
+  page_number: number,
+  items_per_page: number = 12
+) => {
+  return axiosInstance.get(
+    `/nft/g2w3-1155/${owner_address}/${page_number}/${items_per_page}`
   )
 }

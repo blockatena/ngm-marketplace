@@ -400,9 +400,9 @@ const CollectionPage: NextPage = () => {
     { enabled: !!contractAddress }
   )
 
-  const nftType: NftType | undefined = contractType?.data?.type
+  console.log({ data })
 
-  console.log({ nftType })
+  const nftType: NftType | undefined = contractType?.data?.type
 
   const { data: collectionDetails } = useQuery(
     QUERIES.getCollectionDetails,
@@ -561,14 +561,20 @@ const CollectionPage: NextPage = () => {
   // }, [data?.data.nfts, data?.data])
 
   useEffect(() => {
-    if (data?.data?.nfts) {
+    if (nftType === 'NGM1155' && data?.data?.get_nfts) {
+      setAvatars(data.data.get_nfts.nfts)
+      setDataUnsorted(data?.data.get_nfts.nfts)
+      setCollectionData(data?.data.get_nfts)
+      setCurrentPage(data.data.get_nfts.currentPage)
+      setTotalPages(data.data.get_nfts.total_pages)
+    } else if (data?.data?.nfts) {
       setAvatars(data.data.nfts)
       setDataUnsorted(data?.data.nfts)
       setCollectionData(data?.data)
       setCurrentPage(data.data.currentPage)
       setTotalPages(data.data.total_pages)
     }
-  }, [data?.data])
+  }, [data?.data, nftType])
 
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },
