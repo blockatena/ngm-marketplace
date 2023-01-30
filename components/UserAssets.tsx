@@ -77,15 +77,22 @@ const UserAssets: FC<{ address: string | undefined }> = ({ address }) => {
 
   return (
     <>
-      <div className="pb-4 pt-2">
-        <select
-          className="w-24 rounded-md font-poppins"
-          onChange={(e) => setNftType(e.target.value)}
-          value={nftType}
+      <div className="text-white font-poppins text-[20px] pb-4 pt-2">
+        <span
+          className="border-b-2 border-custom_yellow cursor-pointer transition-all"
+          style={nftType !== 'NGM721PSI' ? { border: 'none' } : {}}
+          onClick={() => setNftType('NGM721PSI')}
         >
-          <option value="NGM721PSI">721</option>
-          <option value="NGM1155">1155</option>
-        </select>
+          721
+        </span>{' '}
+        <span className="text-gray-500">|</span>{' '}
+        <span
+          className="border-b-2 border-custom_yellow cursor-pointer transition-all"
+          style={nftType !== 'NGM1155' ? { border: 'none' } : {}}
+          onClick={() => setNftType('NGM1155')}
+        >
+          1155
+        </span>
       </div>
       <div
         className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
