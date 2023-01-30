@@ -769,7 +769,7 @@ const ListingItem: FC<{
     bgColor = 'bg-[#070707]'
   }
 
-  const activityData = [
+  const listingData = [
     {
       name: 'Token Owner',
       value: shortenString(sale?.token_owner),
@@ -802,7 +802,7 @@ const ListingItem: FC<{
         delay: index < 6 ? 0.1 * index : 0,
       }}
     >
-      {activityData?.map((activityData, index) => (
+      {listingData?.map((activityData, index) => (
         <td key={index} className="h-16">
           {activityData?.value}
         </td>
