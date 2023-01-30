@@ -16,6 +16,7 @@ import type {
   AvatarType,
   BidType,
   CrumbType,
+  ListingType,
   NftContractType,
   NftType,
   OfferType,
@@ -157,7 +158,7 @@ const ViewAssetPage: NextPage = () => {
   const [offers, setOffers] = useState<OfferType[]>()
   const [ownerDetails, setOwnerDetails] = useState<UserType>()
   const [saleDetails, setSaleDetails] = useState<SaleType>()
-  const [sales,setSales] = useState<any[]>()
+  const [sales, setSales] = useState<ListingType[]>()
   const [activityDetails, setActivityDetails] = useState<ActivityType>()
   const [currentTab, setCurrenttab] = useState<any>()
   const [totalPages, setTotalpges] = useState<any>()
@@ -318,6 +319,7 @@ const ViewAssetPage: NextPage = () => {
           handleTabs={handleTabs}
           state={state}
           states={states}
+          sales={sales}
         />
         {section && (
           <div className="flex justify-end mb-12">

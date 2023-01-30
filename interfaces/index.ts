@@ -366,3 +366,18 @@ export type Accept1155Offer = {
   number_of_tokens: number
   sign: string
 }
+
+export type ListingType = {
+  contract_address: string
+  createdAt: string
+  end_date: string
+  number_of_tokens: number
+  per_unit_price: number
+  start_date: string
+  status: string
+  token_id: string
+  token_owner: string
+  updatedAt: string
+  __v: number
+  _id: string
+}

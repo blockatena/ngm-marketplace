@@ -18,6 +18,7 @@ import {
   AuctionType,
   AvatarType,
   BidType,
+  ListingType,
   NftContractType,
   OfferType,
   SaleType,
@@ -617,8 +618,8 @@ const CurrentOffers: FC<{
   setActiveTabIndex: () => void
   onClickAddress: () => void
   chainID: any
-  nftType:any
-  owners:any[]
+  nftType: any
+  owners: any[]
 }> = ({
   offers,
   sale,
@@ -627,13 +628,13 @@ const CurrentOffers: FC<{
   onClickAddress,
   chainID,
   nftType,
-  owners
+  owners,
 }) => {
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
   const [isAcceptOfferModalOpen, setIsAcceptOfferModalOpen] = useState(false)
   const [offer_person_address, setoffer_person_address] = useState('')
-  const [contract_address,setContract_address] = useState('')
-  const [token_id,setToken_id] = useState('')
+  const [contract_address, setContract_address] = useState('')
+  const [token_id, setToken_id] = useState('')
   const ifOwner =
     sale?.token_owner === address ||
     owners?.some((owner) => owner.token_owner === address)
@@ -653,7 +654,12 @@ const CurrentOffers: FC<{
         { name: 'Made At' },
       ]
 
-  const handleOffers = (offer_person_address, contract_address, token_id, event) => {
+  const handleOffers = (
+    offer_person_address,
+    contract_address,
+    token_id,
+    event
+  ) => {
     setoffer_person_address(offer_person_address)
     setContract_address(contract_address)
     setToken_id(token_id)
@@ -746,6 +752,108 @@ const CurrentOffers: FC<{
   )
 }
 
+const ListingItem: FC<{
+  index: number
+  sale: ListingType
+}> = ({ index, sale }) => {
+  let timeCreated = ''
+  let endTime
+  if (sale?.createdAt) {
+    let d = new Date(sale.createdAt)
+    timeCreated = d.toLocaleString()
+  }
+  if (sale?.end_date) endTime = new Date(sale.end_date).toLocaleString()
+
+  let bgColor = 'bg-transparent'
+  if (index % 2 === 0) {
+    bgColor = 'bg-[#070707]'
+  }
+
+  const activityData = [
+    {
+      name: 'Token Owner',
+      value: shortenString(sale?.token_owner),
+    },
+    {
+      name: 'Date Created',
+      value: timeCreated,
+    },
+    {
+      name: 'End Date',
+      value: endTime,
+    },
+    {
+      name: 'Unit Price',
+      value: sale?.per_unit_price,
+    },
+    { name: 'Quantity', value: sale?.number_of_tokens },
+  ]
+
+  return (
+    <motion.tr
+      className={`${bgColor} font-poppins text-[#D7D7D7] lg:text-lg py-2 h-16`}
+      variants={opacityAnimation}
+      initial="initial"
+      whileInView="final"
+      viewport={{ once: true }}
+      transition={{
+        ease: 'easeInOut',
+        duration: 0.4,
+        delay: index < 6 ? 0.1 * index : 0,
+      }}
+    >
+      {activityData?.map((activityData, index) => (
+        <td key={index} className="h-16">
+          {activityData?.value}
+        </td>
+      ))}
+    </motion.tr>
+  )
+}
+
+const Listings: FC<{
+  sales: ListingType[]
+}> = ({ sales }) => {
+  const tableHeadings = [
+    { name: 'Token Owner' },
+    { name: 'Date Created' },
+    { name: 'End Date' },
+    { name: 'Unit Price' },
+    { name: 'Quantity' },
+  ]
+  return (
+    <>
+      <div
+        className="font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-[300px] lg:overflow-x-hidden
+    overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
+      >
+        {sales?.length && (
+          <table className="w-full overflow-x-auto text-center">
+            <thead>
+              <tr className="h-16">
+                {tableHeadings.map((heading) => (
+                  <th key={heading.name} className="h-16">
+                    {heading.name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {sales?.length
+                ? sales.map((sale, index) => {
+                    return <ListingItem key={index} sale={sale} index={index} />
+                  })
+                : ''}
+            </tbody>
+          </table>
+        )}
+        {sales?.length === 0 && (
+          <p className="text-center b text-3xl p-12">- No Listings yet -</p>
+        )}
+      </div>
+    </>
+  )
+}
 const DescriptionBidHistorySection: FC<{
   nft: AvatarType | undefined
   contractDetails: NftContractType | undefined
@@ -755,11 +863,12 @@ const DescriptionBidHistorySection: FC<{
   sale: SaleType | undefined
   activity: ActivityType | undefined
   currentTab: any
-  owners?:any[]
-  nftType?:any
+  owners?: any[]
+  nftType?: any
   handleTabs: () => void
   state: () => void
   states: () => void
+  sales?: ListingType[]
 }> = ({
   nft,
   contractDetails,
@@ -774,6 +883,7 @@ const DescriptionBidHistorySection: FC<{
   handleTabs,
   state,
   states,
+  sales,
 }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0)
@@ -794,6 +904,9 @@ const DescriptionBidHistorySection: FC<{
           : nft?.is_in_sale
           ? 'Current Offers'
           : '',
+    },
+    {
+      label: 'Listings',
     },
 
     // {
@@ -822,6 +935,7 @@ const DescriptionBidHistorySection: FC<{
       handleTabs()
     }
   }, [currentTab, handleTabs])
+
   useEffect(() => {
     function setTabPosition() {
       const currentTab = tabsRef.current[activeTabIndex]
@@ -885,6 +999,8 @@ const DescriptionBidHistorySection: FC<{
             address={address}
             onClickAddress={onClickAddress}
           />
+        ) : activeTabIndex === 3 ? (
+          <Listings sales={sales} />
         ) : (
           ''
         )}
