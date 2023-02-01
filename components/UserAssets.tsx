@@ -113,7 +113,15 @@ const UserAssets: FC<{ address: string | undefined }> = ({ address }) => {
                   delay: handleDelay(index),
                 }}
               >
-                <AvatarCard {...cardData} />
+                <AvatarCard
+                  {...cardData}
+                  img_url={
+                    nftType === 'NGM1155' && cardData?.meta_data
+                      ? //@ts-expect-error
+                        cardData.meta_data[0]?.image
+                      : undefined
+                  }
+                />
               </motion.div>
             ))
           : ''}

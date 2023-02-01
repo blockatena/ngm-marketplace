@@ -16,6 +16,7 @@ interface AvatarCardProps extends AvatarType {
   // is_in_auction?: boolean
   // is_in_sale?: boolean
   noCta?: boolean
+  img_url?: string
   // meta_data_url: string
   // token_id: any
   // token_owner: string
@@ -78,6 +79,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
   is_in_auction,
   meta_data,
   token_owner,
+  img_url,
 }) => {
   const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
@@ -125,9 +127,9 @@ const AvatarCard: FC<AvatarCardProps> = ({
         fetch(url)
           .then((response) => response.json())
           .then((data) => {
-            if(data?.auction){
-            setAuctionTime(data?.auction?.end_date)
-            setAuctionAmount(data?.auction?.min_price)
+            if (data?.auction) {
+              setAuctionTime(data?.auction?.end_date)
+              setAuctionAmount(data?.auction?.min_price)
             }
           })
       }
@@ -263,6 +265,8 @@ const AvatarCard: FC<AvatarCardProps> = ({
               backgroundImage: `url(${
                 meta_data?.image
                   ? meta_data?.image
+                  : img_url
+                  ? img_url
                   : '/images/others/avatar_bg.png'
               })`,
             }}
