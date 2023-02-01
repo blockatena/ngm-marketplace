@@ -240,13 +240,13 @@ const ListAssetPage: NextPage = () => {
 
     const sale1155Body: Nft1155SaleBodyType = {
       contract_address: nft?.contract_address,
-      token_id: Number(nft?.token_id),
-      token_owner: String(address),
+      token_id: parseInt(nft?.token_id),
+      token_owner: address,
       start_date: startDate,
       end_date: endDate,
       per_unit_price: formData.min_price,
       number_of_tokens: formData.quantity,
-      // sign: '',
+      sign: '',
     }
 
     let rawMsg = `{
@@ -269,7 +269,7 @@ const ListAssetPage: NextPage = () => {
     let rawMsg1155Sale = `{
       "contract_address":"${nft?.contract_address}",
       "token_id":"${nft?.token_id}",
-      "token_owner":"${nft?.token_owner}",
+      "token_owner":"${address}",
       "start_date":"${startDate}",
       "end_date":"${endDate}",
       "price":"${formData.min_price}"
@@ -278,19 +278,14 @@ const ListAssetPage: NextPage = () => {
     if (isApproved === true) {
       // POST DATA
       // console.log(type === 'auction' ? rawMsg : rawMsgSale)
-      let hashMessage = await ethers.utils.hashMessage(
-        nftType === 'NGM1155'
-          ? rawMsg1155Sale
-          : type === 'auction'
-          ? rawMsg
-          : rawMsgSale
-      )
+      
       let msg =
         nftType === 'NGM1155'
           ? rawMsg1155Sale
           : type === 'auction'
           ? rawMsg
           : rawMsgSale
+      let hashMessage = await ethers.utils.hashMessage(msg)
       // console.log(hashMessage)
       await signer
         .signMessage(
@@ -300,23 +295,30 @@ const ListAssetPage: NextPage = () => {
         )
         .then(async (sign) => {
           // console.log(sign)
-          if (type === 'auction') {
-            requestData['sign'] = sign
-          } else {
-            saleBody['sign'] = sign
-          }
+           if (nftType==='NGM1155') {
+             sale1155Body['sign'] = sign
+           } else if (type === 'auction') {
+             requestData['sign'] = sign
+           } else {
+             saleBody['sign'] = sign
+           }
         })
         .catch((e) => {
           console.log(e.message)
           return
         })
-      let sig = type === 'auction' ? requestData['sign'] : saleBody['sign']
+      let sig = nftType==='NGM1155'? sale1155Body['sign']: type === 'auction' ? requestData['sign'] : saleBody['sign']
       if (sig) {
-        nftType === 'NGM721PSI' && type === 'auction' && mutate(requestData)
-        nftType === 'NGM721PSI' && type === 'fixed' && createSale(saleBody)
-        nftType === 'NGM1155' &&
-          type === 'fixed' &&
+        if(nftType==="NGM1155") {
           create1155Sale(sale1155Body)
+        } else if(type==='auction'){
+          mutate(requestData)
+        } else {
+          createSale(saleBody)
+        }
+        // type === 'auction' && mutate(requestData)
+        // nftType === 'NGM1155' && type === 'fixed' && create1155Sale(sale1155Body)
+        // type === 'fixed' && createSale(saleBody)
         setIsLoading(false)
       } else return setIsLoading(false)
 
@@ -332,19 +334,14 @@ const ListAssetPage: NextPage = () => {
           provider.waitForTransaction(tx.hash).then(async () => {
             // console.log(tx.hash)
             //Axios data:POST
-            let hashMessage = await ethers.utils.hashMessage(
-              nftType === 'NGM1155'
-                ? rawMsg1155Sale
-                : type === 'auction'
-                ? rawMsg
-                : rawMsgSale
-            )
+            
             let msg =
               nftType === 'NGM1155'
                 ? rawMsg1155Sale
                 : type === 'auction'
                 ? rawMsg
                 : rawMsgSale
+            let hashMessage = await ethers.utils.hashMessage(msg)
             // console.log(hashMessage)
             await signer
               .signMessage(
@@ -354,7 +351,10 @@ const ListAssetPage: NextPage = () => {
               )
               .then(async (sign) => {
                 // console.log(sign)
-                if (type === 'auction') {
+                if (nftType === 'NGM1155') {
+                  sale1155Body['sign'] = sign
+                  
+                } else if (type === 'auction') {
                   requestData['sign'] = sign
                 } else {
                   saleBody['sign'] = sign
@@ -365,17 +365,24 @@ const ListAssetPage: NextPage = () => {
                 return
               })
             let sig =
-              type === 'auction' ? requestData['sign'] : saleBody['sign']
+              nftType === 'NGM1155'
+                ? sale1155Body['sign']
+                : type === 'auction'
+                ? requestData['sign']
+                : saleBody['sign']
             if (sig) {
-              nftType === 'NGM721PSI' &&
-                type === 'auction' &&
-                mutate(requestData)
-              nftType === 'NGM721PSI' &&
-                type === 'fixed' &&
-                createSale(saleBody)
-              nftType === 'NGM1155' &&
-                type === 'fixed' &&
+              if (nftType === 'NGM1155') {
                 create1155Sale(sale1155Body)
+              } else if (type === 'auction') {
+                mutate(requestData)
+              } else {
+                createSale(saleBody)
+              }
+              // type === 'auction' && mutate(requestData)
+              // nftType === 'NGM1155' &&
+              //   type === 'fixed' &&
+              //   create1155Sale(sale1155Body)
+              // type === 'fixed' && createSale(saleBody)
               setIsLoading(false)
             } else return setIsLoading(false)
 
@@ -513,7 +520,9 @@ const ListAssetPage: NextPage = () => {
                 )}
                 <div
                   // className={`flex items-center justify-center gap-2 w-1/2 cursor-pointer`}
-                  className={`flex items-center justify-center gap-2 ${nftType === 'NGM1155'?'w-full':'w-1/2'} cursor-pointer 
+                  className={`flex items-center justify-center gap-2 ${
+                    nftType === 'NGM1155' ? 'w-full' : 'w-1/2'
+                  } cursor-pointer 
                 ${
                   type === 'fixed' && 'rounded-l-2xl rounded-r-2xl bg-[#4D4D49]'
                 }`}
@@ -628,9 +637,11 @@ const ListAssetPage: NextPage = () => {
             mb-6"
                 >
                   Quantity{' '}
-                  <span className="text-xs">
-                    (You own {userTokenNumber?.data?.tokens} tokens)
-                  </span>
+                  {userTokenNumber?.data?.number_of_tokens && (
+                    <span className="text-xs">
+                      (You own {userTokenNumber?.data?.number_of_tokens} tokens)
+                    </span>
+                  )}
                 </h5>
                 <div
                   className="flex flex-col md:flex-row items-center gap-4 h-[47px] rounded-lg bg-[#4D4D49] text-white 

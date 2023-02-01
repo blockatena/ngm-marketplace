@@ -26,6 +26,7 @@ import {
 import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
 import AcceptOfferModal from '../modals/AcceptOfferModal'
 import CancelOfferModal from '../modals/CancelOfferModal'
+import { toast } from 'react-toastify'
 const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const explorer =
   CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
@@ -408,48 +409,90 @@ const OfferItem: FC<{
   offer: OfferType
   index: number
   ifOwner: string
+  nftType: any
+  address: any
+  sales:any[]
   handleOffers: () => void
   onClickAddress: () => void
-}> = ({ offer, index, ifOwner, handleOffers, onClickAddress }) => {
+}> = ({
+  offer,
+  index,
+  ifOwner,
+  nftType,
+  address,
+  sales,
+  handleOffers,
+  onClickAddress,
+}) => {
   let timePlaced = ''
 
   if (offer?.createdAt) {
     let d = new Date(offer.createdAt)
     timePlaced = d.toLocaleString()
   }
-
   let bgColor = 'bg-transparent'
   if (index % 2 === 0) {
     bgColor = 'bg-[#070707]'
   }
-  const offerData = ifOwner
-    ? [
-        {
-          name: 'Buyer Address',
-          value: shortenString(offer?.offer_person_address),
-        },
-        {
-          name: 'Bid Amount',
-          value: offer?.offer_price || offer?.per_unit_price,
-        },
-        { name: 'Quantity', value: offer?.number_of_tokens },
-        { name: 'Made At', value: timePlaced },
-        { name: 'cancel', value: 'CANCEL' },
-        { name: 'accept', value: 'ACCEPT' },
-      ]
-    : [
-        {
-          name: 'Buyer Address',
-          value: shortenString(offer?.offer_person_address),
-        },
-        {
-          name: 'Bid Amount',
-          value: offer?.offer_price || offer?.per_unit_price,
-        },
-        { name: 'Quantity', value: offer?.number_of_tokens },
-        { name: 'Made At', value: timePlaced },
-      ]
-
+  const checker = () => {
+    if (nftType !== 'NGM1155' || offer.offer_person_address !== address) {
+      return true
+    } else {
+      return false
+    }
+  }
+  const filterSales = () => {
+    const fi = sales?.find((a) => {
+      return a.token_owner === address
+    })
+    if (fi) {
+      return true
+    } else return false
+  }
+let acceptable = checker() && filterSales()
+  const offerData =
+    ifOwner && nftType === 'NGM1155'
+      ? [
+          {
+            name: 'Buyer Address',
+            value: shortenString(offer?.offer_person_address),
+          },
+          {
+            name: 'Bid Amount',
+            value: offer?.offer_price || offer?.per_unit_price,
+          },
+          { name: 'Quantity', value: offer?.number_of_tokens },
+          { name: 'Made At', value: timePlaced },
+          // { name: 'cancel', value: 'CANCEL' },
+          { name: 'accept', value: 'ACCEPT' },
+        ]
+      : ifOwner
+      ? [
+          {
+            name: 'Buyer Address',
+            value: shortenString(offer?.offer_person_address),
+          },
+          {
+            name: 'Bid Amount',
+            value: offer?.offer_price || offer?.per_unit_price,
+          },
+          { name: 'Quantity', value: offer?.number_of_tokens },
+          { name: 'Made At', value: timePlaced },
+          { name: 'cancel', value: 'CANCEL' },
+          { name: 'accept', value: 'ACCEPT' },
+        ]
+      : [
+          {
+            name: 'Buyer Address',
+            value: shortenString(offer?.offer_person_address),
+          },
+          {
+            name: 'Bid Amount',
+            value: offer?.offer_price || offer?.per_unit_price,
+          },
+          { name: 'Quantity', value: offer?.number_of_tokens },
+          { name: 'Made At', value: timePlaced },
+        ]
   return (
     <>
       <motion.tr
@@ -472,6 +515,8 @@ const OfferItem: FC<{
                 ? 'cursor-pointer underline hover:text-sky-500'
                 : offerData?.name === 'cancel'
                 ? 'cursor-pointer hover:text-red-500'
+                : offerData?.name === 'accept' && !acceptable
+                ? 'cursor-not-allowed text-slate-600'
                 : offerData?.name === 'accept'
                 ? 'cursor-pointer  hover:text-yellow-500'
                 : 'h-16'
@@ -620,6 +665,7 @@ const CurrentOffers: FC<{
   chainID: any
   nftType: any
   owners: any[]
+  sales:any[]
 }> = ({
   offers,
   sale,
@@ -629,16 +675,41 @@ const CurrentOffers: FC<{
   chainID,
   nftType,
   owners,
+  sales
 }) => {
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
   const [isAcceptOfferModalOpen, setIsAcceptOfferModalOpen] = useState(false)
   const [offer_person_address, setoffer_person_address] = useState('')
   const [contract_address, setContract_address] = useState('')
   const [token_id, setToken_id] = useState('')
+    // const checker = () => {
+    //   if (!tempOfferAddress) return
+    //   if (nftType !== 'NGM1155' || tempOfferAddress !== address) {
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // }
+
+      const filterSales = () => {
+        const fi = sales?.find((a) => {
+          return a.token_owner === address
+        })
+        if (fi) {
+          return true
+        } else return false
+      }
+// let acceptable = filterSales()
   const ifOwner =
     sale?.token_owner === address ||
     owners?.some((owner) => owner.token_owner === address)
-  const tableHeadings = ifOwner
+  const tableHeadings = ifOwner && nftType==='NGM1155' ? [
+        { name: 'Buyer Address' },
+        { name: 'Offer Amount (WETH)' },
+        { name: 'Quantity' },
+        { name: 'Made At' },
+        { name: 'Accept' },
+      ]: ifOwner
     ? [
         { name: 'Buyer Address' },
         { name: 'Offer Amount (WETH)' },
@@ -653,7 +724,6 @@ const CurrentOffers: FC<{
         { name: 'Quantity' },
         { name: 'Made At' },
       ]
-
   const handleOffers = (
     offer_person_address,
     contract_address,
@@ -663,9 +733,18 @@ const CurrentOffers: FC<{
     setoffer_person_address(offer_person_address)
     setContract_address(contract_address)
     setToken_id(token_id)
+
+    let acceptable =
+      nftType === 'NGM1155' && filterSales() && offer_person_address !== address
+
+    if (ifOwner && !acceptable && event === 'accept') {
+      return toast.dark(`You have to list your nft in order to accept offers`, {
+        type: 'error',
+        hideProgressBar: true,
+      })
+    }
     if (ifOwner && event === 'accept') {
-      setIsAcceptOfferModalOpen(true)
-      return
+       return setIsAcceptOfferModalOpen(true)
     }
     if (ifOwner && event === 'cancel') {
       setIsCancelOfferModalOpen(true)
@@ -698,6 +777,9 @@ const CurrentOffers: FC<{
                     offer={offer}
                     index={index}
                     ifOwner={ifOwner}
+                    nftType={nftType}
+                    address={address}
+                    sales={sales}
                     onClickAddress={onClickAddress}
                   />
                 )
@@ -715,7 +797,7 @@ const CurrentOffers: FC<{
         <p className="text-center b text-3xl p-12">- No Offers yet -</p>
         // </tr>
       )}
-      {!sale && (
+      {!sale && nftType !=='NGM1155'&& (
         // <tr>
         <p className="text-center b text-3xl p-12">-NFT not on sale-</p>
         // </tr>
@@ -979,6 +1061,7 @@ const DescriptionBidHistorySection: FC<{
             <CurrentOffers
               offers={offers}
               sale={sale}
+              sales={sales}
               address={address}
               setActiveTabIndex={setActiveTabIndex}
               onClickAddress={onClickAddress}

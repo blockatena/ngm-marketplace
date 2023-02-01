@@ -79,7 +79,6 @@ const CancelOfferModal: FC<{
       contract_address: contract_address,
       token_id: parseInt(token_id),
       offer_person_address: address,
-      caller: caller,
       sign: '',
     }
     const ethereum = (window as any).ethereum
@@ -89,7 +88,11 @@ const CancelOfferModal: FC<{
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
-    let rawMsg = `{
+    let rawMsg = nftType==='NGM1155'? `{
+      "offer_person_address":"${address ? address : ''}",
+    "contract_address":"${contract_address}",
+    "token_id":"${token_id}"
+  }`:`{
       "offer_person_address":"${address ? address : ''}",
     "contract_address":"${contract_address}",
     "token_id":"${token_id}",
@@ -178,7 +181,7 @@ const CancelOfferModal: FC<{
             className="cursor-pointer"
             role="buton"
             onClick={() =>
-              !isOfferLoading || (!isOffer1155Loading && setIsOpen(false))
+               setIsOpen(false)
             }
           >
             x

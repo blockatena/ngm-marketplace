@@ -65,6 +65,7 @@ const CancelSaleModal: FC<{
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
       token_owner: String(address),
+      sign:''
     }
 
     const ethereum = (window as any).ethereum
@@ -74,7 +75,11 @@ const CancelSaleModal: FC<{
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
-    let rawMsg = `{
+    let rawMsg = nftType==='NGM1155'?`{
+      "contract_address":"${nft?.contract_address}",
+      "token_id":"${nft?.token_id}",
+      "token_owner":"${address}"
+  }`:`{
       "contract_address":"${nft?.contract_address}",
       "token_id":"${nft?.token_id}"
   }`
@@ -84,14 +89,18 @@ const CancelSaleModal: FC<{
       .signMessage(`Signing to Cancel Sale\n${rawMsg}\n Hash: \n${hashMessage}`)
       .then(async (sign) => {
         // console.log(sign)
-        data['sign'] = sign
+        if(nftType==='NGM1155'){
+          data1155['sign'] = sign
+        } else {
+          data['sign'] = sign
+      }
       })
       .catch((e) => {
         console.log(e.message)
         setIsOpen(false)
         return
       })
-    if (data['sign']) {
+    if (data['sign'] || data1155['sign']) {
       nftType === 'NGM721PSI' && mutate(data)
       nftType === 'NGM1155' && mutate1155(data1155)
     } else return
@@ -138,7 +147,7 @@ const CancelSaleModal: FC<{
           <span
             className="cursor-pointer"
             role="buton"
-            onClick={() => !isLoading && setIsOpen(false)}
+            onClick={() => setIsOpen(false)}
           >
             x
           </span>

@@ -103,21 +103,13 @@ const MakeOfferModal: FC<{
       token_id: nft?.token_id,
       sign: '',
     }
-
-    const OfferData1155t: any = {
-      offer_person_address: address ? address : '',
-      contract_address: nft?.contract_address,
-      token_id: parseInt(nft?.token_id),
-      number_of_tokens: quantity,
-      per_unit_price: bidAmount,
-      sign:''
-    }
     const OfferData1155: Make1155Offer = {
       offer_person_address: address ? address : '',
       contract_address: nft?.contract_address,
       token_id: parseInt(nft?.token_id),
       number_of_tokens: quantity,
       per_unit_price: bidAmount,
+      sign: '',
     }
     
     let raw721Msg = `{
@@ -127,15 +119,14 @@ const MakeOfferModal: FC<{
     "token_id":"${nft?.token_id}"
   }`
     let raw1155Msg = `{
-      "offer_user_address": ${address ? address : ''}",
-      "contract_address": ${nft?.contract_address}",
-      "token_id": ${parseInt(nft?.token_id)}",
-      "number_of_tokens": ${quantity},
-      "per_unit_price": ${bidAmount}",
+      "offer_user_address": "${address ? address : ''}",
+      "contract_address": "${nft?.contract_address}",
+      "token_id": "${nft?.token_id}",
+      "number_of_tokens": "${quantity}",
+      "per_unit_price": "${bidAmount}",
     }`
 
     let rawMsg = nftType === 'NGM1155'? raw1155Msg:raw721Msg
-
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
       toast.dark(`Your offer is greater than your wallet balance`, {
         type: 'error',
@@ -167,7 +158,7 @@ const MakeOfferModal: FC<{
           .then(async (sign) => {
             // console.log(sign)
             if(nftType==='NGM1155'){
-              OfferData1155t['sign'] = sign
+              OfferData1155['sign'] = sign
             } else {
             offerData['sign'] = sign
             }
@@ -180,7 +171,7 @@ const MakeOfferModal: FC<{
         if (offerData['sign']) {
           MakeOffer(offerData)
           setLoading(false)
-        } else if(OfferData1155t['sign']) {
+        } else if(OfferData1155['sign']) {
           Make1155Offer(OfferData1155)
           setLoading(false)
         } else return setLoading(false)
@@ -202,7 +193,7 @@ const MakeOfferModal: FC<{
                 .then(async (sign) => {
                   // console.log(sign)
                   if (nftType === 'NGM1155') {
-                    OfferData1155t['sign'] = sign
+                    OfferData1155['sign'] = sign
                   } else {
                     offerData['sign'] = sign
                   }
@@ -215,7 +206,7 @@ const MakeOfferModal: FC<{
               if (offerData['sign']) {
                 MakeOffer(offerData)
                 setLoading(false)
-              } else if(OfferData1155t['sign']) {
+              } else if(OfferData1155['sign']) {
                 Make1155Offer(OfferData1155)
                 setLoading(false) } 
                 else return setLoading(false)

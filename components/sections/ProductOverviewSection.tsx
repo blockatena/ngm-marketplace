@@ -105,18 +105,27 @@ const ProductOverviewSection: FC<{
         nft?.is_in_sale
   
   // const isBidCancellable = isUserIsBidder && nft?.is_in_auction
-
-  const isSecondBtn = nftType === 'NGM1155' && sales && owners?.some((owner) => owner.token_owner === address)
-console.log(isSecondBtn)
+  const filterSales = () => {
+    const fi = sales?.find((a) => {
+      return a.token_owner !== address
+    })
+    if(fi){
+      return true
+    } else return false
+  }
+  const isSecondBtn = nftType === 'NGM1155' && sales && owners?.some((owner) => owner.token_owner === address) && filterSales()
   const isShowable =
     (nft?.token_owner !== DEAD_ADDRESS && nft?.is_in_sale) ||
     nft?.is_in_auction ||
     nft?.token_owner === address ||
     owners?.some((owner) => owner.token_owner === address)
+
   const isSellable =
     isMounted &&
     ((nft?.token_owner && nft.token_owner === address) ||
       owners?.some((owner) => owner.token_owner === address))
+
+  
   const getBalance = async (address: `0x${string}` | undefined) => {
     if (!address) return
     const ethereum = (window as any).ethereum
@@ -149,12 +158,14 @@ console.log(isSecondBtn)
     return fi
   }
 
+  const isSecondCancellable = isSecondBtn && filters()
   const filterAuction = () => {
     const fi = bids?.find((a) => {
       return a.bidder_address === address && a.status == 'started'
     })
     return fi
   }
+
 
   useEffect(() => {
     if (!accountBalance) {
@@ -202,6 +213,10 @@ console.log(isSecondBtn)
     // }
     if (isSecondBtn && event === 'secondOk') {
       return setIsOfferModalOpen(true)
+    }
+
+    if(isSecondBtn && event === 'secondCancel') {
+      return setIsCancelOfferModalOpen(true)
     }
     if (isCancellable) {
         setIsCancelModalOpen(true)
@@ -259,7 +274,6 @@ console.log(isSecondBtn)
     let profile = owner === address ? `/profile` : `/profile/${owner}`
     router.push(profile)
   }
-
   return (
     <section className="flex flex-col xl:flex-row gap-4 lg:gap-4 2xl:gap-32 xl:justify-between p-0">
       <motion.div
@@ -433,21 +447,28 @@ console.log(isSecondBtn)
                 : ''}
             </button>
           )}
-          {isCancelBtn() ||
-            (isSecondBtn && (
-              <>
-                <button
-                  className="w-full lg:min-w-[327px] btn-secondary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
-                  onClick={() => isSecondBtn?handleClick('secondOk'): handleClick('cancel')}
-                >
-                  {filters()
-                    ? 'Cancel Offer'
-                    : filterAuction()
-                    ? 'Cancel Bid'
-                    : isSecondBtn ? 'Make Offer':''}
-                </button>
-              </>
-            ))}
+          {(isCancelBtn() || isSecondBtn) && (
+            <>
+              <button
+                className="w-full lg:min-w-[327px] btn-secondary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
+                onClick={() =>
+                  isSecondCancellable
+                    ? handleClick('secondCancel')
+                    : isSecondBtn
+                    ? handleClick('secondOk')
+                    : handleClick('cancel')
+                }
+              >
+                {filters()
+                  ? 'Cancel Offer'
+                  : filterAuction()
+                  ? 'Cancel Bid'
+                  : isSecondBtn
+                  ? 'Make Offer'
+                  : 'Cancel Offer'}
+              </button>
+            </>
+          )}
         </div>
       </motion.div>
       <AnimatePresence>

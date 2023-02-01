@@ -135,9 +135,8 @@ const AcceptOfferModal: FC<{
         setIsOpen(false)
         return
       })
-    if (data['sign']) {
+    if (data['sign'] || data1155['sign']) {
       if(nftType==='NGM1155') {
-        console.log(data1155)
         Accept1155Offer(data1155)
       } else {
         AcceptOffer(data)
@@ -212,7 +211,7 @@ const AcceptOfferModal: FC<{
           <span
             className="cursor-pointer"
             role="buton"
-            onClick={() => !isOfferLoading || !isOffer1155Loading && setIsOpen(false)}
+            onClick={() => setIsOpen(false)}
           >
             x
           </span>

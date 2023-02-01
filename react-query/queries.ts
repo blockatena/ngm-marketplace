@@ -214,7 +214,7 @@ export const getUserTokenNumber = (
   token_id: string
 ) => {
   return axiosInstance.get(
-    `/nft/g2w3-1155/${token_owner}/${contract_address}/${token_id}`
+    `/nft/get-1155-usertokens/${contract_address}/${token_id}/${token_owner}`
   )
 }
 

@@ -236,13 +236,14 @@ export type NftSaleBodyType = {
 }
 
 export type Nft1155SaleBodyType = {
-  token_owner: string
+  token_owner: any
   contract_address: string
   token_id: number
   number_of_tokens: number
   start_date: string
   end_date: string
   per_unit_price: number
+  sign:string
 }
 
 export type NftOfferBodyType = {
@@ -347,14 +348,13 @@ export type Make1155Offer = {
   token_id: number
   number_of_tokens: number
   per_unit_price: number
-  // sign:string
+  sign:string
 }
 
 export type Cancel1155Offer = {
   offer_person_address: string
   contract_address: string
   token_id: number
-  caller: string
   sign: string
 }
 
