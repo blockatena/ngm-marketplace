@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from 'chart.js'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useRouter } from 'next/router'
 import { FC, useEffect, useRef, useState } from 'react'
 import { useAccount } from 'wagmi'
 import {
@@ -17,6 +18,7 @@ import {
   AuctionType,
   AvatarType,
   BidType,
+  ListingType,
   NftContractType,
   OfferType,
   SaleType,
@@ -24,10 +26,10 @@ import {
 import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
 import AcceptOfferModal from '../modals/AcceptOfferModal'
 import CancelOfferModal from '../modals/CancelOfferModal'
-import { useRouter } from 'next/router'
+import { toast } from 'react-toastify'
 const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 const explorer =
-    CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
+  CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -37,7 +39,6 @@ ChartJS.register(
   Tooltip,
   Legend
 )
-
 
 export const AvatarData = [
   {
@@ -73,8 +74,6 @@ const DescriptionItem: FC<{
   contract: string
   tokenUri: string
 }> = ({ name, value, contract, tokenUri }) => {
-
-
   const clickC = () => {
     if (name === 'Contract Address') {
       let url = `https://${explorer}/token/${contract}`
@@ -118,7 +117,11 @@ const CharacterDescription: FC<{
 
   const description = [
     { name: 'Contract Address', value: address || '' },
-    { name: 'Token ID', value: nft?.token_id || '' },
+    {
+      name: 'Token ID',
+      value: nft?.token_id === 0 ? '0' : nft?.token_id || '',
+    },
+    { name: 'Total Supply', value: nft?.number_of_tokens || 1 },
     { name: 'Token Standard', value: nft?.contract_type || '' },
     { name: 'Chain ID', value: contractDetails?.chain?.id || '' },
     { name: 'Network', value: contractDetails?.chain?.name || '' },
@@ -166,17 +169,15 @@ const CharacterDescription: FC<{
   )
 }
 
-const Activity: FC<{ 
-  activity:ActivityType
-   onClickAddress: () => void }> = (
-  {activity,
-  onClickAddress}
-  ) => {
-
+const Activity: FC<{
+  activity: ActivityType
+  onClickAddress: () => void
+}> = ({ activity, onClickAddress }) => {
   // activity = activity.activity
   const tableHeadings = [
     { name: 'Type' },
     { name: 'Price' },
+    { name: 'Quantity' },
     { name: 'From' },
     { name: 'To' },
     { name: 'Time' },
@@ -261,9 +262,6 @@ const shortenString = (value: string) => {
 //   )
 // }
 
-
-
-
 const onClickTx = (hash) => {
   let url = `https://${explorer}/tx/${hash}`
   window.open(url, '_blank')
@@ -301,6 +299,7 @@ const BidItem: FC<{
   const bidData = [
     { name: 'Bidder Address', value: shortenString(bid?.bidder_address) },
     { name: 'Bid Amount', value: bid?.bid_amount },
+    { name: 'Quantity', value: 1 },
     { name: 'Placed At', value: timePlaced },
     // { name: 'Updated At', value: timeUpdated },
     // { name: 'Contract Address', value: shortenString(bid?.contract_address) },
@@ -346,6 +345,7 @@ const CurrentBids: FC<{
   const tableHeadings = [
     { name: 'Bidder Address' },
     { name: 'Bid Amount (WETH)' },
+    { name: 'Quantity' },
     { name: 'Placed At' },
     // { name: 'Updated At' },
     // { name: 'Contract Address' },
@@ -409,40 +409,90 @@ const OfferItem: FC<{
   offer: OfferType
   index: number
   ifOwner: string
+  nftType: any
+  address: any
+  sales:any[]
   handleOffers: () => void
-  onClickAddress:()=> void
-}> = ({ offer, index, ifOwner, handleOffers, onClickAddress }) => {
+  onClickAddress: () => void
+}> = ({
+  offer,
+  index,
+  ifOwner,
+  nftType,
+  address,
+  sales,
+  handleOffers,
+  onClickAddress,
+}) => {
   let timePlaced = ''
 
   if (offer?.createdAt) {
     let d = new Date(offer.createdAt)
     timePlaced = d.toLocaleString()
   }
-
   let bgColor = 'bg-transparent'
   if (index % 2 === 0) {
     bgColor = 'bg-[#070707]'
   }
-  const offerData = ifOwner
-    ? [
-        {
-          name: 'Buyer Address',
-          value: shortenString(offer?.offer_person_address),
-        },
-        { name: 'Bid Amount', value: offer?.offer_price },
-        { name: 'Made At', value: timePlaced },
-        { name: 'cancel', value: 'CANCEL' },
-        { name: 'accept', value: 'ACCEPT' },
-      ]
-    : [
-        {
-          name: 'Buyer Address',
-          value: shortenString(offer?.offer_person_address),
-        },
-        { name: 'Bid Amount', value: offer?.offer_price },
-        { name: 'Made At', value: timePlaced },
-      ]
-
+  const checker = () => {
+    if (nftType !== 'NGM1155' || offer.offer_person_address !== address) {
+      return true
+    } else {
+      return false
+    }
+  }
+  const filterSales = () => {
+    const fi = sales?.find((a) => {
+      return a.token_owner === address
+    })
+    if (fi) {
+      return true
+    } else return false
+  }
+let acceptable = checker() && filterSales()
+  const offerData =
+    ifOwner && nftType === 'NGM1155'
+      ? [
+          {
+            name: 'Buyer Address',
+            value: shortenString(offer?.offer_person_address),
+          },
+          {
+            name: 'Bid Amount',
+            value: offer?.offer_price || offer?.per_unit_price,
+          },
+          { name: 'Quantity', value: offer?.number_of_tokens },
+          { name: 'Made At', value: timePlaced },
+          // { name: 'cancel', value: 'CANCEL' },
+          { name: 'accept', value: 'ACCEPT' },
+        ]
+      : ifOwner
+      ? [
+          {
+            name: 'Buyer Address',
+            value: shortenString(offer?.offer_person_address),
+          },
+          {
+            name: 'Bid Amount',
+            value: offer?.offer_price || offer?.per_unit_price,
+          },
+          { name: 'Quantity', value: offer?.number_of_tokens },
+          { name: 'Made At', value: timePlaced },
+          { name: 'cancel', value: 'CANCEL' },
+          { name: 'accept', value: 'ACCEPT' },
+        ]
+      : [
+          {
+            name: 'Buyer Address',
+            value: shortenString(offer?.offer_person_address),
+          },
+          {
+            name: 'Bid Amount',
+            value: offer?.offer_price || offer?.per_unit_price,
+          },
+          { name: 'Quantity', value: offer?.number_of_tokens },
+          { name: 'Made At', value: timePlaced },
+        ]
   return (
     <>
       <motion.tr
@@ -465,6 +515,8 @@ const OfferItem: FC<{
                 ? 'cursor-pointer underline hover:text-sky-500'
                 : offerData?.name === 'cancel'
                 ? 'cursor-pointer hover:text-red-500'
+                : offerData?.name === 'accept' && !acceptable
+                ? 'cursor-not-allowed text-slate-600'
                 : offerData?.name === 'accept'
                 ? 'cursor-pointer  hover:text-yellow-500'
                 : 'h-16'
@@ -473,9 +525,19 @@ const OfferItem: FC<{
               offerData?.name === 'Buyer Address'
                 ? onClickAddress(offer?.offer_person_address)
                 : offerData?.name === 'cancel'
-                ? handleOffers(offer?.offer_person_address, 'cancel')
+                ? handleOffers(
+                    offer?.offer_person_address,
+                    offer?.contract_address,
+                    offer?.token_id,
+                    'cancel'
+                  )
                 : offerData?.name === 'accept'
-                ? handleOffers(offer?.offer_person_address, 'accept')
+                ? handleOffers(
+                    offer?.offer_person_address,
+                    offer?.contract_address,
+                    offer?.token_id,
+                    'accept'
+                  )
                 : ''
             }
           >
@@ -523,6 +585,10 @@ const ActivityItem: FC<{
           : activity?.event === ' '
           ? ' '
           : `${activity?.price} ETH`,
+    },
+    {
+      name: 'Quantity',
+      value: activity?.quantity,
     },
     {
       name: 'From',
@@ -597,6 +663,9 @@ const CurrentOffers: FC<{
   setActiveTabIndex: () => void
   onClickAddress: () => void
   chainID: any
+  nftType: any
+  owners: any[]
+  sales:any[]
 }> = ({
   offers,
   sale,
@@ -604,15 +673,47 @@ const CurrentOffers: FC<{
   setActiveTabIndex,
   onClickAddress,
   chainID,
+  nftType,
+  owners,
+  sales
 }) => {
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
   const [isAcceptOfferModalOpen, setIsAcceptOfferModalOpen] = useState(false)
   const [offer_person_address, setoffer_person_address] = useState('')
-  const ifOwner = sale?.token_owner === address
-  const tableHeadings = ifOwner
+  const [contract_address, setContract_address] = useState('')
+  const [token_id, setToken_id] = useState('')
+    // const checker = () => {
+    //   if (!tempOfferAddress) return
+    //   if (nftType !== 'NGM1155' || tempOfferAddress !== address) {
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // }
+
+      const filterSales = () => {
+        const fi = sales?.find((a) => {
+          return a.token_owner === address
+        })
+        if (fi) {
+          return true
+        } else return false
+      }
+// let acceptable = filterSales()
+  const ifOwner =
+    sale?.token_owner === address ||
+    owners?.some((owner) => owner.token_owner === address)
+  const tableHeadings = ifOwner && nftType==='NGM1155' ? [
+        { name: 'Buyer Address' },
+        { name: 'Offer Amount (WETH)' },
+        { name: 'Quantity' },
+        { name: 'Made At' },
+        { name: 'Accept' },
+      ]: ifOwner
     ? [
         { name: 'Buyer Address' },
         { name: 'Offer Amount (WETH)' },
+        { name: 'Quantity' },
         { name: 'Made At' },
         { name: 'Cancel' },
         { name: 'Accept' },
@@ -620,21 +721,36 @@ const CurrentOffers: FC<{
     : [
         { name: 'Buyer Address' },
         { name: 'Offer Amount (WETH)' },
+        { name: 'Quantity' },
         { name: 'Made At' },
       ]
-console.log(chainID)
-  const handleOffers = (offer_person_address, event) => {
+  const handleOffers = (
+    offer_person_address,
+    contract_address,
+    token_id,
+    event
+  ) => {
     setoffer_person_address(offer_person_address)
+    setContract_address(contract_address)
+    setToken_id(token_id)
+
+    let acceptable =
+      nftType === 'NGM1155' && filterSales() && offer_person_address !== address
+
+    if (ifOwner && !acceptable && event === 'accept') {
+      return toast.dark(`You have to list your nft in order to accept offers`, {
+        type: 'error',
+        hideProgressBar: true,
+      })
+    }
     if (ifOwner && event === 'accept') {
-      setIsAcceptOfferModalOpen(true)
-      return
+       return setIsAcceptOfferModalOpen(true)
     }
     if (ifOwner && event === 'cancel') {
       setIsCancelOfferModalOpen(true)
       return
     }
   }
-
   return (
     <div
       className="font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-[300px] lg:overflow-x-hidden
@@ -661,6 +777,9 @@ console.log(chainID)
                     offer={offer}
                     index={index}
                     ifOwner={ifOwner}
+                    nftType={nftType}
+                    address={address}
+                    sales={sales}
                     onClickAddress={onClickAddress}
                   />
                 )
@@ -678,7 +797,7 @@ console.log(chainID)
         <p className="text-center b text-3xl p-12">- No Offers yet -</p>
         // </tr>
       )}
-      {!sale && (
+      {!sale && nftType !=='NGM1155'&& (
         // <tr>
         <p className="text-center b text-3xl p-12">-NFT not on sale-</p>
         // </tr>
@@ -688,11 +807,12 @@ console.log(chainID)
           <CancelOfferModal
             isOpen={isCancelOfferModalOpen}
             setIsOpen={setIsCancelOfferModalOpen}
-            contract_address={sale?.contract_address}
-            token_id={sale?.token_id}
+            contract_address={contract_address}
+            token_id={token_id}
             address={offer_person_address}
             caller={address}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -702,10 +822,11 @@ console.log(chainID)
             setActiveTabIndex={setActiveTabIndex}
             isOpen={isAcceptOfferModalOpen}
             setIsOpen={setIsAcceptOfferModalOpen}
-            contract_address={sale?.contract_address}
-            token_id={sale?.token_id}
+            contract_address={contract_address}
+            token_id={token_id}
             offer_address={offer_person_address}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -713,6 +834,108 @@ console.log(chainID)
   )
 }
 
+const ListingItem: FC<{
+  index: number
+  sale: ListingType
+}> = ({ index, sale }) => {
+  let timeCreated = ''
+  let endTime
+  if (sale?.createdAt) {
+    let d = new Date(sale.createdAt)
+    timeCreated = d.toLocaleString()
+  }
+  if (sale?.end_date) endTime = new Date(sale.end_date).toLocaleString()
+
+  let bgColor = 'bg-transparent'
+  if (index % 2 === 0) {
+    bgColor = 'bg-[#070707]'
+  }
+
+  const listingData = [
+    {
+      name: 'Token Owner',
+      value: shortenString(sale?.token_owner),
+    },
+    {
+      name: 'Date Created',
+      value: timeCreated,
+    },
+    {
+      name: 'End Date',
+      value: endTime,
+    },
+    {
+      name: 'Unit Price',
+      value: sale?.per_unit_price,
+    },
+    { name: 'Quantity', value: sale?.number_of_tokens },
+  ]
+
+  return (
+    <motion.tr
+      className={`${bgColor} font-poppins text-[#D7D7D7] lg:text-lg py-2 h-16`}
+      variants={opacityAnimation}
+      initial="initial"
+      whileInView="final"
+      viewport={{ once: true }}
+      transition={{
+        ease: 'easeInOut',
+        duration: 0.4,
+        delay: index < 6 ? 0.1 * index : 0,
+      }}
+    >
+      {listingData?.map((activityData, index) => (
+        <td key={index} className="h-16">
+          {activityData?.value}
+        </td>
+      ))}
+    </motion.tr>
+  )
+}
+
+const Listings: FC<{
+  sales: ListingType[]
+}> = ({ sales }) => {
+  const tableHeadings = [
+    { name: 'Token Owner' },
+    { name: 'Date Created' },
+    { name: 'End Date' },
+    { name: 'Unit Price' },
+    { name: 'Quantity' },
+  ]
+  return (
+    <>
+      <div
+        className="font-poppins text-[#D7D7D7] lg:text-lg px-0 max-h-[300px] lg:overflow-x-hidden
+    overflow-y-scroll scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021]"
+      >
+        {sales?.length && (
+          <table className="w-full overflow-x-auto text-center">
+            <thead>
+              <tr className="h-16">
+                {tableHeadings.map((heading) => (
+                  <th key={heading.name} className="h-16">
+                    {heading.name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {sales?.length
+                ? sales.map((sale, index) => {
+                    return <ListingItem key={index} sale={sale} index={index} />
+                  })
+                : ''}
+            </tbody>
+          </table>
+        )}
+        {sales?.length === 0 && (
+          <p className="text-center b text-3xl p-12">- No Listings yet -</p>
+        )}
+      </div>
+    </>
+  )
+}
 const DescriptionBidHistorySection: FC<{
   nft: AvatarType | undefined
   contractDetails: NftContractType | undefined
@@ -722,9 +945,12 @@ const DescriptionBidHistorySection: FC<{
   sale: SaleType | undefined
   activity: ActivityType | undefined
   currentTab: any
+  owners?: any[]
+  nftType?: any
   handleTabs: () => void
-  state:()=> void
-  states: ()=> void
+  state: () => void
+  states: () => void
+  sales?: ListingType[]
 }> = ({
   nft,
   contractDetails,
@@ -734,9 +960,12 @@ const DescriptionBidHistorySection: FC<{
   sale,
   activity,
   currentTab,
+  owners,
+  nftType,
   handleTabs,
   state,
-  states
+  states,
+  sales,
 }) => {
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0)
@@ -758,6 +987,9 @@ const DescriptionBidHistorySection: FC<{
           ? 'Current Offers'
           : '',
     },
+    {
+      label: 'Listings',
+    },
 
     // {
     //   label: 'Bid History',
@@ -765,14 +997,14 @@ const DescriptionBidHistorySection: FC<{
   ]
 
   const onClickAddress = (user) => {
-    let profile = user === address ? `/profile`:`/profile/${user}`
+    let profile = user === address ? `/profile` : `/profile/${user}`
     router.push(profile)
   }
 
   const tabsRef = useRef([])
 
-  useEffect(()=> {
-    if(activeTabIndex === 1) {
+  useEffect(() => {
+    if (activeTabIndex === 1) {
       state()
     } else {
       states()
@@ -785,6 +1017,7 @@ const DescriptionBidHistorySection: FC<{
       handleTabs()
     }
   }, [currentTab, handleTabs])
+
   useEffect(() => {
     function setTabPosition() {
       const currentTab = tabsRef.current[activeTabIndex]
@@ -828,10 +1061,13 @@ const DescriptionBidHistorySection: FC<{
             <CurrentOffers
               offers={offers}
               sale={sale}
+              sales={sales}
               address={address}
               setActiveTabIndex={setActiveTabIndex}
               onClickAddress={onClickAddress}
               chainID={contractDetails?.chain?.id}
+              nftType={nftType}
+              owners={owners}
             />
           ) : (
             <CurrentBids
@@ -846,6 +1082,8 @@ const DescriptionBidHistorySection: FC<{
             address={address}
             onClickAddress={onClickAddress}
           />
+        ) : activeTabIndex === 3 ? (
+          <Listings sales={sales} />
         ) : (
           ''
         )}

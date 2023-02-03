@@ -5,16 +5,15 @@ import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
 import { NGM20ABI } from '../../contracts/nftabi'
-import type { AvatarType, NftOfferBodyType } from '../../interfaces'
+import type { AvatarType, NftOfferBodyType, Make1155Offer } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
-import { makeOffer } from '../../react-query/queries'
+import { makeOffer, make1155Offer } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
-import { useNetwork, useSwitchNetwork } from 'wagmi'
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
 const MakeOfferModal: FC<{
@@ -22,23 +21,41 @@ const MakeOfferModal: FC<{
   isOpen: boolean
   nft: AvatarType
   accountBalance: any
-  chainID:any
-}> = ({ setIsOpen, nft, accountBalance, chainID }) => {
+  chainID: any
+  nftType:any
+}> = ({ setIsOpen, nft, accountBalance, chainID,nftType }) => {
   const queryClient = useQueryClient()
   const { width } = useWindowDimensions()
   const { address } = useAccount()
   const [bidAmount, setBidAmount] = useState(0)
+  const [quantity, setQuantity] = useState(0)
   const [loading, setLoading] = useState(false)
   const [clientWidth, setClientWidth] = useState(1)
   // const [accountBalance, setAccountBalance] = useState('')
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
-  const { mutate, data, isLoading, isSuccess } = useMutation(makeOffer, {
+  // const { mutate, data, isLoading, isSuccess } = useMutation(makeOffer, {
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries(QUERIES.getSingleNft)
+  //   },
+  // })
+
+  const { mutate: MakeOffer, data:makeOfferData, isLoading:isOfferLoading, isSuccess: isOfferSuccess } =
+    useMutation(makeOffer, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
   })
+
+  const { mutate: Make1155Offer,data:make1155OfferData, isLoading:isOffer1155Loading, isSuccess: is1155OfferSuccess } = useMutation(
+    make1155Offer,
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(QUERIES.getSingleNft)
+      },
+    }
+  )
   useEffect(() => {
     if (!chainID) return
     if (chain?.id === parseInt(chainID)) {
@@ -86,13 +103,30 @@ const MakeOfferModal: FC<{
       token_id: nft?.token_id,
       sign: '',
     }
-    let rawMsg = `{
+    const OfferData1155: Make1155Offer = {
+      offer_person_address: address ? address : '',
+      contract_address: nft?.contract_address,
+      token_id: parseInt(nft?.token_id),
+      number_of_tokens: quantity,
+      per_unit_price: bidAmount,
+      sign: '',
+    }
+    
+    let raw721Msg = `{
       "offer_price":"${bidAmount}",
       "offer_person_address":"${address ? address : ''}",
     "contract_address":"${nft?.contract_address}",
     "token_id":"${nft?.token_id}"
   }`
+    let raw1155Msg = `{
+      "offer_user_address": "${address ? address : ''}",
+      "contract_address": "${nft?.contract_address}",
+      "token_id": "${nft?.token_id}",
+      "number_of_tokens": "${quantity}",
+      "per_unit_price": "${bidAmount}",
+    }`
 
+    let rawMsg = nftType === 'NGM1155'? raw1155Msg:raw721Msg
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
       toast.dark(`Your offer is greater than your wallet balance`, {
         type: 'error',
@@ -123,7 +157,11 @@ const MakeOfferModal: FC<{
           )
           .then(async (sign) => {
             // console.log(sign)
+            if(nftType==='NGM1155'){
+              OfferData1155['sign'] = sign
+            } else {
             offerData['sign'] = sign
+            }
           })
           .catch((e) => {
             console.log(e.message)
@@ -131,7 +169,10 @@ const MakeOfferModal: FC<{
             return
           })
         if (offerData['sign']) {
-          mutate(offerData)
+          MakeOffer(offerData)
+          setLoading(false)
+        } else if(OfferData1155['sign']) {
+          Make1155Offer(OfferData1155)
           setLoading(false)
         } else return setLoading(false)
       } else {
@@ -151,7 +192,11 @@ const MakeOfferModal: FC<{
                 )
                 .then(async (sign) => {
                   // console.log(sign)
-                  offerData['sign'] = sign
+                  if (nftType === 'NGM1155') {
+                    OfferData1155['sign'] = sign
+                  } else {
+                    offerData['sign'] = sign
+                  }
                 })
                 .catch((e) => {
                   console.log(e.message)
@@ -159,9 +204,12 @@ const MakeOfferModal: FC<{
                   return
                 })
               if (offerData['sign']) {
-                mutate(offerData)
+                MakeOffer(offerData)
                 setLoading(false)
-              } else return setLoading(false)
+              } else if(OfferData1155['sign']) {
+                Make1155Offer(OfferData1155)
+                setLoading(false) } 
+                else return setLoading(false)
             })
           })
           .catch(() => {
@@ -179,30 +227,57 @@ const MakeOfferModal: FC<{
     }
   }
 
+  const handleQuantity = (value: number) => {
+    if (value > 0) {
+      setQuantity(value)
+    } else {
+      setQuantity(0)
+    }
+  }
+
   useEffect(() => {
     setClientWidth(width)
   }, [width])
 
   useEffect(() => {
-    if (isSuccess) {
-      let msg = data?.data?.message
-        ? data?.data?.message
+    if (isOfferSuccess) {
+      let msg = makeOfferData?.data?.message
+        ? makeOfferData?.data?.message
         : 'Offer Made Successfully'
       toast(msg, {
         hideProgressBar: true,
         autoClose: 3000,
-        type: data?.data?.message ? 'error' : 'success',
+        type: makeOfferData?.data?.message ? 'error' : 'success',
         position: 'top-right',
         theme: 'dark',
       })
       setIsOpen(false)
     }
-  }, [isSuccess, data?.data, setIsOpen])
+    if (is1155OfferSuccess) {
+      let msg = make1155OfferData?.data?.message
+        ? make1155OfferData?.data?.message
+        : 'Offer Made Successfully'
+      toast(msg, {
+        hideProgressBar: true,
+        autoClose: 3000,
+        type: make1155OfferData?.data?.message ? 'error' : 'success',
+        position: 'top-right',
+        theme: 'dark',
+      })
+      setIsOpen(false)
+    }
+  }, [
+    isOfferSuccess,
+    makeOfferData?.data,
+    is1155OfferSuccess,
+    make1155OfferData?.data,
+    setIsOpen,
+  ])
 
   return (
     <ModalBase>
       <motion.div
-        className="w-full max-w-[866px] lg:h-[350px] py-4 px-4 lg:px-10 
+        className="w-full max-w-[866px] lg:h-[400px] py-4 px-4 lg:px-10 
     rounded-lg skew-y-1 -skew-x-1 bg-gradient-to-b from-[#494A4A] via-[#222324] to-[#030507]"
         variants={fromTopAnimation}
         initial="initial"
@@ -254,7 +329,23 @@ const MakeOfferModal: FC<{
               <span>WETH</span>
             </p>
           </div>
-
+          {nftType === 'NGM1155' && (
+            <>
+              <div className="font-poppins lg:text-[20px] flex justify-between mb-2 mt-3">
+                <label htmlFor="quantity" className="text-white">
+                  Quantity
+                </label>
+              </div>
+              <div className="h-[47px] relative rounded-lg">
+                <input
+                  onChange={(e) => handleQuantity(Number(e.target.value))}
+                  type="number"
+                  id="quantity"
+                  className="outline-none w-full h-full bg-[#585858] px-[5%] text-white rounded-lg"
+                />
+              </div>
+            </>
+          )}
           <div className="grid place-items-center mt-8">
             <button
               className="btn-primary w-[200px] h-[40px] lg:w-[375px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]
@@ -262,9 +353,9 @@ const MakeOfferModal: FC<{
               onClick={() =>
                 isChainCorrect ? onMakeOffer() : onSwitchNetwork()
               }
-              disabled={isLoading || loading}
+              disabled={isOfferLoading || loading || isOffer1155Loading}
             >
-              {isLoading || loading ? (
+              {isOfferLoading || loading || isOffer1155Loading ? (
                 <Spinner color="black" />
               ) : !isChainCorrect ? (
                 'Switch Network'

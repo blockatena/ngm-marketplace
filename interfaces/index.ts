@@ -2,6 +2,8 @@ export type CrumbType = { name: string; route: string }
 
 export type addressType = `0x${string}`
 
+export type NftType = 'NGM1155' | 'NGM721PSI' | 'NGMTINY721'
+
 export type CollectionCardType = {
   chain: string
   collection_name: string
@@ -122,6 +124,8 @@ export type AvatarType = {
   contract_type: string
   token_id: string
   meta_data_url: string
+  number_of_tokens?: number
+  listed_tokens?: number
   is_in_auction: boolean
   is_in_sale: boolean
   token_owner: string
@@ -143,8 +147,8 @@ export type NftContractType = {
   owner_address: string
   collection_name: string
   chain: {
-    id:any,
-    name:string
+    id: any
+    name: string
   }
   type: string
   transactionhash: string
@@ -218,6 +222,7 @@ export type CollectionNftsBodyType = {
   items_per_page: number
   order: 'NewToOld' | 'OldToNew'
   alphabetical_order: 'AtoZ' | 'ZtoA'
+  nftType?: NftType
 }
 
 export type NftSaleBodyType = {
@@ -228,6 +233,17 @@ export type NftSaleBodyType = {
   end_date: string
   price: number
   sign: string
+}
+
+export type Nft1155SaleBodyType = {
+  token_owner: any
+  contract_address: string
+  token_id: number
+  number_of_tokens: number
+  start_date: string
+  end_date: string
+  per_unit_price: number
+  sign:string
 }
 
 export type NftOfferBodyType = {
@@ -256,6 +272,7 @@ export type OfferType = {
   createdAt: string
   updatedAt: string
   offer_status: string
+  status: string
   __v: number
 }
 
@@ -273,6 +290,20 @@ export type SaleType = {
   __v: number
 }
 
+export type Sale1155Type = {
+  _id: string
+  token_owner: string
+  contract_address: string
+  token_id: string
+  number_of_tokens: number
+  start_date: string
+  end_date: string
+  per_unit_price: number
+  createdAt: string
+  updatedAt: string
+  status: string
+  __v: number
+}
 export type ActivityType = {
   _id: string
   event: string
@@ -309,4 +340,44 @@ export type UserType = {
   banner_image?: string
   profile_image?: string
   __v: number
+}
+
+export type Make1155Offer = {
+  offer_person_address: string
+  contract_address: string
+  token_id: number
+  number_of_tokens: number
+  per_unit_price: number
+  sign:string
+}
+
+export type Cancel1155Offer = {
+  offer_person_address: string
+  contract_address: string
+  token_id: number
+  sign: string
+}
+
+export type Accept1155Offer = {
+  offer_person_address: string
+  contract_address: string
+  token_owner: string
+  token_id: number
+  number_of_tokens: number
+  sign: string
+}
+
+export type ListingType = {
+  contract_address: string
+  createdAt: string
+  end_date: string
+  number_of_tokens: number
+  per_unit_price: number
+  start_date: string
+  status: string
+  token_id: string
+  token_owner: string
+  updatedAt: string
+  __v: number
+  _id: string
 }

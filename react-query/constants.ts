@@ -11,4 +11,7 @@ export const QUERIES = {
   getUserActivity: 'getUserActivity',
   getNftActivity: 'getNftActivity',
   getUserCollections: 'getUserCollections',
+  getCollectionType: 'getCollectionType',
+  getUserTokenNumber: 'getUserTokenNumber',
+  getUser1155Nfts: 'getUser1155Nfts',
 }

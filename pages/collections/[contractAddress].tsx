@@ -10,17 +10,22 @@ import Drawer from '../../components/Drawer'
 import NavAccordion from '../../components/NavAccordion'
 import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
-import type { AvatarType, CollectionNftsBodyType } from '../../interfaces'
+import withProtection from '../../components/withProtection'
+import type {
+  AvatarType,
+  CollectionNftsBodyType,
+  NftType,
+} from '../../interfaces'
 import { CrumbType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
 import {
   getCollectionDetails,
   getCollectionNfts,
+  getCollectionType,
 } from '../../react-query/queries'
 import { handleAnimationDelay } from '../../utils'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
-import withProtection from '../../components/withProtection'
 interface HeroSectionProps {
   name: string
   img: any
@@ -389,10 +394,23 @@ const CollectionPage: NextPage = () => {
 
   const { mutate, data, isSuccess } = useMutation(getCollectionNfts)
 
+  const { data: contractType } = useQuery(
+    [QUERIES.getCollectionType, contractAddress],
+    () => getCollectionType(contractAddress),
+    { enabled: !!contractAddress }
+  )
+
+  console.log({ data })
+
+  const nftType: NftType | undefined = contractType?.data?.type
+
   const { data: collectionDetails } = useQuery(
     QUERIES.getCollectionDetails,
     () => getCollectionDetails(contractAddress),
-    { enabled: !!contractAddress && contractAddress !== 'undefined' }
+    {
+      enabled:
+        !!contractAddress && contractAddress !== 'undefined' && !!nftType,
+    }
   )
 
   useEffect(() => {
@@ -402,9 +420,10 @@ const CollectionPage: NextPage = () => {
       items_per_page: ITEMS_PER_PAGE,
       alphabetical_order: ALPHABETICAL_ORDER,
       order: ORDER,
+      nftType,
     }
-    contractAddress !== 'undefined' && mutate(body)
-  }, [mutate, contractAddress, currentPage])
+    contractAddress !== 'undefined' && nftType && mutate(body)
+  }, [mutate, contractAddress, currentPage, nftType])
 
   // const { data, refetch, isSuccess } = useQuery(
   //   QUERIES.getCollectionNFTs,
@@ -432,7 +451,8 @@ const CollectionPage: NextPage = () => {
   let bestOffer = collectionDetails?.data.best_offer
   let totalvolume = collectionDetails?.data.collection?.trade_volume
   let owners = collectionDetails?.data.owners
-  let totalsupply = collectionDetails?.data.nfts.length
+  let totalNfts = collectionDetails?.data?.nfts?.total_nfts
+  let totalsupply = totalNfts ? totalNfts : collectionDetails?.data.nfts.length
   let createddate = collectionDetails?.data?.collection?.createdAt
   createddate = createddate?.substring(0, 10)
   let bannerurl = '/images/collections/static.jpg'
@@ -541,14 +561,20 @@ const CollectionPage: NextPage = () => {
   // }, [data?.data.nfts, data?.data])
 
   useEffect(() => {
-    if (data?.data?.nfts) {
+    if (nftType === 'NGM1155' && data?.data?.get_nfts) {
+      setAvatars(data.data.get_nfts.nfts)
+      setDataUnsorted(data?.data.get_nfts.nfts)
+      setCollectionData(data?.data.get_nfts)
+      setCurrentPage(data.data.get_nfts.currentPage)
+      setTotalPages(data.data.get_nfts.total_pages)
+    } else if (data?.data?.nfts) {
       setAvatars(data.data.nfts)
       setDataUnsorted(data?.data.nfts)
       setCollectionData(data?.data)
       setCurrentPage(data.data.currentPage)
       setTotalPages(data.data.total_pages)
     }
-  }, [data?.data])
+  }, [data?.data, nftType])
 
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },

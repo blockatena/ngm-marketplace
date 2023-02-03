@@ -7,6 +7,7 @@ import { ChangeEvent, useEffect, useState } from 'react'
 import { AiFillCheckSquare, AiOutlineClockCircle } from 'react-icons/ai'
 import { useMutation, useQuery } from 'react-query'
 import { toast } from 'react-toastify'
+import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
 import AvatarCard from '../../../../components/AvatarCard'
 import BreadCrumb from '../../../../components/BreadCrumb'
 import ListingSuccessModal from '../../../../components/modals/ListingSuccessModal'
@@ -22,22 +23,26 @@ import {
 import type {
   AvatarType,
   CrumbType,
+  Nft1155SaleBodyType,
   nftAuctionBodyType,
   NftContractType,
   NftSaleBodyType,
+  NftType,
 } from '../../../../interfaces'
 import { QUERIES } from '../../../../react-query/constants'
 import {
+  create1155NftSale,
   createNftAuction,
   createNftSale,
+  getCollectionType,
   getSingleNft,
+  getUserTokenNumber,
 } from '../../../../react-query/queries'
 import {
   fromLeftAnimation,
   opacityAnimation,
 } from '../../../../utils/animations'
 import useCurrentDateTime from '../../../../utils/hooks/useCurrentDateTime'
-import { useNetwork, useSwitchNetwork } from 'wagmi'
 
 const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 
@@ -69,9 +74,11 @@ const ListAssetPage: NextPage = () => {
     start_date: `${date}T${time}`,
     end_date: '',
     min_price: 0,
+    quantity: 1,
   }
+  const { address } = useAccount()
   const { chain } = useNetwork()
-  const {  switchNetwork } = useSwitchNetwork()
+  const { switchNetwork } = useSwitchNetwork()
   const [contractAddress, setContractAddress] = useState('')
   const [tokenId, setTokenId] = useState('')
   const [NFTABI, setNFTABI] = useState<any>()
@@ -80,19 +87,37 @@ const ListAssetPage: NextPage = () => {
   const [contractDetails, setContractDetails] = useState<NftContractType>()
   const [formData, setFormData] = useState(initialFormState)
   const [isLoading, setIsLoading] = useState(false)
-  const [isChainCorrect,setIsChainCorrect] = useState(true)
+  const [isChainCorrect, setIsChainCorrect] = useState(true)
   const [type, setType] = useState<'fixed' | 'auction'>('auction')
-  const [chainID,setChainID] = useState('')
+  const [chainID, setChainID] = useState('')
+
+  const { data: contractType } = useQuery(
+    [QUERIES.getCollectionType, contractAddress],
+    () => getCollectionType(contractAddress),
+    { enabled: !!contractAddress }
+  )
+
+  const nftType: NftType | undefined = contractType?.data?.type
+
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId],
     () => getSingleNft(contractAddress, tokenId),
     { enabled: !!contractAddress && !!tokenId }
   )
 
+  const { data: userTokenNumber } = useQuery(
+    [QUERIES.getUserTokenNumber, contractAddress, tokenId, address],
+    () => getUserTokenNumber(String(address), contractAddress, tokenId),
+    { enabled: !!contractAddress && !!tokenId && !!address }
+  )
+
   const { mutate, isSuccess } = useMutation(createNftAuction)
 
   const { mutate: createSale, isSuccess: isSaleSuccess } =
     useMutation(createNftSale)
+
+  const { mutate: create1155Sale, isSuccess: is1155SaleSuccess } =
+    useMutation(create1155NftSale)
 
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -115,7 +140,11 @@ const ListAssetPage: NextPage = () => {
   ]
 
   useEffect(() => {
-    if(!chainID) return;
+    if (nftType === 'NGM1155') setType('fixed')
+  }, [nftType])
+
+  useEffect(() => {
+    if (!chainID) return
     if (chain?.id === parseInt(chainID)) {
       setIsChainCorrect(true)
       return
@@ -125,7 +154,7 @@ const ListAssetPage: NextPage = () => {
     }
   }, [chain, chainID])
 
-  const onSwitchNetwork= async ()=> {
+  const onSwitchNetwork = async () => {
     await switchNetwork?.(parseInt(chainID))
   }
   const onlisting = async () => {
@@ -185,7 +214,7 @@ const ListAssetPage: NextPage = () => {
     let startPrt = formData?.end_date.split('-')
     let n1 = startPrt[0].slice(0, 4)
     let newEndDate: any = `${n1}-${startPrt[1]}-${startPrt[2]}`
-    formData['end_date']= newEndDate
+    formData['end_date'] = newEndDate
     let startDate = new Date(formData.start_date).toISOString()
     let endDate = new Date(formData?.end_date).toISOString()
 
@@ -196,7 +225,7 @@ const ListAssetPage: NextPage = () => {
       start_date: startDate,
       end_date: endDate,
       min_price: formData.min_price,
-      sign:''
+      sign: '',
     }
 
     const saleBody: NftSaleBodyType = {
@@ -206,7 +235,18 @@ const ListAssetPage: NextPage = () => {
       start_date: startDate,
       end_date: endDate,
       price: formData.min_price,
-      sign:''
+      sign: '',
+    }
+
+    const sale1155Body: Nft1155SaleBodyType = {
+      contract_address: nft?.contract_address,
+      token_id: parseInt(nft?.token_id),
+      token_owner: address,
+      start_date: startDate,
+      end_date: endDate,
+      per_unit_price: formData.min_price,
+      number_of_tokens: formData.quantity,
+      sign: '',
     }
 
     let rawMsg = `{
@@ -225,37 +265,63 @@ const ListAssetPage: NextPage = () => {
       "end_date":"${endDate}",
       "price":"${formData.min_price}"
     }`
+
+    let rawMsg1155Sale = `{
+      "contract_address":"${nft?.contract_address}",
+      "token_id":"${nft?.token_id}",
+      "token_owner":"${address}",
+      "start_date":"${startDate}",
+      "end_date":"${endDate}",
+      "price":"${formData.min_price}"
+      "quantity":"${formData.quantity}"
+    }`
     if (isApproved === true) {
       // POST DATA
       // console.log(type === 'auction' ? rawMsg : rawMsgSale)
-      let hashMessage = await ethers.utils.hashMessage(
-        type === 'auction' ? rawMsg : rawMsgSale
-      )
-       let msg = type === 'auction' ? rawMsg : rawMsgSale
+      
+      let msg =
+        nftType === 'NGM1155'
+          ? rawMsg1155Sale
+          : type === 'auction'
+          ? rawMsg
+          : rawMsgSale
+      let hashMessage = await ethers.utils.hashMessage(msg)
       // console.log(hashMessage)
       await signer
         .signMessage(
-          `Signing to ${type === 'auction'?"Create Auction":"Create Sale"} \n${msg}\n Hash : ${hashMessage}`
+          `Signing to ${
+            type === 'auction' ? 'Create Auction' : 'Create Sale'
+          } \n${msg}\n Hash : ${hashMessage}`
         )
         .then(async (sign) => {
           // console.log(sign)
-          if (type === 'auction') {
-            requestData['sign'] = sign
-          } else {
-            saleBody['sign'] = sign
-          }
+           if (nftType==='NGM1155') {
+             sale1155Body['sign'] = sign
+           } else if (type === 'auction') {
+             requestData['sign'] = sign
+           } else {
+             saleBody['sign'] = sign
+           }
         })
         .catch((e) => {
           console.log(e.message)
           return
         })
-      let sig = type === 'auction' ? requestData['sign'] : saleBody['sign']
+      let sig = nftType==='NGM1155'? sale1155Body['sign']: type === 'auction' ? requestData['sign'] : saleBody['sign']
       if (sig) {
-        type === 'auction' && mutate(requestData)
-        type === 'fixed' && createSale(saleBody)
+        if(nftType==="NGM1155") {
+          create1155Sale(sale1155Body)
+        } else if(type==='auction'){
+          mutate(requestData)
+        } else {
+          createSale(saleBody)
+        }
+        // type === 'auction' && mutate(requestData)
+        // nftType === 'NGM1155' && type === 'fixed' && create1155Sale(sale1155Body)
+        // type === 'fixed' && createSale(saleBody)
         setIsLoading(false)
       } else return setIsLoading(false)
-      
+
       // if (isSuccess) {
       //   setIsSuccessModalOpen(true)
       // }
@@ -268,10 +334,14 @@ const ListAssetPage: NextPage = () => {
           provider.waitForTransaction(tx.hash).then(async () => {
             // console.log(tx.hash)
             //Axios data:POST
-            let hashMessage = await ethers.utils.hashMessage(
-              type === 'auction' ? rawMsg : rawMsgSale
-            )
-            let msg = type === 'auction' ? rawMsg : rawMsgSale
+            
+            let msg =
+              nftType === 'NGM1155'
+                ? rawMsg1155Sale
+                : type === 'auction'
+                ? rawMsg
+                : rawMsgSale
+            let hashMessage = await ethers.utils.hashMessage(msg)
             // console.log(hashMessage)
             await signer
               .signMessage(
@@ -281,7 +351,10 @@ const ListAssetPage: NextPage = () => {
               )
               .then(async (sign) => {
                 // console.log(sign)
-                if (type === 'auction') {
+                if (nftType === 'NGM1155') {
+                  sale1155Body['sign'] = sign
+                  
+                } else if (type === 'auction') {
                   requestData['sign'] = sign
                 } else {
                   saleBody['sign'] = sign
@@ -291,13 +364,28 @@ const ListAssetPage: NextPage = () => {
                 console.log(e.message)
                 return
               })
-            let sig = type === 'auction'?requestData['sign']:saleBody['sign']
-            if(sig) {
-              type === 'auction' && mutate(requestData)
-              type === 'fixed' && createSale(saleBody)
+            let sig =
+              nftType === 'NGM1155'
+                ? sale1155Body['sign']
+                : type === 'auction'
+                ? requestData['sign']
+                : saleBody['sign']
+            if (sig) {
+              if (nftType === 'NGM1155') {
+                create1155Sale(sale1155Body)
+              } else if (type === 'auction') {
+                mutate(requestData)
+              } else {
+                createSale(saleBody)
+              }
+              // type === 'auction' && mutate(requestData)
+              // nftType === 'NGM1155' &&
+              //   type === 'fixed' &&
+              //   create1155Sale(sale1155Body)
+              // type === 'fixed' && createSale(saleBody)
               setIsLoading(false)
             } else return setIsLoading(false)
-            
+
             // setIsSuccessModalOpen(true)
           })
         })
@@ -344,8 +432,9 @@ const ListAssetPage: NextPage = () => {
     //   })
     //   return
     // }
-    ;(isSuccess || isSaleSuccess) && setIsSuccessModalOpen(true)
-  }, [isSuccess, isSaleSuccess])
+    ;(isSuccess || isSaleSuccess || is1155SaleSuccess) &&
+      setIsSuccessModalOpen(true)
+  }, [isSuccess, isSaleSuccess, is1155SaleSuccess])
 
   return (
     <main className="min-h-screen p-2 pt-6 lg:px-16 mb-6">
@@ -403,28 +492,37 @@ const ListAssetPage: NextPage = () => {
                 className="w-full h-[68px] rounded-lg text-white font-poppins 
             lg:text-[28px] flex p-1 border border-[#4D4D49] shadow-inner"
               >
-                <div
-                  className={`flex items-center justify-center gap-2 w-1/2  cursor-pointer transition-all duration-500
+                {nftType !== 'NGM1155' && (
+                  <div
+                    className={`flex items-center justify-center gap-2 w-1/2  ${
+                      type === 'auction' && 'cursor-pointer'
+                    } transition-all duration-500
                 ${
                   type === 'auction' &&
                   'rounded-l-2xl rounded-r-2xl bg-[#4D4D49]'
                 }`}
-                  onClick={() => setType('auction')}
-                >
-                  <p>
-                    {/* <Image
+                    onClick={() => {
+                      // if (nftType === 'NGM1155') return
+                      setType('auction')
+                    }}
+                  >
+                    <p>
+                      {/* <Image
                       src="/images/icons/clock.svg"
                       alt="icon"
                       width="24px"
                       height="24px"
                     /> */}
-                    <AiOutlineClockCircle fontSize={24} />
-                  </p>
-                  <p>Time Auction</p>
-                </div>
+                      <AiOutlineClockCircle fontSize={24} />
+                    </p>
+                    <p>Time Auction</p>
+                  </div>
+                )}
                 <div
                   // className={`flex items-center justify-center gap-2 w-1/2 cursor-pointer`}
-                  className={`flex items-center justify-center gap-2 w-1/2  cursor-pointer 
+                  className={`flex items-center justify-center gap-2 ${
+                    nftType === 'NGM1155' ? 'w-full' : 'w-1/2'
+                  } cursor-pointer 
                 ${
                   type === 'fixed' && 'rounded-l-2xl rounded-r-2xl bg-[#4D4D49]'
                 }`}
@@ -489,7 +587,10 @@ const ListAssetPage: NextPage = () => {
                 htmlFor="starting_price"
                 className="font-poppins lg:text-[31px] text-white"
               >
-                {type === 'auction' && 'Starting'} Price
+                {nftType === 'NGM1155'
+                  ? 'Unit'
+                  : type === 'auction' && 'Starting'}{' '}
+                Price
               </label>
               <div className="flex gap-4 justify-between mt-2">
                 <div
@@ -517,6 +618,47 @@ const ListAssetPage: NextPage = () => {
                 0.0001 ETH{' '}
               </p>
             </motion.div>
+
+            {nftType === 'NGM1155' && (
+              <motion.div
+                className="mt-8"
+                variants={opacityAnimation}
+                initial="initial"
+                whileInView="final"
+                viewport={{ once: true }}
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 1,
+                  delay: 0.4,
+                }}
+              >
+                <h5
+                  className="text-[#F6F6F6] lg:text-[31px] font-medium font-poppins lg:leading-[24px]
+            mb-6"
+                >
+                  Quantity{' '}
+                  {userTokenNumber?.data?.number_of_tokens && (
+                    <span className="text-xs">
+                      (You own {userTokenNumber?.data?.number_of_tokens} tokens)
+                    </span>
+                  )}
+                </h5>
+                <div
+                  className="flex flex-col md:flex-row items-center gap-4 h-[47px] rounded-lg bg-[#4D4D49] text-white 
+            font-poppins"
+                >
+                  <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    className="w-full h-full bg-[#585858] outline-none rounded-lg text-white font-poppins 
+                  px-2 border border-[#E5E4E4]"
+                    onChange={handleUserInput}
+                    value={formData.quantity}
+                  />
+                </div>
+              </motion.div>
+            )}
 
             <motion.div
               className="mt-8"

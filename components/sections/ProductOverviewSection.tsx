@@ -10,8 +10,10 @@ import {
   AvatarType,
   BidType,
   NftContractType,
+  NftType,
   OfferType,
   SaleType,
+  Sale1155Type,
   UserType,
 } from '../../interfaces'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
@@ -23,6 +25,7 @@ import CancelOfferModal from '../modals/CancelOfferModal'
 import CancelSaleModal from '../modals/CancelSaleModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
+import ViewOwnersModal from '../modals/ViewOwnersModal'
 // import ownerImg from '../../public/images/others/owner.png'
 
 const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
@@ -38,6 +41,9 @@ const ProductOverviewSection: FC<{
   offers: OfferType[] | undefined
   setActiveTabIndex: () => void
   owner: UserType | undefined
+  nftType?: NftType
+  owners?: any[]
+  sales?: Sale1155Type[] | undefined
 }> = ({
   nft,
   contractDetails,
@@ -47,6 +53,9 @@ const ProductOverviewSection: FC<{
   offers,
   setActiveTabIndex,
   owner: tokenOwner,
+  nftType,
+  owners,
+  sales,
 }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
@@ -55,6 +64,7 @@ const ProductOverviewSection: FC<{
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
   const [isCancelSaleModalOpen, setIsCancelSaleModalOpen] = useState(false)
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
+  const [isViewOwnersModalOpen, setIsViewOwnersModalOpen] = useState(false)
   const { address } = useAccount()
   const isMounted = useIsMounted()
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
@@ -63,8 +73,17 @@ const ProductOverviewSection: FC<{
   const [M, setM] = useState(0)
   const [S, setS] = useState(0)
   const [accountBalance, setAccountBalance] = useState('')
-    const [chainID, setChainID] = useState('')
+  const [chainID, setChainID] = useState('')
   // const meta_data_url = nft?.nft.meta_data_url || ''
+    const userSales = () => {
+      if (nftType !== 'NGM1155') return false
+      const fi = sales?.find((a) => {
+        if (nftType === 'NGM1155') {
+          return a.token_owner === address && a.status == 'started'
+        } else return false
+      })
+      return fi
+    }
 
   const isCancellable =
     isMounted &&
@@ -73,17 +92,40 @@ const ProductOverviewSection: FC<{
     nft?.is_in_auction
 
   const isSaleCancellable =
-    isMounted &&
-    nft?.token_owner &&
-    nft.token_owner === address &&
-    nft?.is_in_sale
+    nftType === 'NGM1155'
+      ? isMounted &&
+        // nft?.token_owner &&
+        (nft?.token_owner === address ||
+          owners?.some((owner) => owner.token_owner === address)) &&
+        nft?.is_in_sale &&
+        userSales()
+      : isMounted &&
+        // nft?.token_owner &&
+        nft?.token_owner === address &&
+        nft?.is_in_sale
+  
   // const isBidCancellable = isUserIsBidder && nft?.is_in_auction
-
+  const filterSales = () => {
+    const fi = sales?.find((a) => {
+      return a.token_owner !== address
+    })
+    if(fi){
+      return true
+    } else return false
+  }
+  const isSecondBtn = nftType === 'NGM1155' && sales && owners?.some((owner) => owner.token_owner === address) && filterSales()
   const isShowable =
     (nft?.token_owner !== DEAD_ADDRESS && nft?.is_in_sale) ||
     nft?.is_in_auction ||
-    nft?.token_owner === address
+    nft?.token_owner === address ||
+    owners?.some((owner) => owner.token_owner === address)
 
+  const isSellable =
+    isMounted &&
+    ((nft?.token_owner && nft.token_owner === address) ||
+      owners?.some((owner) => owner.token_owner === address))
+
+  
   const getBalance = async (address: `0x${string}` | undefined) => {
     if (!address) return
     const ethereum = (window as any).ethereum
@@ -102,22 +144,28 @@ const ProductOverviewSection: FC<{
     setAccountBalance(balanceInEth)
   }
 
-  useEffect(()=> {
+  useEffect(() => {
     setChainID(contractDetails?.chain?.id)
-  },[contractDetails])
+  }, [contractDetails])
   const filters = () => {
     const fi = offers?.find((a) => {
-      return a.offer_person_address === address && a.offer_status == 'started'
+      if (nftType === 'NGM1155') {
+        return a.offer_person_address === address && a.status == 'started'
+      } else {
+        return a.offer_person_address === address && a.offer_status == 'started'
+      }
     })
     return fi
   }
 
+  const isSecondCancellable = isSecondBtn && filters()
   const filterAuction = () => {
     const fi = bids?.find((a) => {
       return a.bidder_address === address && a.status == 'started'
     })
     return fi
   }
+
 
   useEffect(() => {
     if (!accountBalance) {
@@ -163,15 +211,22 @@ const ProductOverviewSection: FC<{
     //   setIsCancelBidModalOpen(true)
     //   return
     // }
-    if (isCancellable) {
-      setIsCancelModalOpen(true)
-      return
+    if (isSecondBtn && event === 'secondOk') {
+      return setIsOfferModalOpen(true)
     }
+
+    if(isSecondBtn && event === 'secondCancel') {
+      return setIsCancelOfferModalOpen(true)
+    }
+    if (isCancellable) {
+        setIsCancelModalOpen(true)
+        return
+      }
     if (isSaleCancellable) {
       setIsCancelSaleModalOpen(true)
       return
     }
-    if (isMounted && nft?.token_owner === address) {
+    if (isSellable) {
       router.push(`${router.asPath}/list`)
       return
     }
@@ -216,10 +271,9 @@ const ProductOverviewSection: FC<{
   // const explorer =
   //   CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
   const onClickAddress = (owner: string) => {
-      let profile = owner === address ? `/profile` : `/profile/${owner}`
-      router.push(profile)
+    let profile = owner === address ? `/profile` : `/profile/${owner}`
+    router.push(profile)
   }
-
   return (
     <section className="flex flex-col xl:flex-row gap-4 lg:gap-4 2xl:gap-32 xl:justify-between p-0">
       <motion.div
@@ -306,7 +360,19 @@ const ProductOverviewSection: FC<{
             <div className="font-poppins">
               {nft?.token_owner !== DEAD_ADDRESS && (
                 <>
-                  <p className="text-gray-600 text-sm lg:text-base">Owner</p>
+                  {nftType === 'NGM721PSI' && (
+                    <p className="text-gray-600 text-sm lg:text-base">Owner</p>
+                  )}
+                  {nftType === 'NGM1155' && (
+                    <p className="text-gray-600 text-sm lg:text-base">
+                      <span
+                        onClick={() => setIsViewOwnersModalOpen(true)}
+                        className="cursor-pointer hover:text-custom_yellow"
+                      >
+                        {`${owners?.length} Owner(s)`}
+                      </span>
+                    </p>
+                  )}
                   <p className="font-medium text-white text-sm lg:text-base">
                     {/* SalvadorDali */}
                     <a
@@ -368,7 +434,7 @@ const ProductOverviewSection: FC<{
                 ? 'Cancel Auction'
                 : isSaleCancellable
                 ? 'Cancel Sale'
-                : isMounted && nft?.token_owner && nft.token_owner === address
+                : isSellable
                 ? 'Sell'
                 : filters()
                 ? 'Update Offer'
@@ -381,17 +447,25 @@ const ProductOverviewSection: FC<{
                 : ''}
             </button>
           )}
-          {isCancelBtn() && (
+          {(isCancelBtn() || isSecondBtn) && (
             <>
               <button
                 className="w-full lg:min-w-[327px] btn-secondary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
-                onClick={() => handleClick('cancel')}
+                onClick={() =>
+                  isSecondCancellable
+                    ? handleClick('secondCancel')
+                    : isSecondBtn
+                    ? handleClick('secondOk')
+                    : handleClick('cancel')
+                }
               >
                 {filters()
                   ? 'Cancel Offer'
                   : filterAuction()
                   ? 'Cancel Bid'
-                  : ''}
+                  : isSecondBtn
+                  ? 'Make Offer'
+                  : 'Cancel Offer'}
               </button>
             </>
           )}
@@ -427,6 +501,7 @@ const ProductOverviewSection: FC<{
             nft={nft}
             accountBalance={accountBalance}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -449,6 +524,7 @@ const ProductOverviewSection: FC<{
             setIsOpen={setIsCancelSaleModalOpen}
             nft={nft}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -462,6 +538,16 @@ const ProductOverviewSection: FC<{
             address={address}
             caller={address}
             chainID={chainID}
+            nftType={nftType}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isViewOwnersModalOpen && (
+          <ViewOwnersModal
+            isOpen={isViewOwnersModalOpen}
+            setIsOpen={setIsViewOwnersModalOpen}
+            owners={owners}
           />
         )}
       </AnimatePresence>

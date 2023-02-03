@@ -54,6 +54,10 @@ const ActivityItem: FC<{
           ? `${price} ETH`
           : `${activity?.price} ETH`,
     },
+    {
+      name: 'Quantity',
+      value: 1,
+    },
     // {
     //   name: 'From',
     //   value:
@@ -97,7 +101,7 @@ const ActivityItem: FC<{
     { name: 'Time', value: timePlaced },
   ]
 
-const onClickAddress = (user:string) => {
+  const onClickAddress = (user: string) => {
     let profile = user === connectedAddress ? `/profile` : `/profile/${user}`
     router.push(profile)
   }
@@ -205,6 +209,7 @@ const UserActivity: FC<{ address: string | undefined }> = ({ address }) => {
     { name: 'Type' },
     { name: 'Asset Name' },
     { name: 'Price' },
+    { name: 'Quantity' },
     { name: 'From' },
     { name: 'To' },
     { name: 'Time' },
