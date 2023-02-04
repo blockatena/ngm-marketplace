@@ -454,7 +454,7 @@ const OfferItem: FC<{
       return true
     } else return false
   }
-let acceptable = checker() && filterSales()
+let acceptable = nftType !=='NGM1155' || checker() && filterSales()
   const offerData =
     ifOwner && nftType === 'NGM1155'
       ? [
@@ -759,7 +759,7 @@ const CurrentOffers: FC<{
     let acceptable =
       nftType === 'NGM1155' && filterSales() && offer_person_address !== address
 
-    if (ifOwner && !acceptable && event === 'accept') {
+    if (ifOwner && !acceptable && event === 'accept' && nftType === 'NGM1155') {
       return toast.dark(`You have to list your nft in order to accept offers`, {
         type: 'error',
         hideProgressBar: true,

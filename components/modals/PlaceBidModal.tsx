@@ -268,7 +268,7 @@ const PlaceBidModal: FC<{
               Bid Amount
             </label>
             <span className="text-[#AEA8A8]">{`Balance : ${
-              updateBalance ? updateBalance : accountBalance
+              updateBalance !== '' ? updateBalance : accountBalance
             } WETH `}</span>
           </div>
           <div className="h-[47px] relative rounded-lg">
