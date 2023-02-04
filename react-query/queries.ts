@@ -200,7 +200,7 @@ export const getNumberOfTokensForAddress = (
   token_id: string
 ) => {
   return axiosInstance.get(
-    `/nft/g2w3-1155/${token_owner}/${contract_address}/${token_id}`
+    `/nft/g2w3-1155/get-tokens/${token_owner}/${contract_address}/${token_id}`
   )
 }
 

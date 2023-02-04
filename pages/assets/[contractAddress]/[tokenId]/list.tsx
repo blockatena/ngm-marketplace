@@ -36,7 +36,7 @@ import {
   createNftSale,
   getCollectionType,
   getSingleNft,
-  getUserTokenNumber,
+  getNumberOfTokensForAddress,
 } from '../../../../react-query/queries'
 import {
   fromLeftAnimation,
@@ -116,17 +116,17 @@ const ListAssetPage: NextPage = () => {
   const nftType: NftType | undefined = contractType?.data?.type
 
   const { data } = useQuery(
-    [QUERIES.getSingleNft, contractAddress, tokenId],
-    () => getSingleNft(contractAddress, tokenId),
+    [QUERIES.getSingleNft, contractAddress, tokenId, nftType],
+    () => getSingleNft(contractAddress, tokenId, nftType),
     { enabled: !!contractAddress && !!tokenId }
   )
 
   const { data: userTokenNumber } = useQuery(
     [QUERIES.getUserTokenNumber, contractAddress, tokenId, address],
-    () => getUserTokenNumber(String(address), contractAddress, tokenId),
+    () =>
+      getNumberOfTokensForAddress(`${address}`, contractAddress, tokenId),
     { enabled: !!contractAddress && !!tokenId && !!address }
   )
-
   const { mutate, isSuccess } = useMutation(createNftAuction)
 
   const { mutate: createSale, isSuccess: isSaleSuccess } =
@@ -655,7 +655,7 @@ const ListAssetPage: NextPage = () => {
                   Quantity{' '}
                   {userTokenNumber?.data?.number_of_tokens && (
                     <span className="text-xs">
-                      (You own {userTokenNumber?.data?.number_of_tokens} tokens)
+                      (You own {userTokenNumber?.data?.number_of_tokens?.tokens} tokens)
                     </span>
                   )}
                 </h5>
