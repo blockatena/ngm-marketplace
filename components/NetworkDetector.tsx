@@ -1,8 +1,6 @@
 import { ethers } from 'ethers'
 import { FC, useEffect, useState } from 'react'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
-const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
-const CHAINID2: string = process.env.NEXT_PUBLIC_CHAIN_ID2 || ''
 const Detector: FC = () => {
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
@@ -15,6 +13,15 @@ const Detector: FC = () => {
   const { isConnected } = useAccount()
   const [currentChainId, setCurrentChainId] = useState('')
   const targetNetworkId = ['80001', '137', '1', '5']
+  const [route,setRoute] = useState('')
+  useEffect(()=> {
+    const route = window.location.href.split('/')[2]
+    setRoute(route)
+  },[route])
+  // const route = window.location.href.split('/')[2]
+  const CHAINID: string = route=='gamestoweb3.com'?'137':'80001'
+  const CHAINID2: string = route=='gamestoweb3.com'?'1':'5'
+
 
   const onSwitchNetwork = async () => {
     const ethereum = (window as any).ethereum
@@ -39,7 +46,7 @@ const Detector: FC = () => {
       setShowAlert('false')
       return
     }
-  }, [chain])
+  }, [chain,CHAINID])
 
   const detectNetwork = () => {
     if (showAlert !== '') {

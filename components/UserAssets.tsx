@@ -121,6 +121,12 @@ const UserAssets: FC<{ address: string | undefined }> = ({ address }) => {
                         cardData.meta_data[0]?.image
                       : undefined
                   }
+                  nft_name={
+                    nftType === 'NGM1155' && cardData?.meta_data
+                      ? //@ts-expect-error
+                        cardData.meta_data[0]?.name
+                      : undefined
+                  }
                 />
               </motion.div>
             ))

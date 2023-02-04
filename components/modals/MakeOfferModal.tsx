@@ -14,8 +14,9 @@ import { fromTopAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
-const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
-const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
+import { addresses } from '../../contracts/addresses'
+// const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
+// const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
 const MakeOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -40,6 +41,40 @@ const MakeOfferModal: FC<{
   //     queryClient.invalidateQueries(QUERIES.getSingleNft)
   //   },
   // })
+
+    const DeployType =
+      chainID == '80001' || chainID == '5'
+        ? 'DEV'
+        : chainID == '137' || chainID == '1'
+        ? 'PROD'
+        : ''
+    const devMarkets = addresses.MARKETPLACE_CONTRACT.DEV
+    const prodMarkets = addresses.MARKETPLACE_CONTRACT.PROD
+
+    const NGMMarketAddress =
+      DeployType == 'DEV' && chainID == '80001'
+        ? devMarkets.MUMBAI
+        : DeployType == 'DEV' && chainID == '5'
+        ? devMarkets.GOERLI
+        : DeployType == 'PROD' && chainID == '137'
+        ? prodMarkets.POLYGON
+        : DeployType == 'PROD' && chainID == '1'
+        ? prodMarkets.ETHEREUM
+        : ''
+        
+      const devTokens = addresses.ERC20_CONTRACT.DEV
+      const prodTokens = addresses.ERC20_CONTRACT.PROD
+
+      const NGM20Address =
+        DeployType == 'DEV' && chainID == '80001'
+          ? devTokens.MUMBAI
+          : DeployType == 'DEV' && chainID == '5'
+          ? devTokens.GOERLI
+          : DeployType == 'PROD' && chainID == '137'
+          ? prodTokens.POLYGON
+          : DeployType == 'PROD' && chainID == '1'
+          ? prodTokens.ETHEREUM
+          : ''
 
   const { mutate: MakeOffer, data:makeOfferData, isLoading:isOfferLoading, isSuccess: isOfferSuccess } =
     useMutation(makeOffer, {

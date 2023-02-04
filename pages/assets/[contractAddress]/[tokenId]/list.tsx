@@ -43,8 +43,10 @@ import {
   opacityAnimation,
 } from '../../../../utils/animations'
 import useCurrentDateTime from '../../../../utils/hooks/useCurrentDateTime'
+import { addresses } from '../../../../contracts/addresses'
 
-const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
+// const DeployType = process.env.NEXT_PUBLIC_TYPE || ''
+// const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 
 const initalNftState: AvatarType = {
   _id: '',
@@ -91,6 +93,20 @@ const ListAssetPage: NextPage = () => {
   const [type, setType] = useState<'fixed' | 'auction'>('auction')
   const [chainID, setChainID] = useState('')
 
+  const DeployType = chainID == '80001' || chainID == '5'?'DEV': chainID == '137' || chainID == '1'?'PROD':''
+  const devMarkets = addresses.MARKETPLACE_CONTRACT.DEV
+  const prodMarkets = addresses.MARKETPLACE_CONTRACT.PROD
+
+  const NGMMarketAddress =
+    DeployType == 'DEV' && chainID == '80001'
+      ? devMarkets.MUMBAI
+      : DeployType == 'DEV' && chainID == '5'
+      ? devMarkets.GOERLI
+      : DeployType == 'PROD' && chainID == '137'
+      ? prodMarkets.POLYGON
+      : DeployType == 'PROD' && chainID == '1'
+      ? prodMarkets.ETHEREUM
+      : ''
   const { data: contractType } = useQuery(
     [QUERIES.getCollectionType, contractAddress],
     () => getCollectionType(contractAddress),

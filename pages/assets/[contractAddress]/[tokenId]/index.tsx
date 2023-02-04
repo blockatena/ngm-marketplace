@@ -165,11 +165,7 @@ const ViewAssetPage: NextPage = () => {
   const [section, setSection] = useState<boolean>()
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
   const [page_number, setCurrentPage] = useState<number>(1)
-  const refetchtime: number = parseInt(
-    process.env.NEXT_PUBLIC_REFETCH_TIME
-      ? process.env.NEXT_PUBLIC_REFETCH_TIME
-      : '30000'
-  )
+  const refetchtime: number = 10000
 
   const { data: contractType } = useQuery(
     [QUERIES.getCollectionType, contractAddress],

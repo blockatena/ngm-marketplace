@@ -9,9 +9,6 @@ import { getUser, getUserActivity } from '../react-query/queries'
 import { shortenString } from '../utils'
 import { opacityAnimation } from '../utils/animations'
 import Pagination from './Pagination'
-const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
-const explorer =
-  CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
 const ActivityItem: FC<{
   activity: ActivityType
   index: number
@@ -106,11 +103,6 @@ const ActivityItem: FC<{
     router.push(profile)
   }
 
-  const onClickTx = (hash: string) => {
-    let url = `https://${explorer}/tx/${hash}`
-    window.open(url, '_blank')
-  }
-
   const handleAssetNameClick = (contractAddress: string, id: string) => {
     router.push(`/assets/${contractAddress}/${id}`)
     // window.open(`/assets/${contractAddress}/${id}`, '_blank')
@@ -149,7 +141,7 @@ const ActivityItem: FC<{
               ? onClickAddress(activity?.to)
               : isTx && activityData?.name === 'Time'
               ? // ? onClickTx(activity?.transaction_hash)
-                onClickTx('')
+                ''
               : activityData?.name === 'Asset Name'
               ? activityData?.item?.contract_address &&
                 activityData?.item?.token_id &&

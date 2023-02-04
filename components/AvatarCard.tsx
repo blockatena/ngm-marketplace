@@ -17,6 +17,7 @@ interface AvatarCardProps extends AvatarType {
   // is_in_sale?: boolean
   noCta?: boolean
   img_url?: string
+  nft_name?:string
   // meta_data_url: string
   // token_id: any
   // token_owner: string
@@ -80,6 +81,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
   meta_data,
   token_owner,
   img_url,
+  nft_name,
 }) => {
   const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
@@ -280,7 +282,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
                   is_in_auction ? 'w-1/2' : ''
                 }`}
               >
-                {meta_data?.name ? meta_data?.name : ''}
+                {meta_data?.name ? meta_data?.name : nft_name ? nft_name : ''}
               </div>
               <div className={`${is_in_auction ? 'w-1/2' : 'w-0'}`}>
                 {is_in_auction && (

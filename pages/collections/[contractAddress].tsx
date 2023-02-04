@@ -400,8 +400,6 @@ const CollectionPage: NextPage = () => {
     { enabled: !!contractAddress }
   )
 
-  console.log({ data })
-
   const nftType: NftType | undefined = contractType?.data?.type
 
   const { data: collectionDetails } = useQuery(
