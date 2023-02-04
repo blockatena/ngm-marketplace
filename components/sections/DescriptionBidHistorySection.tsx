@@ -27,9 +27,7 @@ import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
 import AcceptOfferModal from '../modals/AcceptOfferModal'
 import CancelOfferModal from '../modals/CancelOfferModal'
 import { toast } from 'react-toastify'
-const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
-const explorer =
-  CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -73,8 +71,12 @@ const DescriptionItem: FC<{
   value: string
   contract: string
   tokenUri: string
-}> = ({ name, value, contract, tokenUri }) => {
-  const clickC = () => {
+  chainID: any
+}> = ({ name, value, contract, tokenUri, chainID }) => {
+
+  let explorer =
+    chainID == '80001' ? 'mumbai.polygonscan.com' : chainID=='137'?'polygonscan.com':chainID=='5'?'goerli.etherscan.io':chainID=='1'?'etherscan.io':''
+    const clickC = () => {
     if (name === 'Contract Address') {
       let url = `https://${explorer}/token/${contract}`
       window.open(url, '_blank')
@@ -107,7 +109,8 @@ const DescriptionItem: FC<{
 const CharacterDescription: FC<{
   nft: AvatarType | undefined
   contractDetails: NftContractType
-}> = ({ nft, contractDetails }) => {
+  chainID:any
+}> = ({ nft, contractDetails,chainID }) => {
   const address =
     nft?.contract_address &&
     `${nft?.contract_address?.substring(
@@ -161,6 +164,7 @@ const CharacterDescription: FC<{
               {...item}
               contract={nft?.contract_address}
               tokenUri={nft?.meta_data_url}
+              chainID={chainID}
             />
           </motion.div>
         ))}
@@ -172,7 +176,8 @@ const CharacterDescription: FC<{
 const Activity: FC<{
   activity: ActivityType
   onClickAddress: () => void
-}> = ({ activity, onClickAddress }) => {
+  chainID:any
+}> = ({ activity, onClickAddress, chainID }) => {
   // activity = activity.activity
   const tableHeadings = [
     { name: 'Type' },
@@ -211,6 +216,7 @@ const Activity: FC<{
                       activity={activity}
                       index={index}
                       onClickAddress={onClickAddress}
+                      chainID={chainID}
                     />
                   )
                 })}
@@ -262,10 +268,8 @@ const shortenString = (value: string) => {
 //   )
 // }
 
-const onClickTx = (hash) => {
-  let url = `https://${explorer}/tx/${hash}`
-  window.open(url, '_blank')
-}
+
+
 
 const BidItem: FC<{
   bid: BidType
@@ -553,7 +557,8 @@ const ActivityItem: FC<{
   activity: ActivityType
   index: number
   onClickAddress: () => void
-}> = ({ activity, index, onClickAddress }) => {
+  chainID:any
+}> = ({ activity, index, onClickAddress,chainID }) => {
   let timePlaced = ''
   const { address } = useAccount()
   if (activity?.createdAt) {
@@ -612,6 +617,22 @@ const ActivityItem: FC<{
     },
     { name: 'Time', value: timePlaced === 'Invalid Date' ? ' ' : timePlaced },
   ]
+
+  let explorer =
+    chainID == '80001'
+      ? 'mumbai.polygonscan.com'
+      : chainID == '137'
+      ? 'polygonscan.com'
+      : chainID == '5'
+      ? 'goerli.etherscan.io'
+      : chainID == '1'
+      ? 'etherscan.io'
+      : ''
+
+  const onClickTx = (hash) => {
+    let url = `https://${explorer}/tx/${hash}`
+    window.open(url, '_blank')
+  }
 
   return (
     <motion.tr
@@ -971,6 +992,7 @@ const DescriptionBidHistorySection: FC<{
   const [tabUnderlineWidth, setTabUnderlineWidth] = useState(0)
   const [tabUnderlineLeft, setTabUnderlineLeft] = useState(0)
   const { address } = useAccount()
+  const [chainID, setChainID] = useState('')
   const router = useRouter()
   const tabsData = [
     {
@@ -995,6 +1017,10 @@ const DescriptionBidHistorySection: FC<{
     //   label: 'Bid History',
     // },
   ]
+
+  useEffect(() => {
+    setChainID(contractDetails?.chain?.id)
+  }, [contractDetails])
 
   const onClickAddress = (user) => {
     let profile = user === address ? `/profile` : `/profile/${user}`
@@ -1081,6 +1107,7 @@ const DescriptionBidHistorySection: FC<{
             activity={activity}
             address={address}
             onClickAddress={onClickAddress}
+            chainID={chainID}
           />
         ) : activeTabIndex === 3 ? (
           <Listings sales={sales} />

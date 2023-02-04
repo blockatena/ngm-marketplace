@@ -27,10 +27,8 @@ import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
 import ViewOwnersModal from '../modals/ViewOwnersModal'
 // import ownerImg from '../../public/images/others/owner.png'
-
-const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
-// const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
-
+import { addresses } from '../../contracts/addresses'
+import { RPC } from '../../contracts/rpc'
 const ProductOverviewSection: FC<{
   nft: AvatarType
   contractDetails: NftContractType | undefined
@@ -84,7 +82,27 @@ const ProductOverviewSection: FC<{
       })
       return fi
     }
+    const DeployType =
+      chainID == '80001' || chainID == '5'
+        ? 'DEV'
+        : chainID == '137' || chainID == '1'
+        ? 'PROD'
+        : ''
+    const devTokens = addresses.ERC20_CONTRACT.DEV
+    const prodTokens = addresses.ERC20_CONTRACT.PROD
 
+    const NGM20Address =
+      DeployType == 'DEV' && chainID == '80001'
+        ? devTokens.MUMBAI
+        : DeployType == 'DEV' && chainID == '5'
+        ? devTokens.GOERLI
+        : DeployType == 'PROD' && chainID == '137'
+        ? prodTokens.POLYGON
+        : DeployType == 'PROD' && chainID == '1'
+        ? prodTokens.ETHEREUM
+        : ''
+
+        // console.log(NGM20Address)
   const isCancellable =
     isMounted &&
     nft?.token_owner &&
@@ -125,15 +143,23 @@ const ProductOverviewSection: FC<{
     ((nft?.token_owner && nft.token_owner === address) ||
       owners?.some((owner) => owner.token_owner === address))
 
-  
   const getBalance = async (address: `0x${string}` | undefined) => {
-    if (!address) return
+    if (!address || !NGM20Address) return
+    await address && NGM20Address
     const ethereum = (window as any).ethereum
     const accounts = await ethereum.request({
       method: 'eth_requestAccounts',
     })
     const provider = new ethers.providers.JsonRpcProvider(
-      process.env.NEXT_PUBLIC_PROVIDER ? process.env.NEXT_PUBLIC_PROVIDER : ''
+      chainID == '80001'
+        ? RPC.mumbai
+        : chainID == '5'
+        ? RPC.goerli
+        : chainID == '137'
+        ? RPC.polygon
+        : chainID == '1'
+        ? RPC.ethereum
+        : ''
     )
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
@@ -143,7 +169,6 @@ const ProductOverviewSection: FC<{
     balanceInEth = parseFloat(balanceInEth).toFixed(2)
     setAccountBalance(balanceInEth)
   }
-
   useEffect(() => {
     setChainID(contractDetails?.chain?.id)
   }, [contractDetails])
@@ -171,7 +196,7 @@ const ProductOverviewSection: FC<{
     if (!accountBalance) {
       getBalance(address)
     }
-  }, [address, accountBalance])
+  })
 
   const isUserPlacedBid = () => {
     const usersbid: any = bids?.filter((e) => {
