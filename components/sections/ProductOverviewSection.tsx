@@ -191,7 +191,7 @@ const ProductOverviewSection: FC<{
     return fi
   }
 
-
+// console.log(accountBalance)
   useEffect(() => {
     if (!accountBalance) {
       getBalance(address)
