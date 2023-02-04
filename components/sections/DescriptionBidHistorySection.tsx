@@ -74,6 +74,7 @@ const DescriptionItem: FC<{
   chainID: any
 }> = ({ name, value, contract, tokenUri, chainID }) => {
 
+//  console.log(chainID)
   let explorer =
     chainID == '80001' ? 'mumbai.polygonscan.com' : chainID=='137'?'polygonscan.com':chainID=='5'?'goerli.etherscan.io':chainID=='1'?'etherscan.io':''
     const clickC = () => {
@@ -129,7 +130,7 @@ const CharacterDescription: FC<{
     { name: 'Chain ID', value: contractDetails?.chain?.id || '' },
     { name: 'Network', value: contractDetails?.chain?.name || '' },
   ]
-
+// console.log(chainID)
   return (
     <div className="py-4 px-0">
       <motion.p
@@ -453,7 +454,7 @@ const OfferItem: FC<{
       return true
     } else return false
   }
-let acceptable = checker() && filterSales()
+let acceptable = nftType !=='NGM1155' || checker() && filterSales()
   const offerData =
     ifOwner && nftType === 'NGM1155'
       ? [
@@ -758,7 +759,7 @@ const CurrentOffers: FC<{
     let acceptable =
       nftType === 'NGM1155' && filterSales() && offer_person_address !== address
 
-    if (ifOwner && !acceptable && event === 'accept') {
+    if (ifOwner && !acceptable && event === 'accept' && nftType === 'NGM1155') {
       return toast.dark(`You have to list your nft in order to accept offers`, {
         type: 'error',
         hideProgressBar: true,
@@ -1081,7 +1082,11 @@ const DescriptionBidHistorySection: FC<{
       </div>
       <div className="py-4">
         {activeTabIndex === 0 ? (
-          <CharacterDescription nft={nft} contractDetails={contractDetails} />
+          <CharacterDescription
+            nft={nft}
+            contractDetails={contractDetails}
+            chainID={chainID}
+          />
         ) : activeTabIndex === 2 ? (
           nft?.is_in_sale || offers ? (
             <CurrentOffers

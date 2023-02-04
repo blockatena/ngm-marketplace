@@ -32,7 +32,7 @@ const MakeOfferModal: FC<{
   const [quantity, setQuantity] = useState(0)
   const [loading, setLoading] = useState(false)
   const [clientWidth, setClientWidth] = useState(1)
-  // const [accountBalance, setAccountBalance] = useState('')
+  const [updateBalance, setAccountBalance] = useState('')
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
@@ -126,6 +126,10 @@ const MakeOfferModal: FC<{
     const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
     // const minimumBid = 0 // need to get data from api
     const bal = await wethcontract.balanceOf(walletAddress)
+    // console.log(bal.toString())
+    let balanceInEth: any = ethers.utils.formatEther(bal)
+    balanceInEth = parseFloat(balanceInEth).toFixed(2)
+    setAccountBalance(balanceInEth)
     const inputAmt: any = await ethers.utils.parseUnits(
       bidAmount.toString(),
       'ether'
@@ -341,7 +345,7 @@ const MakeOfferModal: FC<{
             <label htmlFor="offer_amount" className="text-white">
               Offer Amount
             </label>
-            <span className="text-[#AEA8A8]">{`Balance : ${accountBalance} WETH `}</span>
+            <span className="text-[#AEA8A8]">{`Balance : ${updateBalance !==''?updateBalance:accountBalance} WETH `}</span>
           </div>
           <div className="h-[47px] relative rounded-lg">
             <input
