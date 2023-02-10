@@ -350,7 +350,8 @@ const ProductOverviewSection: FC<{
             </p>
             {tokensOwned && (
               <p className="text-white">
-                <span className="text-custom_yellow">{tokensOwned}</span> Owned
+                You Own:{' '}
+                <span className="text-custom_yellow">{tokensOwned}</span>
               </p>
             )}
           </div>
