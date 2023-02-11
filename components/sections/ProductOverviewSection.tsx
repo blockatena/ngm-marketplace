@@ -29,6 +29,7 @@ import ViewOwnersModal from '../modals/ViewOwnersModal'
 // import ownerImg from '../../public/images/others/owner.png'
 import { addresses } from '../../contracts/addresses'
 import { RPC } from '../../contracts/rpc'
+import ImageViewModal from '../modals/ImageViewModal'
 const ProductOverviewSection: FC<{
   nft: AvatarType
   contractDetails: NftContractType | undefined
@@ -74,6 +75,8 @@ const ProductOverviewSection: FC<{
   const [S, setS] = useState(0)
   const [accountBalance, setAccountBalance] = useState('')
   const [chainID, setChainID] = useState('')
+  const [imageView, setImageView] = useState({ isOpen: false, img: '' })
+
   // const meta_data_url = nft?.nft.meta_data_url || ''
   const userSales = () => {
     if (nftType !== 'NGM1155') return false
@@ -319,7 +322,7 @@ const ProductOverviewSection: FC<{
           delay: 0.6,
         }}
       >
-        <AvatarCard variant="lg" noCta {...nft} />
+        <AvatarCard variant="lg" noCta {...nft} setImageView={setImageView} />
         <div className="lg:hidden grid place-items-center pl-4">
           <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
             <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
@@ -520,6 +523,7 @@ const ProductOverviewSection: FC<{
             nft={nft}
             accountBalance={accountBalance}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -588,6 +592,15 @@ const ProductOverviewSection: FC<{
             isOpen={isViewOwnersModalOpen}
             setIsOpen={setIsViewOwnersModalOpen}
             owners={owners}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {imageView.isOpen && (
+          <ImageViewModal
+            isOpen={imageView.isOpen}
+            setIsOpen={setImageView}
+            img={imageView.img}
           />
         )}
       </AnimatePresence>
