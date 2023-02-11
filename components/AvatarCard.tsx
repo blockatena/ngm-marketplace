@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { FC, useEffect, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { AvatarType } from '../interfaces'
 import useIsMounted from '../utils/hooks/useIsMounted'
@@ -17,7 +17,13 @@ interface AvatarCardProps extends AvatarType {
   // is_in_sale?: boolean
   noCta?: boolean
   img_url?: string
-  nft_name?:string
+  nft_name?: string
+  setImageView?: Dispatch<
+    SetStateAction<{
+      isOpen: boolean
+      img: string
+    }>
+  >
   // meta_data_url: string
   // token_id: any
   // token_owner: string
@@ -82,6 +88,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
   token_owner,
   img_url,
   nft_name,
+  setImageView,
 }) => {
   const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
@@ -199,13 +206,24 @@ const AvatarCard: FC<AvatarCardProps> = ({
     //
   }
 
+  const img = meta_data?.image
+    ? meta_data?.image
+    : img_url
+    ? img_url
+    : '/images/others/avatar_bg.png'
+
+  const handleFullView = () => {
+    setIsSelected((prev) => !prev)
+    setImageView && setImageView({ isOpen: true, img })
+  }
+
   let bottomStyle = 'avatar-btn-right'
   if (isMounted && !is_in_auction) {
     bottomStyle = 'rounded-l-lg'
   }
 
   return (
-    <div onClick={() => setIsSelected((prev) => !prev)}>
+    <div onClick={handleFullView}>
       <div
         className={`${shadow} relative w-min mt-16 hover:avatar-shadow cursor-pointer
     before:absolute before:-right-2 before:-top-2 before:w-[82px] before:h-[88px] before:bg-custom_yellow before:rounded-xl 
@@ -263,14 +281,17 @@ const AvatarCard: FC<AvatarCardProps> = ({
           <div
             className="avatar-card-clip rounded-b-lg rounded-tr-lg bg-dark_mild bg-scroll bg-cover
            absolute top-3 bottom-3 left-3 right-3"
+            // style={{
+            //   backgroundImage: `url(${
+            //     meta_data?.image
+            //       ? meta_data?.image
+            //       : img_url
+            //       ? img_url
+            //       : '/images/others/avatar_bg.png'
+            //   })`,
+            // }}
             style={{
-              backgroundImage: `url(${
-                meta_data?.image
-                  ? meta_data?.image
-                  : img_url
-                  ? img_url
-                  : '/images/others/avatar_bg.png'
-              })`,
+              backgroundImage: `url(${img})`,
             }}
           ></div>
         </div>

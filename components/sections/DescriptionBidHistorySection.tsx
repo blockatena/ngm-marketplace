@@ -12,6 +12,7 @@ import {
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useRef, useState } from 'react'
+import { toast } from 'react-toastify'
 import { useAccount } from 'wagmi'
 import {
   ActivityType,
@@ -20,13 +21,13 @@ import {
   BidType,
   ListingType,
   NftContractType,
+  NftType,
   OfferType,
   SaleType,
 } from '../../interfaces'
 import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
 import AcceptOfferModal from '../modals/AcceptOfferModal'
 import CancelOfferModal from '../modals/CancelOfferModal'
-import { toast } from 'react-toastify'
 
 ChartJS.register(
   CategoryScale,
@@ -73,11 +74,18 @@ const DescriptionItem: FC<{
   tokenUri: string
   chainID: any
 }> = ({ name, value, contract, tokenUri, chainID }) => {
-
-//  console.log(chainID)
+  //  console.log(chainID)
   let explorer =
-    chainID == '80001' ? 'mumbai.polygonscan.com' : chainID=='137'?'polygonscan.com':chainID=='5'?'goerli.etherscan.io':chainID=='1'?'etherscan.io':''
-    const clickC = () => {
+    chainID == '80001'
+      ? 'mumbai.polygonscan.com'
+      : chainID == '137'
+      ? 'polygonscan.com'
+      : chainID == '5'
+      ? 'goerli.etherscan.io'
+      : chainID == '1'
+      ? 'etherscan.io'
+      : ''
+  const clickC = () => {
     if (name === 'Contract Address') {
       let url = `https://${explorer}/token/${contract}`
       window.open(url, '_blank')
@@ -110,8 +118,8 @@ const DescriptionItem: FC<{
 const CharacterDescription: FC<{
   nft: AvatarType | undefined
   contractDetails: NftContractType
-  chainID:any
-}> = ({ nft, contractDetails,chainID }) => {
+  chainID: any
+}> = ({ nft, contractDetails, chainID }) => {
   const address =
     nft?.contract_address &&
     `${nft?.contract_address?.substring(
@@ -130,7 +138,7 @@ const CharacterDescription: FC<{
     { name: 'Chain ID', value: contractDetails?.chain?.id || '' },
     { name: 'Network', value: contractDetails?.chain?.name || '' },
   ]
-// console.log(chainID)
+  // console.log(chainID)
   return (
     <div className="py-4 px-0">
       <motion.p
@@ -177,7 +185,7 @@ const CharacterDescription: FC<{
 const Activity: FC<{
   activity: ActivityType
   onClickAddress: () => void
-  chainID:any
+  chainID: any
 }> = ({ activity, onClickAddress, chainID }) => {
   // activity = activity.activity
   const tableHeadings = [
@@ -268,9 +276,6 @@ const shortenString = (value: string) => {
 //     </div>
 //   )
 // }
-
-
-
 
 const BidItem: FC<{
   bid: BidType
@@ -416,7 +421,7 @@ const OfferItem: FC<{
   ifOwner: string
   nftType: any
   address: any
-  sales:any[]
+  sales: any[]
   handleOffers: () => void
   onClickAddress: () => void
 }> = ({
@@ -454,7 +459,7 @@ const OfferItem: FC<{
       return true
     } else return false
   }
-let acceptable = nftType !=='NGM1155' || checker() && filterSales()
+  let acceptable = nftType !== 'NGM1155' || (checker() && filterSales())
   const offerData =
     ifOwner && nftType === 'NGM1155'
       ? [
@@ -558,8 +563,8 @@ const ActivityItem: FC<{
   activity: ActivityType
   index: number
   onClickAddress: () => void
-  chainID:any
-}> = ({ activity, index, onClickAddress,chainID }) => {
+  chainID: any
+}> = ({ activity, index, onClickAddress, chainID }) => {
   let timePlaced = ''
   const { address } = useAccount()
   if (activity?.createdAt) {
@@ -687,7 +692,7 @@ const CurrentOffers: FC<{
   chainID: any
   nftType: any
   owners: any[]
-  sales:any[]
+  sales: any[]
 }> = ({
   offers,
   sale,
@@ -697,55 +702,58 @@ const CurrentOffers: FC<{
   chainID,
   nftType,
   owners,
-  sales
+  sales,
 }) => {
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
   const [isAcceptOfferModalOpen, setIsAcceptOfferModalOpen] = useState(false)
   const [offer_person_address, setoffer_person_address] = useState('')
   const [contract_address, setContract_address] = useState('')
   const [token_id, setToken_id] = useState('')
-    // const checker = () => {
-    //   if (!tempOfferAddress) return
-    //   if (nftType !== 'NGM1155' || tempOfferAddress !== address) {
-    //     return true
-    //   } else {
-    //     return false
-    //   }
-    // }
+  // const checker = () => {
+  //   if (!tempOfferAddress) return
+  //   if (nftType !== 'NGM1155' || tempOfferAddress !== address) {
+  //     return true
+  //   } else {
+  //     return false
+  //   }
+  // }
 
-      const filterSales = () => {
-        const fi = sales?.find((a) => {
-          return a.token_owner === address
-        })
-        if (fi) {
-          return true
-        } else return false
-      }
-// let acceptable = filterSales()
+  const filterSales = () => {
+    const fi = sales?.find((a) => {
+      return a.token_owner === address
+    })
+    if (fi) {
+      return true
+    } else return false
+  }
+  // let acceptable = filterSales()
   const ifOwner =
     sale?.token_owner === address ||
     owners?.some((owner) => owner.token_owner === address)
-  const tableHeadings = ifOwner && nftType==='NGM1155' ? [
-        { name: 'Buyer Address' },
-        { name: 'Offer Amount (WETH)' },
-        { name: 'Quantity' },
-        { name: 'Made At' },
-        { name: 'Accept' },
-      ]: ifOwner
-    ? [
-        { name: 'Buyer Address' },
-        { name: 'Offer Amount (WETH)' },
-        { name: 'Quantity' },
-        { name: 'Made At' },
-        { name: 'Cancel' },
-        { name: 'Accept' },
-      ]
-    : [
-        { name: 'Buyer Address' },
-        { name: 'Offer Amount (WETH)' },
-        { name: 'Quantity' },
-        { name: 'Made At' },
-      ]
+  const tableHeadings =
+    ifOwner && nftType === 'NGM1155'
+      ? [
+          { name: 'Buyer Address' },
+          { name: 'Offer Amount (WETH)' },
+          { name: 'Quantity' },
+          { name: 'Made At' },
+          { name: 'Accept' },
+        ]
+      : ifOwner
+      ? [
+          { name: 'Buyer Address' },
+          { name: 'Offer Amount (WETH)' },
+          { name: 'Quantity' },
+          { name: 'Made At' },
+          { name: 'Cancel' },
+          { name: 'Accept' },
+        ]
+      : [
+          { name: 'Buyer Address' },
+          { name: 'Offer Amount (WETH)' },
+          { name: 'Quantity' },
+          { name: 'Made At' },
+        ]
   const handleOffers = (
     offer_person_address,
     contract_address,
@@ -766,7 +774,7 @@ const CurrentOffers: FC<{
       })
     }
     if (ifOwner && event === 'accept') {
-       return setIsAcceptOfferModalOpen(true)
+      return setIsAcceptOfferModalOpen(true)
     }
     if (ifOwner && event === 'cancel') {
       setIsCancelOfferModalOpen(true)
@@ -819,7 +827,7 @@ const CurrentOffers: FC<{
         <p className="text-center b text-3xl p-12">- No Offers yet -</p>
         // </tr>
       )}
-      {!sale && nftType !=='NGM1155'&& (
+      {!sale && nftType !== 'NGM1155' && (
         // <tr>
         <p className="text-center b text-3xl p-12">-NFT not on sale-</p>
         // </tr>
@@ -968,7 +976,7 @@ const DescriptionBidHistorySection: FC<{
   activity: ActivityType | undefined
   currentTab: any
   owners?: any[]
-  nftType?: any
+  nftType?: NftType
   handleTabs: () => void
   state: () => void
   states: () => void
@@ -1010,14 +1018,16 @@ const DescriptionBidHistorySection: FC<{
           ? 'Current Offers'
           : '',
     },
-    {
-      label: 'Listings',
-    },
-
     // {
     //   label: 'Bid History',
     // },
   ]
+
+  if (nftType === 'NGM1155') {
+    tabsData.push({
+      label: 'Listings',
+    })
+  }
 
   useEffect(() => {
     setChainID(contractDetails?.chain?.id)
