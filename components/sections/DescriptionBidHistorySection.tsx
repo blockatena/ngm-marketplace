@@ -768,10 +768,14 @@ const CurrentOffers: FC<{
       nftType === 'NGM1155' && filterSales() && offer_person_address !== address
 
     if (ifOwner && !acceptable && event === 'accept' && nftType === 'NGM1155') {
-      return toast.dark(`You have to list your nft in order to accept offers`, {
-        type: 'error',
-        hideProgressBar: true,
-      })
+      return toast.dark(
+        offer_person_address ==
+          address?`You cannot accept your own offer`:`You have to list your nft in order to accept offers`,
+        {
+          type: 'error',
+          hideProgressBar: true,
+        }
+      )
     }
     if (ifOwner && event === 'accept') {
       return setIsAcceptOfferModalOpen(true)

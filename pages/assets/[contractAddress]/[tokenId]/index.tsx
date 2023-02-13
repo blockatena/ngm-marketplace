@@ -239,10 +239,10 @@ const ViewAssetPage: NextPage = () => {
     setEndTime(
       data?.data?.auction?.end_date
         ? data?.data?.auction?.end_date
+        : data?.data?.nft?.end_date
+        ? data?.data?.nft?.end_date
         : data?.data?.sale?.end_date
         ? data?.data?.sale?.end_date
-        : data?.data?.sales?.length
-        ? data?.data?.sales[0].end_date
         : ''
     )
     setNft(data?.data?.nft || data?.data?.nft1155)
