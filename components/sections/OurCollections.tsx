@@ -130,7 +130,7 @@ const OurCollections = () => {
       </div>
       <div className="flex justify-center">
         <button
-          className="capitalize bg-custom-yellow text-black w-[9.125rem] h-[3rem] rounded-md hover:bg-custom-yellow-hover
+          className="capitalize bg-[#F8D40A] text-black w-[9.125rem] h-[3rem] rounded-md hover:bg-custom-yellow-hover
         font-poppins font-medium"
         >
           see all
