@@ -29,12 +29,14 @@ import editIcon from '../../public/images/icons/edit.svg'
 // import messageIcon from '../../public/images/icons/Message.svg'
 import settingsIcon from '../../public/images/icons/Setting.svg'
 // import walletIcon from '../../public/images/icons/Wallet.svg'
+import UserCollections from '../../components/UserCollections'
+import collectionIcon from '../../public/images/icons/collection.svg'
 import { QUERIES } from '../../react-query/constants'
 import {
   getUser,
+  getUserCollections,
   updateUser,
   uploadProfileImg,
-  getUserCollections,
 } from '../../react-query/queries'
 import { shortenString } from '../../utils'
 import {
@@ -42,8 +44,6 @@ import {
   fromRightAnimation,
   opacityAnimation,
 } from '../../utils/animations'
-import UserCollections from '../../components/UserCollections'
-import collectionIcon from '../../public/images/icons/collection.svg'
 // import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 
 type RouteNameType =
@@ -56,8 +56,6 @@ type RouteNameType =
   | 'settings'
 
 type RouteType = { name: RouteNameType; route: string; icon: any }
-
-
 
 const NavRoute: FC<{
   icon: string
@@ -90,8 +88,8 @@ const Drawer: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   setCurrentRoute: Dispatch<SetStateAction<RouteNameType>>
   currentRoute: RouteNameType
-  routes:RouteType[]
-}> = ({ setIsOpen, setCurrentRoute, currentRoute ,routes}) => {
+  routes: RouteType[]
+}> = ({ setIsOpen, setCurrentRoute, currentRoute, routes }) => {
   const handleClick = () => {
     setIsOpen(false)
   }
@@ -201,7 +199,7 @@ const ProfilePage: NextPage = () => {
   const [HasCollections, setHasCollections] = useState(false)
 
   type UploadOptionType = 'banner' | 'profile'
-  const connectedaAddress:any = address
+  const connectedaAddress: any = address
   const collections = useQuery(
     [QUERIES.getUserCollections, connectedaAddress],
     () => getUserCollections(connectedaAddress, 1, 1),
@@ -321,7 +319,9 @@ const ProfilePage: NextPage = () => {
   }, [isUploadSuccess])
 
   useEffect(() => {
-    if (userData && typeof userData?.data !== 'string') setUser(userData?.data?userData?.data:'')
+    // if (userData && typeof userData?.data !== 'string') setUser(userData?.data?userData?.data:'')
+
+    if (userData?.data?.createdAt) setUser(userData?.data)
     else setUser(null)
   }, [userData])
 
@@ -338,16 +338,16 @@ const ProfilePage: NextPage = () => {
     setIsUsernameUpdate(false)
   }, [isUserMutationSuccess])
 
-const routes: RouteType[] = HasCollections
-  ? [
-      { name: 'overview', route: '/', icon: categoryIcon },
-      { name: 'my collections', route: '/', icon: collectionIcon },
-      { name: 'settings', route: '/', icon: settingsIcon },
-    ]
-  : [
-      { name: 'overview', route: '/', icon: categoryIcon },
-      { name: 'settings', route: '/', icon: settingsIcon },
-    ]
+  const routes: RouteType[] = HasCollections
+    ? [
+        { name: 'overview', route: '/', icon: categoryIcon },
+        { name: 'my collections', route: '/', icon: collectionIcon },
+        { name: 'settings', route: '/', icon: settingsIcon },
+      ]
+    : [
+        { name: 'overview', route: '/', icon: categoryIcon },
+        { name: 'settings', route: '/', icon: settingsIcon },
+      ]
   return (
     <main className="p-4 pt-6 pb-0 lg:px-8 relative -bottom-8">
       <div
