@@ -5,14 +5,14 @@ import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
+import { addresses } from '../../contracts/addresses'
 import { NGM20ABI } from '../../contracts/nftabi'
-import type { AvatarType, NftBidBodyType } from '../../interfaces'
+import type { AvatarType, NftBidBodyType, NftType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
 import { placeBid } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
-import { addresses } from '../../contracts/addresses'
 // const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 // const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
 const PlaceBidModal: FC<{
@@ -22,7 +22,8 @@ const PlaceBidModal: FC<{
   accountBalance: any
   status: string
   chainID: any
-}> = ({ setIsOpen, nft, accountBalance, status, chainID }) => {
+  nftType?: NftType
+}> = ({ setIsOpen, nft, accountBalance, status, chainID, nftType }) => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
   const [bidAmount, setBidAmount] = useState(0)
@@ -37,39 +38,39 @@ const PlaceBidModal: FC<{
     },
   })
 
-      const DeployType =
-        chainID == '80001' || chainID == '5'
-          ? 'DEV'
-          : chainID == '137' || chainID == '1'
-          ? 'PROD'
-          : ''
-      const devMarkets = addresses.MARKETPLACE_CONTRACT.DEV
-      const prodMarkets = addresses.MARKETPLACE_CONTRACT.PROD
+  const DeployType =
+    chainID == '80001' || chainID == '5'
+      ? 'DEV'
+      : chainID == '137' || chainID == '1'
+      ? 'PROD'
+      : ''
+  const devMarkets = addresses.MARKETPLACE_CONTRACT.DEV
+  const prodMarkets = addresses.MARKETPLACE_CONTRACT.PROD
 
-      const NGMMarketAddress =
-        DeployType == 'DEV' && chainID == '80001'
-          ? devMarkets.MUMBAI
-          : DeployType == 'DEV' && chainID == '5'
-          ? devMarkets.GOERLI
-          : DeployType == 'PROD' && chainID == '137'
-          ? prodMarkets.POLYGON
-          : DeployType == 'PROD' && chainID == '1'
-          ? prodMarkets.ETHEREUM
-          : ''
+  const NGMMarketAddress =
+    DeployType == 'DEV' && chainID == '80001'
+      ? devMarkets.MUMBAI
+      : DeployType == 'DEV' && chainID == '5'
+      ? devMarkets.GOERLI
+      : DeployType == 'PROD' && chainID == '137'
+      ? prodMarkets.POLYGON
+      : DeployType == 'PROD' && chainID == '1'
+      ? prodMarkets.ETHEREUM
+      : ''
 
-      const devTokens = addresses.ERC20_CONTRACT.DEV
-      const prodTokens = addresses.ERC20_CONTRACT.PROD
+  const devTokens = addresses.ERC20_CONTRACT.DEV
+  const prodTokens = addresses.ERC20_CONTRACT.PROD
 
-      const NGM20Address =
-        DeployType == 'DEV' && chainID == '80001'
-          ? devTokens.MUMBAI
-          : DeployType == 'DEV' && chainID == '5'
-          ? devTokens.GOERLI
-          : DeployType == 'PROD' && chainID == '137'
-          ? prodTokens.POLYGON
-          : DeployType == 'PROD' && chainID == '1'
-          ? prodTokens.ETHEREUM
-          : ''
+  const NGM20Address =
+    DeployType == 'DEV' && chainID == '80001'
+      ? devTokens.MUMBAI
+      : DeployType == 'DEV' && chainID == '5'
+      ? devTokens.GOERLI
+      : DeployType == 'PROD' && chainID == '137'
+      ? prodTokens.POLYGON
+      : DeployType == 'PROD' && chainID == '1'
+      ? prodTokens.ETHEREUM
+      : ''
 
   useEffect(() => {
     if (!chainID) return
@@ -127,7 +128,6 @@ const PlaceBidModal: FC<{
     "contract_address":"${nft?.contract_address}",
     "token_id":"${nft?.token_id}"
   }`
-    console.log(parseInt(inputAmt.toString()))
 
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
       toast.dark(`Your bid is greater than your wallet balance`, {
@@ -292,19 +292,23 @@ const PlaceBidModal: FC<{
             The next bid must be 5% more than the current bid
           </p>
 
-          <div className="font-poppins lg:text-[20px] flex justify-between my-2">
-            <label htmlFor="quantity" className="text-white">
-              Quantity
-            </label>
-          </div>
-          <div className="h-[47px] relative rounded-lg">
-            <input
-              // onChange={() => null }
-              type="number"
-              id="quantity"
-              className="outline-none w-full h-full bg-[#585858] px-[5%] text-white rounded-lg"
-            />
-          </div>
+          {nftType === 'NGM1155' && (
+            <>
+              <div className="font-poppins lg:text-[20px] flex justify-between my-2">
+                <label htmlFor="quantity" className="text-white">
+                  Quantity
+                </label>
+              </div>
+              <div className="h-[47px] relative rounded-lg">
+                <input
+                  // onChange={() => null }
+                  type="number"
+                  id="quantity"
+                  className="outline-none w-full h-full bg-[#585858] px-[5%] text-white rounded-lg"
+                />
+              </div>
+            </>
+          )}
           <div className="grid place-items-center mt-8">
             <button
               className="btn-primary w-[200px] h-[40px] lg:w-[375px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]

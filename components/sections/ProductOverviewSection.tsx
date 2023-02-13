@@ -12,8 +12,8 @@ import {
   NftContractType,
   NftType,
   OfferType,
-  SaleType,
   Sale1155Type,
+  SaleType,
   UserType,
 } from '../../interfaces'
 import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
@@ -29,6 +29,7 @@ import ViewOwnersModal from '../modals/ViewOwnersModal'
 // import ownerImg from '../../public/images/others/owner.png'
 import { addresses } from '../../contracts/addresses'
 import { RPC } from '../../contracts/rpc'
+import ImageViewModal from '../modals/ImageViewModal'
 const ProductOverviewSection: FC<{
   nft: AvatarType
   contractDetails: NftContractType | undefined
@@ -42,6 +43,7 @@ const ProductOverviewSection: FC<{
   nftType?: NftType
   owners?: any[]
   sales?: Sale1155Type[] | undefined
+  tokensOwned: number | null
 }> = ({
   nft,
   contractDetails,
@@ -54,6 +56,7 @@ const ProductOverviewSection: FC<{
   nftType,
   owners,
   sales,
+  tokensOwned,
 }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
@@ -72,37 +75,39 @@ const ProductOverviewSection: FC<{
   const [S, setS] = useState(0)
   const [accountBalance, setAccountBalance] = useState('')
   const [chainID, setChainID] = useState('')
+  const [imageView, setImageView] = useState({ isOpen: false, img: '' })
+
   // const meta_data_url = nft?.nft.meta_data_url || ''
-    const userSales = () => {
-      if (nftType !== 'NGM1155') return false
-      const fi = sales?.find((a) => {
-        if (nftType === 'NGM1155') {
-          return a.token_owner === address && a.status == 'started'
-        } else return false
-      })
-      return fi
-    }
-    const DeployType =
-      chainID == '80001' || chainID == '5'
-        ? 'DEV'
-        : chainID == '137' || chainID == '1'
-        ? 'PROD'
-        : ''
-    const devTokens = addresses.ERC20_CONTRACT.DEV
-    const prodTokens = addresses.ERC20_CONTRACT.PROD
+  const userSales = () => {
+    if (nftType !== 'NGM1155') return false
+    const fi = sales?.find((a) => {
+      if (nftType === 'NGM1155') {
+        return a.token_owner === address && a.status == 'started'
+      } else return false
+    })
+    return fi
+  }
+  const DeployType =
+    chainID == '80001' || chainID == '5'
+      ? 'DEV'
+      : chainID == '137' || chainID == '1'
+      ? 'PROD'
+      : ''
+  const devTokens = addresses.ERC20_CONTRACT.DEV
+  const prodTokens = addresses.ERC20_CONTRACT.PROD
 
-    const NGM20Address =
-      DeployType == 'DEV' && chainID == '80001'
-        ? devTokens.MUMBAI
-        : DeployType == 'DEV' && chainID == '5'
-        ? devTokens.GOERLI
-        : DeployType == 'PROD' && chainID == '137'
-        ? prodTokens.POLYGON
-        : DeployType == 'PROD' && chainID == '1'
-        ? prodTokens.ETHEREUM
-        : ''
+  const NGM20Address =
+    DeployType == 'DEV' && chainID == '80001'
+      ? devTokens.MUMBAI
+      : DeployType == 'DEV' && chainID == '5'
+      ? devTokens.GOERLI
+      : DeployType == 'PROD' && chainID == '137'
+      ? prodTokens.POLYGON
+      : DeployType == 'PROD' && chainID == '1'
+      ? prodTokens.ETHEREUM
+      : ''
 
-        // console.log(NGM20Address)
+  // console.log(NGM20Address)
   const isCancellable =
     isMounted &&
     nft?.token_owner &&
@@ -121,17 +126,21 @@ const ProductOverviewSection: FC<{
         // nft?.token_owner &&
         nft?.token_owner === address &&
         nft?.is_in_sale
-  
+
   // const isBidCancellable = isUserIsBidder && nft?.is_in_auction
   const filterSales = () => {
     const fi = sales?.find((a) => {
       return a.token_owner !== address
     })
-    if(fi){
+    if (fi) {
       return true
     } else return false
   }
-  const isSecondBtn = nftType === 'NGM1155' && sales && owners?.some((owner) => owner.token_owner === address) && filterSales()
+  const isSecondBtn =
+    nftType === 'NGM1155' &&
+    sales &&
+    owners?.some((owner) => owner.token_owner === address) &&
+    filterSales()
   const isShowable =
     (nft?.token_owner !== DEAD_ADDRESS && nft?.is_in_sale) ||
     nft?.is_in_auction ||
@@ -145,7 +154,7 @@ const ProductOverviewSection: FC<{
 
   const getBalance = async (address: `0x${string}` | undefined) => {
     if (!address || !NGM20Address) return
-    await address && NGM20Address
+    ;(await address) && NGM20Address
     const ethereum = (window as any).ethereum
     const accounts = await ethereum.request({
       method: 'eth_requestAccounts',
@@ -191,7 +200,7 @@ const ProductOverviewSection: FC<{
     return fi
   }
 
-// console.log(accountBalance)
+  // console.log(accountBalance)
   useEffect(() => {
     if (!accountBalance) {
       getBalance(address)
@@ -240,13 +249,13 @@ const ProductOverviewSection: FC<{
       return setIsOfferModalOpen(true)
     }
 
-    if(isSecondBtn && event === 'secondCancel') {
+    if (isSecondBtn && event === 'secondCancel') {
       return setIsCancelOfferModalOpen(true)
     }
     if (isCancellable) {
-        setIsCancelModalOpen(true)
-        return
-      }
+      setIsCancelModalOpen(true)
+      return
+    }
     if (isSaleCancellable) {
       setIsCancelSaleModalOpen(true)
       return
@@ -313,7 +322,7 @@ const ProductOverviewSection: FC<{
           delay: 0.6,
         }}
       >
-        <AvatarCard variant="lg" noCta {...nft} />
+        <AvatarCard variant="lg" noCta {...nft} setImageView={setImageView} />
         <div className="lg:hidden grid place-items-center pl-4">
           <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
             <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
@@ -338,9 +347,18 @@ const ProductOverviewSection: FC<{
         }}
       >
         <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 hidden lg:block">
-          <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
-            {contractDetails?.collection_name}
-          </p>
+          <div className="flex justify-between">
+            <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
+              {contractDetails?.collection_name}
+            </p>
+            {tokensOwned && (
+              <p className="text-white">
+                You Own:{' '}
+                <span className="text-custom_yellow">{tokensOwned}</span>
+              </p>
+            )}
+          </div>
+
           <p className="text-white text-2xl lg:text-[49px] font-josefin leading-[55px]">
             {nft?.meta_data?.name}
           </p>
@@ -505,6 +523,7 @@ const ProductOverviewSection: FC<{
             nft={nft}
             accountBalance={accountBalance}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -573,6 +592,15 @@ const ProductOverviewSection: FC<{
             isOpen={isViewOwnersModalOpen}
             setIsOpen={setIsViewOwnersModalOpen}
             owners={owners}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {imageView.isOpen && (
+          <ImageViewModal
+            isOpen={imageView.isOpen}
+            setIsOpen={setImageView}
+            img={imageView.img}
           />
         )}
       </AnimatePresence>

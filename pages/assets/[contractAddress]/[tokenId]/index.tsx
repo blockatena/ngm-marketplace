@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
+import { useAccount } from 'wagmi'
 import BreadCrumb from '../../../../components/BreadCrumb'
 import PageHeading from '../../../../components/PageHeading'
 import Pagination from '../../../../components/Pagination'
@@ -29,6 +30,7 @@ import { QUERIES } from '../../../../react-query/constants'
 import {
   getCollectionType,
   getNftActivity,
+  getNumberOfTokensForAddress,
   getSingleNft,
 } from '../../../../react-query/queries'
 
@@ -147,6 +149,7 @@ const initialActivity: any = [
 ]
 
 const ViewAssetPage: NextPage = () => {
+  const { address } = useAccount()
   const [contractAddress, setContractAddress] = useState('')
   const [tokenId, setTokenId] = useState('')
   // const [name, setName] = useState('')
@@ -194,6 +197,17 @@ const ViewAssetPage: NextPage = () => {
     }
   )
 
+  const { data: userTokenNumber } = useQuery(
+    [QUERIES.getUserTokenNumber, contractAddress, tokenId, address],
+    () => getNumberOfTokensForAddress(`${address}`, contractAddress, tokenId),
+    { enabled: !!contractAddress && !!tokenId && !!address }
+  )
+
+  const numberOfTokensOwned: number | null = userTokenNumber?.data
+    ?.number_of_tokens?.tokens
+    ? userTokenNumber.data.number_of_tokens.tokens
+    : null
+
   const state = () => {
     setSection(true)
   }
@@ -215,9 +229,18 @@ const ViewAssetPage: NextPage = () => {
     },
   ]
   useEffect(() => {
+    // setEndTime(
+    //   data?.data?.auction?.end_date
+    //     ? data?.data?.auction?.end_date
+    //     : data?.data?.sale?.end_date
+    //     ? data?.data?.sale?.end_date
+    //     : ''
+    // )
     setEndTime(
       data?.data?.auction?.end_date
         ? data?.data?.auction?.end_date
+        : data?.data?.nft?.end_date
+        ? data?.data?.nft?.end_date
         : data?.data?.sale?.end_date
         ? data?.data?.sale?.end_date
         : ''
@@ -291,6 +314,7 @@ const ViewAssetPage: NextPage = () => {
               owner={ownerDetails}
               nftType={nftType}
               owners={owners}
+              tokensOwned={numberOfTokensOwned}
             />
           </div>
           <div className="col-span-1 flex justify-end ">
