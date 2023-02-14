@@ -23,10 +23,11 @@ const axiosFileInstance = createAxiosInstance('form-data')
 
 export const getCollections = (
   page_number: number,
-  items_per_page: number = 12
+  items_per_page: number = 12,
+  sort_by:string
 ) => {
   return axiosInstance.get(
-    `/nft/get-collections/${page_number}/${items_per_page}`
+    `/nft/get-collections/${page_number}/${items_per_page}/${sort_by}`
   )
 }
 
@@ -44,9 +45,13 @@ export const getNft = (metadata: any) => {
 
 export const getAllNFts = (
   page_number: number,
-  items_per_page: number = 12
+  items_per_page: number = 12,
+  sort_by:string,
+  listed_in:string
 ) => {
-  return axiosInstance.get(`/nft/Get-all-nfts/${page_number}/${items_per_page}`)
+  return axiosInstance.get(
+    `/nft/Get-all-nfts/${page_number}/${items_per_page}/${sort_by}/${listed_in}`
+  )
 }
 
 export const getSingleNft = (

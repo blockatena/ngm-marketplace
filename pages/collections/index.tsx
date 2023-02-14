@@ -25,9 +25,10 @@ const crumbData: CrumbType[] = [
 ]
 
 const selectData: selectDataType[] = [
-  { name: 'Recently', value: 'recently' },
-  { name: 'A-Z', value: 'a-z' },
-  { name: 'Z-A', value: 'z-a' },
+  { name: 'Recently', value: 'Recently' },
+  {name: "Oldest", value:"Oldest"},
+  { name: 'A - Z', value: 'A - Z' },
+  { name: 'Z - A', value: 'Z - A' },
 ]
 
 // const collectionsData: CollectionCardType[] = [
@@ -79,71 +80,109 @@ const CollectionsPage: NextPage = () => {
   const { width } = useWindowDimensions()
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const { data, isSuccess } = useQuery(
+  const [sort_by,setSortBy] = useState("NA")
+  const { data, isSuccess, refetch } = useQuery(
     [QUERIES.getCollections, currentPage],
-    () => getCollections(currentPage)
+    () => getCollections(currentPage, 12, sort_by)
   )
-  const [selectedItem, setSelectedItem] = useState('')
+  const [selectedItem, setSelectedItem] = useState('Sorted By')
   const [collections, setCollections] = useState<CollectionCardType[]>([])
-  const [dataAscending, setDataAscending] = useState<CollectionCardType[]>([])
-  const [dataDescending, setDataDescending] = useState<CollectionCardType[]>([])
-  const [dataUnsorted, setDataUnsorted] = useState<CollectionCardType[]>([])
-  const [dataRecent, setDataRecent] = useState<CollectionCardType[]>([])
 
   // const collectionsData: CollectionCardType[] = data?.data
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
-  const compareAscending = (
-    a: { collection_name: string },
-    b: { collection_name: string }
-  ) => {
-    if (a.collection_name?.toLowerCase() < b.collection_name?.toLowerCase())
-      return -1
-    if (a.collection_name?.toLowerCase() > b.collection_name?.toLowerCase())
-      return 1
-    return 0
-  }
+    const handleSort = async (_value: any) => {
+      // console.log(_value)
+      if (_value) {
+        await setSortBy(_value)
+        return await refetch()
+      }
+      setSortBy('NA')
+    }
+  // const compareAscending = (
+  //   a: { collection_name: string },
+  //   b: { collection_name: string }
+  // ) => {
+  //   if (a.collection_name?.toLowerCase() < b.collection_name?.toLowerCase())
+  //     return -1
+  //   if (a.collection_name?.toLowerCase() > b.collection_name?.toLowerCase())
+  //     return 1
+  //   return 0
+  // }
 
-  const compareDescending = (
-    a: { collection_name: string },
-    b: { collection_name: string }
-  ) => {
-    if (a.collection_name?.toLowerCase() > b.collection_name?.toLowerCase())
-      return -1
-    if (a.collection_name?.toLowerCase() < b.collection_name?.toLowerCase())
-      return 1
-    return 0
-  }
+  // const compareDescending = (
+  //   a: { collection_name: string },
+  //   b: { collection_name: string }
+  // ) => {
+  //   if (a.collection_name?.toLowerCase() > b.collection_name?.toLowerCase())
+  //     return -1
+  //   if (a.collection_name?.toLowerCase() < b.collection_name?.toLowerCase())
+  //     return 1
+  //   return 0
+  // }
 
-  useEffect(() => {
-    if (selectedItem === 'a-z') {
-      setCollections(dataAscending)
-    } else if (selectedItem === 'z-a') {
-      setCollections(dataDescending)
-    } else if (selectedItem === 'recently') {
-      setCollections(dataRecent)
+  const handleSorts = (sort_by:any)=> {
+    if(!sort_by) return;
+    if (sort_by == 'A - Z') {
+      handleSort('ATOZ')
+    } else if (sort_by == 'Z - A') {
+      handleSort('ZTOA')
+    } else if (sort_by == 'Recently') {
+      handleSort('NEWTOOLD')
+    } else if (sort_by == 'Oldest') {
+      handleSort('OLDTONEW')
     } else {
-      setCollections(dataUnsorted)
+      handleSort('NA')
     }
-  }, [selectedItem, dataAscending, dataUnsorted, dataDescending, dataRecent])
-
-  useEffect(() => {
-    if (data?.data?.collections.length) {
-      let unsortedData = data.data.collections
-      const newArr = [...unsortedData]
-      const newArr2 = [...unsortedData]
-      const newArr3 = [...unsortedData]
-      setDataUnsorted(unsortedData)
-      setTotalPages(data?.data?.total_pages)
-      setCurrentPage(Number(data?.data?.currentPage))
-      const ascendingArr = newArr.sort(compareAscending)
-      setDataAscending(ascendingArr)
-      const descendingArr = newArr2.sort(compareDescending)
-      setDataDescending(descendingArr)
-      setDataRecent(newArr3.reverse())
-    }
-  }, [data?.data])
+    // if (selectedItem === 'A - Z') {
+    //   handleSort('ATOZ')
+    // } else if (selectedItem === 'Z - A') {
+    //   handleSort('ZTOA')
+    // } else if (selectedItem === 'Recently') {
+    //   handleSort('NEWTOOLD')
+    // } else if (selectedItem === 'Oldest') {
+    //   handleSort('OLDTONEW')
+    // } else {
+    //   handleSort('NA')
+    // }
+  }
+    // useEffect(() => {
+    //   handleSorts()
+    // })
+  // useEffect(() => {
+  //   if (selectedItem === 'a-z') {
+  //     setCollections(dataAscending)
+  //   } else if (selectedItem === 'z-a') {
+  //     setCollections(dataDescending)
+  //   } else if (selectedItem === 'recently') {
+  //     setCollections(dataRecent)
+  //   } else {
+  //     setCollections(dataUnsorted)
+  //   }
+  // }, [selectedItem, dataAscending, dataUnsorted, dataDescending, dataRecent])
+console.log(totalPages)
+useEffect(()=> {
+  setCollections(data?.data.collections)
+  setTotalPages(data?.data?.totalpages)
+  setCurrentPage(Number(data?.data?.currentPage))
+},[data])
+  // useEffect(() => {
+  //   if (data?.data?.collections.length) {
+  //     let unsortedData = data.data.collections
+  //     const newArr = [...unsortedData]
+  //     const newArr2 = [...unsortedData]
+  //     const newArr3 = [...unsortedData]
+  //     setDataUnsorted(unsortedData)
+  //     setTotalPages(data?.data?.total_pages)
+  //     setCurrentPage(Number(data?.data?.currentPage))
+  //     const ascendingArr = newArr.sort(compareAscending)
+  //     setDataAscending(ascendingArr)
+  //     const descendingArr = newArr2.sort(compareDescending)
+  //     setDataDescending(descendingArr)
+  //     setDataRecent(newArr3.reverse())
+  //   }
+  // }, [data?.data])
 
   return (
     <div className="min-h-screen p-4 pt-6 lg:px-16 mb-6">
@@ -156,6 +195,7 @@ const CollectionsPage: NextPage = () => {
             setSelectedItem={setSelectedItem}
             selectData={selectData}
             label="Sorted by"
+            handleSorts={handleSorts}
           />
         </div>
       </div>

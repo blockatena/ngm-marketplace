@@ -205,12 +205,71 @@ const crumbData: CrumbType[] = [
 //   },
 // ]
 
-const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
-  setIsOpen,
-}) => {
+const SideNav: FC<{
+  setIsOpen?: Dispatch<SetStateAction<boolean>>
+  handleSort: (_value: any) => void
+  handleListed: (_value: any) => void
+  sort_by: string
+  listed_in: string
+}> = ({ setIsOpen, handleSort, handleListed, sort_by, listed_in }) => {
   const handleClick = () => {
     setIsOpen && setIsOpen(false)
   }
+
+  console.log(sort_by)
+
+  const handleBtn = (_value:any) => {
+    if (_value == 'NA' || _value == "AUCTION" || _value == "SALE") {
+      handleListed(_value)
+    } 
+    if (_value == 'NEWTOOLD' || _value == 'OLDTONEW' || _value == 'ATOZ' || _value == 'ZTOA') {
+      handleSort(_value)
+    } 
+    handleClick()
+
+  }
+  const handleSortedBtn = () => {
+    if (!sort_by || sort_by == "NA") return
+    let arr = ['NEWTOOLD', 'OLDTONEW', 'ATOZ', 'ZTOA']
+
+    const element = document.getElementById(sort_by)
+    if (element) {
+      element.style.color = '#FFDE00'
+      element.style.fontSize = '20px'
+    }
+    let filtered = arr.filter((a) => a !== sort_by)
+    filtered.forEach((a) => {
+      const element = document.getElementById(a)
+      if (element) {
+        element.style.color = 'white'
+        element.style.fontSize = '16px'
+      }
+    })
+  }
+
+  const handleListedBtn = () => {
+    if (!listed_in) return;
+    let arr = ['AUCTION', 'SALE', 'NA']
+
+    const element = document.getElementById(listed_in)
+    if (element) {
+      element.style.color = '#FFDE00'
+      element.style.fontSize = '20px'
+    }
+    let filtered = arr.filter((a) => a !== listed_in)
+    filtered.forEach((a) => {
+      const element = document.getElementById(a)
+      if (element) {
+        element.style.color = 'white'
+        element.style.fontSize = '16px'
+      }
+    })
+  }
+
+  useEffect(() => {
+    handleSortedBtn()
+    handleListedBtn()
+  })
 
   return (
     <div className="bg-[#1A1D1F] h-[1068px] md:max-w-[244px]">
@@ -226,39 +285,47 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
         </div>
       </h3>
       <NavAccordion heading="Sorted by">
-        <button className="w-fit" onClick={handleClick}>
-          Recently Added
+        <button
+          id="NEWTOOLD"
+          className="w-fit"
+          onClick={() => handleBtn('NEWTOOLD')}
+        >
+          Newest
         </button>
-        <button className="w-fit" onClick={handleClick}>
-          Latest
+        <button
+          id="OLDTONEW"
+          className="w-fit"
+          onClick={() => handleBtn('OLDTONEW')}
+        >
+          Oldest
         </button>
-        <button className="w-fit" onClick={handleClick}>
-          Popular
+        <button id="ATOZ" className="w-fit" onClick={() => handleBtn('ATOZ')}>
+          A - Z
+        </button>
+        <button id="ZTOA" className="w-fit" onClick={() => handleBtn('ZTOA')}>
+          Z - A
         </button>
       </NavAccordion>
       <NavAccordion heading="NFT State">
-        {/* <div className="font-oxygen">
-          <input
-            type="checkbox"
-            id="buy_checkbox"
-            className="mr-4 cursor-pointer accent-custom_yellow"
-          />
-          <label htmlFor="buy_checkbox" className="text-xs md:text-[15px]">
-            Buy now
-          </label>
-        </div> */}
-        <div className="font-oxygen">
-          <input
-            type="checkbox"
-            id="auction_checkbox"
-            className="mr-4 cursor-pointer accent-custom_yellow"
-          />
-          <label htmlFor="auction_checkbox" className="text-xs md:text-[15px]">
-            On auction
-          </label>
-        </div>
+        <button id="NA" className="w-fit" onClick={() => handleBtn('NA')}>
+          All
+        </button>
+        <button
+          id="AUCTION"
+          className="w-fit"
+          onClick={() => handleBtn('AUCTION')}
+        >
+          NFTs In Auction
+        </button>
+        <button
+          id="SALE"
+          className="w-fit"
+          onClick={() => handleBtn('SALE')}
+        >
+          NFTs In Sale
+        </button>
       </NavAccordion>
-      <NavAccordion heading="Price">
+      {/* <NavAccordion heading="Price">
         <p className="text-white font-oxygen">
           <span className="mr-4">ETH</span>{' '}
           <input
@@ -281,15 +348,17 @@ const SideNav: FC<{ setIsOpen?: Dispatch<SetStateAction<boolean>> }> = ({
           Collections
         </span>{' '}
         <button className="text-[#9D9D9D]">{'>'}</button>
-      </div>
+      </div> */}
     </div>
   )
 }
 
 const AssetsPage: NextPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
-  const { data } = useQuery([QUERIES.getAllNFts, currentPage], () =>
-    getAllNFts(currentPage)
+  const [sort_by, setSortBy] = useState("NA")
+  const [listed_in, setListedIn] = useState('NA')
+  const { data, refetch } = useQuery([QUERIES.getAllNFts, currentPage], () =>
+    getAllNFts(currentPage, 12, sort_by, listed_in)
   )
   const { width } = useWindowDimensions()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -298,6 +367,23 @@ const AssetsPage: NextPage = () => {
 
   const handlePaginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
+  const handleSort = async (_value: any) => {
+    // console.log(_value)
+    if (_value) {
+      await setSortBy(_value)
+      return await refetch();
+    }
+    setSortBy('NA')
+  }
+
+    const handleListed = async (_value: any) => {
+      // console.log(_value)
+      if (_value) {
+        await setListedIn(_value)
+        return await refetch()
+      }
+      setSortBy('NA')
+    }
   useEffect(() => {
     if (data?.data) {
       setAvatars(data.data.nfts)
@@ -329,11 +415,16 @@ const AssetsPage: NextPage = () => {
                 duration: 0.4,
               }}
             >
-              <SideNav />
+              <SideNav
+                handleSort={handleSort}
+                handleListed={handleListed}
+                sort_by={sort_by}
+                listed_in={listed_in}
+              />
             </motion.div>
           </div>
           <div className="col-span-12 md:col-span-9">
-            <div className="hidden md:block">
+            {/* <div className="hidden md:block">
               <motion.div
                 className=" bg-[#353535] flex flex-row gap-4 p-1 rounded font-poppins w-fit"
                 variants={opacityAnimation}
@@ -351,7 +442,7 @@ const AssetsPage: NextPage = () => {
                   X
                 </button>
               </motion.div>
-            </div>
+            </div> */}
             <div
               className="heading-clip text-white font-oxygen text-[19px] md:hidden bg-[#1A1D1F] w-[172px] h-[42px]
             grid place-items-center uppercase border-b border-gray-700"
@@ -409,7 +500,13 @@ const AssetsPage: NextPage = () => {
             }}
           >
             <Drawer setIsOpen={setIsDrawerOpen}>
-              <SideNav setIsOpen={setIsDrawerOpen} />
+              <SideNav
+                setIsOpen={setIsDrawerOpen}
+                handleSort={handleSort}
+                handleListed={handleListed}
+                sort_by={sort_by}
+                listed_in={listed_in}
+              />
             </Drawer>
           </motion.div>
         )}
