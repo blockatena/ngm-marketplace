@@ -516,7 +516,7 @@ const CollectionPage: NextPage = () => {
   // }
 
   const handleFilters = (value: any) => {
-    // console.log('value is ',value)
+    console.log('value is ',value)
 
     if (value === '1') {
       const sortedBydate = dataUnsorted.sort(function (a, b) {

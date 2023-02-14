@@ -6,6 +6,7 @@ interface CustomSelectProps {
   setSelectedItem: Dispatch<SetStateAction<string>>
   selectData: selectDataType[]
   label: string
+  handleSorts: (_value: any) => void
 }
 
 const CustomSelect: FC<CustomSelectProps> = ({
@@ -13,11 +14,13 @@ const CustomSelect: FC<CustomSelectProps> = ({
   setSelectedItem,
   selectData,
   label,
+  handleSorts
 }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleSelect = (item: string) => {
     setSelectedItem(item)
+    handleSorts(item)
     setIsOpen(false)
   }
 
