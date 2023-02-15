@@ -1,4 +1,5 @@
 import HomeFooter from '../components/HomeFooter'
+import Faq from '../components/sections/Faq'
 import GalleryAndNewsSection from '../components/sections/GalleryAndNewsSection'
 import HeroSection from '../components/sections/HeroSection'
 import HowItWorks from '../components/sections/HowItWorks'
@@ -21,6 +22,7 @@ const HomePage: NextPageWithLayout = () => {
         <PopularNfts />
         <OurCollections />
         <HowItWorks />
+        <Faq />
         <div className=" w-full bg-mainHomePage bg-cover bg-no-repeat bg-center relative before:top-0 before:bottom-0 before:left-0 before:right-0 before:absolute before:bg-black before:opacity-80">
           <LiveAuctionSection />
           <GalleryAndNewsSection />
