@@ -30,7 +30,7 @@ const CustomSelect: FC<CustomSelectProps> = ({
         {label}
       </div>
       <button
-        className="w-[150px] h-[45px] text-white bg-[#101213] border border-[#E5E5E5] capitalize
+        className="w-[106px] h-[45px] text-white bg-[#101213] border border-[#E5E5E5] capitalize
             font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex justify-between items-center"
         type="button"
         data-dropdown-toggle="dropdown"
