@@ -1,0 +1,177 @@
+import { motion } from 'framer-motion'
+import Image from 'next/image'
+import { useRouter } from 'next/router'
+import { FC } from 'react'
+import { IoChevronForwardSharp } from 'react-icons/io5'
+import { fromLeftAnimation } from '../../utils/animations'
+import { CONTAINER_PADDING } from '../../utils/constants'
+
+const ImageItem: FC<{ text: string; img: string }> = ({ text, img }) => (
+  <div
+    className="flex flex-col items-center justify-center font-poppins text-white 
+    font-medium lg:text-[1.25rem] lg:leading-[1.5625rem]"
+  >
+    <div className="w-[6.5625rem] h-[6.375rem] relative">
+      <Image src={img} alt="" layout="fill" />
+    </div>
+    <p className="text-white max-w-[8.4375rem] text-center"> {text}</p>
+  </div>
+)
+
+const ImageDisplay = () => {
+  return (
+    <div className="flex flex-col gap-4 lg:w-[30.6388rem] lg:h-[30.6388rem] bg-gradient-radial from-[#9B568C] via-[#0A0A0A] to-[#0A0A0A]">
+      <ImageItem text="Free Setup Fee & Trial" img="/images/hero/setup.svg" />
+      <div className="flex justify-between">
+        <ImageItem text="Rapid Deployment" img="/images/hero/rocket.svg" />
+        <ImageItem
+          text="User Friendly Interface"
+          img="/images/hero/friendly.svg"
+        />
+      </div>
+      <div className="flex justify-center">
+        <ImageItem text="Rapid Deployment" img="/images/hero/rocket.svg" />
+      </div>
+    </div>
+  )
+}
+
+const nftData1 = [
+  {
+    name: 'Alen Iverson',
+    img: '/images/auction/auction_img_1.svg',
+    pgb: '0.3234',
+  },
+  {
+    name: 'boof bonser',
+    img: '/images/auction/auction_img_5.svg',
+    pgb: '0.3234',
+  },
+]
+
+const nftData2 = [
+  { name: 'carl', img: '/images/auction/auction_img_6.svg', pgb: '0.3234' },
+  {
+    name: 'yogi bera',
+    img: '/images/auction/auction_img_4.svg',
+    pgb: '0.3234',
+  },
+]
+
+const NftCard: FC<{ name: string; pgb: string; img: string }> = ({
+  name,
+  img,
+  pgb,
+}) => {
+  return (
+    <div>
+      <div className="border border-white w-[13.9375rem] h-[16.8125rem] relative text-white">
+        <div className="absolute left-8 -right-8 -top-4 bottom-[6rem] bg-[#0A0A0A]">
+          <Image
+            src={img}
+            alt=""
+            layout="fill"
+            objectFit="cover"
+            objectPosition="top"
+          />
+        </div>
+        <p className="absolute bottom-[3rem] left-8 font-inter font-semibold capitalize">
+          {name}
+        </p>
+        <p className="absolute bottom-[1rem] left-8 flex items-center gap-1">
+          <span className="text-[.4163rem]">pgb </span> <span>{pgb}</span>
+        </p>
+      </div>
+    </div>
+  )
+}
+
+const CardDisplay = () => {
+  return (
+    <div className="w-full lg:pr-10">
+      <div className="flex flex-col lg:flex-row justify-between lg:h-[20rem]">
+        {nftData1.map((nft, i) => {
+          return (
+            <div key={i} className={`${i % 2 !== 0 && 'self-end'}`}>
+              <NftCard {...nft} />
+            </div>
+          )
+        })}
+      </div>
+      <div className="flex flex-col lg:flex-row justify-between h-[20rem]">
+        {nftData2.map((nft, i) => {
+          return (
+            <div key={i} className={`${i % 2 !== 0 && 'self-end'}`}>
+              <NftCard {...nft} />
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+const WhatWeDo: FC = () => {
+  const router = useRouter()
+  return (
+    <section className={`lg:pt-28 bg-[#0A0A0A]`}>
+      <div
+        className={`${CONTAINER_PADDING}  flex flex-col lg:flex-row justify-between`}
+      >
+        <div className="max-w-[30.0625rem]">
+          <h2 className="font-poppins lg:text-[4.25rem] lg:leading-[6.375rem] text-white">
+            How do GameToWeb3 work?
+          </h2>
+          <p className="lg:text-lg lg:leading-[1.8rem] font-light font-poppins text-[#FFD325]">
+            NFTs and tokens are unique assets stored and tradable on a
+            blockchain. They are, immutable, scarce and publicly verifiable
+          </p>
+        </div>
+        <div>
+          <ImageDisplay />
+        </div>
+      </div>
+
+      <div
+        className={`${CONTAINER_PADDING}  flex flex-col lg:flex-row justify-between pt-20 pb-28 bg-[#0A0A0A]`}
+      >
+        <div className="lg:w-[45%]">
+          <CardDisplay />
+        </div>
+        <div className="max-w-[38rem] pt-60">
+          <h2 className="font-inter lg:text-[4.625rem] lg:leading-[5.5975rem] text-white">
+            Web 3 NFT Marketplace
+          </h2>
+          <p className="text-white font-poppins lg:text-lg font-light my-8">
+            Create your first game NFTs with NFT market for gamers. The platform
+            works with BSC blockchain and supports mp4. With AirNFTs, you are
+            getting the control over your NFTs, no middle man cutting your
+            sales. Create, Buy, Sell and Earn with your game NFTs.
+          </p>
+          <motion.div
+            variants={fromLeftAnimation}
+            initial="initial"
+            animate="final"
+            transition={{
+              ease: 'easeInOut',
+              duration: 0.6,
+              delay: 1.4,
+            }}
+            className="bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[16.1875rem] h-[3.06rem] font-inter 
+              lg:text-lg grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD] font-light"
+            role="button"
+            onClick={() => router.push('/collections')}
+          >
+            <div className="h-[2.51rem] w-[15.6875rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
+              <p className="flex gap-2 justify-center items-center text-white">
+                Explore Marketplace <IoChevronForwardSharp />
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default WhatWeDo

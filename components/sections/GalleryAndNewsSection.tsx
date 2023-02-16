@@ -295,7 +295,7 @@ const GalleryAndNewsSection: React.FC = () => {
   const { width } = useWindowDimensions()
 
   const { data } = useQuery([QUERIES.getCollections, CURRENT_PAGE], () =>
-    getCollections(CURRENT_PAGE,12,"NA")
+    getCollections(CURRENT_PAGE,12,"NA","NA","NA")
   )
 
   let maxNum = newsData.length - 1
