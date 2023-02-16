@@ -93,7 +93,7 @@ const CollectionsPage: NextPage = () => {
     [QUERIES.getCollections, currentPage],
     () => getCollections(currentPage, 12, sort_by, chain, nftType)
   )
-  const [selectedItem, setSelectedItem] = useState('Sorted')
+  const [selectedItem, setSelectedItem] = useState('Sort By')
   const [selectedType, setSelectedType] = useState('Type')
   const [selectedChain, setSelectedChain] = useState('Chain')
   const [collections, setCollections] = useState<CollectionCardType[]>([])
@@ -250,7 +250,7 @@ const CollectionsPage: NextPage = () => {
             selectedItem={selectedItem}
             setSelectedItem={setSelectedItem}
             selectData={selectData}
-            label="Sorted by"
+            label="Sort By"
             handleSorts={handleSorts}
           />
         </div>
