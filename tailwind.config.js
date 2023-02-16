@@ -16,7 +16,6 @@ module.exports = {
         market: 'url(/images/others/background.png)',
         connectHero: 'url(/images/others/connect_hero.png)',
         footer: "url('/images/footer/bottom_footer.svg')",
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
       colors: {
         dark_mild: '#141619',
