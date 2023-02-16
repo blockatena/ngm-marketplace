@@ -31,12 +31,6 @@ const selectData: selectDataType[] = [
   { name: 'Z - A', value: 'Z - A' },
 ]
 
-const selectType: selectDataType[] = [
-  { name: 'All', value: 'All' },
-  { name: 'ERC721', value: 'ERC721' },
-  { name: 'ERC1155', value: 'ERC1155' },
-]
-
 // const collectionsData: CollectionCardType[] = [
 //   {
 //     id: 1,
@@ -87,36 +81,15 @@ const CollectionsPage: NextPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [sort_by,setSortBy] = useState("NA")
-  const [chain,setChain] = useState("NA")
-  const [nftType,setNftType] = useState("NA")
   const { data, isSuccess, refetch } = useQuery(
     [QUERIES.getCollections, currentPage],
-    () => getCollections(currentPage, 12, sort_by, chain, nftType)
+    () => getCollections(currentPage, 12, sort_by)
   )
-  const [selectedItem, setSelectedItem] = useState('Sorted')
-  const [selectedType, setSelectedType] = useState('Type')
-  const [selectedChain, setSelectedChain] = useState('Chain')
+  const [selectedItem, setSelectedItem] = useState('Sorted By')
   const [collections, setCollections] = useState<CollectionCardType[]>([])
-  const [route, setRoute] = useState('')
-  useEffect(() => {
-    const route = window.location.href.split('/')[2]
-    setRoute(route)
-  }, [route])
 
-  const selectChain: selectDataType[] = [
-    {
-      name: 'All',
-      value: 'All',
-    },
-    {
-      name: route == 'gamestoweb3.com' ? 'Polygon' : 'Mumbai',
-      value: route == 'gamestoweb3.com' ? 'polygon' : 'Mumbai',
-    },
-    {
-      name: route == 'gamestoweb3.com' ? 'Ethereum' : 'Goerli',
-      value: route == 'gamestoweb3.com' ? 'Ethereum' : 'Goerli',
-    },
-  ]
+  // const collectionsData: CollectionCardType[] = data?.data
+
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
     const handleSort = async (_value: any) => {
@@ -126,20 +99,6 @@ const CollectionsPage: NextPage = () => {
         return await refetch()
       }
       setSortBy('NA')
-    }
-
-    const handleChain = async (_value:any) => {
-      if(_value) {
-        await setChain(_value)
-        return await refetch()
-      }
-    }
-
-    const handleNftType = async (_value:any) => {
-      if(_value) {
-        await setNftType(_value)
-        return await refetch();
-      }
     }
   // const compareAscending = (
   //   a: { collection_name: string },
@@ -176,77 +135,61 @@ const CollectionsPage: NextPage = () => {
     } else {
       handleSort('NA')
     }
+    // if (selectedItem === 'A - Z') {
+    //   handleSort('ATOZ')
+    // } else if (selectedItem === 'Z - A') {
+    //   handleSort('ZTOA')
+    // } else if (selectedItem === 'Recently') {
+    //   handleSort('NEWTOOLD')
+    // } else if (selectedItem === 'Oldest') {
+    //   handleSort('OLDTONEW')
+    // } else {
+    //   handleSort('NA')
+    // }
   }
-
-    
-    const handleChains = (_value:any) => {
-      const testnet = route == 'gamestoweb3.com' ? false : true
-      if (!_value) return
-      if (_value == 'Ethereum') {
-        handleChain(testnet ? 'NA' : 'ETHEREUM')
-      } else if (_value == 'Polygon') {
-        handleChain(testnet ? 'NA' : 'POLYGON')
-      } else if (_value == 'Mumbai') {
-        handleChain(!testnet ? 'NA' : 'MUMBAI')
-      } else if (_value == 'Goerli') {
-        handleChain(!testnet ? 'NA' : 'GOERLI')
-      } else {
-        handleChain('NA')
-      }
-    }
-
-    const checkPage = ()=> {
-            if (totalPages < currentPage) {
-              setCurrentPage(totalPages)
-              refetch()
-            }
-    }
-
-    useEffect(()=> {
-      checkPage()
-    })
-    
-    console.log(currentPage)
-        const handleNftTypes = (_value: any) => {
-          if (!_value) return;
-          if (_value == 'ERC721') {
-            handleNftType('ERC721')
-          } else if (_value == 'ERC1155') {
-            handleNftType('ERC1155')
-          } else {
-            handleNftType('NA')
-          }
-        }
+    // useEffect(() => {
+    //   handleSorts()
+    // })
+  // useEffect(() => {
+  //   if (selectedItem === 'a-z') {
+  //     setCollections(dataAscending)
+  //   } else if (selectedItem === 'z-a') {
+  //     setCollections(dataDescending)
+  //   } else if (selectedItem === 'recently') {
+  //     setCollections(dataRecent)
+  //   } else {
+  //     setCollections(dataUnsorted)
+  //   }
+  // }, [selectedItem, dataAscending, dataUnsorted, dataDescending, dataRecent])
+console.log(totalPages)
 useEffect(()=> {
   setCollections(data?.data.collections)
   setTotalPages(data?.data?.totalpages)
-  // setCurrentPage(data?.data?.currentPage?Number(data?.data?.currentPage):1)
+  setCurrentPage(Number(data?.data?.currentPage))
 },[data])
+  // useEffect(() => {
+  //   if (data?.data?.collections.length) {
+  //     let unsortedData = data.data.collections
+  //     const newArr = [...unsortedData]
+  //     const newArr2 = [...unsortedData]
+  //     const newArr3 = [...unsortedData]
+  //     setDataUnsorted(unsortedData)
+  //     setTotalPages(data?.data?.total_pages)
+  //     setCurrentPage(Number(data?.data?.currentPage))
+  //     const ascendingArr = newArr.sort(compareAscending)
+  //     setDataAscending(ascendingArr)
+  //     const descendingArr = newArr2.sort(compareDescending)
+  //     setDataDescending(descendingArr)
+  //     setDataRecent(newArr3.reverse())
+  //   }
+  // }, [data?.data])
 
   return (
     <div className="min-h-screen p-4 pt-6 lg:px-16 mb-6">
       <BreadCrumb crumbs={crumbData} />
       <PageHeading name="collections" />
       <div className="h-16 flex justify-end mt-2 mb-5 lg:mb-[90px]">
-        <div className="absolute z-40 mr-56">
-          <CustomSelect
-            selectedItem={selectedChain}
-            setSelectedItem={setSelectedChain}
-            selectData={selectChain}
-            label="Chain"
-            handleSorts={handleChains}
-          />
-        </div>
-        <div className="absolute z-40 mr-28">
-          <CustomSelect
-            selectedItem={selectedType}
-            setSelectedItem={setSelectedType}
-            selectData={selectType}
-            label="NFT Type"
-            handleSorts={handleNftTypes}
-          />
-        </div>
-        <div className="absolute z-40 ">
+        <div className="absolute z-40">
           <CustomSelect
             selectedItem={selectedItem}
             setSelectedItem={setSelectedItem}

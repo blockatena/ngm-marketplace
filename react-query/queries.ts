@@ -24,12 +24,10 @@ const axiosFileInstance = createAxiosInstance('form-data')
 export const getCollections = (
   page_number: number,
   items_per_page: number = 12,
-  sort_by:string,
-  chain:string,
-  type:string
+  sort_by:string
 ) => {
   return axiosInstance.get(
-    `/nft/get-collections/${page_number}/${items_per_page}/${sort_by}/${chain}/${type}`
+    `/nft/get-collections/${page_number}/${items_per_page}/${sort_by}`
   )
 }
 
