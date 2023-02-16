@@ -1,117 +1,79 @@
-import { motion } from 'framer-motion'
-import Image from 'next/image'
-import { ReactNode } from 'react'
-import { BiBell } from 'react-icons/bi'
-import { BsInstagram, BsTwitter } from 'react-icons/bs'
-import { FaDiscord, FaTelegram } from 'react-icons/fa'
-import bg_img from '../public/images/footer/bg_footer_final.png'
-import bottom_img from '../public/images/footer/bottom_footer.svg'
-import { fromRightAnimation } from '../utils/animations'
-import useIsMounted from '../utils/hooks/useIsMounted'
-import useWindowDimensions from '../utils/hooks/useWindowDimensions'
-import NFTZoneLogo from './NFTZoneLogo'
+import { FC, ReactNode } from 'react'
+import { BsTwitter } from 'react-icons/bs'
+import { FaDiscord, FaInstagram, FaPinterest } from 'react-icons/fa'
+import Logo from './Logo'
 
-interface IconButtonProps {
-  children: ReactNode
-  link: string
-}
-
-const IconButton: React.FC<IconButtonProps> = ({ children, link }) => {
+const IconLink: FC<{ children: ReactNode; href: string }> = ({
+  children,
+  href,
+}) => {
   return (
     <a
-      href={link}
+      className="w-6 h-6 lg:h-10 lg:w-10  rounded-full grid place-items-center bg-gradient-to-tr to-[#EB7202] from-[#F1CB00] hover:scale-105 transition-transform"
+      href={href}
       target="_blank"
       rel="noreferrer"
-      className="text-custom-yellow hover:text-custom-yellow-hover active:text-custom-yellow-active text-[30px] hover:-translate-y-2 transition-all ease-in-out duration-300"
     >
       {children}
     </a>
   )
 }
 
-const HomeFooter: React.FC = () => {
-  const bellOnClick = () => {
-    console.log('SUBSCRIBE')
-  }
-
-  const { width } = useWindowDimensions()
-  const isMounted = useIsMounted()
-
-  let bellSize: number
-  if (isMounted && width < 768) {
-    bellSize = 24
-  } else if (isMounted && width < 1024) {
-    bellSize = 32
-  } else {
-    bellSize = 38
-  }
-
+const Footer: FC = () => {
   return (
-    <footer className="w-full min-h-screen 2xl:min-h-full 2xl:py-10 2xl:mt-10 relative flex items-center">
-      <div className="flex items-center flex-col xl:flex-row w-full space-y-10 lg:space-y-0 lg:-translate-y-14">
-        <div className="max-w-[800px] xl:max-w-[800px]">
-          <Image alt="Background" src={bg_img} />
-        </div>
-        <div className="z-10 xl:absolute xl:pt-24 xl:right-[100px] 2xl:right-[250px] w-full xl:w-fit space-y-6">
-          <motion.h4
-            variants={fromRightAnimation}
-            initial="initial"
-            whileInView="final"
-            viewport={{ once: true }}
-            transition={{
-              ease: 'easeInOut',
-              duration: 0.5,
-              delay: 0.8,
-            }}
-            className="text-white font-btn font-bold text-[24px] md:text-[28px] lg:text-[35px] w-full text-center relative before:absolute before:w-[3px] before:h-[30px] before:lg:h-[36px] before:my-auto before:lg:top-2 before:top-[2px] before:bg-[#FFDC20] before:-translate-x-3"
-          >
-            Subscribe to Our Newsletter
-          </motion.h4>
-          <motion.div
-            variants={fromRightAnimation}
-            initial="initial"
-            whileInView="final"
-            viewport={{ once: true }}
-            transition={{
-              ease: 'easeInOut',
-              duration: 0.5,
-              delay: 1.2,
-            }}
-            className="flex justify-center"
-          >
-            <button
-              onClick={bellOnClick}
-              className="btn-primary w-[185px] h-[48px] md:w-[200px] md:h-[52px] lg:w-[225px] lg:h-[58px] font-btn text-[20px] md:text-[24px] lg:text-[28px] rounded-md"
-            >
-              <div className="w-full flex flex-row items-center justify-center">
-                <p className="mr-2">Subscribe</p>
-                <BiBell fontSize={bellSize} />
-              </div>
-            </button>
-          </motion.div>
-        </div>
+    <footer className="flex justify-between items-center border-t border-custom-orange mt-10 py-4">
+      <div>
+        <Logo />
       </div>
-      <div className="absolute -bottom-2 left-0 right-0 w-full">
-        <Image src={bottom_img} alt="" />
+      <div className="text-custom-orange text-[.625rem] lg:text-[.75rem] leading-[1.125rem]">
+        All rights reserved ® Digiweb3 | Terms and conditions apply!
       </div>
-      <div className="absolute bottom-0 left-0 right-0 px-10 pb-5 lg:px-24 lg:pb-10 2xl:mt-10 flex flex-row justify-between items-center">
-        <NFTZoneLogo size="small" />
-        <div className="flex flex-row justify-center items-center space-x-3 lg:space-x-6">
-          <IconButton link="https://www.instagram.com/gamestoweb3">
-            <BsInstagram />
-          </IconButton>
-          <IconButton link="https://twitter.com/gamestoweb3">
-            <BsTwitter />
-          </IconButton>
-          <IconButton link="https://discord.gg/Uy63DSnByG">
-            <FaDiscord />
-          </IconButton>
-          <IconButton link="https://t.me/gamestoweb3">
-            <FaTelegram />
-          </IconButton>
-        </div>
+      <div className="flex gap-2 text-black">
+        <IconLink href="#">
+          <FaInstagram />
+        </IconLink>
+        <IconLink href="#">
+          <BsTwitter />
+        </IconLink>
+        <IconLink href="#">
+          <FaPinterest />
+        </IconLink>
+        <IconLink href="#">
+          <FaDiscord />
+        </IconLink>
       </div>
     </footer>
+  )
+}
+
+const HomeFooter: FC = () => {
+  return (
+    <section className="py-16 lg:pt-28 lg:pb-6  px-[5%] 2xl:px-[12%] text-white bg-[#0A0A0A]">
+      <div className="grid place-items-center">
+        <h3 className="font-poppins text-[3.5rem] leading-[5.25rem] font-semibold text-center">
+          Subscribe
+        </h3>
+        <p className="font-poppins text-lg text-center mb-10">
+          Yay! You made it to the end. Means you like what we do.
+        </p>
+        <div className="w-[100%] h-[2.75rem] lg:w-[35rem] lg:h-[6.5rem] relative mb-10">
+          <input
+            type="email"
+            className="w-full h-full bg-white text-black rounded-lg outline-none border-none pl-4 pr-[40%]"
+            placeholder="Enter your email address"
+          />
+          <button
+            className="absolute top-1 lg:top-4 right-4 w-[6.5rem] h-[2.25rem] lg:w-[12.5rem] lg:h-[4.5rem] text-black bg-gradient-to-tr to-[#EB7202] from-[#F1CB00]
+          rounded-lg font-inter text-lg font-extrabold hover:from-[#EB7202] hover:to-[#F1CB00]"
+          >
+            Subscribe
+          </button>
+        </div>
+      </div>
+      <div>
+        <Footer />
+      </div>
+    </section>
   )
 }
 
