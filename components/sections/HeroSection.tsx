@@ -78,7 +78,7 @@ const HeroSection: FC = () => {
     // <section className="bg-hero bg-cover bg-no-repeat bg-center min-h-screen 2xl:min-h-full relative">
     <section className="min-h-screen 2xl:min-h-full relative bg-[#0A0A0A]">
       <video
-        poster="/images/hero/poster.png"
+        // poster="/images/hero/poster.png"
         preload="none"
         autoPlay
         muted
