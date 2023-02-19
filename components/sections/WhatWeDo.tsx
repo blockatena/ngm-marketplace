@@ -192,7 +192,7 @@ const WhatWeDo: FC = () => {
       >
         <div className="max-w-[30.0625rem]">
           <h2 className="font-poppins lg:text-[4.25rem] lg:leading-[6.375rem] text-white">
-            How do GameToWeb3 work?
+            How does GamesToWeb3 work?
           </h2>
           <p className="lg:text-lg lg:leading-[1.8rem] font-light font-poppins text-[#FFD325]">
             NFTs and tokens are unique assets stored and tradable on a
