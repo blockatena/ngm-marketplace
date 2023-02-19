@@ -6,7 +6,6 @@ import { AiOutlineDisconnect } from 'react-icons/ai'
 import { CgProfile } from 'react-icons/cg'
 import { useAccount, useDisconnect } from 'wagmi'
 import { fromLeftAnimation, fromRightAnimation } from '../utils/animations'
-import { CONTAINER_PADDING } from '../utils/constants'
 import useIsMounted from '../utils/hooks/useIsMounted'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
@@ -51,14 +50,16 @@ const ConnectButton: FC = () => {
           }}
         >
           <CgProfile
-            className="text-custom_yellow text-lg lg:text-3xl cursor-pointer"
+            className="text-[#B10DAD] hover:text-[#14A4BD] text-lg lg:text-3xl cursor-pointer"
             onClick={handleProfile}
           />
         </motion.div>
       )}
       <motion.button
-        className="btn-primary cut-corners w-[120px] md:w-[158px] lg:w-[173px] h-[29px] md:h-[33px] lg:h-[39px] 
-      text-xs md:text-sm lg:text-base disabled:bg-gray-500"
+        //   className="btn-primary cut-corners w-[120px] md:w-[158px] lg:w-[173px] h-[29px] md:h-[33px] lg:h-[39px]
+        // text-xs md:text-sm lg:text-base disabled:bg-gray-500"
+        className="bg-gradient-to-r from-[#501B95] to-[#B10DAD] px-4 py-[.625rem] text-white capitalize font-poppins rounded-full 
+        text-sm lg:text-[17px] font-bold lg:leading-[26px] h-12 hover:from-[#14A4BD] hover:to-[#7ABD96] transition-all"
         onClick={handleClick}
         variants={fromRightAnimation}
         initial="initial"
@@ -73,7 +74,7 @@ const ConnectButton: FC = () => {
         {!isMounted
           ? null
           : !isConnected && router.asPath === '/'
-          ? 'Join Community'
+          ? 'join our community'
           : !isConnected
           ? 'Connect Wallet'
           : `Connected ${address?.substring(0, 4)}...${address?.substring(
@@ -205,19 +206,23 @@ const Logo: FC = () => {
 }
 
 const Header: FC = () => {
+  const { asPath } = useRouter()
+  const isHome = asPath === '/'
+
   return (
-    <header className="relative">
+    <header className="relative z-20">
       <div
-        className={`${CONTAINER_PADDING} bg-transparent absolute left-0 right-0`}
+        className={`pt-6 lg:px-16 bg-transparent backdrop-blur-lg absolute left-0 right-0`}
       >
-        <div className="grid grid-cols-12 gap-1">
-          <div className="col-span-3 md:col-span-6">
-            <Logo />
-          </div>
-          {/* <div className="col-span-9 md:col-span-6 flex justify-end gap-2 md:gap-6 lg:gap-16"> */}
-          <div className="col-span-9 md:col-span-6 flex justify-end items-center gap-2 md:gap-3 lg:gap-4">
-            {/* {router.asPath !== '/' && <Search />} */}
-            {/* <motion.div
+        <div className={`${isHome && 'border-b'} border-white pb-4`}>
+          <div className="grid grid-cols-12 gap-1">
+            <div className="col-span-3 md:col-span-6">
+              <Logo />
+            </div>
+            {/* <div className="col-span-9 md:col-span-6 flex justify-end gap-2 md:gap-6 lg:gap-16"> */}
+            <div className="col-span-9 md:col-span-6 flex justify-end items-center gap-2 md:gap-3 lg:gap-4 pr-4">
+              {/* {router.asPath !== '/' && <Search />} */}
+              {/* <motion.div
               variants={fromTopAnimation}
               initial="initial"
               animate="final"
@@ -234,7 +239,8 @@ const Header: FC = () => {
               />
             </motion.div> */}
 
-            <ConnectButton />
+              <ConnectButton />
+            </div>
           </div>
         </div>
       </div>
