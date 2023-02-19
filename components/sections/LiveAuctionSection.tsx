@@ -156,7 +156,7 @@ const LiveAuctionSection: React.FC = () => {
   const [avatars, setAvatars] = useState<AvatarType[]>()
   const [clientWidth, setClientWidth] = useState(1)
   const { data } = useQuery([QUERIES.getAllNFts, CURRENT_PAGE], () =>
-    getAllNFts(CURRENT_PAGE, 12)
+    getAllNFts(CURRENT_PAGE,12,"NEWTOOLD","NA")
   )
   const { width } = useWindowDimensions()
 
