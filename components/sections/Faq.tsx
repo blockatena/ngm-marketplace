@@ -1,4 +1,6 @@
+import { motion } from 'framer-motion'
 import { ReactElement } from 'react'
+import { fromBottomAnimation } from '../../utils/animations'
 import Accordion from '../Accordion'
 
 const faqData = [
@@ -34,12 +36,23 @@ function Faq(): ReactElement {
 
   return (
     <section className="py-16 lg:py-24  px-[5%] 2xl:px-[12%] text-white bg-[#0A0A0A]">
-      <div className="grid place-items-center">
+      <motion.div
+        className="grid place-items-center"
+        variants={fromBottomAnimation}
+        initial="initial"
+        whileInView="final"
+        viewport={{ once: true }}
+        transition={{
+          ease: 'easeInOut',
+          duration: 0.3,
+          delay: 0.3,
+        }}
+      >
         <Accordion>
           <Accordion.Title>Frequently Asked Questions</Accordion.Title>
           <Accordion.Frame>{renderedFaqItems}</Accordion.Frame>
         </Accordion>
-      </div>
+      </motion.div>
     </section>
   )
 }

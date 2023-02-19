@@ -1,6 +1,8 @@
+import { motion } from 'framer-motion'
 import Image, { StaticImageData } from 'next/image'
 import { FC, useCallback, useEffect, useState } from 'react'
 import personImg from '../../public/images/live-auction/pubg.png'
+import { fromBottomAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 
 interface ICollection {
@@ -122,9 +124,20 @@ const CollectionCarousel: FC<{ carouselData: ICollection[] }> = ({
 const OurCollections = () => {
   return (
     <section className="py-16 lg:py-24  px-[5%] 2xl:px-[12%] bg-[#0A0A0A]">
-      <h2 className="text-white lg:text-[4rem] font-poppins leading-[6rem] text-center">
+      <motion.h2
+        className="text-white lg:text-[4rem] font-poppins leading-[6rem] text-center"
+        variants={fromBottomAnimation}
+        initial="initial"
+        whileInView="final"
+        viewport={{ once: true }}
+        transition={{
+          ease: 'easeInOut',
+          duration: 0.5,
+          delay: 0.1,
+        }}
+      >
         Our Collections
-      </h2>
+      </motion.h2>
       <div className="my-10">
         <CollectionCarousel carouselData={carouselData} />
       </div>

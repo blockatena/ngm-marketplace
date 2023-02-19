@@ -1,5 +1,11 @@
+import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { FC, ReactElement } from 'react'
+import {
+  fromBottomAnimation,
+  fromLeftAnimation,
+  fromRightAnimation,
+} from '../../utils/animations'
 
 const cardData = [
   {
@@ -32,10 +38,32 @@ const Card: FC<{ title: string; img: string; body: string }> = ({
 
 const BottomRow: FC = () => (
   <div className="flex flex-col md:flex-row gap-10 bg-[#0A0A0A] py-16 lg:py-24  px-[5%] 2xl:px-[12%]">
-    <div className="relative w-[20.9375rem] lg:w-[31.625rem] h-[20.9375rem]">
+    <motion.div
+      className="relative w-[20.9375rem] lg:w-[31.625rem] h-[20.9375rem]"
+      variants={fromLeftAnimation}
+      initial="initial"
+      whileInView="final"
+      viewport={{ once: true }}
+      transition={{
+        ease: 'easeInOut',
+        duration: 0.5,
+        delay: 0.4,
+      }}
+    >
       <Image src="/images/others/debug.svg" alt="" layout="fill" />
-    </div>
-    <div className="text-white max-w-[40.75rem] flex flex-col gap-10 text-left pt-10 font-poppins">
+    </motion.div>
+    <motion.div
+      className="text-white max-w-[40.75rem] flex flex-col gap-10 text-left pt-10 font-poppins"
+      variants={fromRightAnimation}
+      initial="initial"
+      whileInView="final"
+      viewport={{ once: true }}
+      transition={{
+        ease: 'easeInOut',
+        duration: 0.5,
+        delay: 0.6,
+      }}
+    >
       <h3>Heading</h3>
       <p>
         It is a long established fact that a reader will be distracted by the
@@ -52,7 +80,7 @@ const BottomRow: FC = () => (
           Get APi Key
         </button>
       </p>
-    </div>
+    </motion.div>
   </div>
 )
 
@@ -61,17 +89,63 @@ function HowItWorks(): ReactElement {
   return (
     <section>
       <div className="text-center flex flex-col gap-10 items-center py-16 lg:py-24  px-[5%] 2xl:px-[12%] bg-gradient-to-br from-[#4C068B] via-[#0A0A0A] to-[#0A0A0A]">
-        <h2 className="uppercase font-poppins text-[1.25rem] leading-[1.75rem] text-custom-orange font-semibold">
+        <motion.h2
+          className="uppercase font-poppins text-[1.25rem] leading-[1.75rem] text-custom-orange font-semibold"
+          variants={fromBottomAnimation}
+          initial="initial"
+          whileInView="final"
+          viewport={{ once: true }}
+          transition={{
+            ease: 'easeInOut',
+            duration: 0.5,
+            delay: 0.4,
+          }}
+        >
           how it works
-        </h2>
-        <p className="text-white text-[2.5rem] leading-[3.75rem] font-poppins font-semibold">
+        </motion.h2>
+        <motion.p
+          className="text-white text-[2.5rem] leading-[3.75rem] font-poppins font-semibold"
+          variants={fromBottomAnimation}
+          initial="initial"
+          whileInView="final"
+          viewport={{ once: true }}
+          transition={{
+            ease: 'easeInOut',
+            duration: 0.5,
+            delay: 0.5,
+          }}
+        >
           APi for Developers
-        </p>
-        <p className="font-poppins font-semibold text-[1.25rem] leading-[1.75rem] text-white max-w-[55.75rem]">
+        </motion.p>
+        <motion.p
+          className="font-poppins font-semibold text-[1.25rem] leading-[1.75rem] text-white max-w-[55.75rem]"
+          variants={fromBottomAnimation}
+          initial="initial"
+          whileInView="final"
+          viewport={{ once: true }}
+          transition={{
+            ease: 'easeInOut',
+            duration: 0.5,
+            delay: 0.6,
+          }}
+        >
           We are offering several APIs that game developers can use to enable
           blockchain capabilities in their games.
-        </p>
-        <div className="flex flex-col md:flex-row gap-4">{renderCards}</div>
+        </motion.p>
+        <motion.div
+          className="flex flex-col md:flex-row gap-4"
+          variants={fromBottomAnimation}
+          initial="initial"
+          whileInView="final"
+          viewport={{ once: true }}
+          transition={{
+            ease: 'easeInOut',
+            duration: 0.5,
+            delay: 0.7,
+          }}
+        >
+          {renderCards}
+        </motion.div>
       </div>
       <BottomRow />
     </section>
