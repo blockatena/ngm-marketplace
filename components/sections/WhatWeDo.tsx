@@ -66,7 +66,7 @@ const ImageDisplay = () => {
       </div>
       <div className="flex justify-center">
         <ImageItem
-          text="Rapid Deployment"
+          text="Efficient Smart Contract"
           img="/images/hero/rocket.svg"
           animation="b"
         />
@@ -192,11 +192,12 @@ const WhatWeDo: FC = () => {
       >
         <div className="max-w-[30.0625rem]">
           <h2 className="font-poppins lg:text-[4.25rem] lg:leading-[6.375rem] text-white">
-            How does GamesToWeb3 work?
+            What is GamesToWeb3?
           </h2>
           <p className="lg:text-lg lg:leading-[1.8rem] font-light font-poppins text-[#FFD325]">
-            NFTs and tokens are unique assets stored and tradable on a
-            blockchain. They are, immutable, scarce and publicly verifiable
+            GamestoWeb3 is a platform that offers a marketplace for NFTs, as
+            well as an API for game developers to convert their web 2.0 games
+            and in-game assets to web 3.0 games and NFTs.
           </p>
         </div>
         <motion.div
@@ -236,10 +237,10 @@ const WhatWeDo: FC = () => {
               Web 3 NFT Marketplace
             </h2>
             <p className="text-white font-poppins lg:text-lg font-light my-8">
-              Create your first game NFTs with NFT market for gamers. The
-              platform works with BSC blockchain and supports mp4. With AirNFTs,
-              you are getting the control over your NFTs, no middle man cutting
-              your sales. Create, Buy, Sell and Earn with your game NFTs.
+              GamestoWeb3 makes it easy to create your own NFT collection and
+              bring your game assets to life in a whole new way. Whether you are
+              a game developer, a streamer, or just a passionate gamer, you can
+              create your own unique NFTs and sell them on our platform.
             </p>
             <div
               className="bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[16.1875rem] h-[3.06rem] font-inter 

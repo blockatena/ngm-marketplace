@@ -6,31 +6,50 @@ import Accordion from '../Accordion'
 const faqData = [
   {
     heading: 'Why should you use our APIs?',
-    body: 'As a creative agency we work with you to develop solutions to address your brand needs. That includes various aspects of brand planning and strategy, marketing and design.',
+    body: 'The ERC721 contracts used in our API are highly gas efficient, making it more cost-effective for game developers to deploy and mint NFTs.',
   },
   {
     heading: 'What are the fees for the marketplace?',
-    body: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nisi, sed deleniti. Necessitatibus dignissimos quidem doloremque fugit veritatis cum corporis officiis iusto voluptatibus itaque, natus recusandae!',
+    body: '1 %, one of the lowest in industry',
   },
   {
     heading: 'Can I contact GamesToWeb3 Devs about the API?',
-    body: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nisi, sed deleniti. Necessitatibus dignissimos quidem doloremque fugit veritatis cum corporis officiis iusto voluptatibus itaque, natus recusandae!  ',
+    body: 'Yes. You can reach out to us by raising a ticket on Discord or emailing us at',
+    email: 'hello@blockatena.com',
   },
   {
-    heading: 'Can I contact GamesToWeb3 Devs about the API?',
-    body: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nisi, sed deleniti. Necessitatibus dignissimos quidem doloremque fugit veritatis cum corporis officiis iusto voluptatibus itaque, natus recusandae!  ',
+    heading: 'How can I obtain an API Key?',
+    body: 'Please submit a request here. (Request it on Discord #Raise-a-ticket)',
   },
   {
-    heading: 'Can I contact GamesToWeb3 Devs about the API?',
-    body: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nisi, sed deleniti. Necessitatibus dignissimos quidem doloremque fugit veritatis cum corporis officiis iusto voluptatibus itaque, natus recusandae!  ',
+    heading: 'Does GamesToWeb3 have an API Documentation?',
+    body: 'Yes. Our Docs can be found here: ',
+    link: 'https://gamestoweb3.readme.io/',
   },
 ]
 
 function Faq(): ReactElement {
-  const renderedFaqItems = faqData.map(({ heading, body }, i) => (
+  const renderedFaqItems = faqData.map(({ heading, body, link, email }, i) => (
     <Accordion.Item key={i}>
       <Accordion.Header>{heading}</Accordion.Header>
-      <Accordion.Body>{body}</Accordion.Body>
+      <Accordion.Body>
+        {body}{' '}
+        {link && (
+          <a
+            href={link}
+            target="_blank"
+            rel="noreferrer"
+            className="text-custom_yellow"
+          >
+            {link}
+          </a>
+        )}
+        {email && (
+          <a href={`mailto:${email}`} className="text-custom_yellow">
+            {email}
+          </a>
+        )}
+      </Accordion.Body>
     </Accordion.Item>
   ))
 

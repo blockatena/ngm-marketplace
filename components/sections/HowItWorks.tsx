@@ -11,12 +11,12 @@ const cardData = [
   {
     title: 'Ethereum',
     img: '/images/others/write.svg',
-    body: 'Ethereum is a decentralized, open-source blockchain platform that enables smart contracts. Developers can use the Ethereum API to build blockchain-based games that run on the Ethereum network.',
+    body: 'Ethereum smart contracts transform gaming with verifiable assets, increasing transparency , reliable and driving blockchain adoption in the industry.',
   },
   {
     title: 'Polygon',
     img: '/images/others/bolt.svg',
-    body: 'Polygon API, game developers can create games that use blockchain technology for features such as in-game asset tracking, non-fungible tokens (NFTs), and secure player-to-player transactions.',
+    body: "Polygon's smart contracts enable verifiable gaming assets with faster transaction speeds and lower fees, driving blockchain adoption in gaming for more player engagement and ownership.",
   },
 ]
 
@@ -53,7 +53,7 @@ const BottomRow: FC = () => (
       <Image src="/images/others/debug.svg" alt="" layout="fill" />
     </motion.div>
     <motion.div
-      className="text-white max-w-[40.75rem] flex flex-col gap-10 text-left pt-10 font-poppins"
+      className="text-white max-w-[40.75rem]  text-left pt-10 font-poppins"
       variants={fromRightAnimation}
       initial="initial"
       whileInView="final"
@@ -64,15 +64,18 @@ const BottomRow: FC = () => (
         delay: 0.6,
       }}
     >
-      <h3>Heading</h3>
-      <p>
-        It is a long established fact that a reader will be distracted by the
-        readable content of a page when looking at its layout. The point of
-        using Lorem Ipsum is that it has a more-or-less normal distribution of
-        letters, as opposed to using Content here, content here, making it look
-        like readable English.
+      <h3 className="text-2xl lg:text-[3.4375rem] lg:leading-[5.1563rem]  font-poppins font-semibold">
+        Why Us?
+      </h3>
+      <p className="text-[1.0575rem] leading-[1.5869rem] font-poppins">
+        We offer free Polygon minting for new users, including 5 contracts and
+        200 NFTs. In addition, our extensive research into new standards like
+        TinyERC721 and ERC721Psi allows us to offer cheaper Ethereum and minting
+        for our users and plus our ERC721 contracts are highly gas efficient,
+        making it more cost-effective for game developers to deploy and mint
+        NFTs.
       </p>
-      <p>
+      <p className="pt-4">
         <button
           className="text-black bg-gradient-to-r from-[#F8D40A] to-[#F47721] py-2 px-4
             hover:from-[#F47721] hover:to-[#F8D40A] rounded-md text-[1.25rem] leading-[1.65rem]"
@@ -90,7 +93,7 @@ function HowItWorks(): ReactElement {
     <section>
       <div className="text-center flex flex-col gap-10 items-center py-16 lg:py-24  px-[5%] 2xl:px-[12%] bg-gradient-to-br from-[#4C068B] via-[#0A0A0A] to-[#0A0A0A]">
         <motion.h2
-          className="uppercase font-poppins text-[1.25rem] leading-[1.75rem] text-custom-orange font-semibold"
+          className="uppercase font-poppins text-[1.25rem] lg:text-[3.4375rem] leading-[1.75rem] text-custom-orange font-semibold"
           variants={fromBottomAnimation}
           initial="initial"
           whileInView="final"
@@ -115,7 +118,7 @@ function HowItWorks(): ReactElement {
             delay: 0.5,
           }}
         >
-          APi for Developers
+          API for Developers
         </motion.p>
         <motion.p
           className="font-poppins font-semibold text-[1.25rem] leading-[1.75rem] text-white max-w-[55.75rem]"
@@ -129,8 +132,12 @@ function HowItWorks(): ReactElement {
             delay: 0.6,
           }}
         >
-          We are offering several APIs that game developers can use to enable
-          blockchain capabilities in their games.
+          Our API is designed to make the process of converting your Web2 game
+          to Web3 as seamless as possible. With just a few lines of code, you
+          can integrate our API into your game and start taking advantage of all
+          the benefits of Web3 gaming. Our API is fully customizable and can be
+          tailored to the specific needs of your game, so you can create a
+          unique and engaging experience for your players.
         </motion.p>
         <motion.div
           className="flex flex-col md:flex-row gap-4"

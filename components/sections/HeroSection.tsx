@@ -115,9 +115,11 @@ const HeroSection: FC = () => {
               delay: 1,
             }}
           >
-            THE FIRST NFT for Transparency and Community-Driven. Explore new
-            NFTs Web3 NFTs will continue to revolutionize the way that artists
-            and fans create community together as we enter the upcoming year.
+            Welcome to GamestoWeb3, the premier marketplace for the sale of
+            in-game assets ! We are a community-driven platform that empowers
+            game developers and players to trade, buy, and sell in-game assets
+            as non-fungible tokens (NFTs), making it easy to monetize and own
+            your digital assets.
           </motion.p>
           <motion.div
             variants={fromLeftAnimation}

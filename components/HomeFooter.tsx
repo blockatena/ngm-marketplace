@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react'
 import { BsTwitter } from 'react-icons/bs'
-import { FaDiscord, FaInstagram, FaPinterest } from 'react-icons/fa'
+import { FaDiscord, FaInstagram, FaTelegram } from 'react-icons/fa'
 import Logo from './Logo'
 
 const IconLink: FC<{ children: ReactNode; href: string }> = ({
@@ -26,19 +26,22 @@ const Footer: FC = () => {
         <Logo />
       </div>
       <div className="text-custom-orange text-[.625rem] lg:text-[.75rem] leading-[1.125rem]">
-        All rights reserved ® Digiweb3 | Terms and conditions apply!
+        All rights reserved ®GamestoWeb3 | Terms and conditions apply!{' '}
       </div>
       <div className="flex gap-2 text-black">
-        <IconLink href="#">
+        <IconLink href="https://www.instagram.com/gamestoweb3">
           <FaInstagram />
         </IconLink>
-        <IconLink href="#">
+        <IconLink href="https://twitter.com/gamestoweb3">
           <BsTwitter />
         </IconLink>
-        <IconLink href="#">
-          <FaPinterest />
+        <IconLink href="https://t.me/gamestoweb3">
+          <FaTelegram />
         </IconLink>
-        <IconLink href="#">
+        {/* <IconLink href="#">
+          <FaPinterest />
+        </IconLink> */}
+        <IconLink href="https://discord.gg/Uy63DSnByG">
           <FaDiscord />
         </IconLink>
       </div>
@@ -53,8 +56,9 @@ const HomeFooter: FC = () => {
         <h3 className="font-poppins text-[3.5rem] leading-[5.25rem] font-semibold text-center">
           Subscribe
         </h3>
-        <p className="font-poppins text-lg text-center mb-10">
-          Yay! You made it to the end. Means you like what we do.
+        <p className="font-poppins text-lg text-center mb-10 max-w-[55.625rem]">
+          Yay! You made it to the end. Means you like what we do. Consider
+          subscribing to our weekly newsletter !{' '}
         </p>
         <div className="w-[100%] h-[2.75rem] lg:w-[35rem] lg:h-[6.5rem] relative mb-10">
           <input
