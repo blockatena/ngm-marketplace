@@ -39,13 +39,16 @@ function Faq(): ReactElement {
             href={link}
             target="_blank"
             rel="noreferrer"
-            className="text-custom_yellow"
+            className="text-custom_yellow hover:text-custom-yellow-hover"
           >
             {link}
           </a>
         )}
         {email && (
-          <a href={`mailto:${email}`} className="text-custom_yellow">
+          <a
+            href={`mailto:${email}`}
+            className="text-custom_yellow hover:text-custom-yellow-hover"
+          >
             {email}
           </a>
         )}
