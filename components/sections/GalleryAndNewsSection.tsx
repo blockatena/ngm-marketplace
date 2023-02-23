@@ -311,7 +311,7 @@ const GalleryAndNewsSection: React.FC = () => {
   }
 
   useEffect(() => {
-    if (data?.data?.collections.length) {
+    if (data?.data?.collections?.length) {
       setCollections(data.data.collections)
     }
   }, [data?.data])

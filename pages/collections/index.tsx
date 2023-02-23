@@ -213,7 +213,7 @@ const CollectionsPage: NextPage = () => {
     checkPage()
   })
 
-  console.log(currentPage)
+  // console.log(currentPage)
   const handleNftTypes = (_value: any) => {
     if (!_value) return
     if (_value == 'ERC721') {

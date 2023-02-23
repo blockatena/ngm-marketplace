@@ -12,6 +12,7 @@ const Detector: FC = () => {
   const [url, setUrl] = useState('')
   const { isConnected } = useAccount()
   const [currentChainId, setCurrentChainId] = useState('')
+  const [forceHide, setForceHide] = useState(false)
   const targetNetworkId = ['80001', '137', '1', '5', '3141', '314','20']
   const [route,setRoute] = useState('')
   useEffect(()=> {
@@ -21,7 +22,7 @@ const Detector: FC = () => {
   // const route = window.location.href.split('/')[2]
   const CHAINID: string = route=='gamestoweb3.com'?'137':'80001'
   const CHAINID2: string = route=='gamestoweb3.com'?'1':'5'
-  const CHAINID3: string = route=='gamestoweb3.com'?'314':'20'
+  const CHAINID3: string = route=='gamestoweb3.com'?'314':'20' || '3141'
 
 
   const onSwitchNetwork = async () => {
@@ -44,32 +45,41 @@ const Detector: FC = () => {
   }
 
   useEffect(() => {
-    if (chain?.id === parseInt(CHAINID)) {
+    if (chain?.id === parseInt(CHAINID) || forceHide ) {
       setShowAlert('false')
       return
     }
-  }, [chain,CHAINID])
+  }, [chain,CHAINID, forceHide])
 
   const detectNetwork = () => {
     if (showAlert !== '') {
       window.ethereum.on('networkChanged', function (networkId: any) {
+        setForceHide(false)
         setCurrentChainId(networkId)
         return networkId
       })
-    }
-    let currentChainId = window?.ethereum?.networkVersion
-    setCurrentChainId(currentChainId)
-    return currentChainId
+    } 
+    // let currentChainId = window?.ethereum?.networkVersion
+    // setCurrentChainId(currentChainId)
+    // return currentChainId
   }
 
-  async function listenNetwork() {
+  const listenNetwork = () => {
     if (isConnected) {
-      window.ethereum.on('networkChanged', function (networkId: any) {
+      window.ethereum.on('networkChanged',  async function (networkId: any) {
         // console.log(networkId)
+        
         if (targetNetworkId.includes(networkId)) {
-          setShowAlert('false')
+          setCurrentChainId(networkId)
+          if(!forceHide) {
+            setShowAlert('false')
+          }
+
+          
         } else {
-          setShowAlert('true')
+          setCurrentChainId('')
+          setShowAlert('false')
+          
         }
       })
     }
@@ -103,7 +113,9 @@ const Detector: FC = () => {
         setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
         setMsg3('or Visit to')
         setMsg4(CHAINID === '80001' ? 'Mainnet' : 'Testnet')
-        setShowAlert('true')
+        if (!forceHide) {
+          setShowAlert('true')
+        }
         return
       }
     } else {
@@ -111,7 +123,9 @@ const Detector: FC = () => {
       setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
       setMsg3('')
       setMsg4('')
-      setShowAlert('true')
+      if (!forceHide) {
+        setShowAlert('true')
+      }
       return
     }
   }
@@ -151,7 +165,7 @@ const Detector: FC = () => {
           </span>
           <button
             className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-0.5 mr-6 outline-none focus:outline-none"
-            onClick={() => setShowAlert('false')}
+            onClick={() => setForceHide(true)}
           >
             <span>×</span>
           </button>

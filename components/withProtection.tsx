@@ -12,11 +12,17 @@ const withProtection: withProtectionFn = (Component) => {
     const { isConnected } = useAccount()
     const router = useRouter()
     const isMounted = useIsMounted()
-    const [currentChainId, setCurrentChainId] = useState('')
+    const [currentChainId, setCurrentChainId] = useState('00')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const targetNetworkId = ['80001', '137', '1', '5', '3141', '314','20']
     const { connect } = useConnect({
       connector:new MetaMaskConnector()
     })
+
+    // window.ethereum.on('networkChanged', function (networkId: any) {
+    //   console.log
+    //   detectNetwork()
+    // })
 
     const detectNetwork = () => {
       if (currentChainId !== '') {
@@ -31,8 +37,9 @@ const withProtection: withProtectionFn = (Component) => {
           }
         })
       }
-      if (isConnected && currentChainId) {
+      else if (isConnected) {
         let currentChain = window.ethereum.networkVersion
+        console.log(currentChain)
         if (targetNetworkId.includes(currentChain)) {
           setCurrentChainId(currentChain)
           connect()
@@ -43,29 +50,38 @@ const withProtection: withProtectionFn = (Component) => {
         }
       }
     }
-    // const reConnect = () => {
-    //   if (currentChainId !== '' && !isConnected) {
-    //     connect()
-    //   }
-    // }
-
+    
     useEffect(() => {
       detectNetwork()
-      // reConnect()
     })
 
     useEffect(() => {
-      if (!isConnected && !currentChainId) router.push('/connect-wallet')
+      if (!isConnected && !targetNetworkId.includes(currentChainId) && isMounted) {
+        router.push('/connect-wallet')
+      }
+    }, [isConnected, targetNetworkId, currentChainId, router, isMounted])
 
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isConnected])
+
+
     // console.log('ismount: ', isMounted)
     // console.log('isconnected: ', isConnected)
     // console.log('currentChain: ', currentChainId)
 
-    return isConnected &&  isMounted ? (
+    // return isConnected ||
+    //   (targetNetworkId.includes(currentChainId) && isMounted) ? (
+    //   <Component {...props} />
+    // ) : isMounted && !isConnected && !targetNetworkId.includes(currentChainId) ? (
+    //   <div className="min-h-screen text-white font-poppins text-center text-lg pt-8">
+    //     Redirecting...
+    //   </div>
+    // ) : null
+
+    const isRenderable = isConnected || targetNetworkId.includes(currentChainId)
+    const isRedirectable =  !isConnected;
+
+    return isMounted && isRenderable ? (
       <Component {...props} />
-    ) : isMounted && !currentChainId && !isConnected ? (
+    ) : isMounted  && isRedirectable ? (
       <div className="min-h-screen text-white font-poppins text-center text-lg pt-8">
         Redirecting...
       </div>
