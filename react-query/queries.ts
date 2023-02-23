@@ -92,7 +92,7 @@ export const getCollectionNfts = (data: CollectionNftsBodyType) => {
   if (data.nftType === 'NGM1155') {
     return axiosInstance.post(`/nft/get-nfts-1155-collection`, data)
   }
-  return axiosInstance.post(`/nft/get-nfts-listed-collection`, data)
+  return axiosInstance.post(`/nft/get-nfts-721-collection`, data)
 }
 
 export const createNftSale = (data: NftSaleBodyType) => {

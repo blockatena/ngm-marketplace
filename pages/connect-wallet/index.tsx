@@ -17,7 +17,7 @@ const ConnectPage: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected])
 
-const targetNetworkId = ['80001' , '137','1', '5']
+const targetNetworkId = ['80001', '137', '1', '5', '3141', '314', '20']
 const switchSet = ()=> {
   setIsChainCorrect(true)
 }

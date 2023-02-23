@@ -215,13 +215,13 @@ export type nftCancelbidType = {
 }
 
 export type CollectionNftsBodyType = {
-  contract_address?: string
-  token_owner?: string
-  listed_in?: string
+  address?: string
+  address_type?: 'COLLECTION' | 'USER'
+  listed_in?: "NA" | "AUCTION" | "SALE"
   page_number: number
   items_per_page: number
-  order: 'NewToOld' | 'OldToNew'
-  alphabetical_order: 'AtoZ' | 'ZtoA'
+  sort_by:"NA" | "NEWTOOLD" | "OLDTONEW" | "ATOZ" | "ZTOA"
+  search:string
   nftType?: NftType
 }
 

@@ -102,10 +102,14 @@ const ListAssetPage: NextPage = () => {
       ? devMarkets.MUMBAI
       : DeployType == 'DEV' && chainID == '5'
       ? devMarkets.GOERLI
+      : DeployType == 'DEV' && chainID == '3141'
+      ? devMarkets.HYPERSPACE
       : DeployType == 'PROD' && chainID == '137'
       ? prodMarkets.POLYGON
       : DeployType == 'PROD' && chainID == '1'
       ? prodMarkets.ETHEREUM
+      : DeployType == 'PROD' && chainID == '314'
+      ? prodMarkets.FILECOIN
       : ''
   const { data: contractType } = useQuery(
     [QUERIES.getCollectionType, contractAddress],

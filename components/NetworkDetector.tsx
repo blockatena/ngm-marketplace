@@ -12,7 +12,7 @@ const Detector: FC = () => {
   const [url, setUrl] = useState('')
   const { isConnected } = useAccount()
   const [currentChainId, setCurrentChainId] = useState('')
-  const targetNetworkId = ['80001', '137', '1', '5']
+  const targetNetworkId = ['80001', '137', '1', '5', '3141', '314','20']
   const [route,setRoute] = useState('')
   useEffect(()=> {
     const route = window.location.href.split('/')[2]
@@ -21,6 +21,7 @@ const Detector: FC = () => {
   // const route = window.location.href.split('/')[2]
   const CHAINID: string = route=='gamestoweb3.com'?'137':'80001'
   const CHAINID2: string = route=='gamestoweb3.com'?'1':'5'
+  const CHAINID3: string = route=='gamestoweb3.com'?'314':'20'
 
 
   const onSwitchNetwork = async () => {
@@ -32,7 +33,8 @@ const Detector: FC = () => {
       const { chainId } = await provider.getNetwork()
       let chain = parseInt(CHAINID)
       let chain2 = parseInt(CHAINID2)
-      if (chainId !== chain && chainId !== chain2) {
+      let chain3 = parseInt(CHAINID3)
+      if (chainId !== chain && chainId !== chain2 && chainId !== chain3) {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
@@ -77,8 +79,13 @@ const Detector: FC = () => {
     // console.log(isConnected)
     // console.log(currentChainId)
     if (!isConnected) return
+    console.log(currentChainId)
     if (targetNetworkId.includes(currentChainId)) {
-      if (currentChainId === CHAINID || currentChainId === CHAINID2) {
+      if (
+        currentChainId === CHAINID ||
+        currentChainId === CHAINID2 ||
+        currentChainId === CHAINID3
+      ) {
         // console.log('On Correct Network')
         setShowAlert('false')
         return

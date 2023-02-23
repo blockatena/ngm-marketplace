@@ -13,7 +13,7 @@ const withProtection: withProtectionFn = (Component) => {
     const router = useRouter()
     const isMounted = useIsMounted()
     const [currentChainId, setCurrentChainId] = useState('')
-    const targetNetworkId = ['80001', '137', '1', '5']
+    const targetNetworkId = ['80001', '137', '1', '5', '3141', '314','20']
     const { connect } = useConnect({
       connector:new MetaMaskConnector()
     })
@@ -23,6 +23,7 @@ const withProtection: withProtectionFn = (Component) => {
         window.ethereum.on('networkChanged', function (networkId: any) {
           if (targetNetworkId.includes(networkId)) {
             setCurrentChainId(networkId)
+            connect()
             return networkId
           } else {
             setCurrentChainId('0')
@@ -30,10 +31,11 @@ const withProtection: withProtectionFn = (Component) => {
           }
         })
       }
-      if (isConnected) {
+      if (isConnected && currentChainId) {
         let currentChain = window.ethereum.networkVersion
         if (targetNetworkId.includes(currentChain)) {
           setCurrentChainId(currentChain)
+          connect()
           return currentChain
         } else {
           setCurrentChainId('0')
@@ -41,15 +43,15 @@ const withProtection: withProtectionFn = (Component) => {
         }
       }
     }
-    const reConnect = () => {
-      if (currentChainId !== '' && !isConnected) {
-        connect()
-      }
-    }
+    // const reConnect = () => {
+    //   if (currentChainId !== '' && !isConnected) {
+    //     connect()
+    //   }
+    // }
 
     useEffect(() => {
       detectNetwork()
-      reConnect()
+      // reConnect()
     })
 
     useEffect(() => {
