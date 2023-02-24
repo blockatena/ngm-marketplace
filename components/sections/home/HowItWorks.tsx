@@ -5,7 +5,7 @@ import {
   fromBottomAnimation,
   fromLeftAnimation,
   fromRightAnimation,
-} from '../../utils/animations'
+} from '../../../utils/animations'
 
 const cardData = [
   {

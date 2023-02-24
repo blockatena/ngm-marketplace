@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
 import Image, { StaticImageData } from 'next/image'
 import { FC, useCallback, useEffect, useState } from 'react'
-import personImg from '../../public/images/live-auction/pubg.png'
-import { fromBottomAnimation } from '../../utils/animations'
-import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
+import personImg from '../../../public/images/live-auction/pubg.png'
+import { fromBottomAnimation } from '../../../utils/animations'
+import useWindowDimensions from '../../../utils/hooks/useWindowDimensions'
 
 interface ICollection {
   img: StaticImageData

@@ -4,7 +4,10 @@ import { useRouter } from 'next/router'
 import { FC } from 'react'
 import { FaEthereum } from 'react-icons/fa'
 import { IoChevronForwardSharp } from 'react-icons/io5'
-import { fromLeftAnimation, fromRightAnimation } from '../../utils/animations'
+import {
+  fromLeftAnimation,
+  fromRightAnimation,
+} from '../../../utils/animations'
 
 const CardStack: FC = () => {
   return (

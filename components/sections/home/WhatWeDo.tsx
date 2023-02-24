@@ -8,8 +8,8 @@ import {
   fromLeftAnimation,
   fromRightAnimation,
   fromTopAnimation,
-} from '../../utils/animations'
-import { CONTAINER_PADDING } from '../../utils/constants'
+} from '../../../utils/animations'
+import { CONTAINER_PADDING } from '../../../utils/constants'
 
 const ImageItem: FC<{
   text: string

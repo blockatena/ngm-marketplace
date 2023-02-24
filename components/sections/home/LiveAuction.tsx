@@ -4,9 +4,9 @@ import {
   fromBottomAnimation,
   fromLeftAnimation,
   fromRightAnimation,
-} from '../../utils/animations'
-import { CONTAINER_PADDING } from '../../utils/constants'
-import OutlinedNftCard from '../OutlinedNftCard'
+} from '../../../utils/animations'
+import { CONTAINER_PADDING } from '../../../utils/constants'
+import OutlinedNftCard from '../../OutlinedNftCard'
 
 const LiveAuction: FC = () => {
   return (

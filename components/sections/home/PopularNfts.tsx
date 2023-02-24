@@ -1,9 +1,12 @@
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/router'
 import { IoChevronForwardSharp } from 'react-icons/io5'
-import { fromBottomAnimation, fromRightAnimation } from '../../utils/animations'
-import { CONTAINER_PADDING } from '../../utils/constants'
-import OutlinedNftCard from '../OutlinedNftCard'
+import {
+  fromBottomAnimation,
+  fromRightAnimation,
+} from '../../../utils/animations'
+import { CONTAINER_PADDING } from '../../../utils/constants'
+import OutlinedNftCard from '../../OutlinedNftCard'
 
 const nfts = [
   '/images/auction/auction_img_5.svg',

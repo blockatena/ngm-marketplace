@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react'
 import { BsTwitter } from 'react-icons/bs'
 import { FaDiscord, FaInstagram, FaTelegram } from 'react-icons/fa'
-import Logo from './Logo'
+import Logo from '../../Logo'
 
 const IconLink: FC<{ children: ReactNode; href: string }> = ({
   children,

@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
 import { ReactElement } from 'react'
-import { fromBottomAnimation } from '../../utils/animations'
-import Accordion from '../Accordion'
+import { IoAdd, IoRemove } from 'react-icons/io5'
+import { fromBottomAnimation } from '../../../utils/animations'
+import Accordion from '../../Accordion'
 
 const faqData = [
   {
@@ -31,7 +32,9 @@ const faqData = [
 function Faq(): ReactElement {
   const renderedFaqItems = faqData.map(({ heading, body, link, email }, i) => (
     <Accordion.Item key={i}>
-      <Accordion.Header>{heading}</Accordion.Header>
+      <Accordion.Header openIcon={<IoAdd />} closeIcon={<IoRemove />}>
+        {heading}
+      </Accordion.Header>
       <Accordion.Body>
         {body}{' '}
         {link && (
