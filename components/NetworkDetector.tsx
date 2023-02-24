@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 import { FC, useEffect, useState } from 'react'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
+import useIsMounted from '../utils/hooks/useIsMounted'
 const Detector: FC = () => {
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
@@ -15,6 +16,7 @@ const Detector: FC = () => {
   const [forceHide, setForceHide] = useState(false)
   const targetNetworkId = ['80001', '137', '1', '5', '3141', '314','20']
   const [route,setRoute] = useState('')
+  const isMounted = useIsMounted()
   useEffect(()=> {
     const route = window.location.href.split('/')[2]
     setRoute(route)
@@ -45,11 +47,11 @@ const Detector: FC = () => {
   }
 
   useEffect(() => {
-    if (chain?.id === parseInt(CHAINID) || forceHide ) {
+    if (chain?.id === parseInt(CHAINID) || (forceHide && isMounted)) {
       setShowAlert('false')
       return
     }
-  }, [chain,CHAINID, forceHide])
+  }, [chain, CHAINID, forceHide, isMounted])
 
   const detectNetwork = () => {
     if (showAlert !== '') {
@@ -59,9 +61,11 @@ const Detector: FC = () => {
         return networkId
       })
     } 
-    // let currentChainId = window?.ethereum?.networkVersion
-    // setCurrentChainId(currentChainId)
-    // return currentChainId
+    if(showAlert == '') {
+    let currentChainId = window?.ethereum?.networkVersion
+    setCurrentChainId(currentChainId)
+    return currentChainId
+    }
   }
 
   const listenNetwork = () => {
@@ -113,7 +117,7 @@ const Detector: FC = () => {
         setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
         setMsg3('or Visit to')
         setMsg4(CHAINID === '80001' ? 'Mainnet' : 'Testnet')
-        if (!forceHide) {
+        if (!forceHide && isMounted) {
           setShowAlert('true')
         }
         return
@@ -123,7 +127,7 @@ const Detector: FC = () => {
       setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
       setMsg3('')
       setMsg4('')
-      if (!forceHide) {
+      if (!forceHide && isMounted) {
         setShowAlert('true')
       }
       return
