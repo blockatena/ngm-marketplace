@@ -10,7 +10,6 @@ import {
   useContext,
   useState,
 } from 'react'
-import { IoAdd, IoRemove } from 'react-icons/io5'
 
 interface IItemContext {
   isOpen: boolean
@@ -66,7 +65,13 @@ const Frame: FC<IContainer> = ({ children, ...restProps }) => (
   <div {...restProps}>{children}</div>
 )
 
-const Header: FC<IContainer> = ({ children, className, ...restProps }) => {
+interface IHeader extends IContainer {
+  openIcon?: ReactNode
+  closeIcon?: ReactNode
+}
+
+const Header: FC<IHeader> = (props) => {
+  const { children, className, openIcon, closeIcon, ...restProps } = props
   const { isOpen, setIsOpen } = useItemContext()
   return (
     <div
@@ -80,7 +85,7 @@ const Header: FC<IContainer> = ({ children, className, ...restProps }) => {
       {...restProps}
     >
       <div>{children} </div>
-      <div className="text-white">{!isOpen ? <IoAdd /> : <IoRemove />}</div>
+      <div className="text-white">{!isOpen ? openIcon : closeIcon}</div>
     </div>
   )
 }
