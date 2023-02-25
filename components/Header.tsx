@@ -8,6 +8,7 @@ import { useAccount, useDisconnect } from 'wagmi'
 import { fromLeftAnimation, fromRightAnimation } from '../utils/animations'
 import useIsMounted from '../utils/hooks/useIsMounted'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
+import { INNER_BOX_STYLE, OUTER_BOX_STYLE } from './SectionContainer'
 
 const ConnectButton: FC = () => {
   const router = useRouter()
@@ -212,17 +213,21 @@ const Header: FC = () => {
   return (
     <header className="relative z-20">
       <div
-        className={`pt-6 lg:px-16 bg-transparent backdrop-blur-lg absolute left-0 right-0`}
+        className={`pt-6 ${
+          !isHome && 'lg:px-16'
+        } bg-transparent backdrop-blur-lg absolute left-0 right-0`}
       >
-        <div className={`${isHome && 'border-b'} border-white pb-4`}>
-          <div className="grid grid-cols-12 gap-1">
-            <div className="col-span-3 md:col-span-6">
-              <Logo />
-            </div>
-            {/* <div className="col-span-9 md:col-span-6 flex justify-end gap-2 md:gap-6 lg:gap-16"> */}
-            <div className="col-span-9 md:col-span-6 flex justify-end items-center gap-2 md:gap-3 lg:gap-4 pr-4">
-              {/* {router.asPath !== '/' && <Search />} */}
-              {/* <motion.div
+        <div className={`${isHome && OUTER_BOX_STYLE}`}>
+          <div className={`${isHome && INNER_BOX_STYLE}`}>
+            <div className={`${isHome && 'border-b'} border-white pb-4`}>
+              <div className="grid grid-cols-12 gap-1">
+                <div className="col-span-3 md:col-span-6">
+                  <Logo />
+                </div>
+                {/* <div className="col-span-9 md:col-span-6 flex justify-end gap-2 md:gap-6 lg:gap-16"> */}
+                <div className="col-span-9 md:col-span-6 flex justify-end items-center gap-2 md:gap-3 lg:gap-4 pr-4">
+                  {/* {router.asPath !== '/' && <Search />} */}
+                  {/* <motion.div
               variants={fromTopAnimation}
               initial="initial"
               animate="final"
@@ -239,7 +244,9 @@ const Header: FC = () => {
               />
             </motion.div> */}
 
-              <ConnectButton />
+                  <ConnectButton />
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -100,7 +100,7 @@ const CollectionCarousel: FC<{ carouselData: ICollection[] }> = ({
   return (
     <div
       className="w-[350px] md:w-[392px] lg:w-full 
-     mx-auto overflow-hidden pt-8 lg:pt-10"
+     mx-auto overflow-hidden pt-2 lg:pt-10"
     >
       <div
         className="w-fit flex flex-row items-center h-[550px] gap-6 transition-all ease-in-out duration-300"
@@ -123,9 +123,9 @@ const CollectionCarousel: FC<{ carouselData: ICollection[] }> = ({
 
 const OurCollections = () => {
   return (
-    <section className="py-16 lg:py-24  px-[5%] 2xl:px-[12%] bg-[#0A0A0A]">
+    <section className="py-5 lg:py-24  px-[5%] 2xl:px-[12%] bg-[#0A0A0A]">
       <motion.h2
-        className="text-white lg:text-[4rem] font-poppins leading-[6rem] text-center"
+        className="text-white text-4xl lg:text-[4rem] font-poppins leading-[6rem] text-center"
         variants={fromBottomAnimation}
         initial="initial"
         whileInView="final"
@@ -138,7 +138,7 @@ const OurCollections = () => {
       >
         Our Collections
       </motion.h2>
-      <div className="my-10">
+      <div className="my-2 lg:my-10">
         <CollectionCarousel carouselData={carouselData} />
       </div>
       <div className="flex justify-center">

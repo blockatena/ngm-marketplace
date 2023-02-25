@@ -8,6 +8,7 @@ import {
   fromLeftAnimation,
   fromRightAnimation,
 } from '../../../utils/animations'
+import SectionContainer from '../../SectionContainer'
 
 const CardStack: FC = () => {
   return (
@@ -86,132 +87,85 @@ const HeroSection: FC = () => {
         autoPlay
         muted
         loop
-        className="w-full"
+        className="w-full hidden xl:block"
       >
         <source src="/hero_video.mp4" type="video/mp4" />
       </video>
-      <div className="flex flex-col md:flex-row justify-between absolute top-28 bottom-0 right-0 left-0 z-30 px-4 lg:px-10 pt-[10%]">
-        <div className="flex flex-col gap-4 lg:gap-12">
-          <motion.h1
-            className="font-inter text-[2.5rem] leading-[3rem] lg:text-[3.75rem] lg:leading-[4.56rem]"
-            variants={fromLeftAnimation}
-            initial="initial"
-            animate="final"
-            transition={{
-              ease: 'easeInOut',
-              duration: 0.6,
-              delay: 0.8,
-            }}
-          >
-            <span className="text-[#FCBA24]">Games</span>
-            <span className="text-white">To</span>
-            <span className="text-[#E435DF]">Web3</span>
-          </motion.h1>
-          <motion.p
-            className="max-w-[41.25rem] font-inter font-light font-sm lg:font-base lg:leading-[1.6rem] text-white"
-            variants={fromLeftAnimation}
-            initial="initial"
-            animate="final"
-            transition={{
-              ease: 'easeInOut',
-              duration: 0.6,
-              delay: 1,
-            }}
-          >
-            Welcome to GamestoWeb3, the premier marketplace for the sale of
-            in-game assets ! We are a community-driven platform that empowers
-            game developers and players to trade, buy, and sell in-game assets
-            as non-fungible tokens (NFTs), making it easy to monetize and own
-            your digital assets.
-          </motion.p>
-          <motion.div
-            variants={fromLeftAnimation}
-            initial="initial"
-            animate="final"
-            transition={{
-              ease: 'easeInOut',
-              duration: 0.6,
-              delay: 1.4,
-            }}
-            className="bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[13.55rem] h-[3.06rem] font-inter 
+      <div className="absolute top-28 bottom-0 right-0 left-0 z-30 pt-[10%]">
+        <SectionContainer>
+          <div className="flex flex-col md:flex-row justify-between ">
+            <div className="flex flex-col gap-4 lg:gap-12">
+              <motion.h1
+                className="font-inter text-[2.5rem] leading-[3rem] lg:text-[3.75rem] lg:leading-[4.56rem]"
+                variants={fromLeftAnimation}
+                initial="initial"
+                animate="final"
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 0.6,
+                  delay: 0.8,
+                }}
+              >
+                <span className="text-[#FCBA24]">Games</span>
+                <span className="text-white">To</span>
+                <span className="text-[#E435DF]">Web3</span>
+              </motion.h1>
+              <motion.p
+                className="max-w-[41.25rem] font-inter font-light font-sm lg:font-base lg:leading-[1.6rem] text-white"
+                variants={fromLeftAnimation}
+                initial="initial"
+                animate="final"
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 0.6,
+                  delay: 1,
+                }}
+              >
+                Welcome to GamestoWeb3, the premier marketplace for the sale of
+                in-game assets ! We are a community-driven platform that
+                empowers game developers and players to trade, buy, and sell
+                in-game assets as non-fungible tokens (NFTs), making it easy to
+                monetize and own your digital assets.
+              </motion.p>
+              <motion.div
+                variants={fromLeftAnimation}
+                initial="initial"
+                animate="final"
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 0.6,
+                  delay: 1.4,
+                }}
+                className="bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[13.55rem] h-[3.06rem] font-inter 
               text-lg grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD] "
-            role="button"
-            onClick={letsExploreOnClick}
-          >
-            <div className="h-[2.51rem] w-[13rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
-              <p className="flex gap-2 justify-center items-center text-white">
-                Discover More <IoChevronForwardSharp />
-              </p>
-            </div>
-          </motion.div>
-        </div>
-        <div>
-          <motion.div
-            variants={fromRightAnimation}
-            initial="initial"
-            animate="final"
-            transition={{
-              ease: 'easeInOut',
-              duration: 0.6,
-              delay: 1.6,
-            }}
-            className="xl:pr-36"
-          >
-            <CardStack />
-          </motion.div>
-        </div>
-      </div>
-
-      {/* <div className={` ${CONTAINER_PADDING} w-full mx-auto`}>
-        <div className="flex flex-col-reverse lg:flex-row pt-[20px] md:pt-[30px] lg:pt-[60px] items-center w-full">
-          <div className="w-full lg:w-[70%] xl:w-[60%] space-y-[25px] md:space-y-[30px] lg:space-y-[40px]">
-            <motion.h1
-              variants={fromLeftAnimation}
-              initial="initial"
-              animate="final"
-              transition={{
-                ease: 'easeInOut',
-                duration: 0.6,
-                delay: 0.8,
-              }}
-              className="text-white text-center lg:text-left font-bold text-[30px] md:text-[34px] lg:text-[36px] xl:text-[50px] w-auto xl:w-[650px]"
-            >
-              THE FIRST <span className="text-[#FFD707]">NFT</span>
-              <br /> FOR TRANSPARENCY AND COMMUNITY-DRIVEN
-            </motion.h1>
-            <motion.div
-              variants={fromLeftAnimation}
-              initial="initial"
-              animate="final"
-              transition={{
-                ease: 'easeInOut',
-                duration: 0.6,
-                delay: 1.4,
-              }}
-              className="mx-auto lg:mx-0 w-fit pb-6"
-            >
-              <button
-                className="btn-primary w-[200px] md:w-[220px] lg:w-[248px] h-[48px] md:h-[56px] lg:h-[62px] text-[20px] md:text-[24px] lg:text-[29px] rounded-xl"
+                role="button"
                 onClick={letsExploreOnClick}
               >
-                Let&apos;s Explore
-              </button>
-            </motion.div>
+                <div className="h-[2.51rem] w-[13rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
+                  <p className="flex gap-2 justify-center items-center text-white">
+                    Discover More <IoChevronForwardSharp />
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+            <div>
+              <motion.div
+                variants={fromRightAnimation}
+                initial="initial"
+                animate="final"
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 0.6,
+                  delay: 1.6,
+                }}
+                className="xl:pr-36"
+              >
+                <CardStack />
+              </motion.div>
+            </div>
           </div>
-          <motion.div
-            variants={fromRightAnimation}
-            initial="initial"
-            animate="final"
-            transition={{
-              ease: 'easeInOut',
-              duration: 0.6,
-              delay: 1.6,
-            }}
-          >
-            <Image alt="Nft character" src={nft_hero_character} />
-          </motion.div>
-        </div>
-      </div> */}
+        </SectionContainer>
+      </div>
     </section>
   )
 }

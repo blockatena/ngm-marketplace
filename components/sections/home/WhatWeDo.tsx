@@ -9,7 +9,7 @@ import {
   fromRightAnimation,
   fromTopAnimation,
 } from '../../../utils/animations'
-import { CONTAINER_PADDING } from '../../../utils/constants'
+import SectionContainer from '../../SectionContainer'
 
 const ImageItem: FC<{
   text: string
@@ -105,7 +105,7 @@ const NftCard: FC<{ name: string; pgb: string; img: string }> = ({
   return (
     <div>
       <div className="border border-white w-[13.9375rem] h-[16.8125rem] relative text-white">
-        <div className="absolute left-8 -right-8 -top-4 bottom-[6rem] bg-[#0A0A0A]">
+        <div className="absolute left-8 -right-4 lg:-right-8 -top-4 bottom-[6rem] bg-[#0A0A0A]">
           <Image
             src={img}
             alt=""
@@ -127,7 +127,7 @@ const NftCard: FC<{ name: string; pgb: string; img: string }> = ({
 
 const CardDisplay = () => {
   return (
-    <div className="w-full lg:pr-10">
+    <div className="w-full lg:pr-10 lg:min-w-[35rem]">
       <div className="flex flex-col lg:flex-row justify-between lg:h-[20rem]">
         {nftData1.map((nft, i) => {
           return (
@@ -178,29 +178,9 @@ const WhatWeDo: FC = () => {
   const router = useRouter()
   return (
     <section className={`lg:pt-28 bg-[#0A0A0A]`}>
-      <motion.div
-        className={`${CONTAINER_PADDING}  flex flex-col lg:flex-row justify-between`}
-        variants={fromBottomAnimation}
-        initial="initial"
-        whileInView="final"
-        viewport={{ once: true }}
-        transition={{
-          ease: 'easeInOut',
-          duration: 0.3,
-          delay: 0.2,
-        }}
-      >
-        <div className="max-w-[30.0625rem]">
-          <h2 className="font-poppins lg:text-[4.25rem] lg:leading-[6.375rem] text-white">
-            What is GamesToWeb3?
-          </h2>
-          <p className="lg:text-lg lg:leading-[1.8rem] font-light font-poppins text-[#FFD325]">
-            GamestoWeb3 is a platform that offers a marketplace for NFTs, as
-            well as an API for game developers to convert their web 2.0 games
-            and in-game assets to web 3.0 games and NFTs.
-          </p>
-        </div>
+      <SectionContainer>
         <motion.div
+          className={`flex flex-col lg:flex-row justify-between w-full pt-24 md:pt-0`}
           variants={fromBottomAnimation}
           initial="initial"
           whileInView="final"
@@ -208,55 +188,79 @@ const WhatWeDo: FC = () => {
           transition={{
             ease: 'easeInOut',
             duration: 0.3,
-            delay: 0.3,
+            delay: 0.2,
           }}
         >
-          <ImageDisplay />
-        </motion.div>
-      </motion.div>
-
-      <div
-        className={`${CONTAINER_PADDING}  flex flex-col lg:flex-row justify-between pt-20 pb-28 bg-[#0A0A0A]`}
-      >
-        <div className="lg:w-[45%]">
-          <CardDisplay />
-        </div>
-        <div className="max-w-[38rem] pt-60">
+          <div className="max-w-[30.0625rem]">
+            <h2 className="font-poppins text-3xl pb-2 lg:text-[3.25rem] lg:leading-[5rem] xl:text-[4.25rem] xl:leading-[6.375rem] text-white">
+              What is GamesToWeb3?
+            </h2>
+            <p className="lg:text-lg lg:leading-[1.8rem] font-light font-poppins text-[#FFD325]">
+              GamestoWeb3 is a platform that offers a marketplace for NFTs, as
+              well as an API for game developers to convert their web 2.0 games
+              and in-game assets to web 3.0 games and NFTs.
+            </p>
+          </div>
           <motion.div
-            variants={fromRightAnimation}
+            variants={fromBottomAnimation}
             initial="initial"
             whileInView="final"
             viewport={{ once: true }}
             transition={{
               ease: 'easeInOut',
-              duration: 0.5,
-              delay: 0.6,
+              duration: 0.3,
+              delay: 0.3,
             }}
           >
-            <h2 className="font-inter lg:text-[4.625rem] lg:leading-[5.5975rem] text-white">
-              Web 3 NFT Marketplace
-            </h2>
-            <p className="text-white font-poppins lg:text-lg font-light my-8">
-              GamestoWeb3 makes it easy to create your own NFT collection and
-              bring your game assets to life in a whole new way. Whether you are
-              a game developer, a streamer, or just a passionate gamer, you can
-              create your own unique NFTs and sell them on our platform.
-            </p>
-            <div
-              className="bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[16.1875rem] h-[3.06rem] font-inter 
-              lg:text-lg grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD] font-light"
-              role="button"
-              onClick={() => router.push('/collections')}
-            >
-              <div className="h-[2.51rem] w-[15.6875rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
-                <p className="flex gap-2 justify-center items-center text-white">
-                  Explore Marketplace <IoChevronForwardSharp />
-                </p>
-              </div>
-            </div>
+            <ImageDisplay />
           </motion.div>
+        </motion.div>
+
+        <div
+          className={`flex flex-col lg:flex-row justify-between pt-20 pb-28 bg-[#0A0A0A]`}
+        >
+          {/* <div className="lg:w-[45%]"> */}
+          <div className="">
+            <CardDisplay />
+          </div>
+          <div className="max-w-[38rem] pt-60  lg:pl-4 xl:pl-0">
+            <motion.div
+              variants={fromRightAnimation}
+              initial="initial"
+              whileInView="final"
+              viewport={{ once: true }}
+              transition={{
+                ease: 'easeInOut',
+                duration: 0.5,
+                delay: 0.6,
+              }}
+            >
+              <h2 className="font-inter text-3xl lg:text-[3rem] lg:leading-[4rem] xl:text-[4.625rem] xl:leading-[5.5975rem] text-white">
+                Web 3 NFT Marketplace
+              </h2>
+              <p className="text-white font-poppins lg:text-lg font-light my-8">
+                GamestoWeb3 makes it easy to create your own NFT collection and
+                bring your game assets to life in a whole new way. Whether you
+                are a game developer, a streamer, or just a passionate gamer,
+                you can create your own unique NFTs and sell them on our
+                platform.
+              </p>
+              <div
+                className="bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[16.1875rem] h-[3.06rem] font-inter 
+              lg:text-lg grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD] font-light"
+                role="button"
+                onClick={() => router.push('/collections')}
+              >
+                <div className="h-[2.51rem] w-[15.6875rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
+                  <p className="flex gap-2 justify-center items-center text-white">
+                    Explore Marketplace <IoChevronForwardSharp />
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </SectionContainer>
     </section>
   )
 }
