@@ -25,7 +25,7 @@ const crumbData: CrumbType[] = [
 ]
 
 const selectData: selectDataType[] = [
-  { name: 'Recently', value: 'Recently' },
+  { name: 'Newest', value: 'Newest' },
   { name: 'Oldest', value: 'Oldest' },
   { name: 'A - Z', value: 'A - Z' },
   { name: 'Z - A', value: 'Z - A' },
@@ -93,9 +93,9 @@ const CollectionsPage: NextPage = () => {
     [QUERIES.getCollections, currentPage],
     () => getCollections(currentPage, 12, sort_by, chain, nftType)
   )
-  const [selectedItem, setSelectedItem] = useState('Sort By')
-  const [selectedType, setSelectedType] = useState('Type')
-  const [selectedChain, setSelectedChain] = useState('Chain')
+  const [selectedItem, setSelectedItem] = useState('Select')
+  const [selectedType, setSelectedType] = useState('All')
+  const [selectedChain, setSelectedChain] = useState('All')
   const [collections, setCollections] = useState<CollectionCardType[]>([])
   const [route, setRoute] = useState('')
   useEffect(() => {
@@ -115,6 +115,10 @@ const CollectionsPage: NextPage = () => {
     {
       name: route == 'gamestoweb3.com' ? 'Ethereum' : 'Goerli',
       value: route == 'gamestoweb3.com' ? 'Ethereum' : 'Goerli',
+    },
+    {
+      name: route == 'gamestoweb3.com' ? 'Filecoin' : 'Hyperspace',
+      value: route == 'gamestoweb3.com' ? 'Filecoin' : 'Hyperspace',
     },
   ]
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
@@ -169,7 +173,7 @@ const CollectionsPage: NextPage = () => {
       handleSort('ATOZ')
     } else if (sort_by == 'Z - A') {
       handleSort('ZTOA')
-    } else if (sort_by == 'Recently') {
+    } else if (sort_by == 'Newest') {
       handleSort('NEWTOOLD')
     } else if (sort_by == 'Oldest') {
       handleSort('OLDTONEW')
@@ -189,6 +193,10 @@ const CollectionsPage: NextPage = () => {
       handleChain(!testnet ? 'NA' : 'MUMBAI')
     } else if (_value == 'Goerli') {
       handleChain(!testnet ? 'NA' : 'GOERLI')
+    } else if (_value == 'Filecoin') {
+      handleChain(!testnet ? 'NA' : 'FILECOIN')
+    } else if (_value == 'Hyperspace') {
+      handleChain(!testnet ? 'NA' : 'HYPERSPACE')
     } else {
       handleChain('NA')
     }
@@ -205,7 +213,7 @@ const CollectionsPage: NextPage = () => {
     checkPage()
   })
 
-  console.log(currentPage)
+  // console.log(currentPage)
   const handleNftTypes = (_value: any) => {
     if (!_value) return
     if (_value == 'ERC721') {

@@ -11,8 +11,6 @@ import Pagination from './Pagination'
 // import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 
 const ITEMS_PER_PAGE = 12
-const ALPHABETICAL_ORDER = 'AtoZ'
-const ORDER = 'NewToOld'
 
 const UserAssets: FC<{ address: string | undefined }> = ({ address }) => {
   const [currentPage, setCurrentPage] = useState(1)
@@ -38,11 +36,13 @@ const UserAssets: FC<{ address: string | undefined }> = ({ address }) => {
 
   useEffect(() => {
     let body: CollectionNftsBodyType = {
-      token_owner: address,
+      address: address,
+      address_type:'USER',
       page_number: currentPage,
       items_per_page: ITEMS_PER_PAGE,
-      alphabetical_order: ALPHABETICAL_ORDER,
-      order: ORDER,
+      listed_in:'NA',
+      sort_by:'NA',
+      search:'NA'
     }
     address && nftType === 'NGM721PSI' && mutate(body)
   }, [mutate, address, currentPage, nftType])

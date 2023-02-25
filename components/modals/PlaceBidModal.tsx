@@ -52,10 +52,14 @@ const PlaceBidModal: FC<{
       ? devMarkets.MUMBAI
       : DeployType == 'DEV' && chainID == '5'
       ? devMarkets.GOERLI
+      : DeployType == 'DEV' && chainID == '3141'
+      ? devMarkets.HYPERSPACE
       : DeployType == 'PROD' && chainID == '137'
       ? prodMarkets.POLYGON
       : DeployType == 'PROD' && chainID == '1'
       ? prodMarkets.ETHEREUM
+      : DeployType == 'PROD' && chainID == '314'
+      ? prodMarkets.FILECOIN
       : ''
 
   const devTokens = addresses.ERC20_CONTRACT.DEV
@@ -66,10 +70,14 @@ const PlaceBidModal: FC<{
       ? devTokens.MUMBAI
       : DeployType == 'DEV' && chainID == '5'
       ? devTokens.GOERLI
+      : DeployType == 'DEV' && chainID == '3141'
+      ? devTokens.HYPERSPACE
       : DeployType == 'PROD' && chainID == '137'
       ? prodTokens.POLYGON
       : DeployType == 'PROD' && chainID == '1'
       ? prodTokens.ETHEREUM
+      : DeployType == 'PROD' && chainID == '314'
+      ? prodTokens.FILECOIN
       : ''
 
   useEffect(() => {
