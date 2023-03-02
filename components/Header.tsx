@@ -10,6 +10,8 @@ import useIsMounted from '../utils/hooks/useIsMounted'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 import { INNER_BOX_STYLE, OUTER_BOX_STYLE } from './SectionContainer'
 
+
+// Connect wallet button
 const ConnectButton: FC = () => {
   const router = useRouter()
   const { address, isConnected } = useAccount()
@@ -174,6 +176,8 @@ const ConnectButton: FC = () => {
 //   )
 // }
 
+
+// Logo
 const Logo: FC = () => {
   const router = useRouter()
   const { width } = useWindowDimensions()
@@ -206,6 +210,7 @@ const Logo: FC = () => {
   )
 }
 
+//Header for all pages
 const Header: FC = () => {
   const { asPath } = useRouter()
   const isHome = asPath === '/'

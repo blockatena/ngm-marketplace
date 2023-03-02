@@ -17,194 +17,14 @@ import { handleAnimationDelay } from '../../utils'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 import withProtection from '../../components/withProtection'
+
+// crumbData : Shortcut routes name
 const crumbData: CrumbType[] = [
   { name: 'home', route: '/' },
   { name: 'assets', route: '/assets' },
 ]
 
-// const avatars: AvatarType[] = [
-//   {
-//     token_id: 1,
-//     name: 'Wraith',
-//     img: '/images/auction/auction_img_1.svg',
-//     is_in_auction: false,
-//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-//   {
-//     token_id: 2,
-//     name: 'Horizon',
-//     img: '/images/auction/auction_img_2.svg',
-//     is_in_auction: true,
-//     contract_address: '0xfd2b4561630c02b8047B911c22d3f3bfF3ad64Ce',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-//   {
-//     token_id: 3,
-//     name: 'Lifeline',
-//     img: '/images/auction/auction_img_3.svg',
-//     is_in_auction: false,
-//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-//   {
-//     token_id: 4,
-//     name: 'Fuse',
-//     img: '/images/auction/auction_img_4.svg',
-//     is_in_auction: true,
-//     contract_address: '0xfe2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-//   {
-//     token_id: 5,
-//     name: 'Fortune',
-//     img: '/images/auction/auction_img_5.svg',
-//     is_in_auction: true,
-//     contract_address: '0xfd3b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-//   {
-//     token_id: 6,
-//     name: 'Crypto',
-//     img: '/images/auction/auction_img_6.svg',
-//     is_in_auction: false,
-//     contract_address: '0xfd6b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-//   {
-//     token_id: 7,
-//     name: 'Wraith',
-//     img: '/images/auction/auction_img_1.svg',
-//     is_in_auction: true,
-//     contract_address: '0xfa2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-//   {
-//     token_id: 8,
-//     name: 'Horizon',
-//     img: '/images/auction/auction_img_2.svg',
-//     is_in_auction: false,
-//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ca',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-//   {
-//     token_id: 9,
-//     name: 'Lifeline',
-//     img: '/images/auction/auction_img_3.svg',
-//     is_in_auction: true,
-//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cb',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-//   {
-//     token_id: 10,
-//     name: 'Fuse',
-//     img: '/images/auction/auction_img_4.svg',
-//     is_in_auction: false,
-//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Cc',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-//   {
-//     token_id: 11,
-//     name: 'Fortune',
-//     img: '/images/auction/auction_img_5.svg',
-//     is_in_auction: true,
-//     contract_address: '0xfd2b3161630c02b8047B911c22d3f3bfF3ad64Ce',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-//   {
-//     token_id: 12,
-//     name: 'Crypto',
-//     img: '/images/auction/auction_img_6.svg',
-//     is_in_auction: false,
-//     contract_address: '0xfd2b3561630c02b8047B911c22d3f3bfF3ad64Ce',
-//     contract_type:'',
-//     createdAt:'',
-//     is_in_sale:false,
-//     meta_data_url:'',
-//     token_owner:'',
-//     updatedAt:'',
-//     __v:0,
-//     _id:''
-//   },
-// ]
-
+// Side Nav for filters and Sort
 const SideNav: FC<{
   setIsOpen?: Dispatch<SetStateAction<boolean>>
   handleSort: (_value: any) => void
@@ -216,8 +36,7 @@ const SideNav: FC<{
     setIsOpen && setIsOpen(false)
   }
 
-  console.log(sort_by)
-
+  // handle filter and sorts Button 
   const handleBtn = (_value:any) => {
     if (_value == 'NA' || _value == "AUCTION" || _value == "SALE") {
       handleListed(_value)
@@ -228,6 +47,8 @@ const SideNav: FC<{
     handleClick()
 
   }
+
+  // handle Sort Option Button
   const handleSortedBtn = () => {
     if (!sort_by || sort_by == "NA") return
     let arr = ['NEWTOOLD', 'OLDTONEW', 'ATOZ', 'ZTOA']
@@ -247,6 +68,7 @@ const SideNav: FC<{
     })
   }
 
+  // handle Filter NFT State Button
   const handleListedBtn = () => {
     if (!listed_in) return;
     let arr = ['AUCTION', 'SALE', 'NA']
@@ -353,22 +175,27 @@ const SideNav: FC<{
   )
 }
 
+
+// Assets Page : Main 
 const AssetsPage: NextPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [sort_by, setSortBy] = useState("NA")
   const [listed_in, setListedIn] = useState('NA')
-  const { data, refetch } = useQuery([QUERIES.getAllNFts, currentPage], () =>
-    getAllNFts(currentPage, 12, sort_by, listed_in)
-  )
-  const { width } = useWindowDimensions()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [totalPages, setTotalPages] = useState(1)
   const [avatars, setAvatars] = useState<AvatarType[]>()
 
+
+  // Api call to get all assets / NFTs
+  const { data, refetch } = useQuery([QUERIES.getAllNFts, currentPage], () =>
+    getAllNFts(currentPage, 12, sort_by, listed_in)
+  )
+
+  const { width } = useWindowDimensions()
   const handlePaginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
+// handle Sort and call api on change
   const handleSort = async (_value: any) => {
-    // console.log(_value)
     if (_value) {
       await setSortBy(_value)
       return await refetch();
@@ -376,8 +203,8 @@ const AssetsPage: NextPage = () => {
     setSortBy('NA')
   }
 
+  // handle Nft State and call function on change
     const handleListed = async (_value: any) => {
-      // console.log(_value)
       if (_value) {
         await setListedIn(_value)
         return await refetch()

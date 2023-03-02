@@ -2,6 +2,8 @@ import { ethers } from 'ethers'
 import { FC, useEffect, useState } from 'react'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
 import useIsMounted from '../utils/hooks/useIsMounted'
+
+//detect current network and show warning according to that
 const Detector: FC = () => {
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
@@ -27,6 +29,7 @@ const Detector: FC = () => {
   const CHAINID3: string = route=='gamestoweb3.com'?'314':'20' || '3141'
 
 
+//switch network function
   const onSwitchNetwork = async () => {
     const ethereum = (window as any).ethereum
     if (isConnected) {
@@ -53,6 +56,7 @@ const Detector: FC = () => {
     }
   }, [chain, CHAINID, forceHide, isMounted])
 
+//detect network function
   const detectNetwork = () => {
     if (showAlert !== '') {
       window.ethereum.on('networkChanged', function (networkId: any) {
@@ -68,6 +72,7 @@ const Detector: FC = () => {
     }
   }
 
+  //listen network change event from wallet
   const listenNetwork = () => {
     if (isConnected) {
       window.ethereum.on('networkChanged',  async function (networkId: any) {
@@ -81,7 +86,7 @@ const Detector: FC = () => {
 
           
         } else {
-          setCurrentChainId('')
+          setCurrentChainId('_')
           setShowAlert('false')
           
         }
@@ -89,6 +94,7 @@ const Detector: FC = () => {
     }
   }
 
+  // Handle Warning Alert
   const handleAlert = async () => {
     // console.log(isConnected)
     // console.log(currentChainId)
@@ -122,7 +128,7 @@ const Detector: FC = () => {
         }
         return
       }
-    } else {
+    } else if (currentChainId !=='') {
       setMsg1(`Wrong Network Detected, Switch Network to `)
       setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
       setMsg3('')
@@ -134,6 +140,7 @@ const Detector: FC = () => {
     }
   }
 
+  // handle on click visit to another network
   const clickC = () => {
     window.open(url, '_blank')
   }

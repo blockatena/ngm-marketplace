@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { AiOutlineHeart } from 'react-icons/ai'
 import { FaEthereum } from 'react-icons/fa'
 
+//Outline for NFTs Card
 const OutlinedNftCard: FC<{
   name?: string
   desc?: string

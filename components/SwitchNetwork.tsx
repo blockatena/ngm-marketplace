@@ -22,6 +22,8 @@ interface CardProps {
   switchSet: () => void
 }
 
+
+// to switch Network : from /wallet-connect route
 const switchNetworks: WalletOptionType[] = [
   {
     img: '/images/icons/metamask.png',
@@ -31,6 +33,7 @@ const switchNetworks: WalletOptionType[] = [
   },
 ]
 
+// Card : of  metamask
 const Card: FC<CardProps> = ({ connector, setMessage, switchSet }) => {
   //   const { connect, isLoading, pendingConnector } = useConnect()
   const { name } = connector
@@ -104,6 +107,7 @@ const Card: FC<CardProps> = ({ connector, setMessage, switchSet }) => {
   )
 }
 
+// Switch networks  handle if not correct network while connect wallet
 const SwitchNetworks: FC<{ switchSet: () => void }> = ({ switchSet }) => {
   const { connectors, error } = useConnect()
   const [message, setMessage] = useState('')

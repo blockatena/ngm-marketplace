@@ -48,6 +48,7 @@ interface IContainer
   children: ReactNode
 }
 
+//title
 const Title: FC<IContainer> = ({ children, className, ...restProps }) => (
   <div
     role="heading"
@@ -61,6 +62,8 @@ const Title: FC<IContainer> = ({ children, className, ...restProps }) => (
   </div>
 )
 
+//frame
+
 const Frame: FC<IContainer> = ({ children, ...restProps }) => (
   <div {...restProps}>{children}</div>
 )
@@ -70,6 +73,8 @@ interface IHeader extends IContainer {
   closeIcon?: ReactNode
 }
 
+
+// Header
 const Header: FC<IHeader> = (props) => {
   const { children, className, openIcon, closeIcon, ...restProps } = props
   const { isOpen, setIsOpen } = useItemContext()
@@ -90,6 +95,8 @@ const Header: FC<IHeader> = (props) => {
   )
 }
 
+
+//Body
 const Body: FC<IContainer> = ({ children, className, ...restProps }) => {
   const { isOpen } = useItemContext()
   return (
@@ -104,6 +111,7 @@ const Body: FC<IContainer> = ({ children, className, ...restProps }) => {
   )
 }
 
+//Item
 const Item: FC<IContainer> = ({ children }) => {
   return <ItemContextProvider>{children}</ItemContextProvider>
 }

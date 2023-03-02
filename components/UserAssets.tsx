@@ -12,16 +12,21 @@ import Pagination from './Pagination'
 
 const ITEMS_PER_PAGE = 12
 
+// User Assets for user profiles 
 const UserAssets: FC<{ address: string | undefined }> = ({ address }) => {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [nftType, setNftType] = useState('NGM721PSI')
   const [nfts, setNfts] = useState<AvatarType[]>()
   const { width } = useWindowDimensions()
+
+  // Api call to get all nfts of the user
   const { mutate, data } = useMutation(getCollectionNfts)
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
+
+  // APi call to Get All 1155 NFTs
   const { data: nfts1155 } = useQuery(
     [QUERIES.getUser1155Nfts, address, currentPage],
     () => getUser1155Nfts(String(address || ''), currentPage),
@@ -34,6 +39,7 @@ const UserAssets: FC<{ address: string | undefined }> = ({ address }) => {
     setCurrentPage(1)
   }, [nftType])
 
+  // Check requied data to call api 
   useEffect(() => {
     let body: CollectionNftsBodyType = {
       address: address,
@@ -47,6 +53,8 @@ const UserAssets: FC<{ address: string | undefined }> = ({ address }) => {
     address && nftType === 'NGM721PSI' && mutate(body)
   }, [mutate, address, currentPage, nftType])
 
+
+  // for 1155 check data
   useEffect(() => {
     if (nftType !== 'NGM1155' && data?.data?.nfts) {
       setNfts(data.data.nfts)
@@ -59,6 +67,7 @@ const UserAssets: FC<{ address: string | undefined }> = ({ address }) => {
     }
   }, [data?.data, nftType, nfts1155?.data])
 
+  // handle delay
   const handleDelay = (index: number): number => {
     if (width >= 1536) {
       if (index < 8) return 1.2 + index * 0.2

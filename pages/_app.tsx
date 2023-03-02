@@ -21,6 +21,8 @@ import '../styles/globals.css'
 //   publicProvider(),
 // ])
 
+
+// wagmi connector configuration
 const { chains, provider, webSocketProvider } = configureChains([chain.polygon,chain.polygonMumbai], [
   publicProvider(),
 ])
@@ -40,6 +42,7 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout
 }
 
+// Google API Key for sign in with google
 const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {

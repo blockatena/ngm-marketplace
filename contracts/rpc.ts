@@ -4,3 +4,5 @@ export const RPC = {
   polygon: 'https://rpc-mainnet.maticvigil.com',
   ethereum: 'https://ethereum.publicnode.com',
 }
+
+//RPCs : Filecoin & Hyperspace yet to add

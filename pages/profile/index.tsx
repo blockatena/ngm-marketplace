@@ -57,6 +57,8 @@ type RouteNameType =
 
 type RouteType = { name: RouteNameType; route: string; icon: any }
 
+
+// NavRoute: handle single routes with names , all routes receive from main page / drawer
 const NavRoute: FC<{
   icon: string
   name: RouteNameType
@@ -83,6 +85,8 @@ const NavRoute: FC<{
   )
 }
 
+
+// handle Routes for mobile, tab devices and send to NavRoute
 const Drawer: FC<{
   isOpen: boolean
   setIsOpen: Dispatch<SetStateAction<boolean>>
@@ -117,6 +121,8 @@ const Drawer: FC<{
   )
 }
 
+
+// User Assets and Activity tab Function 
 const AssetsActivityTabs: FC<{
   setIsDrawerOpen: Dispatch<SetStateAction<boolean>>
 }> = ({ setIsDrawerOpen }) => {
@@ -157,6 +163,8 @@ const AssetsActivityTabs: FC<{
   )
 }
 
+
+// User Collections Tabs function
 const CollectionTab: FC<{
   setIsDrawerOpen: Dispatch<SetStateAction<boolean>>
   address: string | undefined
@@ -181,6 +189,8 @@ const CollectionTab: FC<{
     </>
   )
 }
+
+// User's Profile Page 
 const ProfilePage: NextPage = () => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
@@ -200,6 +210,8 @@ const ProfilePage: NextPage = () => {
 
   type UploadOptionType = 'banner' | 'profile'
   const connectedaAddress: any = address
+  
+  // Api Call to Get User's Collections 
   const collections = useQuery(
     [QUERIES.getUserCollections, connectedaAddress],
     () => getUserCollections(connectedaAddress, 1, 1),
@@ -217,6 +229,7 @@ const ProfilePage: NextPage = () => {
     }
   }, [collections])
 
+  // Api Call to get User's Data
   const { data: userData } = useQuery(
     [QUERIES.getUser, address],
     () => getUser(String(address)),
@@ -225,6 +238,7 @@ const ProfilePage: NextPage = () => {
     }
   )
 
+  // Api Call to Post User's ProfileImage 
   const {
     mutate: uploadImage,
     isSuccess: isUploadSuccess,
@@ -235,6 +249,7 @@ const ProfilePage: NextPage = () => {
     },
   })
 
+  // Api Post call to update username
   const {
     mutate: usernameMutation,
     isLoading: isUserMutationLoading,
@@ -245,11 +260,14 @@ const ProfilePage: NextPage = () => {
     },
   })
 
+  // handle Username input
   const handleUsernameMutation = () => {
     if (!username || !address) return
     usernameMutation({ username, wallet_address: String(address) })
   }
 
+
+  // Choose File to upload Banner or Profile Picture
   const handleChooseFile = (type: 'bgImg' | 'profilePic') => {
     if (!user) {
       toast.dark('Sign in to edit profile', {
@@ -267,14 +285,17 @@ const ProfilePage: NextPage = () => {
     }
   }
 
+  // File Validation, check if the uploaded Image is with correct suffix and size
   const handleFileValidation = (files: FileList): boolean => {
     if (!files) return false
     const fileName = files[0]?.name
     const fileSize = files[0]?.size / 1024 / 1024 //file size in MBs
     // const allowedFileTypesRegex = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png)$/i;
-    const allowedFileTypesRegex = /(\.jpg|\.jpeg)$/i
 
-    if (!allowedFileTypesRegex.exec(fileName)) {
+
+    const allowedFileTypesRegex = /(\.jpg|\.jpeg)$/i  // Manage Allowed suffixes
+
+    if (!allowedFileTypesRegex.exec(fileName)) { 
       toast.dark('Please upload a jpg image', {
         type: 'error',
         hideProgressBar: true,
@@ -282,7 +303,7 @@ const ProfilePage: NextPage = () => {
       return false
     }
 
-    if (fileSize > 1.5) {
+    if (fileSize > 1.5) {  // Maximum Allowed Size of upload image in MB
       toast.dark('File must be under 1.5MB', {
         type: 'error',
         hideProgressBar: true,
@@ -293,6 +314,8 @@ const ProfilePage: NextPage = () => {
     return true
   }
 
+
+  // Handle upload Banner and PFP
   const handleUpload = useCallback(() => {
     if ((!bgFiles && !profilePicFiles) || !address) return
     let uploadType: UploadOptionType = 'banner'
@@ -338,6 +361,7 @@ const ProfilePage: NextPage = () => {
     setIsUsernameUpdate(false)
   }, [isUserMutationSuccess])
 
+  // Manage Routes
   const routes: RouteType[] = HasCollections
     ? [
         { name: 'overview', route: '/', icon: categoryIcon },

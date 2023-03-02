@@ -34,6 +34,7 @@ import {
   getSingleNft,
 } from '../../../../react-query/queries'
 
+// Initial NFT State
 const initalNftState: AvatarType = {
   _id: '',
   contract_address: '',
@@ -55,6 +56,7 @@ const initalNftState: AvatarType = {
   },
 }
 
+//Initial Activities 
 const initialActivity: any = [
   {
     _id: ' ',
@@ -148,6 +150,7 @@ const initialActivity: any = [
   },
 ]
 
+// Single Asset (NFT) Page 
 const ViewAssetPage: NextPage = () => {
   const { address } = useAccount()
   const [contractAddress, setContractAddress] = useState('')
@@ -164,19 +167,22 @@ const ViewAssetPage: NextPage = () => {
   const [sales, setSales] = useState<ListingType[]>()
   const [activityDetails, setActivityDetails] = useState<ActivityType>()
   const [currentTab, setCurrenttab] = useState<any>()
-  const [totalPages, setTotalpges] = useState<any>()
+  const [totalPages, setTotalpages] = useState<any>()
   const [section, setSection] = useState<boolean>()
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
   const [page_number, setCurrentPage] = useState<number>(1)
   const refetchtime: number = 10000
 
+  // Get nft Type from API
   const { data: contractType } = useQuery(
     [QUERIES.getCollectionType, contractAddress],
     () => getCollectionType(contractAddress),
     { enabled: !!contractAddress }
   )
+  //Set nftType from responce data
   const nftType: NftType | undefined = contractType?.data?.type
 
+  // Get Activities from API
   const activities = useQuery(
     [QUERIES.getNftActivity, contractAddress, tokenId, page_number],
     () => getNftActivity(contractAddress, tokenId, page_number, 10),
@@ -187,6 +193,7 @@ const ViewAssetPage: NextPage = () => {
     }
   )
 
+  // Get NFT from API
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId, nftType],
     () => getSingleNft(contractAddress, tokenId, nftType),
@@ -197,12 +204,14 @@ const ViewAssetPage: NextPage = () => {
     }
   )
 
+  // Get User Owned Quantities : ( Only for ERC1155 Type)
   const { data: userTokenNumber } = useQuery(
     [QUERIES.getUserTokenNumber, contractAddress, tokenId, address],
     () => getNumberOfTokensForAddress(`${address}`, contractAddress, tokenId),
     { enabled: !!contractAddress && !!tokenId && !!address }
   )
 
+  // Set tokenNumbers responce data to variable
   const numberOfTokensOwned: number | null = userTokenNumber?.data
     ?.number_of_tokens?.tokens
     ? userTokenNumber.data.number_of_tokens.tokens
@@ -215,8 +224,10 @@ const ViewAssetPage: NextPage = () => {
   const states = () => {
     setSection(false)
   }
+  // current path / URL
   const { asPath } = useRouter()
 
+  // crumbData : shortcut redirectors
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },
     {
@@ -228,14 +239,9 @@ const ViewAssetPage: NextPage = () => {
       route: `/assets/${contractAddress}/${tokenId}`,
     },
   ]
+
+  // Set Data in respected variable from responce data
   useEffect(() => {
-    // setEndTime(
-    //   data?.data?.auction?.end_date
-    //     ? data?.data?.auction?.end_date
-    //     : data?.data?.sale?.end_date
-    //     ? data?.data?.sale?.end_date
-    //     : ''
-    // )
     setEndTime(
       data?.data?.auction?.end_date
         ? data?.data?.auction?.end_date
@@ -246,7 +252,6 @@ const ViewAssetPage: NextPage = () => {
         : ''
     )
     setNft(data?.data?.nft || data?.data?.nft1155)
-    // setAvatars(DATA?.data?.data?.nfts)
     setContractDetails(data?.data?.contract_details || data?.data?.collection)
     setBids(data?.data?.bids)
     setAuctionDetails(data?.data.auction)
@@ -255,14 +260,16 @@ const ViewAssetPage: NextPage = () => {
     setSaleDetails(data?.data?.sale)
     setSales(data?.data?.sales)
     setActivityDetails(activities.data?.data.activity_data)
-    setTotalpges(activities.data?.data?.total_pages)
+    setTotalpages(activities.data?.data?.total_pages)
     if (activities.isLoading) {
       setActivityDetails(initialActivity)
     }
   }, [data, activities])
 
+  // Set Owners from responce data ( Only for ERC1155 )
   const owners: any[] | undefined = data?.data?.owners
 
+  // get current token contract address and token Id from URL/ route
   useEffect(() => {
     if (asPath) {
       const routeArr = asPath.split('/')
@@ -271,6 +278,7 @@ const ViewAssetPage: NextPage = () => {
     }
   }, [asPath])
 
+  // handle Tabs : Activities, Description, offers, etc. , call in DescriptionBidHistorySection
   const handleTabs = () => {
     if (currentTab === 0) {
       setCurrenttab('')

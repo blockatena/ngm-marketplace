@@ -152,6 +152,7 @@ import AvatarCard from '../AvatarCard'
 
 const CURRENT_PAGE = 1
 
+// Live Auction Section
 const LiveAuctionSection: React.FC = () => {
   const [avatars, setAvatars] = useState<AvatarType[]>()
   const [clientWidth, setClientWidth] = useState(1)

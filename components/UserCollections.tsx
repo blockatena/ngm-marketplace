@@ -12,6 +12,8 @@ import { useQuery } from 'react-query'
 
 const ITEMS_PER_PAGE = 6
 
+
+// User collections for /profile & /profile/userAddress Route
 const UserCollections: FC<{
   address: any
 }> = ({ address}) => {
@@ -21,6 +23,7 @@ const UserCollections: FC<{
   const { width } = useWindowDimensions()
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
+  // get User's All collections 
   const { data } = useQuery(
     [QUERIES.getUserCollections, address, currentPage, ITEMS_PER_PAGE],
     () => getUserCollections(address, currentPage, ITEMS_PER_PAGE),
@@ -35,6 +38,7 @@ const UserCollections: FC<{
     setCollections(data?.data?.collections)
   }, [data])
 
+  // handle Delay 
   const handleDelay = (index: number): number => {
     if (width >= 1536) {
       if (index < 8) return 1.2 + index * 0.2

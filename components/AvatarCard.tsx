@@ -5,6 +5,7 @@ import { AvatarType } from '../interfaces'
 import useIsMounted from '../utils/hooks/useIsMounted'
 // import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
+// BaseURL of API
 const BaseURL = process.env.NEXT_PUBLIC_API_URL || ''
 interface AvatarCardProps extends AvatarType {
   // name: string
@@ -41,6 +42,8 @@ interface AvatarCardProps extends AvatarType {
 // }
 
 // const placeholderImg = '/images/collections/placeholder.jpg'
+
+// End Timer
 const TimerSection: FC<{
   days: number
   hours: number
@@ -77,6 +80,7 @@ const TimerSection: FC<{
   )
 }
 
+// Avatar Card : All nfts
 const AvatarCard: FC<AvatarCardProps> = ({
   variant = 'sm',
   noCta,
@@ -129,6 +133,8 @@ const AvatarCard: FC<AvatarCardProps> = ({
   // }, [meta_data_url])
 
   // console.log(nftinfo.name)
+
+  // check if nft in auction : and get info
   const ifInauction = () => {
     if (is_in_auction && !auctionAmount && !inputTime) {
       let url = `${BaseURL}/nft/get-nft/${contract_address}/${token_id}`
@@ -148,11 +154,13 @@ const AvatarCard: FC<AvatarCardProps> = ({
     ifInauction()
   })
 
+  // shadow on select card
   useEffect(() => {
     if (isSelected) setShadow('avatar-shadow')
     else setShadow('')
   }, [isSelected])
 
+  // card size as per device width
   useEffect(() => {
     if (variant === 'sm') {
       setCardProperties((prev) => ({
@@ -174,6 +182,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
     }
   }, [variant])
 
+  // on View button click
   const handleClick = () => {
     // if (is_in_auction) {
     //   return
@@ -181,6 +190,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
     router.push(`/assets/${contract_address}/${token_id}`)
   }
 
+  // timer will be called only if nft in auction
   if (is_in_auction === true) {
     setInterval(() => {
       if (Date.parse(inputTime) > Date.now()) {
@@ -206,12 +216,14 @@ const AvatarCard: FC<AvatarCardProps> = ({
     //
   }
 
+  // NFT Image , if not placeholder 
   const img = meta_data?.image
     ? meta_data?.image
     : img_url
     ? img_url
     : '/images/others/avatar_bg.png'
 
+    // full view NFT
   const handleFullView = () => {
     setIsSelected((prev) => !prev)
     setImageView && setImageView({ isOpen: true, img })

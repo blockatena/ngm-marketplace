@@ -5,6 +5,7 @@ interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
+// Loading spiner for everywhere
 const Spinner: FC<SpinnerProps> = ({ color = 'primary', size = 'md' }) => {
   let fillColor = 'fill-custom_yellow'
   let dimensions = 'w-4 h-4 lg:w-8 lg:h-8'

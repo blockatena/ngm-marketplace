@@ -19,11 +19,14 @@ import { handleAnimationDelay } from '../../utils'
 import { opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 
+
+// CrumbData : for shortcut Navigation
 const crumbData: CrumbType[] = [
   { name: 'home', route: '/' },
   { name: 'collections', route: '/collections' },
 ]
 
+// Sort options
 const selectData: selectDataType[] = [
   { name: 'Newest', value: 'Newest' },
   { name: 'Oldest', value: 'Oldest' },
@@ -31,56 +34,13 @@ const selectData: selectDataType[] = [
   { name: 'Z - A', value: 'Z - A' },
 ]
 
+// NFT Types
 const selectType: selectDataType[] = [
   { name: 'All', value: 'All' },
   { name: 'ERC721', value: 'ERC721' },
   { name: 'ERC1155', value: 'ERC1155' },
 ]
 
-// const collectionsData: CollectionCardType[] = [
-//   {
-//     id: 1,
-//     name: 'freefire',
-//     imageFront: '/images/collections/freefire.jpg',
-//     imageMiddle: '/images/collections/pubg.jpg',
-//     imageBack: '/images/collections/apex_legend.jpg',
-//   },
-//   {
-//     id: 2,
-//     name: 'pubg',
-//     imageFront: '/images/collections/pubg.jpg',
-//     imageMiddle: '/images/collections/freefire.jpg',
-//     imageBack: '/images/collections/apex_legend.jpg',
-//   },
-//   {
-//     id: 3,
-//     name: 'apex legend',
-//     imageFront: '/images/collections/apex_legend.jpg',
-//     imageMiddle: '/images/collections/pubg.jpg',
-//     imageBack: '/images/collections/freefire.jpg',
-//   },
-//   {
-//     id: 4,
-//     name: 'pubg',
-//     imageFront: '/images/collections/pubg.jpg',
-//     imageMiddle: '/images/collections/freefire.jpg',
-//     imageBack: '/images/collections/apex_legend.jpg',
-//   },
-//   {
-//     id: 5,
-//     name: 'apex legend',
-//     imageFront: '/images/collections/apex_legend.jpg',
-//     imageMiddle: '/images/collections/pubg.jpg',
-//     imageBack: '/images/collections/freefire.jpg',
-//   },
-//   {
-//     id: 6,
-//     name: 'freefire',
-//     imageFront: '/images/collections/freefire.jpg',
-//     imageMiddle: '/images/collections/pubg.jpg',
-//     imageBack: '/images/collections/apex_legend.jpg',
-//   },
-// ]
 
 const CollectionsPage: NextPage = () => {
   const { width } = useWindowDimensions()
@@ -103,6 +63,7 @@ const CollectionsPage: NextPage = () => {
     setRoute(route)
   }, [route])
 
+  // Multiple Chains
   const selectChain: selectDataType[] = [
     {
       name: 'All',
@@ -123,8 +84,8 @@ const CollectionsPage: NextPage = () => {
   ]
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
+  // handleSort : to sort the collections by sort options : variable Name : "selectData"
   const handleSort = async (_value: any) => {
-    // console.log(_value)
     if (_value) {
       await setSortBy(_value)
       return await refetch()
@@ -132,6 +93,7 @@ const CollectionsPage: NextPage = () => {
     setSortBy('NA')
   }
 
+  // handleChain : to filter by Chains : variable Name : "selectChain"
   const handleChain = async (_value: any) => {
     if (_value) {
       await setChain(_value)
@@ -139,34 +101,15 @@ const CollectionsPage: NextPage = () => {
     }
   }
 
+  // handleNftType : to filter by Nft types : ERC721 , ERC1155 , variable name : "selectType"
   const handleNftType = async (_value: any) => {
     if (_value) {
       await setNftType(_value)
       return await refetch()
     }
   }
-  // const compareAscending = (
-  //   a: { collection_name: string },
-  //   b: { collection_name: string }
-  // ) => {
-  //   if (a.collection_name?.toLowerCase() < b.collection_name?.toLowerCase())
-  //     return -1
-  //   if (a.collection_name?.toLowerCase() > b.collection_name?.toLowerCase())
-  //     return 1
-  //   return 0
-  // }
 
-  // const compareDescending = (
-  //   a: { collection_name: string },
-  //   b: { collection_name: string }
-  // ) => {
-  //   if (a.collection_name?.toLowerCase() > b.collection_name?.toLowerCase())
-  //     return -1
-  //   if (a.collection_name?.toLowerCase() < b.collection_name?.toLowerCase())
-  //     return 1
-  //   return 0
-  // }
-
+  // handleSorts : call while select option
   const handleSorts = (sort_by: any) => {
     if (!sort_by) return
     if (sort_by == 'A - Z') {
@@ -182,6 +125,7 @@ const CollectionsPage: NextPage = () => {
     }
   }
 
+  // handleChains : call while select option
   const handleChains = (_value: any) => {
     const testnet = route == 'gamestoweb3.com' ? false : true
     if (!_value) return
@@ -202,6 +146,7 @@ const CollectionsPage: NextPage = () => {
     }
   }
 
+  // check pages after filters , if pages not available as current page , it redirect to 1st page
   const checkPage = () => {
     if (totalPages < currentPage) {
       setCurrentPage(totalPages)
@@ -213,7 +158,7 @@ const CollectionsPage: NextPage = () => {
     checkPage()
   })
 
-  // console.log(currentPage)
+  // handleNftTypes : call while select option
   const handleNftTypes = (_value: any) => {
     if (!_value) return
     if (_value == 'ERC721') {

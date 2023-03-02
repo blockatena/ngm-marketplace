@@ -10,6 +10,8 @@ import WhatWeDo from '../components/sections/home/WhatWeDo'
 import { NextPageWithLayout } from './_app'
 
 const HomePage: NextPageWithLayout = () => {
+
+  // Homepage Sections 
   return (
     <div className="min-h-screen w-full overflow-hidden">
       <main>
