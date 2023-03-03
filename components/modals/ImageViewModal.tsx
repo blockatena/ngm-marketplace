@@ -3,8 +3,9 @@ import { Dispatch, FC, MouseEvent, SetStateAction } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
-// const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
-// const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
+
+
+// Image view Modal
 const ImageViewModal: FC<{
   setIsOpen: Dispatch<SetStateAction<{ isOpen: boolean; img: string }>>
   isOpen: boolean

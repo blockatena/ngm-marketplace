@@ -20,6 +20,8 @@ const cardVariants = {
   }),
 }
 // card
+
+// card : How it works
 const Card: React.FC<CardProps> = ({ children, index }) => {
   return (
     <motion.div

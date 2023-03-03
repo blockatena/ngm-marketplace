@@ -15,6 +15,8 @@ const nfts = [
   '/images/auction/auction_img_2.svg',
 ]
 
+
+// Popular NFTs section
 const PopularNfts = () => {
   const router = useRouter()
   return (

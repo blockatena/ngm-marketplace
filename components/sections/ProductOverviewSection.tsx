@@ -111,13 +111,14 @@ const ProductOverviewSection: FC<{
       ? prodTokens.ETHEREUM
       : ''
 
-  // console.log(NGM20Address)
+// condition for cancallable 
   const isCancellable =
     isMounted &&
     nft?.token_owner &&
     nft.token_owner === address &&
     nft?.is_in_auction
 
+    //check if sale cancellable
   const isSaleCancellable =
     nftType === 'NGM1155'
       ? isMounted &&
@@ -133,8 +134,7 @@ const ProductOverviewSection: FC<{
 
   // const isBidCancellable = isUserIsBidder && nft?.is_in_auction
 
-
-// filter Sales if any sales by the current user
+  // filter Sales if any sales by the current user
   const filterSales = () => {
     const fi = sales?.find((a) => {
       return a.token_owner !== address
@@ -159,8 +159,8 @@ const ProductOverviewSection: FC<{
     ((nft?.token_owner && nft.token_owner === address) ||
       owners?.some((owner) => owner.token_owner === address))
 
-// get user balance
-      const getBalance = async (address: `0x${string}` | undefined) => {
+  // get user balance
+  const getBalance = async (address: `0x${string}` | undefined) => {
     if (!address || !NGM20Address) return
     ;(await address) && NGM20Address
     const ethereum = (window as any).ethereum
@@ -199,7 +199,7 @@ const ProductOverviewSection: FC<{
     })
     return fi
   }
-// for ERC1155 , cancel button
+  // for ERC1155 , cancel button
   const isSecondCancellable = isSecondBtn && filters()
   const filterAuction = () => {
     const fi = bids?.find((a) => {
@@ -207,7 +207,6 @@ const ProductOverviewSection: FC<{
     })
     return fi
   }
-
 
   useEffect(() => {
     if (!accountBalance) {
@@ -230,7 +229,7 @@ const ProductOverviewSection: FC<{
     if (nft?.is_in_auction) {
       window.setTimeout(isUserPlacedBid, 5000)
     } else {
-      // 
+      //
     }
   })
 
@@ -241,20 +240,12 @@ const ProductOverviewSection: FC<{
   }
   let displayTime = nft?.is_in_auction || nft?.is_in_sale
   const handleClick = (event: string) => {
-    // if (isMounted && nft?.token_owner === address && nft?.is_in_auction) {
-    //   toast('You have already listed this NFT!', {
-    //     hideProgressBar: true,
-    //     autoClose: 3000,
-    //     type: 'error',
-    //     position: 'top-right',
-    //     theme: 'dark',
-    //   })
-    //   return
-    // }
-    // if (isBidCancellable) {
-    //   setIsCancelBidModalOpen(true)
-    //   return
-    // }
+    // secondOk - event : for Second Btn is Available for offer { ERC1155 }
+
+    // secondCancel - event : for second btn is active for cancal { ERC1155 }
+
+    // cancel - event : for second button is actice for cancel
+
     if (isSecondBtn && event === 'secondOk') {
       return setIsOfferModalOpen(true)
     }
@@ -315,8 +306,7 @@ const ProductOverviewSection: FC<{
   // const explorer =
   //   CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
 
-
-  // On click address 
+  // On click address
   const onClickAddress = (owner: string) => {
     let profile = owner === address ? `/profile` : `/profile/${owner}`
     router.push(profile)

@@ -7,7 +7,6 @@ import { QUERIES } from '../../react-query/constants'
 import { getAllCollectionNfts } from '../../react-query/queries'
 import { opacityAnimation } from '../../utils/animations'
 import AvatarCard from '../AvatarCard'
-// const baseURL = process.env.NEXT_PUBLIC_API_URL || ''
 
 
 // Numbers of nfts to display
