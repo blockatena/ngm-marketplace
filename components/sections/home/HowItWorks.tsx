@@ -12,31 +12,30 @@ import SectionContainer from '../../SectionContainer'
 const cardData = [
   {
     title: 'Ethereum',
-    img: '/images/others/write.svg',
-    body: 'Ethereum smart contracts transform gaming with verifiable assets, increasing transparency , reliable and driving blockchain adoption in the industry.',
+    img: '/images/others/ethereum_logo.svg',
+    // body: 'Ethereum smart contracts transform gaming with verifiable assets, increasing transparency , reliable and driving blockchain adoption in the industry.',
   },
   {
     title: 'Polygon',
-    img: '/images/others/bolt.svg',
-    body: "Polygon's smart contracts enable verifiable gaming assets with faster transaction speeds and lower fees, driving blockchain adoption in gaming for more player engagement and ownership.",
+    img: '/images/others/polygon_logo.svg',
+    // body: "Polygon's smart contracts enable verifiable gaming assets with faster transaction speeds and lower fees, driving blockchain adoption in gaming for more player engagement and ownership.",
   },
 ]
 
 
 // handle single card
-const Card: FC<{ title: string; img: string; body: string }> = ({
+const Card: FC<{ title: string; img: string }> = ({
   title,
-  img,
-  body,
+  img
 }) => (
-  <div className="w-[20.3125rem] h-[22.125rem] border border-custom_yellow p-4 pt-8 text-white font-poppins rounded-lg text-left font-semibold">
+  <div className="w-[20.25rem] h-[24rem] text-center border border-custom_yellow p-4 pt-16 text-white font-poppins rounded-lg font-semibold">
     <p>
-      <Image alt="icon" src={img} height={24} width={24} />
+      <Image alt="icon" src={img} height={161.5} width={100} />
     </p>
     <h5 className="text-[1.75rem] leading-[2.375rem] capitalize py-4">
       {title}
     </h5>
-    <p>{body}</p>
+    {/* <p>{body}</p> */}
   </div>
 )
 
@@ -76,17 +75,17 @@ const BottomRow: FC = () => (
             Why Us?
           </h3>
           <p className="text-[1.0575rem] leading-[1.5869rem] font-poppins">
-            We offer free Polygon minting for new users, including 5 contracts
-            and 200 NFTs. In addition, our extensive research into new standards
-            like TinyERC721 and ERC721Psi allows us to offer cheaper Ethereum
-            and minting for our users and plus our ERC721 contracts are highly
-            gas efficient, making it more cost-effective for game developers to
-            deploy and mint NFTs.
+            Get <span className="text-[#02FF76]">free Polygon</span> minting for
+            new users, including 5 contracts and 500 NFTs per user. Our research
+            into new standards like TinyERC721 and ERC721Psi allows us to offer
+            cost-effective Ethereum and Polygon minting solutions as compared to
+            our competitors, while our ERC1155 contracts make it easier and more
+            affordable for game developers to deploy and mint NFTs.
           </p>
           <p className="pt-4">
             <button
-              className="text-black bg-gradient-to-r from-[#F8D40A] to-[#F47721] py-2 px-4
-            hover:from-[#F47721] hover:to-[#F8D40A] rounded-md text-[1.25rem] leading-[1.65rem]"
+              className="text-black bg-gradient-to-r from-[#F8D40A] to-[#F47721] py-5 px-11
+            hover:from-[#F47721] hover:to-[#F8D40A] rounded-md text-[2rem] leading-[1.65rem]"
             >
               Get APi Key
             </button>
@@ -107,7 +106,7 @@ function HowItWorks(): ReactElement {
         <SectionContainer>
           <div className="text-center flex flex-col gap-10 items-center py-16 lg:py-24 ">
             <motion.h2
-              className="uppercase font-poppins text-4xl lg:text-[3.4375rem] leading-[1.75rem] text-custom-orange font-semibold"
+              className="uppercase font-poppins text-4xl lg:text-[3.4375rem] leading-[1.75rem] text-white font-medium"
               variants={fromBottomAnimation}
               initial="initial"
               whileInView="final"
@@ -118,10 +117,10 @@ function HowItWorks(): ReactElement {
                 delay: 0.4,
               }}
             >
-              how it works
+              how it <span className="text-[#FF00F8]">works</span>
             </motion.h2>
             <motion.p
-              className="text-white text-[2.5rem] leading-[3.75rem] font-poppins font-semibold"
+              className="text-[#FCBA24] text-[2.5rem] leading-[3.125rem] font-poppins font-medium"
               variants={fromBottomAnimation}
               initial="initial"
               whileInView="final"
@@ -135,7 +134,7 @@ function HowItWorks(): ReactElement {
               API for Developers
             </motion.p>
             <motion.p
-              className="font-poppins font-semibold text-[1.25rem] leading-[1.75rem] text-white max-w-[55.75rem]"
+              className="font-poppins font-semibold text-[1.875rem] leading-[1.75rem] text-white max-w-[88.5rem]"
               variants={fromBottomAnimation}
               initial="initial"
               whileInView="final"
@@ -146,16 +145,12 @@ function HowItWorks(): ReactElement {
                 delay: 0.6,
               }}
             >
-              Our API is designed to make the process of converting your Web2
-              game to Web3 as seamless as possible. With just a few lines of
-              code, you can integrate our API into your game and start taking
-              advantage of all the benefits of Web3 gaming. Our API is fully
-              customizable and can be tailored to the specific needs of your
-              game, so you can create a unique and engaging experience for your
-              players.
+              {`"Seamlessly convert your Web2 game to Web3 with our seamless API
+              integration. Customize the API to create a unique and engaging
+              player experience in the world of Web3 gaming."`}
             </motion.p>
             <motion.div
-              className="flex flex-col md:flex-row gap-4"
+              className="pt-12 flex flex-col md:flex-row gap-20"
               variants={fromBottomAnimation}
               initial="initial"
               whileInView="final"

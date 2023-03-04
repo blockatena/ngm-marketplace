@@ -109,7 +109,7 @@ const NftCard: FC<{ name: string; pgb: string; img: string }> = ({
 }) => {
   return (
     <div>
-      <div className="border border-white w-[13.9375rem] h-[16.8125rem] relative text-white">
+      <div className="border border-white w-[12.25rem] h-[15.375rem] relative text-white">
         <div className="absolute left-8 -right-4 lg:-right-8 -top-4 bottom-[6rem] bg-[#0A0A0A]">
           <Image
             src={img}
@@ -133,8 +133,8 @@ const NftCard: FC<{ name: string; pgb: string; img: string }> = ({
 // Card Display
 const CardDisplay = () => {
   return (
-    <div className="w-full lg:pr-10 lg:min-w-[35rem]">
-      <div className="flex flex-col lg:flex-row justify-between lg:h-[20rem]">
+    <div className="w-full lg:pr-10 lg:min-w-[15rem]">
+      <div className="flex flex-col gap-14 lg:flex-row justify-between lg:h-[18.813rem]">
         {nftData1.map((nft, i) => {
           return (
             <motion.div
@@ -155,7 +155,7 @@ const CardDisplay = () => {
           )
         })}
       </div>
-      <div className="flex flex-col lg:flex-row justify-between h-[20rem]">
+      <div className="flex flex-col lg:flex-row justify-between h-[18.813rem]">
         {nftData2.map((nft, i) => {
           return (
             <motion.div
@@ -185,7 +185,7 @@ const CardDisplay = () => {
 const WhatWeDo: FC = () => {
   const router = useRouter()
   return (
-    <section className={`lg:pt-28 bg-[#0A0A0A]`}>
+    <section className={`lg:pt-28 bg-[#0A0A0A] `}>
       <SectionContainer>
         <motion.div
           className={`flex flex-col lg:flex-row justify-between w-full pt-24 md:pt-0`}
@@ -199,14 +199,19 @@ const WhatWeDo: FC = () => {
             delay: 0.2,
           }}
         >
-          <div className="max-w-[30.0625rem]">
+          <div className="max-w-[58.75rem]">
             <h2 className="font-poppins text-3xl pb-2 lg:text-[3.25rem] lg:leading-[5rem] xl:text-[4.25rem] xl:leading-[6.375rem] text-white">
-              What is GamesToWeb3?
+              <span className="text-white">What is</span>
             </h2>
-            <p className="lg:text-lg lg:leading-[1.8rem] font-light font-poppins text-[#FFD325]">
-              GamestoWeb3 is a platform that offers a marketplace for NFTs, as
-              well as an API for game developers to convert their web 2.0 games
-              and in-game assets to web 3.0 games and NFTs.
+            <h2 className="font-poppins text-3xl pb-2 lg:text-[3.25rem] lg:leading-[5rem] xl:text-[4.25rem] xl:leading-[6.375rem] text-white">
+              <span className="text-[#FEE400]">GamesToWeb3?</span>
+            </h2>
+            <p className="lg:text-3xl lg:leading-[160%] font-light font-poppins text-[#FFF]">
+              Your <span className="text-[#FF61FA]">one-stop-shop</span> for NFT
+              adoption in gaming. Convert web 2.0 games and assets to web 3.0
+              games and with our API and list in game assets on our NFT
+              marketplace , while growing the NFT ecosystem. Explore our
+              platform now!
             </p>
           </div>
           <motion.div
@@ -225,13 +230,13 @@ const WhatWeDo: FC = () => {
         </motion.div>
 
         <div
-          className={`flex flex-col lg:flex-row justify-between pt-20 pb-28 bg-[#0A0A0A]`}
+          className={`flex flex-col lg:flex-row justify-between pt-44 pb-28 bg-[#0A0A0A]`}
         >
           {/* <div className="lg:w-[45%]"> */}
           <div className="">
             <CardDisplay />
           </div>
-          <div className="max-w-[38rem] pt-60  lg:pl-4 xl:pl-0">
+          <div className="max-w-[55.375rem] pt-20  lg:pl-4 xl:pl-0">
             <motion.div
               variants={fromRightAnimation}
               initial="initial"
@@ -244,23 +249,24 @@ const WhatWeDo: FC = () => {
               }}
             >
               <h2 className="font-inter text-3xl lg:text-[3rem] lg:leading-[4rem] xl:text-[4.625rem] xl:leading-[5.5975rem] text-white">
-                Web 3 NFT Marketplace
+                Web3 NFT
               </h2>
-              <p className="text-white font-poppins lg:text-lg font-light my-8">
-                GamestoWeb3 makes it easy to create your own NFT collection and
-                bring your game assets to life in a whole new way. Whether you
-                are a game developer, a streamer, or just a passionate gamer,
-                you can create your own unique NFTs and sell them on our
-                platform.
+              <h2 className="font-inter text-3xl lg:text-[3rem] lg:leading-[4rem] xl:text-[4.625rem] xl:leading-[5.5975rem] text-[#05ECB4]">
+                Marketplace
+              </h2>
+              <p className="text-white font-poppins lg:text-3xl font-light my-20 mt-8">
+                {`"Game Developers can create their own NFT collection and bring
+                their game assets to life with GamestoWeb3 - a platform for
+                Gamers to easily trade these unique NFTs."`}
               </p>
               <div
-                className="bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[16.1875rem] h-[3.06rem] font-inter 
+                className=" bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[26rem] h-[5.188rem] font-inter 
               lg:text-lg grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD] font-light"
                 role="button"
                 onClick={() => router.push('/collections')}
               >
-                <div className="h-[2.51rem] w-[15.6875rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
-                  <p className="flex gap-2 justify-center items-center text-white">
+                <div className="h-[4.688rem] w-[25.5rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
+                  <p className="flex text-[1.813rem] gap-2 justify-center items-center text-white">
                     Explore Marketplace <IoChevronForwardSharp />
                   </p>
                 </div>

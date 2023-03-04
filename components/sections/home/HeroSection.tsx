@@ -14,7 +14,7 @@ import SectionContainer from '../../SectionContainer'
 // card stack
 const CardStack: FC = () => {
   return (
-    <div className="relative  h-[27.0625rem] w-[23.9375rem]">
+    <div className="relative  h-[34.25rem] w-[30.313rem]">
       <div className="absolute z-20 left-0 -right-32 top-12 bottom-12">
         <Image
           src="/images/hero/hero_card.svg"
@@ -87,16 +87,16 @@ const HeroSection: FC = () => {
         autoPlay
         muted
         loop
-        className="w-full hidden xl:block"
+        className="w-full hidden xl:block opacity-40"
       >
         <source src="/hero_video.mp4" type="video/mp4" />
       </video>
-      <div className="absolute top-28 bottom-0 right-0 left-0 z-30 pt-[10%]">
+      <div className="absolute top-28 bottom-0 right-0 left-[3rem] z-30 pt-[5%]">
         <SectionContainer>
           <div className="flex flex-col md:flex-row justify-between ">
-            <div className="flex flex-col gap-4 lg:gap-12">
+            <div className="flex flex-col gap-4 lg:gap-12 pt-28">
               <motion.h1
-                className="font-inter text-[2.5rem] leading-[3rem] lg:text-[3.75rem] lg:leading-[4.56rem]"
+                className="font-inter font-normal text-[2.5rem] leading-[3rem] lg:text-[5.313rem] lg:leading-[4.56rem]"
                 variants={fromLeftAnimation}
                 initial="initial"
                 animate="final"
@@ -111,7 +111,7 @@ const HeroSection: FC = () => {
                 <span className="text-[#E435DF]">Web3</span>
               </motion.h1>
               <motion.p
-                className="max-w-[41.25rem] font-inter font-light font-sm lg:font-base lg:leading-[1.6rem] text-white"
+                className="max-w-[54.375rem]  font-poppins font-normal font-sm text-[1.75rem] lg:font-base lg:leading-[2.6rem] text-white"
                 variants={fromLeftAnimation}
                 initial="initial"
                 animate="final"
@@ -121,11 +121,9 @@ const HeroSection: FC = () => {
                   delay: 1,
                 }}
               >
-                Welcome to GamestoWeb3, the premier marketplace for the sale of
-                in-game assets ! We are a community-driven platform that
-                empowers game developers and players to trade, buy, and sell
-                in-game assets as non-fungible tokens (NFTs), making it easy to
-                monetize and own your digital assets.
+                {`"Join the NFT gaming revolution with GamestoWeb3 - convert your
+                web 2.0 games and assets to web 3.0 and list them on our
+                marketplace via our API."`}
               </motion.p>
               <motion.div
                 variants={fromLeftAnimation}
@@ -136,12 +134,12 @@ const HeroSection: FC = () => {
                   duration: 0.6,
                   delay: 1.4,
                 }}
-                className="bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[13.55rem] h-[3.06rem] font-inter 
-              text-lg grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD] "
+                className="bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[23.55rem] h-[5.36rem] font-inter 
+              text-[1.68rem] grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD] "
                 role="button"
                 onClick={letsExploreOnClick}
               >
-                <div className="h-[2.51rem] w-[13rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
+                <div className="h-[4.8rem] w-[23.1rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
                   <p className="flex gap-2 justify-center items-center text-white">
                     Discover More <IoChevronForwardSharp />
                   </p>
@@ -158,7 +156,7 @@ const HeroSection: FC = () => {
                   duration: 0.6,
                   delay: 1.6,
                 }}
-                className="xl:pr-36"
+                className="xl:pr-8"
               >
                 <CardStack />
               </motion.div>

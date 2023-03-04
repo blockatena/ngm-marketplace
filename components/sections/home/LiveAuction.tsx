@@ -12,7 +12,7 @@ import SectionContainer from '../../SectionContainer'
 // Live Auction Section
 const LiveAuction: FC = () => {
   return (
-    <section className={`text-[#EAD30C] bg-[#0A0A0A] py-10 lg:py-40`}>
+    <section className={`text-[#fff] bg-[#0A0A0A] py-10 lg:py-40`}>
       <SectionContainer>
         <motion.h2
           className="text-center text-4xl lg:text-[55px] lg:leading-[66.6496px] pt-4 lg:pt-20"
@@ -26,7 +26,7 @@ const LiveAuction: FC = () => {
             delay: 0.6,
           }}
         >
-          Live Auction
+          Live <span className="text-[#FF00F8]">Auction</span>
         </motion.h2>
 
         <motion.div

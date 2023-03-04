@@ -2,6 +2,7 @@ import { ethers } from 'ethers'
 import { FC, useEffect, useState } from 'react'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
 import useIsMounted from '../utils/hooks/useIsMounted'
+import { useRouter } from 'next/router'
 
 //detect current network and show warning according to that
 const Detector: FC = () => {
@@ -19,6 +20,7 @@ const Detector: FC = () => {
   const targetNetworkId = ['80001', '137', '1', '5', '3141', '314','20']
   const [route,setRoute] = useState('')
   const isMounted = useIsMounted()
+  const router = useRouter()
   useEffect(()=> {
     const route = window.location.href.split('/')[2]
     setRoute(route)
@@ -153,7 +155,7 @@ const Detector: FC = () => {
 
   return (
     <>
-      {showAlert === 'true' ? (
+      {showAlert === 'true' && router.asPath !== '/' ? (
         <div
           className={`text-black text-sm text-center px-6 py-1 border-0 rounded relative mb-4 bg-yellow-400`}
         >
