@@ -14,7 +14,7 @@ import SectionContainer from '../../SectionContainer'
 // card stack
 const CardStack: FC = () => {
   return (
-    <div className="relative  h-[34.25rem] w-[30.313rem]">
+    <div className="relative h-[19rem] w-[15rem] lg:h-[34.25rem] lg:w-[30.313rem]">
       <div className="absolute z-20 left-0 -right-32 top-12 bottom-12">
         <Image
           src="/images/hero/hero_card.svg"
@@ -36,12 +36,12 @@ const CardStack: FC = () => {
           layout="fill"
           className=""
         />
-        <div className="text-white absolute top-[18%] left-[18%]">
-          <p className="text-[1.75rem] font-bold leading-[2.275rem]">
+        <div className="text-white absolute top-[17%] left-[18%]">
+          <p className="text-[.75rem] lg:text-[1.75rem] font-bold lg:leading-[2.275rem]">
             Robins NFT
           </p>
-          <div className="flex gap-2 items-center">
-            <div className="relative h-8 w-8">
+          <div className="flex gap-1 items-center">
+            <div className="relative h-4 w-4">
               <Image
                 src="/images/hero/user.svg"
                 alt="user"
@@ -50,18 +50,24 @@ const CardStack: FC = () => {
               />{' '}
             </div>
 
-            <p className="text-[1.25rem] font-bold">Robinson </p>
+            <p className="text-[.55rem] lg:text-[1.25rem] font-bold">
+              Robinson{' '}
+            </p>
           </div>
         </div>
         <div className="absolute bottom-[18%] right-[18%] left-[18%] flex justify-between text-white bg-white/20 backdrop-blur-xl p-2 rounded-lg">
           <div>
-            <p className="text-[0.75rem] font-medium">Current Bid</p>
-            <p className="text-base font-bold flex items-center">
+            <p className="text-[.65rem] lg:text-[0.75rem] font-medium">
+              Current Bid
+            </p>
+            <p className="text-[.55rem] lg:text-base font-bold flex items-center">
               <FaEthereum /> 0.25NXT
             </p>
           </div>
           <div className="flex items-center">
-            <p className="text-[0.75rem] font-medium">Robinson</p>
+            <p className="text-[.55rem] lg:text-[0.75rem] font-medium">
+              Robinson
+            </p>
           </div>
         </div>
       </div>
@@ -91,7 +97,7 @@ const HeroSection: FC = () => {
       >
         <source src="/hero_video.mp4" type="video/mp4" />
       </video>
-      <div className="absolute top-28 bottom-0 right-0 left-[3rem] z-30 pt-[5%]">
+      <div className="absolute top-4 lg:top-28 bottom-0 right-0 left-[3rem] z-30 pt-[5%]">
         <SectionContainer>
           <div className="flex flex-col md:flex-row justify-between ">
             <div className="flex flex-col gap-4 lg:gap-12 pt-28">
@@ -111,7 +117,7 @@ const HeroSection: FC = () => {
                 <span className="text-[#E435DF]">Web3</span>
               </motion.h1>
               <motion.p
-                className="max-w-[54.375rem]  font-poppins font-normal font-sm text-[1.75rem] lg:font-base lg:leading-[2.6rem] text-white"
+                className=" max-w-[19.375rem] lg:max-w-[54.375rem] font-poppins font-normal font-sm text-base lg:text-[1.75rem]  lg:font-base lg:leading-[2.6rem] text-white"
                 variants={fromLeftAnimation}
                 initial="initial"
                 animate="final"
@@ -134,12 +140,12 @@ const HeroSection: FC = () => {
                   duration: 0.6,
                   delay: 1.4,
                 }}
-                className="bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[23.55rem] h-[5.36rem] font-inter 
-              text-[1.68rem] grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD] "
+                className="mt-6 bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[15rem] h-[3.5rem] lg:w-[23.55rem] lg:h-[5.36rem] font-inter 
+              text-[1.3rem] lg:text-[1.68rem] grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD] "
                 role="button"
                 onClick={letsExploreOnClick}
               >
-                <div className="h-[4.8rem] w-[23.1rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
+                <div className="w-[14.5rem] h-[3.1rem] lg:h-[4.8rem] lg:w-[23.1rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
                   <p className="flex gap-2 justify-center items-center text-white">
                     Discover More <IoChevronForwardSharp />
                   </p>

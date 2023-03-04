@@ -50,7 +50,7 @@ const ImageItem: FC<{
 // Image display
 const ImageDisplay = () => {
   return (
-    <div className="flex flex-col gap-4 lg:w-[30.6388rem] lg:h-[30.6388rem] bg-gradient-radial from-[#9B568C] via-[#0A0A0A] to-[#0A0A0A]">
+    <div className="flex flex-col gap-4 w-[23rem] h-[23rem] lg:w-[30.6388rem] lg:h-[30.6388rem] bg-gradient-radial from-[#52069a] via-[#140132] to-[#0A0A0A]">
       <ImageItem
         text="Free Setup Fee & Trial"
         img="/images/hero/setup.svg"
@@ -199,7 +199,7 @@ const WhatWeDo: FC = () => {
             delay: 0.2,
           }}
         >
-          <div className="max-w-[58.75rem]">
+          <div className="max-w-[22.75rem] lg:max-w-[58.75rem]">
             <h2 className="font-poppins text-3xl pb-2 lg:text-[3.25rem] lg:leading-[5rem] xl:text-[4.25rem] xl:leading-[6.375rem] text-white">
               <span className="text-white">What is</span>
             </h2>
