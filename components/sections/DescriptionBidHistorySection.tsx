@@ -1,14 +1,14 @@
 // @ts-nocheck
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-} from 'chart.js'
+// import {
+//   CategoryScale,
+//   Chart as ChartJS,
+//   Legend,
+//   LinearScale,
+//   LineElement,
+//   PointElement,
+//   Title,
+//   Tooltip,
+// } from 'chart.js'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useRef, useState } from 'react'
@@ -29,15 +29,15 @@ import { fromRightAnimation, opacityAnimation } from '../../utils/animations'
 import AcceptOfferModal from '../modals/AcceptOfferModal'
 import CancelOfferModal from '../modals/CancelOfferModal'
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-)
+// ChartJS.register(
+//   CategoryScale,
+//   LinearScale,
+//   PointElement,
+//   LineElement,
+//   Title,
+//   Tooltip,
+//   Legend
+// )
 
 //initial AvatarData
 export const AvatarData = [
@@ -78,10 +78,7 @@ const shortenString = (value: string) => {
   return shortenedString
 }
 
-
-
 /////////////////////// DESCRIPTION ///////////////////////////
-
 
 // handle single Description :  All Activities receive one by one from : CharactorDescription
 const DescriptionItem: FC<{
@@ -91,7 +88,6 @@ const DescriptionItem: FC<{
   tokenUri: string
   chainID: any
 }> = ({ name, value, contract, tokenUri, chainID }) => {
-
   // define variable by checking if mainnet or testnet
   let explorer =
     chainID == '80001'
@@ -139,7 +135,6 @@ const DescriptionItem: FC<{
   )
 }
 
-
 // Description Section : Whole description data receive from DescriptionBidHistorySection
 const CharacterDescription: FC<{
   nft: AvatarType | undefined
@@ -153,7 +148,7 @@ const CharacterDescription: FC<{
       6
     )}...${nft?.contract_address?.substring(nft?.contract_address?.length - 4)}`
 
-    // set data in description variable as [key, value] pair
+  // set data in description variable as [key, value] pair
   const description = [
     { name: 'Contract Address', value: address || '' },
     {
@@ -208,7 +203,6 @@ const CharacterDescription: FC<{
     </div>
   )
 }
-
 
 /////////////////////// DESCRIPTION //////////////////////////
 //////////////////////// ACTIVITIES //////////////////////////
@@ -296,7 +290,7 @@ const ActivityItem: FC<{
       ? 'filfox.info/en'
       : ''
 
-      // on Click Transaction ID
+  // on Click Transaction ID
   const onClickTx = (hash) => {
     let url = `https://${explorer}/tx/${hash}`
     window.open(url, '_blank')
@@ -351,7 +345,6 @@ const Activity: FC<{
   onClickAddress: () => void
   chainID: any
 }> = ({ activity, onClickAddress, chainID }) => {
-
   // Activity headings
   const tableHeadings = [
     { name: 'Type' },
@@ -409,11 +402,8 @@ const Activity: FC<{
   )
 }
 
-
 //////////////////////// ACTIVITIES //////////////////////////
 //////////////////////// BIDS (AUCTION) //////////////////////
-
-
 
 // Handle Single Bid : All bids receive one by one from : CurrentBids
 const BidItem: FC<{
@@ -433,7 +423,6 @@ const BidItem: FC<{
     let d = new Date(bid.createdAt)
     timePlaced = d.toLocaleString()
   }
-
 
   let bgColor = 'bg-transparent'
   if (index % 2 === 0) {
@@ -484,8 +473,7 @@ const CurrentBids: FC<{
   auction: AuctionType | undefined
   onClickAddress: () => void
 }> = ({ bids, auction, onClickAddress }) => {
-
-  // tableHeadings for currentBids 
+  // tableHeadings for currentBids
   const tableHeadings = [
     { name: 'Bidder Address' },
     { name: 'Bid Amount (WETH)' },
@@ -545,11 +533,8 @@ const CurrentBids: FC<{
   )
 }
 
-
 /////////////////////// BIDS (AUCTIONS) //////////////////////
 ////////////////////////// OFFERS ////////////////////////////
-
-
 
 // handle single offer : All offers receive one by one from : CurrentOffers
 const OfferItem: FC<{
@@ -605,7 +590,7 @@ const OfferItem: FC<{
 
   // set OfferData , accoring to ERC1155 , ERC721, and If User is Owner
   const offerData =
-    ifOwner && nftType === 'NGM1155'  // ERC155
+    ifOwner && nftType === 'NGM1155' // ERC155
       ? [
           {
             name: 'Buyer Address',
@@ -619,7 +604,7 @@ const OfferItem: FC<{
           { name: 'Made At', value: timePlaced },
           { name: 'accept', value: 'ACCEPT' },
         ]
-      : ifOwner             // if Owner
+      : ifOwner // if Owner
       ? [
           {
             name: 'Buyer Address',
@@ -634,7 +619,8 @@ const OfferItem: FC<{
           { name: 'cancel', value: 'CANCEL' },
           { name: 'accept', value: 'ACCEPT' },
         ]
-      : [                 // ERC721
+      : [
+          // ERC721
           {
             name: 'Buyer Address',
             value: shortenString(offer?.offer_person_address),
@@ -730,7 +716,6 @@ const CurrentOffers: FC<{
   const [contract_address, setContract_address] = useState('')
   const [token_id, setToken_id] = useState('')
 
-
   // filter sales if user have placed any nfts on sale ( for ERC1155 )
   const filterSales = () => {
     const fi = sales?.find((a) => {
@@ -741,7 +726,7 @@ const CurrentOffers: FC<{
     } else return false
   }
 
-  // Check if user is nft owner 
+  // Check if user is nft owner
   const ifOwner =
     sale?.token_owner === address ||
     owners?.some((owner) => owner.token_owner === address)
@@ -772,7 +757,7 @@ const CurrentOffers: FC<{
           { name: 'Made At' },
         ]
 
-        // handle offers 
+  // handle offers
   const handleOffers = (
     offer_person_address,
     contract_address,
@@ -789,8 +774,9 @@ const CurrentOffers: FC<{
 
     if (ifOwner && !acceptable && event === 'accept' && nftType === 'NGM1155') {
       return toast.dark(
-        offer_person_address ==
-          address?`You cannot accept your own offer`:`You have to list your nft in order to accept offers`,
+        offer_person_address == address
+          ? `You cannot accept your own offer`
+          : `You have to list your nft in order to accept offers`,
         {
           type: 'error',
           hideProgressBar: true,
@@ -888,12 +874,9 @@ const CurrentOffers: FC<{
   )
 }
 
-
 ////////////////////////// OFFERS ////////////////////////////
-////////////////////////// LISTINGS //////////////////////////// 
+////////////////////////// LISTINGS ////////////////////////////
 //  (Only for ERC1155)
-
-
 
 // handle single listing : all sales receive from : Listings (Only for ERC1155)
 const ListingItem: FC<{
@@ -956,12 +939,11 @@ const ListingItem: FC<{
   )
 }
 
-
 // handle all listings : all sales receive from : DescriptionBidHistorySection  (Only for ERC1155)
 const Listings: FC<{
   sales: ListingType[]
 }> = ({ sales }) => {
-  // table heading for sales / listings 
+  // table heading for sales / listings
   const tableHeadings = [
     { name: 'Token Owner' },
     { name: 'Date Created' },
@@ -1003,9 +985,9 @@ const Listings: FC<{
   )
 }
 
-////////////////////////// LISTINGS //////////////////////////// 
+////////////////////////// LISTINGS ////////////////////////////
 ////////////////////////////////////////////////////////////////
-//////// MAIN SECTION : DescriptionBidHistorySection//////////// 
+//////// MAIN SECTION : DescriptionBidHistorySection////////////
 
 // This is main section from Single NFT / Asset Page
 
@@ -1046,8 +1028,8 @@ const DescriptionBidHistorySection: FC<{
   const { address } = useAccount()
   const [chainID, setChainID] = useState('')
   const router = useRouter()
-  
-  // handle tabs from here 
+
+  // handle tabs from here
   const tabsData = [
     {
       label: 'Description',
@@ -1069,7 +1051,7 @@ const DescriptionBidHistorySection: FC<{
   ]
 
   // if nft type ERC1155 then listing tab is added
-  if (nftType === 'NGM1155' && sales?.length>0) {
+  if (nftType === 'NGM1155' && sales?.length > 0) {
     tabsData.push({
       label: 'Listings',
     })
@@ -1087,7 +1069,7 @@ const DescriptionBidHistorySection: FC<{
 
   const tabsRef = useRef([])
 
-  // handle currentactive tab if 
+  // handle currentactive tab if
   useEffect(() => {
     if (activeTabIndex === 1) {
       state()
