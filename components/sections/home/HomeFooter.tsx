@@ -3,6 +3,8 @@ import { BsTwitter } from 'react-icons/bs'
 import { FaDiscord, FaInstagram, FaTelegram } from 'react-icons/fa'
 import Logo from '../../Logo'
 
+
+// Icon Links
 const IconLink: FC<{ children: ReactNode; href: string }> = ({
   children,
   href,
@@ -19,6 +21,8 @@ const IconLink: FC<{ children: ReactNode; href: string }> = ({
   )
 }
 
+
+// Footer for home 
 const Footer: FC = () => {
   return (
     <footer className="flex justify-between items-center border-t border-custom-orange mt-10 py-4">

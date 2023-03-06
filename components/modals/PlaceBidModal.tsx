@@ -13,8 +13,9 @@ import { placeBid } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
-// const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
-// const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
+
+
+// Place Bid Modal
 const PlaceBidModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -32,6 +33,8 @@ const PlaceBidModal: FC<{
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
+
+  //  Api Call to Place a Bid 
   const { mutate, data, isLoading, isSuccess } = useMutation(placeBid, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
@@ -91,9 +94,12 @@ const PlaceBidModal: FC<{
     }
   }, [chain, chainID])
 
+  // Netwok switch if not correct network detected
   const onSwitchNetwork = async () => {
     await switchNetwork?.(parseInt(chainID))
   }
+
+// function On place a bid
   const onBid = async () => {
     if (nft?.token_owner === address) {
       toast.dark('You own this NFT!', {
@@ -215,6 +221,7 @@ const PlaceBidModal: FC<{
       }
     }
   }
+  // handle Amount
   const handleBidAmount = (value: number) => {
     if (value > 0) {
       setBidAmount(value)

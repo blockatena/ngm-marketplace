@@ -8,6 +8,7 @@ import {
 } from '../../../utils/animations'
 import SectionContainer from '../../SectionContainer'
 
+// what we do cards data
 const cardData = [
   {
     title: 'Ethereum',
@@ -21,6 +22,8 @@ const cardData = [
   },
 ]
 
+
+// handle single card
 const Card: FC<{ title: string; img: string; body: string }> = ({
   title,
   img,
@@ -37,6 +40,8 @@ const Card: FC<{ title: string; img: string; body: string }> = ({
   </div>
 )
 
+
+// Bottom row
 const BottomRow: FC = () => (
   <div className=" bg-[#0A0A0A] py-16 lg:py-24">
     <SectionContainer>
@@ -92,6 +97,8 @@ const BottomRow: FC = () => (
   </div>
 )
 
+
+// How it works
 function HowItWorks(): ReactElement {
   const renderCards = cardData.map((card, i) => <Card key={i} {...card} />)
   return (

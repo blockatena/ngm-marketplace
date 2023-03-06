@@ -11,6 +11,8 @@ import {
 } from '../../../utils/animations'
 import SectionContainer from '../../SectionContainer'
 
+
+// Image Item Section
 const ImageItem: FC<{
   text: string
   img: string
@@ -44,6 +46,8 @@ const ImageItem: FC<{
   </motion.div>
 )
 
+
+// Image display
 const ImageDisplay = () => {
   return (
     <div className="flex flex-col gap-4 lg:w-[30.6388rem] lg:h-[30.6388rem] bg-gradient-radial from-[#9B568C] via-[#0A0A0A] to-[#0A0A0A]">
@@ -97,6 +101,7 @@ const nftData2 = [
   },
 ]
 
+// Nft Card 
 const NftCard: FC<{ name: string; pgb: string; img: string }> = ({
   name,
   img,
@@ -125,6 +130,7 @@ const NftCard: FC<{ name: string; pgb: string; img: string }> = ({
   )
 }
 
+// Card Display
 const CardDisplay = () => {
   return (
     <div className="w-full lg:pr-10 lg:min-w-[35rem]">
@@ -174,6 +180,8 @@ const CardDisplay = () => {
   )
 }
 
+
+// WhatWeDo section
 const WhatWeDo: FC = () => {
   const router = useRouter()
   return (

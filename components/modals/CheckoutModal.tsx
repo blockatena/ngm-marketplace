@@ -6,6 +6,8 @@ import { AvatarType } from '../../interfaces'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 
+
+// checkout modal
 const CheckoutModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean

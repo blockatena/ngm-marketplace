@@ -1,5 +1,7 @@
 import { ReactElement } from 'react'
 
+
+// Join Community Section for home
 function JoinCommunity(): ReactElement {
   return (
     <section className="py-16 lg:py-24  px-[5%] 2xl:px-[12%] grid place-items-center text-white bg-gradient-to-tr from-[#4315A5] to-[#E26C1A]">

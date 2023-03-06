@@ -10,6 +10,8 @@ import Spinner from '../Spinner'
 import { useAccount } from 'wagmi'
 import { ethers } from 'ethers'
 import { useNetwork, useSwitchNetwork } from 'wagmi'
+
+// Accept Offer Modal : from Single NFT page
 const AcceptOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -36,12 +38,9 @@ const AcceptOfferModal: FC<{
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
   const [quantity, setQuantity] = useState(0)
-  // const { mutate, isSuccess, data, isLoading } = useMutation(acceptOffer, {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries(QUERIES.getSingleNft)
-  //   },
-  // })
 
+
+  //Api call to accept offer ERC721 
     const {
       mutate: AcceptOffer,
       data: acceptOfferData,
@@ -53,6 +52,7 @@ const AcceptOfferModal: FC<{
       },
     })
 
+    // Api call to accept offer ERC1155
     const {
       mutate: Accept1155Offer,
       data: accept1155OfferData,
@@ -74,9 +74,12 @@ const AcceptOfferModal: FC<{
     }
   }, [chain, chainID])
 
+  // Switch Network
   const onSwitchNetwork = async () => {
     await switchNetwork?.(parseInt(chainID))
   }
+
+  // Handle Click
   const handleClick = async () => {
     const data = {
       contract_address: contract_address,

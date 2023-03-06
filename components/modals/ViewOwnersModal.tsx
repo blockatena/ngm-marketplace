@@ -5,6 +5,7 @@ import { shortenString } from '../../utils'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 
+// The function view owners one by one
 const Owner: FC<{ owner: any; isLast?: boolean }> = ({ owner, isLast }) => {
   const router = useRouter()
   return (
@@ -30,6 +31,8 @@ const Owner: FC<{ owner: any; isLast?: boolean }> = ({ owner, isLast }) => {
   )
 }
 
+
+// View Owners Modal
 const ViewOwnersModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean

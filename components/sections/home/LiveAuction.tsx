@@ -8,6 +8,8 @@ import {
 import OutlinedNftCard from '../../OutlinedNftCard'
 import SectionContainer from '../../SectionContainer'
 
+
+// Live Auction Section
 const LiveAuction: FC = () => {
   return (
     <section className={`text-[#EAD30C] bg-[#0A0A0A] py-10 lg:py-40`}>

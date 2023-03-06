@@ -4,6 +4,7 @@ import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import { useRouter } from 'next/router'
 
+// Listing Success Modal : After NFT get listed
 const ListingSuccessModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean

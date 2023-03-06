@@ -32,6 +32,8 @@ interface CarouselCardProps extends ICollection {
   currentIndex: number
 }
 
+
+// Collection Carousel card
 const CarouselCard: FC<CarouselCardProps> = ({ img, index, currentIndex }) => {
   return (
     <div
@@ -47,6 +49,7 @@ const CarouselCard: FC<CarouselCardProps> = ({ img, index, currentIndex }) => {
   )
 }
 
+//  Collections Carousel
 const CollectionCarousel: FC<{ carouselData: ICollection[] }> = ({
   carouselData,
 }) => {
@@ -121,6 +124,7 @@ const CollectionCarousel: FC<{ carouselData: ICollection[] }> = ({
   )
 }
 
+// Our Collections
 const OurCollections = () => {
   return (
     <section className="py-5 lg:py-24  px-[5%] 2xl:px-[12%] bg-[#0A0A0A]">

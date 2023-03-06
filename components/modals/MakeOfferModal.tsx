@@ -15,8 +15,9 @@ import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 import { addresses } from '../../contracts/addresses'
-// const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
-// const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
+
+
+// Make Offer Modal
 const MakeOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -36,16 +37,13 @@ const MakeOfferModal: FC<{
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
-  // const { mutate, data, isLoading, isSuccess } = useMutation(makeOffer, {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries(QUERIES.getSingleNft)
-  //   },
-  // })
 
+
+  // handle deployment type
     const DeployType =
-      chainID == '80001' || chainID == '5'
+      chainID == '80001' || chainID == '5' || chainID == '3141'
         ? 'DEV'
-        : chainID == '137' || chainID == '1'
+        : chainID == '137' || chainID == '1' || chainID == '314'
         ? 'PROD'
         : ''
     const devMarkets = addresses.MARKETPLACE_CONTRACT.DEV
@@ -84,6 +82,7 @@ const MakeOfferModal: FC<{
           ? prodTokens.FILECOIN
           : ''
 
+  // APi call to make offer ERC721
   const { mutate: MakeOffer, data:makeOfferData, isLoading:isOfferLoading, isSuccess: isOfferSuccess } =
     useMutation(makeOffer, {
     onSuccess: () => {
@@ -91,6 +90,7 @@ const MakeOfferModal: FC<{
     },
   })
 
+  // APi call to make offer ERC1155
   const { mutate: Make1155Offer,data:make1155OfferData, isLoading:isOffer1155Loading, isSuccess: is1155OfferSuccess } = useMutation(
     make1155Offer,
     {
@@ -110,9 +110,12 @@ const MakeOfferModal: FC<{
     }
   }, [chain, chainID])
 
+  // On Switch network if not correct network detected
   const onSwitchNetwork = async () => {
     await switchNetwork?.(parseInt(chainID))
   }
+
+// Make offer 
   const onMakeOffer = async () => {
     if (nft?.token_owner === address) {
       toast.dark('You own this NFT!', {
@@ -266,6 +269,8 @@ const MakeOfferModal: FC<{
       }
     }
   }
+
+  // Handle bid Amount
   const handleBidAmount = (value: number) => {
     if (value > 0) {
       setBidAmount(value)
@@ -274,6 +279,7 @@ const MakeOfferModal: FC<{
     }
   }
 
+  // handle qunatity
   const handleQuantity = (value: number) => {
     if (value > 0) {
       setQuantity(value)

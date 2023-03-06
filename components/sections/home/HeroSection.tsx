@@ -10,6 +10,8 @@ import {
 } from '../../../utils/animations'
 import SectionContainer from '../../SectionContainer'
 
+
+// card stack
 const CardStack: FC = () => {
   return (
     <div className="relative  h-[27.0625rem] w-[23.9375rem]">
@@ -67,12 +69,10 @@ const CardStack: FC = () => {
   )
 }
 
+
+// Hero Section for home
 const HeroSection: FC = () => {
   const router = useRouter()
-  //Btn logic
-  // const joinCommunityOnClick = () => {
-  //   console.log('JOIN COMMUNITY')
-  // }
 
   const letsExploreOnClick = () => {
     router.push('/collections')

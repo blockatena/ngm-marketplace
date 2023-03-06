@@ -4,6 +4,8 @@ import { IoAdd, IoRemove } from 'react-icons/io5'
 import { fromBottomAnimation } from '../../../utils/animations'
 import Accordion from '../../Accordion'
 
+
+// Faqs Data 
 const faqData = [
   {
     heading: 'Why should you use our APIs?',
@@ -29,6 +31,8 @@ const faqData = [
   },
 ]
 
+
+// Faqs section for Home
 function Faq(): ReactElement {
   const renderedFaqItems = faqData.map(({ heading, body, link, email }, i) => (
     <Accordion.Item key={i}>
