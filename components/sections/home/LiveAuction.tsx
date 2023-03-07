@@ -41,7 +41,7 @@ const LiveAuction: FC = () => {
             delay: 0.1,
           }}
         >
-          {new Array(6).fill(2).map((item, i) => (
+          {new Array(4).fill(2).map((item, i) => (
             <motion.div
               key={i}
               variants={fromRightAnimation}

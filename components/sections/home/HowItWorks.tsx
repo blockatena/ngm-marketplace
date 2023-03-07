@@ -12,7 +12,7 @@ import SectionContainer from '../../SectionContainer'
 const cardData = [
   {
     title: 'Ethereum',
-    img: '/images/others/ethereum_logo.svg', 
+    img: '/images/others/Ethereum_logo.svg', 
     // body: 'Ethereum smart contracts transform gaming with verifiable assets, increasing transparency , reliable and driving blockchain adoption in the industry.',
   },
   {

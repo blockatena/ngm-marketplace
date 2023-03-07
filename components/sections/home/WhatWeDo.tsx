@@ -50,30 +50,32 @@ const ImageItem: FC<{
 // Image display
 const ImageDisplay = () => {
   return (
-    <div className="flex flex-col gap-4 w-[23rem] h-[23rem] lg:w-[30.6388rem] lg:h-[30.6388rem] bg-gradient-radial from-[#52069a] via-[#140132] to-[#0A0A0A]">
-      <ImageItem
-        text="Free Setup Fee & Trial"
-        img="/images/hero/setup.svg"
-        animation="t"
-      />
-      <div className="flex justify-between">
+    <div className="flex flex-col gap-4 w-[23rem] h-[23rem] lg:w-[30.6388rem] lg:h-[30.6388rem] bg-gradient-radial from-[#290552] via-[#0b0a11] to-[#050506]">
+      <div className="z-40">
         <ImageItem
-          text="Rapid Deployment"
-          img="/images/hero/rocket.svg"
-          animation="l"
+          text="Free Setup Fee & Trial"
+          img="/images/hero/setup.svg"
+          animation="t"
         />
-        <ImageItem
-          text="User Friendly Interface"
-          img="/images/hero/friendly.svg"
-          animation="r"
-        />
-      </div>
-      <div className="flex justify-center">
-        <ImageItem
-          text="Efficient Smart Contract"
-          img="/images/hero/rocket.svg"
-          animation="b"
-        />
+        <div className="flex justify-between">
+          <ImageItem
+            text="Rapid Deployment"
+            img="/images/hero/rocket.svg"
+            animation="l"
+          />
+          <ImageItem
+            text="User Friendly Interface"
+            img="/images/hero/friendly.svg"
+            animation="r"
+          />
+        </div>
+        <div className="flex justify-center">
+          <ImageItem
+            text="Efficient Smart Contract"
+            img="/images/hero/rocket.svg"
+            animation="b"
+          />
+        </div>
       </div>
     </div>
   )
@@ -188,7 +190,7 @@ const WhatWeDo: FC = () => {
     <section className={`lg:pt-28 bg-[#0A0A0A] `}>
       <SectionContainer>
         <motion.div
-          className={`flex flex-col lg:flex-row justify-between w-full pt-24 md:pt-0`}
+          className={`flex flex-col lg:flex-row  justify-between w-full pt-24 md:pt-0`}
           variants={fromBottomAnimation}
           initial="initial"
           whileInView="final"
@@ -199,14 +201,17 @@ const WhatWeDo: FC = () => {
             delay: 0.2,
           }}
         >
-          <div className="max-w-[22.75rem] lg:max-w-[58.75rem]">
-            <h2 className="font-poppins text-3xl pb-2 lg:text-[3.25rem] lg:leading-[5rem] xl:text-[4.25rem] xl:leading-[6.375rem] text-white">
-              <span className="text-white">What is</span>
+          <div className="max-w-[22.75rem]  lg:max-w-[45.75rem]">
+            <h2 className="font-poppins text-3xl pb-2 lg:text-[3.25rem] lg:leading-[5rem] xl:text-[3.56rem] xl:leading-[5.375rem] text-white">
+              <p>
+                <span className="text-white">What is </span>
+              </p>
+              <p>
+                <span className="text-[#FEE400]">GamesToWeb3?</span>
+              </p>
             </h2>
-            <h2 className="font-poppins text-3xl pb-2 lg:text-[3.25rem] lg:leading-[5rem] xl:text-[4.25rem] xl:leading-[6.375rem] text-white">
-              <span className="text-[#FEE400]">GamesToWeb3?</span>
-            </h2>
-            <p className="lg:text-3xl lg:leading-[160%] font-light font-poppins text-[#FFF]">
+            {/* <h2 className="font-poppins text-3xl pb-2 lg:text-[3.25rem] lg:leading-[5rem] xl:text-[4.25rem] xl:leading-[6.375rem] text-white"></h2> */}
+            <p className="lg:text-2xl lg:leading-[160%] font-light font-poppins text-[#FFF]">
               Your <span className="text-[#FF61FA]">one-stop-shop</span> for NFT
               adoption in gaming. Convert web 2.0 games and assets to web 3.0
               games and with our API and list in game assets on our NFT
@@ -230,7 +235,7 @@ const WhatWeDo: FC = () => {
         </motion.div>
 
         <div
-          className={`flex flex-col lg:flex-row justify-between pt-44 pb-28 bg-[#0A0A0A]`}
+          className={`flex flex-col lg:flex-row justify-between gap-[10rem] pt-44 pb-28 bg-[#0A0A0A]`}
         >
           {/* <div className="lg:w-[45%]"> */}
           <div className="">
@@ -248,13 +253,14 @@ const WhatWeDo: FC = () => {
                 delay: 0.6,
               }}
             >
-              <h2 className="font-inter text-3xl lg:text-[3rem] lg:leading-[4rem] xl:text-[4.625rem] xl:leading-[5.5975rem] text-white">
-                Web3 NFT
+              <h2 className="font-inter text-3xl lg:text-[3rem] lg:leading-[4rem] xl:text-[3.56rem] xl:leading-[5.01rem] text-white">
+                Web3 NFT{' '}
+                <p>
+                  <span className="text-[#05ECB4]">Marketplace</span>
+                </p>
               </h2>
-              <h2 className="font-inter text-3xl lg:text-[3rem] lg:leading-[4rem] xl:text-[4.625rem] xl:leading-[5.5975rem] text-[#05ECB4]">
-                Marketplace
-              </h2>
-              <p className="text-white font-poppins lg:text-3xl font-light my-20 mt-8">
+              {/* <h2 className="font-inter text-3xl lg:text-[3rem] lg:leading-[4rem] xl:text-[3.625rem] xl:leading-[5.5975rem] text-[#05ECB4]"></h2> */}
+              <p className="text-white font-poppins lg:text-2xl font-light my-20 mt-8">
                 {`"Game Developers can create their own NFT collection and bring
                 their game assets to life with GamestoWeb3 - a platform for
                 Gamers to easily trade these unique NFTs."`}
