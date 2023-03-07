@@ -142,7 +142,7 @@ const CollectionCarousel: FC<{ carouselData: ICollection[] }> = ({
 // Our Collections
 const OurCollections = () => {
   return (
-    <section className="py-5 lg:py-24  bg-[#0A0A0A]">
+    <section className="py-5 lg:py-24 justify-center bg-[#0A0A0A]">
       <motion.h2
         className="text-white text-4xl lg:text-[4rem] font-poppins leading-[6rem] text-center"
         variants={fromBottomAnimation}
@@ -157,7 +157,7 @@ const OurCollections = () => {
       >
         Our <span className="text-[#76CEFF]">Collections</span>
       </motion.h2>
-      <div className="my-2 lg:my-10">
+      <div className=" my-2 lg:my-10">
         <CollectionCarousel carouselData={carouselData} />
       </div>
       <div className="flex justify-center p-12">
