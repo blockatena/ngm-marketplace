@@ -78,7 +78,7 @@ function Faq(): ReactElement {
         }}
       >
         <Accordion>
-          <Accordion.Title>Frequently Asked Questions</Accordion.Title>
+          <Accordion.Title>Frequently <span className='text-[#0AE2FF]'>Ask</span> Questions</Accordion.Title>
           <Accordion.Frame>{renderedFaqItems}</Accordion.Frame>
         </Accordion>
       </motion.div>

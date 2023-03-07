@@ -29,7 +29,7 @@ const Footer: FC = () => {
       <div>
         <Logo />
       </div>
-      <div className="text-custom-orange text-[.625rem] lg:text-[.75rem] leading-[1.125rem]">
+      <div className="text-custom-orange text-[.625rem] lg:text-[1rem] leading-[1.125rem]">
         All rights reserved ®GamestoWeb3 | Terms and conditions apply!{' '}
       </div>
       <div className="flex gap-2 text-black">
@@ -57,22 +57,22 @@ const HomeFooter: FC = () => {
   return (
     <section className="py-16 lg:pt-28 lg:pb-6  px-[5%] 2xl:px-[12%] text-white bg-[#0A0A0A]">
       <div className="grid place-items-center">
-        <h3 className="font-poppins text-[3.5rem] leading-[5.25rem] font-semibold text-center">
+        <h3 className="font-poppins text-[3.5rem] leading-[5.25rem] font-medium text-center">
           Subscribe
         </h3>
-        <p className="font-poppins text-lg text-center mb-10 max-w-[55.625rem]">
+        <p className="font-poppins text-3xl font-normal text-center mb-10 max-w-[55.625rem]">
           Yay! You made it to the end. Means you like what we do. Consider
           subscribing to our weekly newsletter !{' '}
         </p>
-        <div className="w-[100%] h-[2.75rem] lg:w-[35rem] lg:h-[6.5rem] relative mb-10">
+        <div className="w-[100%] h-[2.75rem] lg:w-[64rem] lg:h-[6.5rem] relative mb-10">
           <input
             type="email"
-            className="w-full h-full bg-white text-black rounded-lg outline-none border-none pl-4 pr-[40%]"
+            className="w-full h-full bg-white text-black text-3xl rounded-2xl outline-none border-none pl-[6.563rem] pr-[40%]"
             placeholder="Enter your email address"
           />
           <button
-            className="absolute top-1 lg:top-4 right-4 w-[6.5rem] h-[2.25rem] lg:w-[12.5rem] lg:h-[4.5rem] text-black bg-gradient-to-tr to-[#EB7202] from-[#F1CB00]
-          rounded-lg font-inter text-lg font-extrabold hover:from-[#EB7202] hover:to-[#F1CB00]"
+            className="absolute top-1 lg:top-3 right-8 w-[6.5rem] h-[2.25rem] lg:w-[20.875rem] lg:h-[5.188rem] text-black bg-gradient-to-tr to-[#EB7202] from-[#F1CB00]
+          rounded-2xl font-inter text-3xl font-extrabold hover:from-[#EB7202] hover:to-[#F1CB00]"
           >
             Subscribe
           </button>

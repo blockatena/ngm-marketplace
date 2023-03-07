@@ -41,49 +41,52 @@ const ConnectButton: FC = () => {
 
   return (
     <div className="relative flex items-center gap-2">
-      {isMounted && isConnected && (
-        <motion.div
+      {(isMounted && isConnected) ||
+        (router.asPath !== '/' && (
+          <motion.div
+            variants={fromRightAnimation}
+            initial="initial"
+            animate="final"
+            transition={{
+              ease: 'easeIn',
+              duration: 0.2,
+              delay: 1,
+            }}
+          >
+            <CgProfile
+              className="text-[#B10DAD] hover:text-[#14A4BD] text-lg lg:text-3xl cursor-pointer"
+              onClick={handleProfile}
+            />
+          </motion.div>
+        ))}
+      {router.asPath !== '/' && (
+        <motion.button
+          //   className="btn-primary cut-corners w-[120px] md:w-[158px] lg:w-[173px] h-[29px] md:h-[33px] lg:h-[39px]
+          // text-xs md:text-sm lg:text-base disabled:bg-gray-500"
+          className="bg-gradient-to-r from-[#501B95] to-[#B10DAD] px-4 py-[.625rem] text-white capitalize font-poppins rounded-full 
+        text-sm lg:text-[17px] font-bold lg:leading-[26px] h-12 hover:from-[#14A4BD] hover:to-[#7ABD96] transition-all"
+          onClick={handleClick}
           variants={fromRightAnimation}
           initial="initial"
           animate="final"
           transition={{
             ease: 'easeIn',
             duration: 0.2,
-            delay: 1,
+            delay: 1.4,
           }}
+          // disabled={isMounted && isConnected}
         >
-          <CgProfile
-            className="text-[#B10DAD] hover:text-[#14A4BD] text-lg lg:text-3xl cursor-pointer"
-            onClick={handleProfile}
-          />
-        </motion.div>
+          {!isMounted
+            ? null
+            : !isConnected && router.asPath === '/'
+            ? 'join our community'
+            : !isConnected
+            ? 'Connect Wallet'
+            : `Connected ${address?.substring(0, 4)}...${address?.substring(
+                address.length - 2
+              )}`}
+        </motion.button>
       )}
-      <motion.button
-        //   className="btn-primary cut-corners w-[120px] md:w-[158px] lg:w-[173px] h-[29px] md:h-[33px] lg:h-[39px]
-        // text-xs md:text-sm lg:text-base disabled:bg-gray-500"
-        className="bg-gradient-to-r from-[#501B95] to-[#B10DAD] px-4 py-[.625rem] text-white capitalize font-poppins rounded-full 
-        text-sm lg:text-[17px] font-bold lg:leading-[26px] h-12 hover:from-[#14A4BD] hover:to-[#7ABD96] transition-all"
-        onClick={handleClick}
-        variants={fromRightAnimation}
-        initial="initial"
-        animate="final"
-        transition={{
-          ease: 'easeIn',
-          duration: 0.2,
-          delay: 1.4,
-        }}
-        // disabled={isMounted && isConnected}
-      >
-        {!isMounted
-          ? null
-          : !isConnected && router.asPath === '/'
-          ? 'join our community'
-          : !isConnected
-          ? 'Connect Wallet'
-          : `Connected ${address?.substring(0, 4)}...${address?.substring(
-              address.length - 2
-            )}`}
-      </motion.button>
       {isOpen && (
         <div
           className="absolute z-50 right-0 left-0 -bottom-[3rem] bg-gradient-to-b from-custom-yellow to-custom-orange
@@ -223,7 +226,7 @@ const Header: FC = () => {
         } bg-transparent backdrop-blur-lg absolute left-0 right-0`}
       >
         <div className={`${isHome && OUTER_BOX_STYLE}`}>
-          <div className={`${isHome && INNER_BOX_STYLE}`}>
+          <div className={`${isHome && INNER_BOX_STYLE} px-[5%]`}>
             <div className={`${isHome && 'border-b'} border-white pb-4`}>
               <div className="grid grid-cols-12 gap-1">
                 <div className="col-span-3 md:col-span-6">

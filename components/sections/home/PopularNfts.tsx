@@ -34,7 +34,10 @@ const PopularNfts = () => {
             delay: 0.6,
           }}
         >
-          View Popular NFTS
+          <p>View </p>
+          <p>
+            Popular <span className="text-[#FEE400]">NFTs</span>
+          </p>
         </motion.h2>{' '}
         <div className="flex justify-evenly flex-wrap gap-16">
           {nfts.map((item, i) => (
@@ -60,9 +63,9 @@ const PopularNfts = () => {
         </div>
         <div className="flex justify-center p-12">
           <motion.button
-            className="text-white flex items-center justify-center w-[17.25rem] h-[3.0625rem] gap-4 bg-gradient-to-r 
+            className="text-white flex items-center justify-center w-[35rem] h-[5.188rem] gap-4 bg-gradient-to-r 
       from-[#BD00D1] via-[#000000] to-[#FFC701] rounded-full hover:to-[#BD00D1] hover:via-[#000000] hover:from-[#FFC701]
-      font-poppins text-lg font-semibold"
+      font-poppins text-[1.75rem] font-semibold"
             onClick={() => router.push('/assets')}
             variants={fromBottomAnimation}
             initial="initial"
