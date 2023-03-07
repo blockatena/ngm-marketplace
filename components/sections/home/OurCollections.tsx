@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion'
 import Image, { StaticImageData } from 'next/image'
+import router from 'next/router'
 import { FC, useCallback, useEffect, useState } from 'react'
+import { IoChevronForwardSharp } from 'react-icons/io5'
 import personImg from '../../../public/images/live-auction/pubg.png'
 import { fromBottomAnimation } from '../../../utils/animations'
 import useWindowDimensions from '../../../utils/hooks/useWindowDimensions'
-import { IoChevronForwardSharp } from 'react-icons/io5'
-import router from 'next/router'
 
 interface ICollection {
   img: StaticImageData
@@ -38,14 +38,13 @@ export const carouselData: ICollection[] = [
   },
   {
     img: personImg,
-  }
+  },
 ]
 
 interface CarouselCardProps extends ICollection {
   index: number
   currentIndex: number
 }
-
 
 // Collection Carousel card
 const CarouselCard: FC<CarouselCardProps> = ({ img, index, currentIndex }) => {
@@ -80,7 +79,6 @@ const CollectionCarousel: FC<{ carouselData: ICollection[] }> = ({
         maxNum = carouselData.length - 5
       }
 
-      console.log(number)
       if (number === 1) {
         if (currentIndex === maxNum + 1) {
           setCurrentIndex(0)

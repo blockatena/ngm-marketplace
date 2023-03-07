@@ -11,7 +11,6 @@ import {
 } from '../../../utils/animations'
 import SectionContainer from '../../SectionContainer'
 
-
 // Image Item Section
 const ImageItem: FC<{
   text: string
@@ -46,35 +45,36 @@ const ImageItem: FC<{
   </motion.div>
 )
 
-
 // Image display
 const ImageDisplay = () => {
   return (
-    <div className="flex flex-col gap-4 w-[23rem] h-[23rem] lg:w-[30.6388rem] lg:h-[30.6388rem] bg-gradient-radial from-[#290552] via-[#0b0a11] to-[#050506]">
-      <div className="z-40">
-        <ImageItem
-          text="Free Setup Fee & Trial"
-          img="/images/hero/setup.svg"
-          animation="t"
-        />
-        <div className="flex justify-between">
+    <div className="p-2  bg-transparent">
+      <div className="flex flex-col gap-4 w-[23rem] h-[23rem] lg:w-[30.6388rem] lg:h-[30.6388rem] bg-gradient-radial from-[#2B1A27] via-[#0A0A0A] to-[#0A0A0A]">
+        <div className="z-40">
           <ImageItem
-            text="Rapid Deployment"
-            img="/images/hero/rocket.svg"
-            animation="l"
+            text="Free Setup Fee & Trial"
+            img="/images/hero/setup.svg"
+            animation="t"
           />
-          <ImageItem
-            text="User Friendly Interface"
-            img="/images/hero/friendly.svg"
-            animation="r"
-          />
-        </div>
-        <div className="flex justify-center">
-          <ImageItem
-            text="Efficient Smart Contract"
-            img="/images/hero/rocket.svg"
-            animation="b"
-          />
+          <div className="flex justify-between">
+            <ImageItem
+              text="Rapid Deployment"
+              img="/images/hero/rocket.svg"
+              animation="l"
+            />
+            <ImageItem
+              text="User Friendly Interface"
+              img="/images/hero/friendly.svg"
+              animation="r"
+            />
+          </div>
+          <div className="flex justify-center">
+            <ImageItem
+              text="Efficient Smart Contract"
+              img="/images/hero/rocket.svg"
+              animation="b"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -103,7 +103,7 @@ const nftData2 = [
   },
 ]
 
-// Nft Card 
+// Nft Card
 const NftCard: FC<{ name: string; pgb: string; img: string }> = ({
   name,
   img,
@@ -182,7 +182,6 @@ const CardDisplay = () => {
   )
 }
 
-
 // WhatWeDo section
 const WhatWeDo: FC = () => {
   const router = useRouter()
@@ -190,7 +189,7 @@ const WhatWeDo: FC = () => {
     <section className={`lg:pt-28 bg-[#0A0A0A] `}>
       <SectionContainer>
         <motion.div
-          className={`flex flex-col lg:flex-row  justify-between w-full pt-24 md:pt-0`}
+          className={`flex flex-col lg:flex-row  justify-between w-full pt-24 md:pt-0 lg:gap-x-20`}
           variants={fromBottomAnimation}
           initial="initial"
           whileInView="final"
@@ -229,6 +228,7 @@ const WhatWeDo: FC = () => {
               duration: 0.3,
               delay: 0.3,
             }}
+            className="bg-transparent"
           >
             <ImageDisplay />
           </motion.div>

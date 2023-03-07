@@ -1,11 +1,10 @@
 import { motion } from 'framer-motion'
 import { ReactElement } from 'react'
 import { IoAdd, IoRemove } from 'react-icons/io5'
-import { fromBottomAnimation } from '../../../utils/animations'
+import { opacityAnimation } from '../../../utils/animations'
 import Accordion from '../../Accordion'
 
-
-// Faqs Data 
+// Faqs Data
 const faqData = [
   {
     heading: 'Why should you use our APIs?',
@@ -30,7 +29,6 @@ const faqData = [
     link: 'https://gamestoweb3.readme.io/',
   },
 ]
-
 
 // Faqs section for Home
 function Faq(): ReactElement {
@@ -67,18 +65,20 @@ function Faq(): ReactElement {
     <section className="py-16 lg:py-24  px-[5%] 2xl:px-[12%] text-white bg-[#0A0A0A]">
       <motion.div
         className="grid place-items-center"
-        variants={fromBottomAnimation}
+        variants={opacityAnimation}
         initial="initial"
         whileInView="final"
         viewport={{ once: true }}
         transition={{
           ease: 'easeInOut',
-          duration: 0.5,
+          duration: 0.8,
           delay: 0.2,
         }}
       >
         <Accordion>
-          <Accordion.Title>Frequently <span className='text-[#0AE2FF]'>Ask</span> Questions</Accordion.Title>
+          <Accordion.Title>
+            Frequently <span className="text-[#0AE2FF]">Asked</span> Questions
+          </Accordion.Title>
           <Accordion.Frame>{renderedFaqItems}</Accordion.Frame>
         </Accordion>
       </motion.div>
