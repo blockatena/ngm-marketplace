@@ -7,7 +7,7 @@ import Image from 'next/image'
 const cardData = [
   {
     title: 'Filecoin Foundation',
-    img: '/images/partners/filecoin.svg',
+    img: '/images/others/filecoin_logo.svg',
     color: 'text-[#01D1FF]',
   },
 ]
@@ -18,12 +18,12 @@ const Card: FC<{ title: string; img: string; color: string }> = ({
   img,
   color,
 }) => (
-  <div className=" inline-flex h-[15rem] text-center p-4 text-white font-family: 'Mulish'; rounded-lg font-semibold">
+  <div className=" inline-flex h-[15rem] text-center gap-4 p-4 text-white font-family: 'Mulish'; rounded-lg font-semibold">
     <p>
-      <Image alt="icon" src={img} height={179} width={146} />
+      <Image alt="icon" src={img} height={70} width={70} />
     </p>
     <h5
-      className={`pt-[4.2rem] text-[2.875rem] ${color} leading-[2.375rem] capitalize py-4`}
+      className={`pt-[1.2rem] text-[2rem] ${color} leading-[2.375rem] capitalize py-4`}
     >
       {title}
     </h5>
@@ -51,7 +51,7 @@ function OurPartner(): ReactElement {
         }}
       >
         <Accordion>
-          <Accordion.Title>
+          <Accordion.Title className="text-[5rem]">
             Our <span className="text-[#FF00F8]">Partners</span>
           </Accordion.Title>
           <motion.div

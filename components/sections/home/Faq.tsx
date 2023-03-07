@@ -37,7 +37,7 @@ function Faq(): ReactElement {
       <Accordion.Header openIcon={<IoAdd />} closeIcon={<IoRemove />}>
         {heading}
       </Accordion.Header>
-      <Accordion.Body>
+      <Accordion.Body className='text-[1.2rem] leading-6'>
         {body}{' '}
         {link && (
           <a
@@ -62,9 +62,9 @@ function Faq(): ReactElement {
   ))
 
   return (
-    <section className="py-16 lg:py-24  px-[5%] 2xl:px-[12%] text-white bg-[#0A0A0A]">
+    <section className="py-16 lg:py-24   2xl:px-[12%] text-white bg-[#0A0A0A]">
       <motion.div
-        className="grid place-items-center"
+        className="grid place-items-center text-4xl lg:text-[55px] text-white lg:leading-[66.6496px] pt-4 lg:pt-20"
         variants={opacityAnimation}
         initial="initial"
         whileInView="final"

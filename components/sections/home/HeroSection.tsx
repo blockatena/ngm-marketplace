@@ -97,12 +97,12 @@ const HeroSection: FC = () => {
       >
         <source src="/hero_video.mp4" type="video/mp4" />
       </video>
-      <div className="absolute top-4 lg:top-28 bottom-0 right-0 left-[3rem] z-30 pt-[5%]">
+      <div className="absolute top-4 lg:top-28 bottom-0 right-0 left-0 z-30 pt-[5%]">
         <SectionContainer>
           <div className="flex flex-col md:flex-row justify-between ">
-            <div className="flex flex-col gap-4 lg:gap-12 pt-28">
+            <div className="flex flex-col gap-4 lg:gap-12 pt-16">
               <motion.h1
-                className="font-inter font-normal text-[2.5rem] leading-[3rem] lg:text-[5.313rem] lg:leading-[4.56rem]"
+                className="font-inter font-normal text-[2.5rem] leading-[3rem] lg:text-[4.213rem] lg:leading-[4.56rem]"
                 variants={fromLeftAnimation}
                 initial="initial"
                 animate="final"
@@ -117,7 +117,7 @@ const HeroSection: FC = () => {
                 <span className="text-[#E435DF]">Web3</span>
               </motion.h1>
               <motion.p
-                className=" max-w-[19.375rem] lg:max-w-[54.375rem] font-poppins font-normal font-sm text-base lg:text-[1.75rem]  lg:font-base lg:leading-[2.6rem] text-white"
+                className=" max-w-[19.375rem] lg:max-w-[47.375rem] font-poppins font-normal font-sm text-base lg:text-[1.5rem]  lg:font-base lg:leading-[2.6rem] text-white"
                 variants={fromLeftAnimation}
                 initial="initial"
                 animate="final"
@@ -140,12 +140,12 @@ const HeroSection: FC = () => {
                   duration: 0.6,
                   delay: 1.4,
                 }}
-                className="mt-6 bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[15rem] h-[3.5rem] lg:w-[23.55rem] lg:h-[5.36rem] font-inter 
+                className="mt-6 bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[15rem] h-[3.5rem] lg:w-[19.55rem] lg:h-[4.3rem] font-inter 
               text-[1.3rem] lg:text-[1.68rem] grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD] "
                 role="button"
                 onClick={letsExploreOnClick}
               >
-                <div className="w-[14.5rem] h-[3.1rem] lg:h-[4.8rem] lg:w-[23.1rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
+                <div className="w-[14.5rem] h-[3.1rem] lg:h-[3.8rem] lg:w-[19.1rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
                   <p className="flex gap-2 justify-center items-center text-white">
                     Discover More <IoChevronForwardSharp />
                   </p>
@@ -162,7 +162,7 @@ const HeroSection: FC = () => {
                   duration: 0.6,
                   delay: 1.6,
                 }}
-                className="xl:pr-8"
+                className="xl:pr-0"
               >
                 <CardStack />
               </motion.div>

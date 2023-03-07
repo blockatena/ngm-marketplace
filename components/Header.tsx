@@ -226,7 +226,7 @@ const Header: FC = () => {
         } bg-transparent backdrop-blur-lg absolute left-0 right-0`}
       >
         <div className={`${isHome && OUTER_BOX_STYLE}`}>
-          <div className={`${isHome && INNER_BOX_STYLE} px-[5%]`}>
+          <div className={`${isHome && INNER_BOX_STYLE}`}>
             <div className={`${isHome && 'border-b'} border-white pb-4`}>
               <div className="grid grid-cols-12 gap-1">
                 <div className="col-span-3 md:col-span-6">

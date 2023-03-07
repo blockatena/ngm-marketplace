@@ -60,9 +60,9 @@ const PopularNfts = () => {
         </div>
         <div className="flex justify-center p-12">
           <motion.button
-            className="text-white flex items-center justify-center w-[35rem] h-[5.188rem] gap-4 bg-gradient-to-r 
+            className="text-white flex items-center justify-center w-[23rem] h-[3.888rem] gap-4 bg-gradient-to-r 
       from-[#BD00D1] via-[#000000] to-[#FFC701] rounded-full hover:to-[#BD00D1] hover:via-[#000000] hover:from-[#FFC701]
-      font-poppins text-[1.75rem] font-semibold"
+      font-poppins text-[1.68rem] font-normal"
             onClick={() => router.push('/assets')}
             variants={fromBottomAnimation}
             initial="initial"

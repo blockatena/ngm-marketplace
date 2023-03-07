@@ -20,6 +20,11 @@ const cardData = [
     img: '/images/others/polygon_logo.svg',
     // body: "Polygon's smart contracts enable verifiable gaming assets with faster transaction speeds and lower fees, driving blockchain adoption in gaming for more player engagement and ownership.",
   },
+  {
+    title: 'Filecoin',
+    img: '/images/others/filecoin_logo.svg',
+    // body: "Polygon's smart contracts enable verifiable gaming assets with faster transaction speeds and lower fees, driving blockchain adoption in gaming for more player engagement and ownership.",
+  },
 ]
 
 // handle single card
@@ -43,9 +48,9 @@ const BottomRow: FC = () => (
       className="pb-8"
     >
       <SectionContainer>
-        <div className="flex flex-col md:flex-row gap-10">
+        <div className="flex flex-col md:flex-row justify-between gap-10">
           <motion.div
-            className="relative w-[20.9375rem] lg:w-[31.625rem] h-[20.9375rem]"
+            className="relative w-[20.9375rem] lg:w-[31.625rem] h-[26.9375rem]"
             variants={fromLeftAnimation}
             initial="initial"
             whileInView="final"
@@ -59,7 +64,7 @@ const BottomRow: FC = () => (
             <Image src="/images/others/debug.svg" alt="" layout="fill" />
           </motion.div>
           <motion.div
-            className="text-white max-w-[40.75rem]  text-left pt-10 font-poppins"
+            className="text-white max-w-[40.75rem] pt-5 text-left font-poppins"
             variants={fromRightAnimation}
             initial="initial"
             whileInView="final"
@@ -70,10 +75,10 @@ const BottomRow: FC = () => (
               delay: 0.6,
             }}
           >
-            <h3 className="text-2xl lg:text-[3.4375rem] lg:leading-[5.1563rem]  font-poppins font-semibold">
+            <h3 className="text-2xl lg:text-[3rem] lg:leading-[5.1563rem] font-poppins font-normal">
               Why Us?
             </h3>
-            <p className="text-[1.0575rem] leading-[1.5869rem] font-poppins">
+            <p className="text-[1.3575rem] leading-[1.7rem] font-poppins">
               Get <span className="text-[#02FF76]">free Polygon</span> minting
               for new users, including 5 contracts and 500 NFTs per user. Our
               research into new standards like TinyERC721 and ERC721Psi allows
@@ -82,10 +87,10 @@ const BottomRow: FC = () => (
               it easier and more affordable for game developers to deploy and
               mint NFTs.
             </p>
-            <p className="pt-4">
+            <p className="pt-7">
               <button
-                className="text-black bg-gradient-to-r from-[#F8D40A] to-[#F47721] py-5 px-11
-            hover:from-[#F47721] hover:to-[#F8D40A] rounded-md text-[2rem] leading-[1.65rem]"
+                className="text-black bg-gradient-to-r from-[#F8D40A] to-[#F47721] py-[1.1rem] px-11
+            hover:from-[#F47721] hover:to-[#F8D40A] rounded-md text-[1.5rem] leading-[1.65rem]"
               >
                 Get APi Key
               </button>
@@ -134,7 +139,7 @@ function HowItWorks(): ReactElement {
               API for Developers
             </motion.p>
             <motion.p
-              className="font-poppins font-semibold text-[1.875rem] leading-[1.75rem] text-white max-w-[88.5rem]"
+              className="font-poppins font-normal text-[1.68rem] leading-[2.7rem] text-white max-w-[88.5rem]"
               variants={fromBottomAnimation}
               initial="initial"
               whileInView="final"
