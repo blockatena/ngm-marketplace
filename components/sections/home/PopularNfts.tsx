@@ -15,7 +15,6 @@ const nfts = [
   '/images/auction/auction_img_2.svg',
 ]
 
-
 // Popular NFTs section
 const PopularNfts = () => {
   const router = useRouter()
@@ -23,7 +22,7 @@ const PopularNfts = () => {
     <section className={` bg-[#0A0A0A] pb-40`}>
       <SectionContainer>
         <motion.h2
-          className="text-center text-4xl lg:text-[55px] text-white lg:leading-[66.6496px] pt-4 lg:pt-20"
+          className=" text-start sm:text-center text-4xl lg:text-[55px] text-white lg:leading-[66.6496px] pt-4 lg:pt-20"
           variants={fromBottomAnimation}
           initial="initial"
           whileInView="final"
@@ -36,7 +35,7 @@ const PopularNfts = () => {
         >
           View Popular <span className="text-[#FEE400]">NFTs</span>
         </motion.h2>
-        <div className="flex justify-evenly flex-wrap gap-16 pt-20">
+        <div className="flex flex-col sm:flex-row justify-evenly flex-wrap gap-16 pt-20 pl-4 sm:pl-0">
           {nfts.map((item, i) => (
             <motion.div
               key={i}
@@ -60,9 +59,9 @@ const PopularNfts = () => {
         </div>
         <div className="flex justify-center p-12">
           <motion.button
-            className="text-white flex items-center justify-center w-[23rem] h-[3.888rem] gap-4 bg-gradient-to-r 
+            className="text-white flex items-center justify-center w-[16rem] md:w-[23rem] md:h-[3.888rem] gap-4 bg-gradient-to-r 
       from-[#BD00D1] via-[#000000] to-[#FFC701] rounded-full hover:to-[#BD00D1] hover:via-[#000000] hover:from-[#FFC701]
-      font-poppins text-[1.68rem] font-normal"
+      font-poppins text-xl py-4 md:text-[1.68rem] font-normal"
             onClick={() => router.push('/assets')}
             variants={fromBottomAnimation}
             initial="initial"

@@ -40,7 +40,10 @@ const ImageItem: FC<{
     <div className="w-[7.5625rem] h-[7.375rem] relative">
       <Image src={img} alt="" layout="fill" />
     </div>
-    <p className="text-white max-w-[8.4375rem] font-normal  text-center"> {text}</p>
+    <p className="text-white max-w-[8.4375rem] font-normal  text-center">
+      {' '}
+      {text}
+    </p>
   </motion.div>
 )
 
@@ -48,7 +51,7 @@ const ImageItem: FC<{
 const ImageDisplay = () => {
   return (
     <div className="p-2  bg-transparent">
-      <div className="flex flex-col gap-4 w-[23rem] h-[23rem] lg:w-[30.6388rem] lg:h-[30.6388rem] bg-gradient-radial from-[#2B1A27] via-[#0A0A0A] to-[#0A0A0A]">
+      <div className="flex flex-col gap-4 w-full h-[23rem] lg:w-[30.6388rem] lg:h-[30.6388rem] bg-gradient-radial from-[#2B1A27] via-[#0A0A0A] to-[#0A0A0A]">
         <div className="z-40">
           <ImageItem
             text="Free Setup Fee & Trial"
@@ -134,13 +137,15 @@ const NftCard: FC<{ name: string; pgb: string; img: string }> = ({
 // Card Display
 const CardDisplay = () => {
   return (
-    <div className="w-full lg:pr-10 lg:min-w-[15rem]">
-      <div className="flex flex-col gap-14 lg:flex-row justify-between lg:h-[18.813rem]">
+    <div className="w-full lg:pr-10 lg:min-w-[15rem] pb-14">
+      <div className="flex flex-col gap-14 lg:flex-row justify-between lg:h-[18.813rem] mb-14">
         {nftData1.map((nft, i) => {
           return (
             <motion.div
               key={i}
-              className={`${i % 2 !== 0 && 'self-end'}`}
+              className={`self-center sm:self-start ${
+                i % 2 !== 0 && 'sm:self-end'
+              }`}
               variants={fromBottomAnimation}
               initial="initial"
               whileInView="final"
@@ -156,12 +161,14 @@ const CardDisplay = () => {
           )
         })}
       </div>
-      <div className="flex flex-col lg:flex-row justify-between h-[18.813rem]">
+      <div className="flex flex-col gap-14 lg:flex-row justify-between h-[18.813rem]">
         {nftData2.map((nft, i) => {
           return (
             <motion.div
               key={i}
-              className={`${i % 2 !== 0 && 'self-end'}`}
+              className={`self-center sm:self-start  ${
+                i % 2 !== 0 && 'sm:self-end'
+              }`}
               variants={fromBottomAnimation}
               initial="initial"
               whileInView="final"
@@ -185,7 +192,7 @@ const CardDisplay = () => {
 const WhatWeDo: FC = () => {
   const router = useRouter()
   return (
-    <section className={`lg:pt-28 bg-[#0A0A0A] `}>
+    <section className={`lg:pt-28 bg-[#0A0A0A]`}>
       <SectionContainer>
         <motion.div
           className={`flex flex-col lg:flex-row  justify-between w-full pt-24 md:pt-0 lg:gap-x-20`}
@@ -271,7 +278,7 @@ const WhatWeDo: FC = () => {
                 onClick={() => router.push('/collections')}
               >
                 <div className="w-[14.5rem] h-[3.1rem] lg:h-[3.8rem] lg:w-[22.1rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
-                  <p className="flex gap-2 justify-center items-center text-white">
+                  <p className="flex gap-2 justify-center items-center text-white text-sm lg:text-[1.68rem]">
                     Explore Marketplace <IoChevronForwardSharp />
                   </p>
                 </div>

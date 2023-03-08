@@ -3,7 +3,6 @@ import { BsTwitter } from 'react-icons/bs'
 import { FaDiscord, FaInstagram, FaTelegram } from 'react-icons/fa'
 import Logo from '../../Logo'
 
-
 // Icon Links
 const IconLink: FC<{ children: ReactNode; href: string }> = ({
   children,
@@ -21,8 +20,7 @@ const IconLink: FC<{ children: ReactNode; href: string }> = ({
   )
 }
 
-
-// Footer for home 
+// Footer for home
 const Footer: FC = () => {
   return (
     <footer className="flex justify-between items-center border-t border-custom-orange mt-10 py-4">
@@ -72,7 +70,7 @@ const HomeFooter: FC = () => {
           />
           <button
             className="absolute top-1 lg:top-2.5 right-3.5 w-[6.5rem] h-[2.15rem] lg:w-[12.875rem] lg:h-[3.3rem] text-black bg-gradient-to-tr to-[#EB7202] from-[#F1CB00]
-          rounded-2xl font-inter text-2xl font-normal hover:from-[#EB7202] hover:to-[#F1CB00] "
+          rounded-2xl font-inter lg:text-2xl font-normal hover:from-[#EB7202] hover:to-[#F1CB00] "
           >
             Subscribe
           </button>

@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion'
-import { ReactElement, FC } from 'react'
+import Image from 'next/image'
+import { FC, ReactElement } from 'react'
 import { fromBottomAnimation } from '../../../utils/animations'
 import Accordion from '../../Accordion'
-import Image from 'next/image'
 // OurPartners Data
 const cardData = [
   {
@@ -18,7 +18,7 @@ const Card: FC<{ title: string; img: string; color: string }> = ({
   img,
   color,
 }) => (
-  <div className=" inline-flex h-[15rem] text-center gap-4 p-4 text-white font-family: 'Mulish'; rounded-lg font-semibold">
+  <div className="flex items-center lg:items-start h-[15rem] text-center gap-4 p-4 text-white font-family: 'Mulish'; rounded-lg font-semibold">
     <p>
       <Image alt="icon" src={img} height={70} width={70} />
     </p>
@@ -31,11 +31,9 @@ const Card: FC<{ title: string; img: string; color: string }> = ({
   </div>
 )
 
-
 // OurPartners section for Home
 function OurPartner(): ReactElement {
-
-    const renderCards = cardData.map((card, i) => <Card key={i} {...card} />)
+  const renderCards = cardData.map((card, i) => <Card key={i} {...card} />)
   return (
     <section className="pt-16 lg:py-24  px-[5%] 2xl:px-[12%] text-white bg-[#0A0A0A]">
       <motion.div
@@ -51,7 +49,7 @@ function OurPartner(): ReactElement {
         }}
       >
         <Accordion>
-          <Accordion.Title className="text-[5rem]">
+          <Accordion.Title className="text-2xl md:text-[5rem]">
             Our <span className="text-[#FF00F8]">Partners</span>
           </Accordion.Title>
           <motion.div
