@@ -29,11 +29,11 @@ const cardData = [
 
 // handle single card
 const Card: FC<{ title: string; img: string }> = ({ title, img }) => (
-  <div className="w-[20.25rem] h-[24rem] text-center border border-custom_yellow p-4 pt-16 text-white font-poppins rounded-lg font-semibold">
+  <div className="w-[20.25rem] lg:w-[18rem] xl:w-[20.25rem] h-[24rem] text-center border border-custom_yellow p-4 pt-16 text-white font-poppins rounded-lg font-semibold">
     <p>
       <Image alt="icon" src={img} height={161.5} width={100} />
     </p>
-    <h5 className="text-[1.75rem] leading-[2.375rem] capitalize py-4">
+    <h5 className="text-[1.5rem] xl:text-[1.75rem] leading-[2.375rem] capitalize py-4">
       {title}
     </h5>
     {/* <p>{body}</p> */}
@@ -48,9 +48,9 @@ const BottomRow: FC = () => (
       className="pb-8"
     >
       <SectionContainer>
-        <div className="flex flex-col md:flex-row justify-between gap-10">
+        <div className="flex flex-col md:flex-row justify-between gap-6 xl:gap-10">
           <motion.div
-            className="relative w-[20.9375rem] lg:w-[31.625rem] h-[26.9375rem]"
+            className="relative w-[20.9375rem] lg:w-[31.625rem] flex-1"
             variants={fromLeftAnimation}
             initial="initial"
             whileInView="final"
@@ -64,7 +64,7 @@ const BottomRow: FC = () => (
             <Image src="/images/others/debug.svg" alt="" layout="fill" />
           </motion.div>
           <motion.div
-            className="text-white max-w-[40.75rem] pt-5 text-left font-poppins"
+            className="text-white max-w-[40.75rem] pt-5 text-left font-poppins flex-1"
             variants={fromRightAnimation}
             initial="initial"
             whileInView="final"
@@ -78,7 +78,7 @@ const BottomRow: FC = () => (
             <h3 className="text-2xl lg:text-[3rem] lg:leading-[5.1563rem] font-poppins font-normal">
               Why Us?
             </h3>
-            <p className="text-[1.3575rem] leading-[1.7rem] font-poppins">
+            <p className="text-lg  xl:text-[1.3575rem] leading-[1.7rem] font-poppins">
               Get <span className="text-[#02FF76]">free Polygon</span> minting
               for new users, including 5 contracts and 500 NFTs per user. Our
               research into new standards like TinyERC721 and ERC721Psi allows
@@ -125,7 +125,7 @@ function HowItWorks(): ReactElement {
               how it <span className="text-[#FF00F8]">works</span>
             </motion.h2>
             <motion.p
-              className="text-[#FCBA24] text-[2.5rem] leading-[3.125rem] font-poppins font-medium"
+              className="text-[#FCBA24] text-3xl  xl:text-[2.5rem] xl:leading-[3.125rem] font-poppins font-medium"
               variants={fromBottomAnimation}
               initial="initial"
               whileInView="final"
@@ -139,7 +139,7 @@ function HowItWorks(): ReactElement {
               API for Developers
             </motion.p>
             <motion.p
-              className="font-poppins font-normal text-[1.68rem] leading-[2.7rem] text-white max-w-[88.5rem]"
+              className="font-poppins font-normal text-lg xl:text-[1.68rem] xl:leading-[2.7rem] text-white max-w-[88.5rem]"
               variants={fromBottomAnimation}
               initial="initial"
               whileInView="final"
@@ -155,7 +155,7 @@ function HowItWorks(): ReactElement {
               player experience in the world of Web3 gaming."`}
             </motion.p>
             <motion.div
-              className="pt-12 flex flex-col md:flex-row gap-20"
+              className="pt-12 flex flex-col lg:flex-row gap-4  xl:gap-20"
               variants={fromBottomAnimation}
               initial="initial"
               whileInView="final"

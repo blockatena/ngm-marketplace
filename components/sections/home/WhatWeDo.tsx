@@ -37,10 +37,10 @@ const ImageItem: FC<{
       delay: 0.6,
     }}
   >
-    <div className="w-[7.5625rem] h-[7.375rem] relative">
+    <div className="w-[5rem] h-[5rem] xl:w-[7.5625rem] xl:h-[7.375rem] relative">
       <Image src={img} alt="" layout="fill" />
     </div>
-    <p className="text-white max-w-[8.4375rem] font-normal  text-center">
+    <p className="text-white max-w-[7rem] xl:max-w-[8.4375rem] text-sm xl:text-base  text-center">
       {' '}
       {text}
     </p>
@@ -50,8 +50,8 @@ const ImageItem: FC<{
 // Image display
 const ImageDisplay = () => {
   return (
-    <div className="p-2  bg-transparent">
-      <div className="flex flex-col gap-4 w-full h-[23rem] lg:w-[30.6388rem] lg:h-[30.6388rem] bg-gradient-radial from-[#2B1A27] via-[#0A0A0A] to-[#0A0A0A]">
+    <div className="p-2  bg-transparent w-full">
+      <div className="flex flex-col gap-4 w-full bg-gradient-radial from-[#2B1A27] via-[#0A0A0A] to-[#0A0A0A]">
         <div className="z-40">
           <ImageItem
             text="Free Setup Fee & Trial"
@@ -195,7 +195,7 @@ const WhatWeDo: FC = () => {
     <section className={`lg:pt-28 bg-[#0A0A0A]`}>
       <SectionContainer>
         <motion.div
-          className={`flex flex-col lg:flex-row  justify-between w-full pt-24 md:pt-0 lg:gap-x-20`}
+          className={`flex flex-col md:flex-row  flex-wrap justify-between w-full pt-24 md:pt-0 lg:gap-x-4 xl:gap-x-20 `}
           variants={fromBottomAnimation}
           initial="initial"
           whileInView="final"
@@ -206,8 +206,8 @@ const WhatWeDo: FC = () => {
             delay: 0.2,
           }}
         >
-          <div className="max-w-[22.75rem]  lg:max-w-[42.75rem] pt-20">
-            <h2 className="font-poppins text-3xl pb-8 lg:text-[3.25rem] lg:leading-[3.5rem]  text-white">
+          <div className="max-w-[22.75rem]  xl:max-w-[32.75rem] pt-20 lg:scale-90 xl:scale-100">
+            <h2 className="font-poppins text-4xl pb-8 xl:text-[3.25rem] xl:leading-[3.5rem]  text-white">
               <p>
                 <span className="text-white">What is </span>
               </p>
@@ -234,20 +234,20 @@ const WhatWeDo: FC = () => {
               duration: 0.3,
               delay: 0.3,
             }}
-            className="bg-transparent"
+            className="bg-transparent md:w-[20rem] lg:w-[25rem] xl:w-[28rem]"
           >
             <ImageDisplay />
           </motion.div>
         </motion.div>
 
         <div
-          className={`flex flex-col lg:flex-row justify-between gap-[10rem] pt-44 pb-28 bg-[#0A0A0A]`}
+          className={`flex flex-col lg:flex-row justify-between gap-[4rem] xl:gap-[10rem] pt-44 pb-28 bg-[#0A0A0A]`}
         >
           {/* <div className="lg:w-[45%]"> */}
           <div className="">
             <CardDisplay />
           </div>
-          <div className="max-w-[55.375rem] pt-20  lg:pl-4 xl:pl-0">
+          <div className="max-w-[20rem] xl:max-w-[55.375rem] pt-36 md:pt-28">
             <motion.div
               variants={fromRightAnimation}
               initial="initial"
@@ -259,26 +259,26 @@ const WhatWeDo: FC = () => {
                 delay: 0.6,
               }}
             >
-              <h2 className="font-poppins text-3xl pb-2 lg:text-[3.25rem] lg:leading-[3.5rem] text-white">
+              <h2 className="font-poppins text-3xl pb-2 xl:text-[3.25rem] xl:leading-[3.5rem] text-white">
                 Web3 NFT{' '}
                 <p>
                   <span className="text-[#05ECB4]">Marketplace</span>
                 </p>
               </h2>
               {/* <h2 className="font-inter text-3xl lg:text-[3rem] lg:leading-[4rem] xl:text-[3.625rem] xl:leading-[5.5975rem] text-[#05ECB4]"></h2> */}
-              <p className="text-white font-poppins lg:leading-[160%] lg:text-2xl font-light my-20 mt-8">
+              <p className="text-white font-poppins xl:leading-[160%] xl:text-2xl font-light my-20 mt-8">
                 {`"Game Developers can create their own NFT collection and bring
                 their game assets to life with GamestoWeb3 - a platform for
                 Gamers to easily trade these unique NFTs."`}
               </p>
               <div
-                className="mt-6 bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[15rem] h-[3.5rem] lg:w-[22.55rem] lg:h-[4.3rem] font-inter 
-              text-[1.3rem] lg:text-[1.68rem] grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD]"
+                className="mt-6 bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[15rem] h-[3.5rem] xl:w-[22.55rem] xl:h-[4.3rem] font-inter 
+              text-[1.3rem] xl:text-[1.68rem] grid place-items-center rounded-full hover:from-[#501B95] hover:to-[#B10DAD]"
                 role="button"
                 onClick={() => router.push('/collections')}
               >
-                <div className="w-[14.5rem] h-[3.1rem] lg:h-[3.8rem] lg:w-[22.1rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
-                  <p className="flex gap-2 justify-center items-center text-white text-sm lg:text-[1.68rem]">
+                <div className="w-[14.5rem] h-[3.1rem] xl:h-[3.8rem] xl:w-[22.1rem] bg-black hover:bg-transparent grid place-items-center rounded-full">
+                  <p className="flex gap-2 justify-center items-center text-white text-sm xl:text-[1.68rem]">
                     Explore Marketplace <IoChevronForwardSharp />
                   </p>
                 </div>

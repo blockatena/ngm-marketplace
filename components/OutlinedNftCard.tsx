@@ -17,7 +17,7 @@ const OutlinedNftCard: FC<{
 }) => {
   return (
     <div>
-      <div className="border border-white w-[250px] h-[360px] relative text-white font-poppins">
+      <div className="border border-white w-[14.6875rem] h-[22.5rem] relative text-white font-poppins">
         <div className="absolute left-2 -right-8 -top-4 bottom-2 bg-[#17191C]">
           <div className="bg-black h-[48px] w-[48px] rounded-full absolute right-4 top-5 grid place-items-center cursor-pointer z-20">
             <AiOutlineHeart fontSize={24} />
@@ -39,7 +39,7 @@ const OutlinedNftCard: FC<{
               {desc}
             </p>
             <div className="flex justify-between items-center">
-              <p className="text-white flex gap-1 items-center">
+              <p className="text-white flex gap-1 items-center text-sm">
                 <FaEthereum color="#12D8FA" /> {stat}
               </p>
               <p>

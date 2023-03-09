@@ -3,6 +3,7 @@ import { ReactElement } from 'react'
 import { IoAdd, IoRemove } from 'react-icons/io5'
 import { opacityAnimation } from '../../../utils/animations'
 import Accordion from '../../Accordion'
+import SectionContainer from '../../SectionContainer'
 
 // Faqs Data
 const faqData = [
@@ -62,26 +63,28 @@ function Faq(): ReactElement {
   ))
 
   return (
-    <section className="py-16 lg:py-24 px-4  2xl:px-[12%] text-white bg-[#0A0A0A]">
-      <motion.div
-        className="grid place-items-center text-4xl lg:text-[55px] text-white lg:leading-[66.6496px] pt-4 lg:pt-20"
-        variants={opacityAnimation}
-        initial="initial"
-        whileInView="final"
-        viewport={{ once: true }}
-        transition={{
-          ease: 'easeInOut',
-          duration: 0.8,
-          delay: 0.2,
-        }}
-      >
-        <Accordion>
-          <Accordion.Title>
-            Frequently <span className="text-[#0AE2FF]">Asked</span> Questions
-          </Accordion.Title>
-          <Accordion.Frame>{renderedFaqItems}</Accordion.Frame>
-        </Accordion>
-      </motion.div>
+    <section className="py-16 lg:py-24 text-white bg-[#0A0A0A]">
+      <SectionContainer>
+        <motion.div
+          className="grid place-items-center text-4xl lg:text-[55px] text-white lg:leading-[66.6496px] pt-4 lg:pt-20"
+          variants={opacityAnimation}
+          initial="initial"
+          whileInView="final"
+          viewport={{ once: true }}
+          transition={{
+            ease: 'easeInOut',
+            duration: 0.8,
+            delay: 0.2,
+          }}
+        >
+          <Accordion>
+            <Accordion.Title>
+              Frequently <span className="text-[#0AE2FF]">Asked</span> Questions
+            </Accordion.Title>
+            <Accordion.Frame>{renderedFaqItems}</Accordion.Frame>
+          </Accordion>
+        </motion.div>
+      </SectionContainer>
     </section>
   )
 }

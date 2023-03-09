@@ -22,7 +22,7 @@ const PopularNfts = () => {
     <section className={` bg-[#0A0A0A] pb-40`}>
       <SectionContainer>
         <motion.h2
-          className=" text-start sm:text-center text-4xl lg:text-[55px] text-white lg:leading-[66.6496px] pt-4 lg:pt-20"
+          className="text-center text-4xl lg:text-[55px] text-white lg:leading-[66.6496px] pt-4 lg:pt-20"
           variants={fromBottomAnimation}
           initial="initial"
           whileInView="final"
@@ -35,7 +35,7 @@ const PopularNfts = () => {
         >
           View Popular <span className="text-[#FEE400]">NFTs</span>
         </motion.h2>
-        <div className="flex flex-col sm:flex-row justify-evenly flex-wrap gap-16 pt-20 pl-4 sm:pl-0">
+        <div className="flex flex-col items-center  sm:flex-row sm:justify-evenly flex-wrap gap-10 pt-20 pl-4 sm:pl-0">
           {nfts.map((item, i) => (
             <motion.div
               key={i}

@@ -49,7 +49,7 @@ function OurPartner(): ReactElement {
         }}
       >
         <Accordion>
-          <Accordion.Title className="text-2xl md:text-[5rem]">
+          <Accordion.Title className="text-2xl md:text-[3rem] xl:text-[5rem]">
             Our <span className="text-[#FF00F8]">Partners</span>
           </Accordion.Title>
           <motion.div

@@ -8,7 +8,6 @@ import {
 import OutlinedNftCard from '../../OutlinedNftCard'
 import SectionContainer from '../../SectionContainer'
 
-
 // Live Auction Section
 const LiveAuction: FC = () => {
   return (
@@ -30,7 +29,7 @@ const LiveAuction: FC = () => {
         </motion.h2>
 
         <motion.div
-          className="flex justify-evenly flex-wrap gap-16 pt-20"
+          className="flex justify-evenly flex-wrap gap-10 pt-20"
           variants={fromLeftAnimation}
           initial="initial"
           whileInView="final"
@@ -53,6 +52,7 @@ const LiveAuction: FC = () => {
                 duration: 0.5,
                 delay: 0.1 + i / 5,
               }}
+              className=""
             >
               <OutlinedNftCard />
             </motion.div>
