@@ -126,9 +126,9 @@ const HeroSection: FC = () => {
                     delay: 1,
                   }}
                 >
-                  {`"Join the NFT gaming revolution with GamestoWeb3 - convert your
+                  {`Join the NFT gaming revolution with GamestoWeb3 - convert your
                 web 2.0 games and assets to web 3.0 and list them on our
-                marketplace via our API."`}
+                marketplace via our API.`}
                 </motion.p>
                 <motion.div
                   variants={fromLeftAnimation}

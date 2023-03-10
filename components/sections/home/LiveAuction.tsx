@@ -11,10 +11,10 @@ import SectionContainer from '../../SectionContainer'
 // Live Auction Section
 const LiveAuction: FC = () => {
   return (
-    <section className={`text-[#fff] bg-[#0A0A0A] py-10 lg:py-40`}>
+    <section className={`text-[#fff] bg-[#0A0A0A] py-10 lg:pb-40 lg:pt-8`}>
       <SectionContainer>
         <motion.h2
-          className="text-center text-4xl lg:text-[55px] lg:leading-[66.6496px] pt-4 lg:pt-20"
+          className="text-center text-4xl lg:text-[4rem] lg:leading-[66.6496px] pt-4 lg:pt-20"
           variants={fromBottomAnimation}
           initial="initial"
           whileInView="final"

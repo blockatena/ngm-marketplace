@@ -1,11 +1,8 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { FC, ReactElement } from 'react'
-import {
-  fromBottomAnimation,
-  fromLeftAnimation,
-  fromRightAnimation,
-} from '../../../utils/animations'
+import { IoChevronForwardSharp } from 'react-icons/io5'
+import { fromBottomAnimation } from '../../../utils/animations'
 import SectionContainer from '../../SectionContainer'
 
 // what we do cards data
@@ -39,16 +36,59 @@ const Card: FC<{ title: string; img: string }> = ({ title, img }) => (
     {/* <p>{body}</p> */}
   </div>
 )
-
+const WhyItem: FC<{ text: string }> = ({ text }) => {
+  return (
+    <div className="flex gap-2 items-center mb-2 flex-wrap">
+      <div className="relative w-10 h-8 lg:w-[61px] lg:h-[33px]">
+        <Image alt="" src="/images/others/tick.svg" layout="fill" />
+      </div>
+      <div className="font-poppins font-medium text-[#f4eeee] text-lg lg:text-2xl">
+        {text}
+      </div>
+    </div>
+  )
+}
 // Bottom row
 const BottomRow: FC = () => (
-  <div className=" bg-[#0A0A0A] py-16 lg:py-24 lg:px-8 2xl:px-10">
+  <div className=" bg-[#040404] py-16 lg:py-24 lg:px-8 2xl:px-10">
     <div
-      style={{ backgroundImage: "url('/images/others/why_us_bg.png')" }}
+      // style={{ backgroundImage: "url('/images/others/why_us_bg.png')" }}
       className="pb-8"
     >
       <SectionContainer>
-        <div className="flex flex-col md:flex-row justify-between gap-6 xl:gap-10">
+        <div className="grid place-items-center">
+          <h2 className="capitalize text-white text-4xl lg:text-[4rem] pb-8 lg:pb-12">
+            why <span className="text-custom_yellow">us</span>
+          </h2>
+          <div>
+            <WhyItem text="Free minting 5 contracts and 500 NFTs per user" />
+            <WhyItem text="Efficient NFT standards TinyERC721, ERC721Psi and ERC1155" />
+            <WhyItem text="Integrated marketplace to trade these minted assets" />
+          </div>
+          <div className="mt-8 flex flex-col sm:flex-row gap-6">
+            <button
+              className="w-[14.625rem] h-[3rem] md:w-[17.625rem] md:h-[3.5rem] text-white font-poppins font-medium text-sm md:text-[1.25rem] bg-[#8D5DF1] 
+            flex justify-center items-center gap-2 rounded hover:scale-105 transition-transform"
+            >
+              <span>View API Docs</span>
+              <span>
+                <IoChevronForwardSharp />
+              </span>
+            </button>
+            <button
+              className="w-[14.625rem] h-[3rem] md:w-[17.625rem] md:h-[3.5rem] text-black font-poppins font-medium text-sm md:text-[1.25rem] bg-[#27DFB3] 
+            flex justify-center items-center gap-2 rounded hover:scale-105 transition-transform"
+            >
+              <span>Generate API Key</span>
+              <span>
+                {' '}
+                <IoChevronForwardSharp />
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* <div className="flex flex-col md:flex-row justify-between gap-6 xl:gap-10">
           <motion.div
             className="relative w-[20.9375rem] lg:w-[31.625rem] flex-1"
             variants={fromLeftAnimation}
@@ -96,7 +136,7 @@ const BottomRow: FC = () => (
               </button>
             </p>
           </motion.div>
-        </div>
+        </div> */}
       </SectionContainer>
     </div>
   </div>
@@ -124,20 +164,7 @@ function HowItWorks(): ReactElement {
             >
               how it <span className="text-[#FF00F8]">works</span>
             </motion.h2>
-            <motion.p
-              className="text-[#FCBA24] text-3xl  xl:text-[2.5rem] xl:leading-[3.125rem] font-poppins font-medium"
-              variants={fromBottomAnimation}
-              initial="initial"
-              whileInView="final"
-              viewport={{ once: true }}
-              transition={{
-                ease: 'easeInOut',
-                duration: 0.5,
-                delay: 0.5,
-              }}
-            >
-              API for Developers
-            </motion.p>
+
             <motion.p
               className="font-poppins font-normal text-lg xl:text-[1.68rem] xl:leading-[2.7rem] text-white max-w-[88.5rem]"
               variants={fromBottomAnimation}
@@ -150,9 +177,24 @@ function HowItWorks(): ReactElement {
                 delay: 0.6,
               }}
             >
-              {`"Seamlessly convert your Web2 game to Web3 with our seamless API
+              Seamlessly convert your Web2 game to Web3 with our seamless API
               integration. Customize the API to create a unique and engaging
-              player experience in the world of Web3 gaming."`}
+              player experience in the world of Web3 gaming
+            </motion.p>
+
+            <motion.p
+              className="text-[#76CEFF] text-3xl  xl:text-[2.5rem] xl:leading-[3.125rem] font-poppins font-medium"
+              variants={fromBottomAnimation}
+              initial="initial"
+              whileInView="final"
+              viewport={{ once: true }}
+              transition={{
+                ease: 'easeInOut',
+                duration: 0.5,
+                delay: 0.5,
+              }}
+            >
+              Our APIs are live on these Blockchains{' '}
             </motion.p>
             <motion.div
               className="pt-12 flex flex-col lg:flex-row gap-4  xl:gap-20"

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { ReactElement } from 'react'
-import { IoAdd, IoRemove } from 'react-icons/io5'
+import { IoIosCloseCircle } from 'react-icons/io'
+import { IoAdd } from 'react-icons/io5'
 import { opacityAnimation } from '../../../utils/animations'
 import Accordion from '../../Accordion'
 import SectionContainer from '../../SectionContainer'
@@ -35,26 +36,30 @@ const faqData = [
 function Faq(): ReactElement {
   const renderedFaqItems = faqData.map(({ heading, body, link, email }, i) => (
     <Accordion.Item key={i}>
-      <Accordion.Header openIcon={<IoAdd />} closeIcon={<IoRemove />}>
-        {heading}
+      <Accordion.Header
+        openIcon={<IoAdd />}
+        closeIcon={<IoIosCloseCircle className="text-3xl lg:text-5xl" />}
+        className="bg-none text-[#ffffff]"
+      >
+        <span className="text-[2rem] lg:text-[3rem] lg:pr-8">{`${
+          i < 9 ? '0' + (i + 1).toString() : (i + 1).toString()
+        }`}</span>{' '}
+        <span>{heading}</span>
       </Accordion.Header>
-      <Accordion.Body className="text-[1.2rem] leading-6">
+      <Accordion.Body className="text-[1.2rem] leading-6 lg:pl-28 text-custom_yellow bg-transparent">
         {body}{' '}
         {link && (
           <a
             href={link}
             target="_blank"
             rel="noreferrer"
-            className="text-custom_yellow hover:text-custom-yellow-hover"
+            className="text-white hover:underline"
           >
             {link}
           </a>
         )}
         {email && (
-          <a
-            href={`mailto:${email}`}
-            className="text-custom_yellow hover:text-custom-yellow-hover"
-          >
+          <a href={`mailto:${email}`} className="text-white hover:underline">
             {email}
           </a>
         )}
@@ -63,7 +68,7 @@ function Faq(): ReactElement {
   ))
 
   return (
-    <section className="py-16 lg:py-24 text-white bg-[#0A0A0A]">
+    <section className="py-16 lg:py-24 text-white bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A] to-[#490747]">
       <SectionContainer>
         <motion.div
           className="grid place-items-center text-4xl lg:text-[55px] text-white lg:leading-[66.6496px] pt-4 lg:pt-20"
@@ -79,7 +84,9 @@ function Faq(): ReactElement {
         >
           <Accordion>
             <Accordion.Title>
-              Frequently <span className="text-[#0AE2FF]">Asked</span> Questions
+              Frequently{' '}
+              <span className="text-[#FF00F8] font-medium">Asked</span>{' '}
+              Questions
             </Accordion.Title>
             <Accordion.Frame>{renderedFaqItems}</Accordion.Frame>
           </Accordion>

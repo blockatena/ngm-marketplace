@@ -1,75 +1,46 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { FC, ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { fromBottomAnimation } from '../../../utils/animations'
-import Accordion from '../../Accordion'
-// OurPartners Data
-const cardData = [
-  {
-    title: 'Filecoin Foundation',
-    img: '/images/others/filecoin_logo.svg',
-    color: 'text-[#01D1FF]',
-  },
-]
-
-// handle single card
-const Card: FC<{ title: string; img: string; color: string }> = ({
-  title,
-  img,
-  color,
-}) => (
-  <div className="flex items-center lg:items-start h-[15rem] text-center gap-4 p-4 text-white font-family: 'Mulish'; rounded-lg font-semibold">
-    <p>
-      <Image alt="icon" src={img} height={70} width={70} />
-    </p>
-    <h5
-      className={`pt-[1.2rem] text-[2rem] ${color} leading-[2.375rem] capitalize py-4`}
-    >
-      {title}
-    </h5>
-    {/* <p>{body}</p> */}
-  </div>
-)
+import SectionContainer from '../../SectionContainer'
 
 // OurPartners section for Home
-function OurPartner(): ReactElement {
-  const renderCards = cardData.map((card, i) => <Card key={i} {...card} />)
+function OurPartners(): ReactElement {
   return (
-    <section className="pt-16 lg:py-24  px-[5%] 2xl:px-[12%] text-white bg-[#0A0A0A]">
-      <motion.div
-        className="grid place-items-center"
-        variants={fromBottomAnimation}
-        initial="initial"
-        whileInView="final"
-        viewport={{ once: true }}
-        transition={{
-          ease: 'easeInOut',
-          duration: 0.5,
-          delay: 0.2,
-        }}
-      >
-        <Accordion>
-          <Accordion.Title className="text-2xl md:text-[3rem] xl:text-[5rem]">
-            Our <span className="text-[#FF00F8]">Partners</span>
-          </Accordion.Title>
-          <motion.div
-            className=" flex flex-row md:flex-row gap-20"
-            variants={fromBottomAnimation}
-            initial="initial"
-            whileInView="final"
-            viewport={{ once: true }}
-            transition={{
-              ease: 'easeInOut',
-              duration: 0.5,
-              delay: 0.7,
-            }}
-          >
-            {renderCards}
-          </motion.div>
-        </Accordion>
-      </motion.div>
+    <section className="py-16  lg:py-24 text-white bg-[#0A0A0A]">
+      <SectionContainer>
+        <motion.div
+          className="grid place-items-center bg-[#0E0C0C]/90 p-4 lg:py-16 rounded-lg"
+          variants={fromBottomAnimation}
+          initial="initial"
+          whileInView="final"
+          viewport={{ once: true }}
+          transition={{
+            ease: 'easeInOut',
+            duration: 0.5,
+            delay: 0.2,
+          }}
+        >
+          <h2 className="text-white text-4xl lg:text-[4rem] font-poppins  capitalize">
+            our supporters
+          </h2>
+          <div className="flex items-center gap-4 pt-10 lg:pt-16">
+            <div className="relative w-[3.5rem] h-[3.5rem] lg:w-[4.875rem] lg:h-[4.875rem]">
+              <Image
+                alt="filecoin_logo"
+                src="/images/others/filecoin_logo.svg"
+                layout="fill"
+              />
+            </div>
+
+            <div className="font-medium text-2xl lg:text-[29px] text-[#01D1FF] font-poppins">
+              Filecoin Foundation
+            </div>
+          </div>
+        </motion.div>
+      </SectionContainer>
     </section>
   )
 }
 
-export default OurPartner
+export default OurPartners
