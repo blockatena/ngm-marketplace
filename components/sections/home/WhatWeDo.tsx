@@ -234,7 +234,7 @@ const WhatWeDo: FC = () => {
               duration: 0.3,
               delay: 0.3,
             }}
-            className="bg-transparent md:w-[20rem] lg:w-[25rem] xl:w-[28rem]"
+            className="bg-transparent md:w-[20rem] lg:w-[25rem] 2xl:w-[28rem]"
           >
             <ImageDisplay />
           </motion.div>
