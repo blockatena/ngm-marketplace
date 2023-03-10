@@ -2,7 +2,7 @@ import { FC, ReactNode } from 'react'
 // 'grid place-items-center w-full px-[5%] lg:px-[8%] 2xl:px-6'
 
 export const OUTER_BOX_STYLE =
-  'grid place-items-center w-full px-[5%] lg:px-[2%] xl:px-[6%] 2xl:px-[20%]'
+  'grid place-items-center w-full px-[5%] lg:px-[2%] xl:px-[6%]'
 export const INNER_BOX_STYLE =
   'max-w-[62.5rem] xl:max-w-[120rem]  w-full lg:px-[5.93rem]  px-[.1rem]'
 
