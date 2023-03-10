@@ -153,7 +153,7 @@ const HeroSection: FC = () => {
               </div>
             </div>
 
-            <div className="scale-100 lg:scale-50 xl:scale-90 origin-top-left md:pt-10">
+            <div className="scale-100 lg:scale-50 xl:scale-90 origin-top-left md:pt-10 xl:pt-0">
               <motion.div
                 variants={fromRightAnimation}
                 initial="initial"
