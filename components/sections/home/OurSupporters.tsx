@@ -4,13 +4,13 @@ import { ReactElement } from 'react'
 import { fromBottomAnimation } from '../../../utils/animations'
 import SectionContainer from '../../SectionContainer'
 
-// OurPartners section for Home
-function OurPartners(): ReactElement {
+// OurSupporters section for Home
+function OurSupporters(): ReactElement {
   return (
     <section className="py-16  lg:py-24 text-white bg-[#0A0A0A]">
       <SectionContainer>
         <motion.div
-          className="grid place-items-center bg-[#0E0C0C]/90 p-4 lg:py-16 rounded-lg"
+          className="grid place-items-center bg-[#0E0C0C]/90 p-4 lg:py-16 rounded-lg relative overflow-hidden"
           variants={fromBottomAnimation}
           initial="initial"
           whileInView="final"
@@ -21,6 +21,9 @@ function OurPartners(): ReactElement {
             delay: 0.2,
           }}
         >
+          <div className="absolute bg-[#AC8223] -top-4 -left-4 h-10 w-10 lg:h-20 lg:w-20 rounded-full "></div>
+          <div className="absolute bg-[#023F1E] -bottom-4 -right-4 h-8 w-8 lg:h-16 lg:w-16 rounded-full "></div>
+
           <h2 className="text-white text-4xl lg:text-[4rem] font-poppins  capitalize">
             our supporters
           </h2>
@@ -43,4 +46,4 @@ function OurPartners(): ReactElement {
   )
 }
 
-export default OurPartners
+export default OurSupporters
