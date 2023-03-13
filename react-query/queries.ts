@@ -234,3 +234,11 @@ export const getUser1155Nfts = (
     `/nft/g2w3-1155/${owner_address}/${page_number}/${items_per_page}`
   )
 }
+
+
+export const getPopularNFTs = () => {
+  return axiosInstance.get(`/nft/get-popular-nfts/popular`)
+}
+export const getAuctionNFTs = () => {
+  return axiosInstance.get(`/nft/get-popular-nfts/auction`)
+}

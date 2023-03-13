@@ -4,23 +4,43 @@ import { IoChevronForwardSharp } from 'react-icons/io5'
 import {
   fromBottomAnimation,
   fromRightAnimation,
+  opacityAnimation,
 } from '../../../utils/animations'
 import OutlinedNftCard from '../../OutlinedNftCard'
 import SectionContainer from '../../SectionContainer'
-
-const nfts = [
-  '/images/auction/auction_img_5.svg',
-  '/images/auction/auction_img_1.svg',
-  '',
-  '/images/auction/auction_img_2.svg',
-]
+import { getPopularNFTs } from '../../../react-query/queries'
+import { QUERIES } from '../../../react-query/constants'
+import { useQuery } from 'react-query'
+import { useEffect, useState } from 'react'
+import useIsMounted from '../../../utils/hooks/useIsMounted'
+// const nfts = [
+//   '/images/auction/auction_img_5.svg',
+//   '/images/auction/auction_img_1.svg',
+//   '',
+//   '/images/auction/auction_img_2.svg',
+// ]
 
 // Popular NFTs section
 const PopularNfts = () => {
   const router = useRouter()
+  const [nfts, setNFTs] = useState<any[]>([])
+  const isMounted = useIsMounted()
+
+    const { data } = useQuery(
+      [QUERIES.getPopularNFTs],
+      () => getPopularNFTs(),
+      {
+        enabled: !!nfts,
+        refetchIntervalInBackground: true,
+      }
+    )
+  useEffect(()=> {
+    setNFTs(data?.data !== 'Curently no nfts are in popular' ? data?.data : [])
+  },[data])
+
   return (
     <section className={` bg-[#0A0A0A] pb-40`}>
-      <SectionContainer>
+      {nfts?.length > 0 && isMounted && <SectionContainer>
         <motion.h2
           className="text-center text-4xl lg:text-[55px] text-white lg:leading-[66.6496px] pt-4 lg:pt-20"
           variants={fromBottomAnimation}
@@ -35,8 +55,20 @@ const PopularNfts = () => {
         >
           View Popular <span className="text-[#FEE400]">NFTs</span>
         </motion.h2>
-        <div className="flex flex-col items-center  sm:flex-row sm:justify-evenly flex-wrap gap-10 pt-20 pl-4 sm:pl-0">
-          {nfts.map((item, i) => (
+         {nfts?.length > 0 && isMounted && 
+         <motion.div
+          className="flex flex-col items-center  sm:flex-row sm:justify-evenly flex-wrap gap-10 pt-20 pl-4 sm:pl-0"
+          variants={opacityAnimation}
+          initial="initial"
+          whileInView="final"
+          viewport={{ once: true }}
+          transition={{
+            ease: 'easeInOut',
+            duration: 0.5,
+            delay: 0.6,
+          }}
+        >
+          {nfts?.map((item: any, i: any) => (
             <motion.div
               key={i}
               variants={fromRightAnimation}
@@ -49,14 +81,14 @@ const PopularNfts = () => {
                 delay: 0.1 + i / 5,
               }}
             >
-              <OutlinedNftCard img={item || undefined} />
+              <OutlinedNftCard nft={item} />
             </motion.div>
           ))}
           {/* <OutlinedNftCard img="/images/auction/auction_img_5.svg" />
         <OutlinedNftCard img="/images/auction/auction_img_1.svg" />
         <OutlinedNftCard />
         <OutlinedNftCard img="/images/auction/auction_img_2.svg" /> */}
-        </div>
+        </motion.div>}
         <div className="flex justify-center p-12">
           <motion.button
             className="text-white flex items-center justify-center w-[16rem] md:w-[23rem] md:h-[3.888rem] gap-4 bg-gradient-to-r 
@@ -76,7 +108,7 @@ const PopularNfts = () => {
             Discover More NFTS <IoChevronForwardSharp />
           </motion.button>
         </div>
-      </SectionContainer>
+      </SectionContainer>}
     </section>
   )
 }

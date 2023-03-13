@@ -1,11 +1,15 @@
 import { motion } from 'framer-motion'
-import router from 'next/router'
+import router, { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
 import { IoChevronForwardSharp } from 'react-icons/io5'
 import Carousel from 'react-simply-carousel'
 import { fromBottomAnimation } from '../../../utils/animations'
 import useWindowDimensions from '../../../utils/hooks/useWindowDimensions'
-
+import { getCollections } from '../../../react-query/queries'
+import { QUERIES } from '../../../react-query/constants'
+import { useQuery } from 'react-query'
+import { CollectionCardType } from '../../../interfaces'
+import useIsMounted from '../../../utils/hooks/useIsMounted'
 interface ICollection {
   // img: StaticImageData
   img: string
@@ -144,6 +148,19 @@ const CollectionCarousel: FC = () => {
   const [activeSlide, setActiveSlide] = useState(0)
   const { width } = useWindowDimensions()
   const [currentWidth, setCurrentWidth] = useState(650)
+  const [totalCollections,setTotalCollections] = useState(10)
+  const isMounted = useIsMounted()
+  const router = useRouter()
+  const [collections, setCollections] = useState<CollectionCardType[]>([])
+
+  const { data } = useQuery([QUERIES.getCollections, totalCollections], () =>
+    getCollections(1, totalCollections, 'NA', 'NA', 'NA')
+  )
+
+  useEffect(()=> {
+    setCollections(data?.data?.collections)
+    setTotalCollections(data?.data?.total_collections)
+  },[data])
 
   useEffect(() => {
     setCurrentWidth(width)
@@ -162,91 +179,96 @@ const CollectionCarousel: FC = () => {
   }
 
   return (
-    <Carousel
-      autoplay
-      delay={1000}
-      containerProps={{
-        style: {
-          width: '100%',
-          justifyContent: 'space-between',
-          userSelect: 'none',
-        },
-      }}
-      preventScrollOnSwipe
-      swipeTreshold={60}
-      activeSlideIndex={activeSlide}
-      activeSlideProps={{
-        style: {
-          // background: 'blue',
-        },
-      }}
-      onRequestChange={setActiveSlide}
-      forwardBtnProps={{
-        children: '>',
-        style: {
-          width: 60,
-          height: 60,
-          minWidth: 60,
-          alignSelf: 'center',
-        },
-      }}
-      backwardBtnProps={{
-        children: '<',
-        style: {
-          width: 60,
-          height: 60,
-          minWidth: 60,
-          alignSelf: 'center',
-        },
-      }}
-      dotsNav={{
-        show: true,
-        itemBtnProps: {
-          style: {
-            height: 16,
-            width: 16,
-            borderRadius: '50%',
-            border: 0,
-          },
-        },
-        activeItemBtnProps: {
-          style: {
-            height: 16,
-            width: 16,
-            borderRadius: '50%',
-            border: 0,
-            background: 'black',
-          },
-        },
-      }}
-      itemsToShow={8}
-      speed={400}
-    >
-      {carouselData.map(({ img }, index) => (
-        <div
-          style={{
-            background: 'transparent',
-            width: calculateDimension(index, isMobile),
-            height: calculateDimension(index, isMobile),
-            // border: '30px solid white',
-            textAlign: 'center',
-            lineHeight: '240px',
-            boxSizing: 'border-box',
-            alignSelf: 'center',
-            borderRadius: '1rem',
-            padding: '0.5rem',
+    <>
+      {isMounted && collections?.length > 0 && (
+        <Carousel
+          autoplay
+          delay={1000}
+          containerProps={{
+            style: {
+              width: '100%',
+              justifyContent: 'space-between',
+              userSelect: 'none',
+            },
           }}
-          key={index}
+          preventScrollOnSwipe
+          swipeTreshold={60}
+          activeSlideIndex={activeSlide}
+          activeSlideProps={{
+            style: {
+              // background: 'blue',
+            },
+          }}
+          onRequestChange={setActiveSlide}
+          forwardBtnProps={{
+            children: '>',
+            style: {
+              width: 60,
+              height: 60,
+              minWidth: 60,
+              alignSelf: 'center',
+            },
+          }}
+          backwardBtnProps={{
+            children: '<',
+            style: {
+              width: 60,
+              height: 60,
+              minWidth: 60,
+              alignSelf: 'center',
+            },
+          }}
+          dotsNav={{
+            show: true,
+            itemBtnProps: {
+              style: {
+                height: 16,
+                width: 16,
+                borderRadius: '50%',
+                border: 0,
+              },
+            },
+            activeItemBtnProps: {
+              style: {
+                height: 16,
+                width: 16,
+                borderRadius: '50%',
+                border: 0,
+                background: 'black',
+              },
+            },
+          }}
+          itemsToShow={8}
+          speed={400}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            alt=""
-            src={img}
-            className="object-cover w-full h-full rounded-2xl cursor-pointer"
-          />
-        </div>
-      ))}
-    </Carousel>
+          {collections.map((collection, index) => (
+            <div
+              style={{
+                background: 'transparent',
+                width: calculateDimension(index, isMobile),
+                height: calculateDimension(index, isMobile),
+                // border: '30px solid white',
+                textAlign: 'center',
+                lineHeight: '240px',
+                boxSizing: 'border-box',
+                alignSelf: 'center',
+                borderRadius: '1rem',
+                padding: '0.5rem',
+              }}
+              key={index}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt=""
+                src={collection?.imageuri?.[0]}
+                className="object-cover w-full h-full rounded-2xl cursor-pointer"
+                onClick={() => router.push(`/collections/${collection?.contract_address}`)}
+              />
+            </div>
+          ))}
+        </Carousel>
+      )}
+    </>
   )
 }
 
