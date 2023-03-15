@@ -145,9 +145,15 @@ const BottomRow: FC = () => (
 // How it works
 function HowItWorks(): ReactElement {
   const renderCards = cardData.map((card, i) => <Card key={i} {...card} />)
+
   return (
-    <section className=" ">
-      <div className="bg-gradient-to-br from-[#4C068B] via-[#0A0A0A] to-[#0A0A0A]">
+    <section className="bg-[#0A0A0A]">
+      {/* <div className="bg-gradient-to-br from-[#4C068B] via-[#0A0A0A] to-[#0A0A0A]"> */}
+      <div
+        style={{
+          backgroundImage: "url('/images/others/why_us_bg3.svg')",
+        }}
+      >
         <SectionContainer>
           <div className="text-center flex flex-col gap-10 items-center py-16 lg:py-24 ">
             <motion.h2

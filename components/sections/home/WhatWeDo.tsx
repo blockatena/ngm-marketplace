@@ -51,7 +51,8 @@ const ImageItem: FC<{
 const ImageDisplay = () => {
   return (
     <div className="p-2  bg-transparent w-full">
-      <div className="flex flex-col gap-4 w-full bg-gradient-radial from-[#2B1A27] via-[#0A0A0A] to-[#0A0A0A]">
+      {/* <div className="flex flex-col gap-4 w-full bg-gradient-radial from-[#2B1A27] via-[#0A0A0A] to-[#0A0A0A]"> */}
+      <div className="flex flex-col gap-4 w-full">
         <div className="z-40">
           <ImageItem
             text="Free Setup Fee & Trial"
@@ -192,8 +193,14 @@ const CardDisplay = () => {
 const WhatWeDo: FC = () => {
   const router = useRouter()
   return (
-    <section className={`lg:pt-28 bg-[#0A0A0A]`}>
-      <SectionContainer>
+    <section className={`bg-[#0A0A0A] `}>
+      <SectionContainer
+        style={{
+          backgroundImage: "url('/images/others/why_us_bg1.svg')",
+          paddingTop: '7rem',
+          paddingBottom: '2rem',
+        }}
+      >
         <motion.div
           className={`flex flex-col md:flex-row  flex-wrap justify-between w-full pt-24 md:pt-0 lg:gap-x-4 xl:gap-x-20 `}
           variants={fromBottomAnimation}
@@ -234,12 +241,13 @@ const WhatWeDo: FC = () => {
               duration: 0.3,
               delay: 0.3,
             }}
-            className="bg-transparent md:w-[20rem] lg:w-[25rem] 2xl:w-[28rem]"
+            className="bg-transparent md:w-[20rem] lg:w-[25rem] xl:w-[29rem]"
           >
             <ImageDisplay />
           </motion.div>
         </motion.div>
-
+      </SectionContainer>
+      <SectionContainer>
         <div
           className={`flex flex-col lg:flex-row justify-between gap-[4rem] xl:gap-[10rem] pt-44 pb-28 bg-[#0A0A0A]`}
         >
@@ -267,9 +275,9 @@ const WhatWeDo: FC = () => {
               </h2>
               {/* <h2 className="font-inter text-3xl lg:text-[3rem] lg:leading-[4rem] xl:text-[3.625rem] xl:leading-[5.5975rem] text-[#05ECB4]"></h2> */}
               <p className="text-white font-poppins xl:leading-[160%] xl:text-2xl font-light my-20 mt-8">
-                {`"Game Developers can create their own NFT collection and bring
+                {`Game Developers can create their own NFT collection and bring
                 their game assets to life with GamestoWeb3 - a platform for
-                Gamers to easily trade these unique NFTs."`}
+                Gamers to easily trade these unique NFTs.`}
               </p>
               <div
                 className="mt-6 bg-gradient-to-r from-[#FFCC02] to-[#8F4F86] text-white w-[15rem] h-[3.5rem] xl:w-[22.55rem] xl:h-[4.3rem] font-inter 

@@ -8,9 +8,12 @@ export const INNER_BOX_STYLE =
 // 'max-w-[62.5rem] xl:max-w-[120rem]  w-full lg:px-[5.93rem]  px-[.1rem] xl:scale-90 origin-center'
 
 // section container
-const SectionContainer: FC<{ children: ReactNode }> = ({ children }) => {
+const SectionContainer: FC<{ children: ReactNode; style?: object }> = ({
+  children,
+  style = {},
+}) => {
   return (
-    <div className={OUTER_BOX_STYLE}>
+    <div className={OUTER_BOX_STYLE} style={style}>
       <div className={INNER_BOX_STYLE}> {children}</div>
     </div>
   )

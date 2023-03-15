@@ -41,7 +41,7 @@ function Faq(): ReactElement {
         closeIcon={<IoIosCloseCircle className="text-3xl lg:text-5xl" />}
         className="bg-none text-[#ffffff]"
       >
-        <span className="text-[2rem] lg:text-[3rem] lg:pr-8">{`${
+        <span className="text-[1.75rem] lg:text-[2rem] lg:pr-8">{`${
           i < 9 ? '0' + (i + 1).toString() : (i + 1).toString()
         }`}</span>{' '}
         <span>{heading}</span>
