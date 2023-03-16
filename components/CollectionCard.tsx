@@ -5,8 +5,11 @@ import { CollectionCardType } from '../interfaces'
 
 interface CollectionCardProps extends CollectionCardType {}
 
+// PlaceHolder Image for collection
 const placeholderImg = '/images/collections/placeholder.jpg'
 
+
+// Collection card
 const CollectionCard: FC<CollectionCardProps> = ({
   collection_name,
   contract_address,

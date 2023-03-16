@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { useIsFetching, useIsMutating } from 'react-query'
 
+// Loading function
 export default function Loading(): ReactElement {
   const isFetching = useIsFetching()
   const isMutating = useIsMutating()

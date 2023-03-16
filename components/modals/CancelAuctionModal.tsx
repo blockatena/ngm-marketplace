@@ -10,6 +10,8 @@ import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 import { ethers } from 'ethers'
 import { useNetwork, useSwitchNetwork } from 'wagmi'
+
+//Cancel Auction Modal
 const CancelAuctionModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -21,6 +23,8 @@ const CancelAuctionModal: FC<{
   const { chain } = useNetwork()
   const {  switchNetwork } = useSwitchNetwork()
     const [isChainCorrect, setIsChainCorrect] = useState(true)
+
+    // Api call to cancel Auction
   const { mutate, isSuccess, data, isLoading } = useMutation(cancelAuction, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
@@ -37,6 +41,7 @@ useEffect(() => {
   }
 }, [chain, chainID])
 
+// switch network if not correct network detected
 const onSwitchNetwork = async () => {
   await switchNetwork?.(parseInt(chainID))
 }

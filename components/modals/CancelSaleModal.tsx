@@ -10,6 +10,8 @@ import { cancel1155Sale, cancelSale } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
+
+// cancel sale modal
 const CancelSaleModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -22,6 +24,8 @@ const CancelSaleModal: FC<{
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
+
+  // APi call to cancel Sale for ERC721
   const { mutate, isSuccess, data, isLoading } = useMutation(cancelSale, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
@@ -29,6 +33,7 @@ const CancelSaleModal: FC<{
   })
   const { address } = useAccount()
 
+  // APi call to cancel sale ERC1155
   const {
     mutate: mutate1155,
     isSuccess: is1155Success,
@@ -51,9 +56,11 @@ const CancelSaleModal: FC<{
     }
   }, [chain, chainID])
 
+  // switch network if not correct network detected
   const onSwitchNetwork = async () => {
     await switchNetwork?.(parseInt(chainID))
   }
+  // handle click
   const handleClick = async () => {
     const data = {
       contract_address: nft?.contract_address,
@@ -106,6 +113,7 @@ const CancelSaleModal: FC<{
     } else return
   }
 
+  // handle toast oon response
   useEffect(() => {
     if (isSuccess || is1155Success) {
       let msg = data?.data?.message

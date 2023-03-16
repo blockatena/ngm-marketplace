@@ -5,6 +5,8 @@ import { FC, useEffect, useState } from 'react'
 import { fromLeftAnimation } from '../utils/animations'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
+
+//LOGO Website
 const Logo: FC = () => {
   const router = useRouter()
   const { width } = useWindowDimensions()

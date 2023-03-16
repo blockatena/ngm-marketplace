@@ -1,6 +1,7 @@
 import { QueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 
+// Handles errors for all queries and mutations made via react-query
 function queryErrorHandler(error: unknown): void {
   const title =
     error instanceof Error ? error.message : 'error connecting to server'

@@ -15,9 +15,13 @@ import { opacityAnimation } from '../utils/animations'
 import AccountConfirmationModal from './modals/AccountConfirmationModal'
 import Spinner from './Spinner'
 
+
+// User Setting : from /profile Route
 const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
   const { address } = useAccount()
   const queryClient = useQueryClient()
+
+  // Api post call to handle user create
   const {
     mutate: createUserMutation,
     isSuccess,
@@ -52,6 +56,7 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
       })
   }, [data, isSuccess])
 
+  // handle Create User
   const handleCreateUser = (
     email: string,
     wallet_address: string,
@@ -64,6 +69,7 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
     })
   }
 
+  //handle Login with Google Auth
   const handleLogin = useGoogleLogin({
     onSuccess: async (respose) => {
       try {
@@ -101,6 +107,7 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
     },
   })
 
+  // check User Info 
   const userInfo = useMemo(
     () => [
       { name: 'Linked Email', value: user?.email },

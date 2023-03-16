@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import {
   createContext,
   DetailedHTMLProps,
@@ -48,6 +49,7 @@ interface IContainer
   children: ReactNode
 }
 
+//title
 const Title: FC<IContainer> = ({ children, className, ...restProps }) => (
   <div
     role="heading"
@@ -55,11 +57,13 @@ const Title: FC<IContainer> = ({ children, className, ...restProps }) => (
     {...restProps}
     className={`${
       className || ''
-    } font-inter text-3xl lg:text-[3rem] lg:leading-[3.6rem] font-bold text-white text-center mb-8 lg:mb-16`}
+    } font-inter text-3xl lg:text-[3rem] lg:leading-[3.6rem] text-white text-center mb-8 lg:mb-16`}
   >
     {children}
   </div>
 )
+
+//frame
 
 const Frame: FC<IContainer> = ({ children, ...restProps }) => (
   <div {...restProps}>{children}</div>
@@ -70,6 +74,7 @@ interface IHeader extends IContainer {
   closeIcon?: ReactNode
 }
 
+// Header
 const Header: FC<IHeader> = (props) => {
   const { children, className, openIcon, closeIcon, ...restProps } = props
   const { isOpen, setIsOpen } = useItemContext()
@@ -90,20 +95,27 @@ const Header: FC<IHeader> = (props) => {
   )
 }
 
+//Body
 const Body: FC<IContainer> = ({ children, className, ...restProps }) => {
   const { isOpen } = useItemContext()
   return (
-    <div
-      {...restProps}
-      className={`${className || ''} ${
-        !isOpen ? 'h-0 p-0' : 'h-fit p-4'
-      } bg-[#0A0A0A] text-white font-inter text-[1.0625rem] leading-[1.4875rem] transition-all duration-300 overflow-hidden`}
+    <motion.div
+      layout
+      className={` ${!isOpen ? 'h-0 p-0' : 'h-fit p-4 '} overflow-hidden`}
     >
-      {children}
-    </div>
+      <div
+        {...restProps}
+        className={`${
+          className || ''
+        } text-white font-inter text-[1.0625rem] leading-[1.4875rem]`}
+      >
+        {children}
+      </div>
+    </motion.div>
   )
 }
 
+//Item
 const Item: FC<IContainer> = ({ children }) => {
   return <ItemContextProvider>{children}</ItemContextProvider>
 }

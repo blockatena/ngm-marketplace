@@ -7,6 +7,7 @@ import { useConnect } from 'wagmi'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 type withProtectionFn = (_Component: FC) => FC
 
+// With Protection : to Handle if user is not connected with wallets 
 const withProtection: withProtectionFn = (Component) => {
   const Authenticated: FC = (props): ReactElement | null => {
     const { isConnected } = useAccount()
@@ -19,11 +20,8 @@ const withProtection: withProtectionFn = (Component) => {
       connector:new MetaMaskConnector()
     })
 
-    // window.ethereum.on('networkChanged', function (networkId: any) {
-    //   console.log
-    //   detectNetwork()
-    // })
 
+    // detect current network
     const detectNetwork = () => {
       if (currentChainId !== '') {
         window.ethereum.on('networkChanged', function (networkId: any) {
@@ -55,26 +53,14 @@ const withProtection: withProtectionFn = (Component) => {
       detectNetwork()
     })
 
+
+    // If not connected : redirect to connect-wallet page
     useEffect(() => {
       if (!isConnected && !targetNetworkId.includes(currentChainId) && isMounted) {
         router.push('/connect-wallet')
       }
     }, [isConnected, targetNetworkId, currentChainId, router, isMounted])
 
-
-
-    // console.log('ismount: ', isMounted)
-    // console.log('isconnected: ', isConnected)
-    // console.log('currentChain: ', currentChainId)
-
-    // return isConnected ||
-    //   (targetNetworkId.includes(currentChainId) && isMounted) ? (
-    //   <Component {...props} />
-    // ) : isMounted && !isConnected && !targetNetworkId.includes(currentChainId) ? (
-    //   <div className="min-h-screen text-white font-poppins text-center text-lg pt-8">
-    //     Redirecting...
-    //   </div>
-    // ) : null
 
     const isRenderable = isConnected || targetNetworkId.includes(currentChainId)
     const isRedirectable =  !isConnected;

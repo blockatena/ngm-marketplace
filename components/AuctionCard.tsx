@@ -50,6 +50,7 @@ interface AuctionCardProps {
 //   },
 // ]
 
+// Timesquare 
 const TimerSquare: React.FC<{ time: string; title: string }> = ({
   time,
   title,
@@ -65,6 +66,7 @@ const TimerSquare: React.FC<{ time: string; title: string }> = ({
     </div>
   )
 }
+// auction card : home
 const AuctionCard: React.FC<AuctionCardProps & { onClick: () => void }> = ({
   imgUrl,
   expireDate,

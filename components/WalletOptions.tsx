@@ -19,6 +19,7 @@ interface CardProps {
   setMessage: Dispatch<SetStateAction<string>>
 }
 
+// wallet options : Metamask
 const walletOptions: WalletOptionType[] = [
   {
     img: '/images/icons/metamask.png',
@@ -28,6 +29,7 @@ const walletOptions: WalletOptionType[] = [
   },
 ]
 
+// Card container of wallet
 const Card: FC<CardProps> = ({ connector, setMessage }) => {
   const { connect, isLoading } = useConnect()
   const { name } = connector
@@ -80,6 +82,8 @@ const Card: FC<CardProps> = ({ connector, setMessage }) => {
   )
 }
 
+
+// wallet Options : handle wallet connect
 const WalletOptions: FC = () => {
   const { connectors, error } = useConnect()
   const [message, setMessage] = useState('')

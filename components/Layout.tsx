@@ -25,6 +25,7 @@ const CurrentFooter = () => {
   return <Footer />
 }
 
+// Layout for website : imp
 const Layout: FC<LayoutProps> = ({ children }) => {
   const router = useRouter()
   const isHome = router.asPath === '/'

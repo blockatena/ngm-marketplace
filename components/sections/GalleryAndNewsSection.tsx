@@ -24,23 +24,6 @@ interface GalleryCardProps extends CollectionCardType {
   // behindImgUrl: any
 }
 
-// const galleryData: GalleryCardProps[] = [
-//   {
-//     title: 'Apex Legends',
-//     behindImgUrl: behind_1,
-//     imgUrl: img_1,
-//   },
-//   {
-//     title: 'Free Fire',
-//     behindImgUrl: behind_1,
-//     imgUrl: img_2,
-//   },
-//   {
-//     title: 'PUBG',
-//     behindImgUrl: behind_1,
-//     imgUrl: img_3,
-//   },
-// ]
 
 const cardVariants = {
   initial: {

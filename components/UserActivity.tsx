@@ -9,6 +9,8 @@ import { getUser, getUserActivity } from '../react-query/queries'
 import { shortenString } from '../utils'
 import { opacityAnimation } from '../utils/animations'
 import Pagination from './Pagination'
+
+// user Activities for user profiles 
 const ActivityItem: FC<{
   activity: ActivityType
   index: number
@@ -17,6 +19,7 @@ const ActivityItem: FC<{
   const router = useRouter()
   const { address: connectedAddress } = useAccount()
 
+  // APi call to get User info
   const { data: userData } = useQuery(
     [QUERIES.getUser, address],
     () => getUser(String(address)),
@@ -38,6 +41,7 @@ const ActivityItem: FC<{
   const isTx = undefined
   const price = activity?.price
 
+  // set activity data in array with [key, value] pair
   const activityData = [
     {
       name: 'Type',
@@ -98,14 +102,15 @@ const ActivityItem: FC<{
     { name: 'Time', value: timePlaced },
   ]
 
+  // on click address , redirect to user's profile
   const onClickAddress = (user: string) => {
     let profile = user === connectedAddress ? `/profile` : `/profile/${user}`
     router.push(profile)
   }
 
+  // when click on assets name : redirect to asset / nft page
   const handleAssetNameClick = (contractAddress: string, id: string) => {
     router.push(`/assets/${contractAddress}/${id}`)
-    // window.open(`/assets/${contractAddress}/${id}`, '_blank')
   }
 
   return (
@@ -171,10 +176,13 @@ const INITIAL_ACTIVITY_STATE: InitialActivityStateType = {
   currentPage: 1,
 }
 
+// User Activities : and send one by one to ActivityItem Section
 const UserActivity: FC<{ address: string | undefined }> = ({ address }) => {
   const [{ activity, totalPages, currentPage }, setActivityState] = useState(
     INITIAL_ACTIVITY_STATE
   )
+
+  // Api call to get user's All activities
   const { data } = useQuery(
     [QUERIES.getUserActivity, address, currentPage],
     () => getUserActivity(String(address), currentPage),

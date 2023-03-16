@@ -17,10 +17,14 @@ const ConnectPage: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected])
 
+
+  // Chain Ids that are available 
 const targetNetworkId = ['80001', '137', '1', '5', '3141', '314', '20']
 const switchSet = ()=> {
   setIsChainCorrect(true)
 }
+
+// to check current network and set if network is in targetNetworkId
 const checkNetwork = async (id:string) => {
   if(isChainCorrect) return
   if(id==='')
@@ -44,6 +48,8 @@ const checkNetwork = async (id:string) => {
   }  
 };
 
+
+// Detect network on chainChanged
 useEffect(()=> {
   if (window.ethereum) {
     window.ethereum.on('chainChanged', (chainId: any) => {

@@ -1,5 +1,7 @@
 import { FC, ReactNode } from 'react'
 
+
+// Base of Modal
 const ModalBase: FC<{
   children?: ReactNode
 }> = ({ children }) => {

@@ -26,6 +26,8 @@ import {
 import { handleAnimationDelay } from '../../utils'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
+
+// Interface each of Collection Data
 interface HeroSectionProps {
   name: string
   img: any
@@ -44,6 +46,9 @@ interface HeroSectionProps {
 }
 
 const placeholderLogo = '/images/collections/collection_avatar.png'
+
+// Side NavBar :  Filters tab includes sort by and nft state
+
 const SideNav: FC<{
   setIsOpen?: Dispatch<SetStateAction<boolean>>
   handleSort: (_value: any) => void
@@ -51,13 +56,13 @@ const SideNav: FC<{
   sort_by: string
   listed_in: string
 }> = ({ setIsOpen, handleListed, handleSort, sort_by, listed_in }) => {
-  // eslint-disable-next-line no-unused-vars
-  const [currency, setCurrency] = useState('')
-  // eslint-disable-next-line no-unused-vars
+
+  // the function handle the sideNavbar , isOpen
   const handleClick = () => {
     setIsOpen && setIsOpen(false)
   }
 
+  // Handle Filters and Sort Options, The Function is check _value parameter pass from filters, nft state buttons
   const handleBtn = (_value: any) => {
     if (_value == 'NA' || _value == 'AUCTION' || _value == 'SALE') {
       handleListed(_value)
@@ -73,8 +78,9 @@ const SideNav: FC<{
     handleClick()
   }
 
+  // Handle Color of Selected Sorted Option ( NEWEST, OLDEST, A-Z, Z-A )
   const handleSortedBtn = () => {
-    if (!sort_by || sort_by == "NA") return
+    if (!sort_by || sort_by == 'NA') return
     let arr = ['NEWTOOLD', 'OLDTONEW', 'ATOZ', 'ZTOA']
 
     const element = document.getElementById(sort_by)
@@ -92,8 +98,9 @@ const SideNav: FC<{
     })
   }
 
+  // Handle Color of Selected NFT State Option ( ALL, IN AUCTION, IN SALE )
   const handleListedBtn = () => {
-    if (!listed_in) return;
+    if (!listed_in) return
     let arr = ['AUCTION', 'SALE', 'NA']
 
     const element = document.getElementById(listed_in)
@@ -166,6 +173,12 @@ const SideNav: FC<{
           NFTs In Sale
         </button>
       </NavAccordion>
+
+      {
+        // if wants to add new features, you can use <NavAccordion> Content </NavAccordion>
+      }
+
+
       {/* <NavAccordion heading="Price">
         <p className="text-white font-oxygen">
           <span className="mr-4">ETH</span>{' '}
@@ -229,6 +242,7 @@ const SideNav: FC<{
   )
 }
 
+// Collection Hero Section : It contains Name, Image, Banner, Total Supply , create date of collection
 const CollectionHeroSection: FC<HeroSectionProps> = ({
   name,
   img,
@@ -317,6 +331,8 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
   )
 }
 
+
+// Collection Info Section : It contains totalvolume, bestOffer, floor, owners, description of the collection
 const CollectionInfoSection: FC<HeroSectionProps> = ({
   totalvolume,
   bestOffer,
@@ -378,6 +394,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
   )
 }
 
+// Collection Search Section: It contins Search Box where user can search nfts from the collection,
 const CollectionSearchSection: FC<{ handleSearch: (_value: any) => void }> = ({
   handleSearch,
 }) => {
@@ -386,6 +403,8 @@ const CollectionSearchSection: FC<{ handleSearch: (_value: any) => void }> = ({
   const [_search, setSearchvalue] = useState<any>()
   const [inputText,setInputText] = useState('')
 
+
+  //The Function read input value, and Set in '_search' variable
   const handleSearchBtn = (_value:string) => {
     if(_value) {
       setSearchvalue(_value)
@@ -396,25 +415,28 @@ const CollectionSearchSection: FC<{ handleSearch: (_value: any) => void }> = ({
     }
   }
 
+  // Search Button: When user click on Search Button , The function call api
   const Searchbtn = () => {
     if(_search) {
       handleSearch(_search)
     }
   }
 
+  // The function alternative to above function, The function execute when user click "ENTER KEY"
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       Searchbtn()
     }
   }
 
+  // The function Execute when click on 'X' (Clear) Button, It Clear the input box and call api without search input
   const clearBtn = () => {
     setSearchvalue("NA")
     setInputText('')
     handleSearch('NA')
   }
   useEffect(() => {
-    setWidth(clientWidth)
+    setWidth(clientWidth) // It check user's device width and save it in width variable
   }, [clientWidth])
 
   return (
@@ -488,8 +510,11 @@ const CollectionSearchSection: FC<{ handleSearch: (_value: any) => void }> = ({
   )
 }
 
+// Default Value : The Number of NFTs Per Page (can be changable)
 const ITEMS_PER_PAGE = 12
 
+
+// Collection Page : Main Component Page
 const CollectionPage: NextPage = () => {
   const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
@@ -498,38 +523,37 @@ const CollectionPage: NextPage = () => {
   const { width } = useWindowDimensions()
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
-  const [collectionData, setCollectionData] = useState<HeroSectionProps[]>()
-  const [avatars, setAvatars] = useState<AvatarType[]>([])
-  // const [collection, setCollection] = useState<CollectionCardTypes[]>([])
-  // const [filteredData, setFiltered] = useState<CollectionCardTypes[]>([])
-  // const [dataUnsorted, setDataUnsorted] = useState<AvatarType[]>([])
-    const [sort_by, setSortBy] = useState<any>('NA')
-    const [listed_in, setListedIn] = useState<any>('NA')
-    const [search, setSearch] = useState("NA")
-    // const [nftType, setNftType] = useState<NftType | undefined>()
+  const [collectionData, setCollectionData] = useState<HeroSectionProps[]>() // collection info
+  const [avatars, setAvatars] = useState<AvatarType[]>([]) //All NFTs on same page
+  const [sort_by, setSortBy] = useState<any>('NA')
+  const [listed_in, setListedIn] = useState<any>('NA')
+  const [search, setSearch] = useState('NA')
   const contractAddress = String(router?.query?.contractAddress)
 
-  const { mutate, data, isSuccess} = useMutation(getCollectionNfts)
+  // Api to get NFTs of the collection
+  const { mutate, data, isSuccess } = useMutation(getCollectionNfts)
 
+  // Api to get Contract Type
   const { data: contractType } = useQuery(
     [QUERIES.getCollectionType, contractAddress],
     () => getCollectionType(contractAddress),
     { enabled: !!contractAddress }
   )
 
+  // NFT Type : Set Contract Type in nftType Varible
   const nftType: NftType | undefined = contractType?.data?.type
 
+  // Get Collection Info
   const { data: collectionDetails } = useQuery(
     QUERIES.getCollectionDetails,
-    () => getCollectionDetails(contractAddress),
+    () => getCollectionDetails(contractAddress), // Set collection info in collectionData variable
     {
       enabled:
         !!contractAddress && contractAddress !== 'undefined' && !!nftType,
     }
   )
-  // useEffect(()=> {
-  //   setNftType(contractType?.data?.type)
-  // },[contractType])
+
+  // check user selected filters and call api to get nfts data
   useEffect(() => {
     let body: CollectionNftsBodyType = {
       address: contractAddress,
@@ -552,8 +576,7 @@ const CollectionPage: NextPage = () => {
     search,
   ])
 
-
-
+  // Here some variables are defined as follows
   let collectionName = collectionDetails?.data?.collection?.collection_name
   let floor = collectionDetails?.data.floor_price
   let bestOffer = collectionDetails?.data.best_offer
@@ -571,22 +594,20 @@ const CollectionPage: NextPage = () => {
       : undefined
 
 
-
+      // The function handleSearch is call in Collection Search Section
   const handleSearch = (value: any) => {
-
-    if(value) {
+    if (value) {
       setSearch(value)
     }
   }
 
 
-  // Updated 
 
+  // HandleSort & handleListed functions are call in SideNav section
   const handleSort = async (_value: any) => {
-    // console.log(_value)
     if (_value) {
       await setSortBy(_value)
-      return;
+      return
     }
     setSortBy('NA')
   }
@@ -595,11 +616,10 @@ const CollectionPage: NextPage = () => {
     // console.log(_value)
     if (_value) {
       await setListedIn(_value)
-      return;
+      return
     }
     setSortBy('NA')
   }
-
 
   useEffect(() => {
     if (nftType === 'NGM1155' && data?.data?.get_nfts) {
@@ -617,6 +637,7 @@ const CollectionPage: NextPage = () => {
     }
   }, [data?.data, nftType])
 
+  // This crumData is showing on top left below header, it's shortcult way to visit the respected page
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },
     { name: 'collections', route: '/collections' },

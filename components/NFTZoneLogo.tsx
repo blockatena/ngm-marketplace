@@ -2,6 +2,7 @@ interface NFTZoneLogoProps {
   size?: "small" | "normal";
 }
 
+// LOGO 
 const NFTZoneLogo: React.FC<NFTZoneLogoProps> = ({ size = "normal" }) => {
   if (size === "small") {
     return (

@@ -37,7 +37,7 @@ type RouteNameType =
 type RouteType = { name: RouteNameType; route: string; icon: any }
 
 
-
+// Handle Current Route from nav Routes That receive from drawer and sideNav
 const NavRoute: FC<{
   icon: string
   name: RouteNameType
@@ -64,6 +64,7 @@ const NavRoute: FC<{
   )
 }
 
+// handle All Routes , on Click
 const Drawer: FC<{
   isOpen: boolean
   setIsOpen: Dispatch<SetStateAction<boolean>>
@@ -98,6 +99,7 @@ const Drawer: FC<{
   )
 }
 
+// User's Activities and Assets handle function
 const AssetsActivityTabs: FC<{
   setIsDrawerOpen: Dispatch<SetStateAction<boolean>>
   address: string | undefined
@@ -138,6 +140,7 @@ const AssetsActivityTabs: FC<{
   )
 }
 
+// User's collections handle tab
 const CollectionTab: FC<{
   setIsDrawerOpen: Dispatch<SetStateAction<boolean>>
   address: string | undefined
@@ -166,6 +169,8 @@ const CollectionTab: FC<{
   )
 }
 
+
+// User's Profile Page
 const UserProfilePage: NextPage = () => {
   const router = useRouter()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -175,6 +180,7 @@ const UserProfilePage: NextPage = () => {
   const address:any = router?.query?.walletAddress
   const { address: connectedAddress } = useAccount()
 
+  // Api call to Get User's collection
   const collections = useQuery(
     [QUERIES.getUserCollections, address],
     () => getUserCollections(address,1,1),
@@ -192,6 +198,7 @@ const UserProfilePage: NextPage = () => {
     }
   },[collections])
 
+  // Api call to get User
   const { data: userData } = useQuery(
     [QUERIES.getUser, address],
     () => getUser(String(address)),
@@ -212,6 +219,7 @@ const UserProfilePage: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, connectedAddress])
 
+  //All Routes  in Side Nav / Drawer
   const routes: RouteType[] = HasCollections
     ? [
         { name: 'overview', route: '/', icon: categoryIcon },

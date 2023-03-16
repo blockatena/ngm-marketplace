@@ -10,6 +10,8 @@ import Spinner from '../Spinner'
 import { ethers } from 'ethers'
 import { useNetwork, useSwitchNetwork } from 'wagmi'
 
+
+// cancel offer Modal
 const CancelOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -26,12 +28,9 @@ const CancelOfferModal: FC<{
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
-  // const { mutate, isSuccess, data, isLoading } = useMutation(cancelOffer, {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries(QUERIES.getSingleNft)
-  //   },
-  // })
 
+
+  // api call to cancel offer ERC721 
   const {
     mutate: CancelOffer,
     data: cancelOfferData,
@@ -43,6 +42,7 @@ const CancelOfferModal: FC<{
     },
   })
 
+  // APi call to cancel offer ERC1155
   const {
     mutate: Cancel1155Offer,
     data: cancel1155OfferData,
@@ -64,6 +64,8 @@ const CancelOfferModal: FC<{
     }
   }, [chain, chainID])
 
+
+  // Switch network if network is not correct
   const onSwitchNetwork = async () => {
     await switchNetwork?.(parseInt(chainID))
   }

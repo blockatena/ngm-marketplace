@@ -48,6 +48,8 @@ import { addresses } from '../../../../contracts/addresses'
 // const DeployType = process.env.NEXT_PUBLIC_TYPE || ''
 // const NGMMarketAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || ''
 
+
+// Initial State of nft 
 const initalNftState: AvatarType = {
   _id: '',
   contract_address: '',
@@ -69,6 +71,8 @@ const initalNftState: AvatarType = {
   },
 }
 
+
+// List Asset Page 
 const ListAssetPage: NextPage = () => {
   const { asPath } = useRouter()
   const { date, time } = useCurrentDateTime()
@@ -93,10 +97,11 @@ const ListAssetPage: NextPage = () => {
   const [type, setType] = useState<'fixed' | 'auction'>('auction')
   const [chainID, setChainID] = useState('')
 
-  const DeployType = chainID == '80001' || chainID == '5'?'DEV': chainID == '137' || chainID == '1'?'PROD':''
+  const DeployType = chainID == '80001' || chainID == '5' || chainID == '3141'?'DEV': chainID == '137' || chainID == '1'|| chainID == '314'?'PROD':''
   const devMarkets = addresses.MARKETPLACE_CONTRACT.DEV
   const prodMarkets = addresses.MARKETPLACE_CONTRACT.PROD
 
+  // handle multichain MarketPlace address 
   const NGMMarketAddress =
     DeployType == 'DEV' && chainID == '80001'
       ? devMarkets.MUMBAI
@@ -111,6 +116,8 @@ const ListAssetPage: NextPage = () => {
       : DeployType == 'PROD' && chainID == '314'
       ? prodMarkets.FILECOIN
       : ''
+
+      // Api call to get nft collection type
   const { data: contractType } = useQuery(
     [QUERIES.getCollectionType, contractAddress],
     () => getCollectionType(contractAddress),
@@ -119,26 +126,33 @@ const ListAssetPage: NextPage = () => {
 
   const nftType: NftType | undefined = contractType?.data?.type
 
+  // APi call to get single NFT
   const { data } = useQuery(
     [QUERIES.getSingleNft, contractAddress, tokenId, nftType],
     () => getSingleNft(contractAddress, tokenId, nftType),
     { enabled: !!contractAddress && !!tokenId }
   )
 
+  // Api call to get Token Quantities User owned ( Only For ERC1155)
   const { data: userTokenNumber } = useQuery(
     [QUERIES.getUserTokenNumber, contractAddress, tokenId, address],
     () =>
       getNumberOfTokensForAddress(`${address}`, contractAddress, tokenId),
     { enabled: !!contractAddress && !!tokenId && !!address }
   )
+
+  // Api Post call to Create NFT Auction
   const { mutate, isSuccess } = useMutation(createNftAuction)
 
+  // Api Post call to Create Sale for ERC721 type NFT
   const { mutate: createSale, isSuccess: isSaleSuccess } =
     useMutation(createNftSale)
 
+    // APi Post Call to create sale for ERC1155 type NFT 
   const { mutate: create1155Sale, isSuccess: is1155SaleSuccess } =
     useMutation(create1155NftSale)
 
+    // The function handle User Inputs
   const handleUserInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prevData) => ({
@@ -147,6 +161,7 @@ const ListAssetPage: NextPage = () => {
     }))
   }
 
+  // handle Crumb Data for shortcut routes
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },
     {
@@ -159,10 +174,12 @@ const ListAssetPage: NextPage = () => {
     },
   ]
 
+  // If nft collection is ERC1155  then Auction Tab will be disabled
   useEffect(() => {
     if (nftType === 'NGM1155') setType('fixed')
   }, [nftType])
 
+  // check if chain Id is correct 
   useEffect(() => {
     if (!chainID) return
     if (chain?.id === parseInt(chainID)) {
@@ -174,9 +191,12 @@ const ListAssetPage: NextPage = () => {
     }
   }, [chain, chainID])
 
+  // function to switch network if chainId is wrong
   const onSwitchNetwork = async () => {
     await switchNetwork?.(parseInt(chainID))
   }
+
+  // function to handle Listing
   const onlisting = async () => {
     if (!formData.end_date || !formData.min_price) {
       toast('Please fill all required fields', {
@@ -223,14 +243,16 @@ const ListAssetPage: NextPage = () => {
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
 
-    // console.log(signer)
+    // NFT contracts 
     const nftcontract = new ethers.Contract(contractAddress, NFTABI, signer)
 
+    // check if already approved
     const isApproved = await nftcontract.isApprovedForAll(
       signer._address,
       NGMMarketAddress
     )
-    // console.log(isApproved)
+
+    // End date , input 
     let startPrt = formData?.end_date.split('-')
     let n1 = startPrt[0].slice(0, 4)
     let newEndDate: any = `${n1}-${startPrt[1]}-${startPrt[2]}`
@@ -295,6 +317,8 @@ const ListAssetPage: NextPage = () => {
       "price":"${formData.min_price}"
       "quantity":"${formData.quantity}"
     }`
+
+    // if Approved
     if (isApproved === true) {
       // POST DATA
       // console.log(type === 'auction' ? rawMsg : rawMsgSale)
@@ -342,18 +366,14 @@ const ListAssetPage: NextPage = () => {
         setIsLoading(false)
       } else return setIsLoading(false)
 
-      // if (isSuccess) {
-      //   setIsSuccessModalOpen(true)
-      // }
+
+      // if Not Approved : Then Approved and sign transaction
     } else {
-      // console.log(formData)
       await nftcontract
         .setApprovalForAll(NGMMarketAddress, true)
         .then((tx: any) => {
           console.log('processing')
           provider.waitForTransaction(tx.hash).then(async () => {
-            // console.log(tx.hash)
-            //Axios data:POST
             
             let msg =
               nftType === 'NGM1155'
@@ -398,11 +418,6 @@ const ListAssetPage: NextPage = () => {
               } else {
                 createSale(saleBody)
               }
-              // type === 'auction' && mutate(requestData)
-              // nftType === 'NGM1155' &&
-              //   type === 'fixed' &&
-              //   create1155Sale(sale1155Body)
-              // type === 'fixed' && createSale(saleBody)
               setIsLoading(false)
             } else return setIsLoading(false)
 
@@ -424,6 +439,7 @@ const ListAssetPage: NextPage = () => {
     }
   }, [asPath])
 
+  // Handle NFT contract ABI According to NFT Type
   useEffect(() => {
     if (data?.data?.nft) {
       setNFTABI(
@@ -778,7 +794,7 @@ const ListAssetPage: NextPage = () => {
               <button
                 className="btn-primary grid place-items-center w-[200px] h-[40px] lg:w-[618px] lg:h-[57px] 
                 rounded-lg font-poppins lg:text-[25px]"
-                // onClick={() => setIsSuccessModalOpen(true)}
+                // if chainId is not correct , Switch network : then Listing
                 onClick={() =>
                   isChainCorrect ? onlisting() : onSwitchNetwork()
                 }

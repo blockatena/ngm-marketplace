@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
 
+// Homepage Header
 const HomeHeader: FC = () => {
   const router = useRouter()
   const handleClick = () => {
