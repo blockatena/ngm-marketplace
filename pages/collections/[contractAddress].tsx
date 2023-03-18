@@ -13,19 +13,24 @@ import Pagination from '../../components/Pagination'
 import withProtection from '../../components/withProtection'
 import type {
   AvatarType,
+  CheckIfFavoriteType,
   CollectionNftsBodyType,
+  FavouritePostType,
   NftType,
 } from '../../interfaces'
 import { CrumbType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
 import {
+  checkIfFavorite,
   getCollectionDetails,
   getCollectionNfts,
   getCollectionType,
+  handleFavourite,
 } from '../../react-query/queries'
 import { handleAnimationDelay } from '../../utils'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
+import { useAccount } from 'wagmi'
 
 // Interface each of Collection Data
 interface HeroSectionProps {
@@ -43,6 +48,7 @@ interface HeroSectionProps {
   owners: any
   description: string
   floor: any
+  wallet_address:any
 }
 
 const placeholderLogo = '/images/collections/collection_avatar.png'
@@ -249,10 +255,53 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
   bannerimage,
   totalsupply,
   createdAt,
+  wallet_address,
+  contract_address
 }) => {
   let banner = `url("${
     bannerimage ? bannerimage : '/images/collections/collection_hero.png'
   }")`
+
+  const [isLiked, setIsLiked] = useState(false)
+
+  // useEffect(()=> {
+
+  // },[isLiked, contract_address, wallet_address, handleFav])
+
+    const {
+      mutate: checkIfFav,
+      data: checkIfFavData,
+      isSuccess: checkIfFavSuccess,
+    } = useMutation(checkIfFavorite)
+
+    const { mutate: handleFav } =
+      useMutation(handleFavourite)
+
+    useEffect(() => {
+      checkIfFavSuccess && setIsLiked(checkIfFavData?.data?.isFavourite)
+    }, [checkIfFavData, checkIfFavSuccess])
+
+    useEffect(() => {
+      let body: CheckIfFavoriteType = {
+        contract_address,
+        favourite_kind: 'COLLECTIONS',
+        wallet_address,
+      }
+      contract_address !== 'undefined' && wallet_address && checkIfFav(body)
+    }, [checkIfFav, wallet_address, contract_address])
+
+
+  const handleLike = async () => {
+    await setIsLiked(!isLiked)
+    let data: FavouritePostType = {
+      contract_address,
+      wallet_address,
+      favourite_kind: 'COLLECTIONS',
+      action: isLiked ? 'REMOVE' : 'ADD',
+    }
+    contract_address && wallet_address && handleFav(data)
+  }
+
   return (
     <motion.section
       className="w-full h-[279px] bg-cover p-2 flex justify-between items-end lg:px-4 lg:py-2"
@@ -312,12 +361,14 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
             </p>
           </div>
         </div>
-        <div className="flex justify-end items-end gap-2">
+        {checkIfFavSuccess && <div className="flex justify-end items-end gap-2 ">
           <Image
-            src="/images/icons/like.svg"
+            src={isLiked ? '/images/icons/liked.svg' : '/images/icons/like.svg'}
             alt="like"
             width="20px"
             height="18px"
+            onClick={() => handleLike()}
+            className="cursor-pointer"
           />
           <Image
             src="/images/icons/share.svg"
@@ -325,7 +376,7 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
             width="20px"
             height="18px"
           />
-        </div>
+        </div>}
       </div>
     </motion.section>
   )
@@ -522,7 +573,7 @@ const CollectionPage: NextPage = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { width } = useWindowDimensions()
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
-
+  const {address} = useAccount()
   const [collectionData, setCollectionData] = useState<HeroSectionProps[]>() // collection info
   const [avatars, setAvatars] = useState<AvatarType[]>([]) //All NFTs on same page
   const [sort_by, setSortBy] = useState<any>('NA')
@@ -583,7 +634,7 @@ const CollectionPage: NextPage = () => {
   let totalvolume = collectionDetails?.data.collection?.trade_volume
   let owners = collectionDetails?.data.owners
   let totalNfts = collectionDetails?.data?.nfts?.total_nfts
-  let totalsupply = totalNfts ? totalNfts : collectionDetails?.data.nfts.length
+  let totalsupply = totalNfts ? totalNfts : collectionDetails?.data.nfts?.length
   let createddate = collectionDetails?.data?.collection?.createdAt
   createddate = createddate?.substring(0, 10)
   let bannerurl = '/images/collections/static.jpg'
@@ -656,7 +707,7 @@ const CollectionPage: NextPage = () => {
             name={collectionName}
             img={imageurl}
             bannerimage={bannerurl}
-            contract_address={''}
+            contract_address={contractAddress}
             contract_type={''}
             owners={owners}
             totalsupply={totalsupply}
@@ -667,6 +718,7 @@ const CollectionPage: NextPage = () => {
             totalvolume={totalvolume}
             bestOffer={bestOffer}
             floor={floor}
+            wallet_address={address}
           />
         ) : (
           ''
@@ -688,6 +740,7 @@ const CollectionPage: NextPage = () => {
             totalvolume={totalvolume}
             bestOffer={bestOffer}
             floor={floor}
+            wallet_address={address}
           />
         ) : (
           ''

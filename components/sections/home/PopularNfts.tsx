@@ -27,7 +27,7 @@ const PopularNfts = () => {
   const isMounted = useIsMounted()
 
   const { data } = useQuery([QUERIES.getPopularNFTs], () => getPopularNFTs(), {
-    enabled: !!nfts,
+    // enabled: !!nfts,
     refetchIntervalInBackground: true,
   })
   useEffect(() => {

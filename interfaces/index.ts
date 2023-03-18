@@ -381,3 +381,20 @@ export type ListingType = {
   __v: number
   _id: string
 }
+
+export type FavouritePostType = {
+  contract_address: any
+  token_id?: number
+  nft_type?: "NGM721" | "NGM1155"
+  favourite_kind: "COLLECTIONS" | "NFTS"
+  wallet_address: any
+  action?: "ADD" | "REMOVE"
+}
+
+export type CheckIfFavoriteType = {
+  contract_address: any
+  token_id?: number
+  nft_type?: 'NGM721' | 'NGM1155'
+  favourite_kind: 'COLLECTIONS' | 'NFTS'
+  wallet_address: any
+}

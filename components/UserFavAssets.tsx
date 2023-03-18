@@ -1,0 +1,168 @@
+import { motion } from 'framer-motion'
+import { FC, useEffect, useState } from 'react'
+import { useQuery } from 'react-query'
+import { AvatarType} from '../interfaces'
+import { QUERIES } from '../react-query/constants'
+import { getFavNFT1155, getFavorite } from '../react-query/queries'
+import { opacityAnimation } from '../utils/animations'
+import useWindowDimensions from '../utils/hooks/useWindowDimensions'
+import AvatarCard from './AvatarCard'
+import Pagination from './Pagination'
+// import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
+
+// const ITEMS_PER_PAGE = 12
+
+// User Assets for user profiles
+const UserFavAssets: FC<{ address: string | undefined }> = ({ address }) => {
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [nftType, setNftType] = useState('NGM721PSI')
+  const [nfts, setNfts] = useState<AvatarType[]>()
+  const { width } = useWindowDimensions()
+
+  // Api call to get all nfts of the user
+//   const { mutate, data } = useMutation(getCollectionNfts)
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+
+  // APi call to Get All 1155 NFTs
+  const { data: nfts1155 } = useQuery(
+    [QUERIES.getFavNFT1155, address],
+    () => getFavNFT1155('NFTS', address, 'NGM1155'),
+    {
+      enabled: !!address
+    }
+  )
+
+
+    const { data } = useQuery(
+      [QUERIES.getFavorite, address],
+      () => getFavorite('NFTS', address, 'NGM721'),
+      {
+        enabled: !!address
+      }
+    )
+
+    console.log(data?.data?.data?.nfts)
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [nftType])
+
+  // Check requied data to call api
+//   useEffect(() => {
+//     let body: CollectionNftsBodyType = {
+//       address: address,
+//       address_type: 'USER',
+//       page_number: currentPage,
+//       items_per_page: ITEMS_PER_PAGE,
+//       listed_in: 'NA',
+//       sort_by: 'NA',
+//       search: 'NA',
+//     }
+//     address && nftType === 'NGM721PSI' && mutate(body)
+//   }, [mutate, address, currentPage, nftType])
+
+  // for 1155 check data
+  useEffect(() => {
+    if (nftType !== 'NGM1155' && data?.data?.data?.nfts) {
+      setNfts(data.data?.data?.nfts)
+      // setCurrentPage(data.data.currentPage)
+      setTotalPages(1)
+    } else if (nftType === 'NGM1155' && nfts1155?.data?.data?.nfts) {
+      setNfts(nfts1155.data?.data?.nfts)
+      // setCurrentPage(Number(nfts1155.data.current_page))
+      // setTotalPages(Number(nfts1155.data.total_pages))
+    }
+  }, [data?.data, nftType, nfts1155?.data])
+
+  // handle delay
+  const handleDelay = (index: number): number => {
+    if (width >= 1536) {
+      if (index < 8) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else if (width >= 1280) {
+      if (index < 3) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else if (width >= 768) {
+      if (index < 4) return 1.2 + index * 0.2
+      else return index * 0.2
+    } else {
+      if (index < 1) return 1.2 + index * 0.2
+      else return index * 0.2
+    }
+  }
+  return (
+    <>
+      <div className="text-white font-poppins text-[20px] pb-4 pt-2">
+        <span
+          className="border-b-2 border-custom_yellow cursor-pointer transition-all"
+          style={nftType !== 'NGM721PSI' ? { border: 'none' } : {}}
+          onClick={() => setNftType('NGM721PSI')}
+        >
+          NGM 721
+        </span>{' '}
+        <span className="text-gray-500"> | </span>{' '}
+        <span
+          className="border-b-2 border-custom_yellow cursor-pointer transition-all"
+          style={nftType !== 'NGM1155' ? { border: 'none' } : {}}
+          onClick={() => setNftType('NGM1155')}
+        >
+          NGM 1155
+        </span>
+      </div>
+      <div
+        className="pb-20 md:px-4 bg-[#1F2021] rounded-lg grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4
+  gap-20 w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll"
+      >
+        {nfts?.length
+          ? nfts.map((cardData, index) => (
+              <motion.div
+                className="flex justify-center"
+                key={index}
+                variants={opacityAnimation}
+                initial="initial"
+                whileInView="final"
+                viewport={{ once: true }}
+                transition={{
+                  ease: 'easeInOut',
+                  duration: 0.6,
+                  delay: handleDelay(index),
+                }}
+              >
+                <AvatarCard
+                  {...cardData}
+                  img_url={
+                    nftType === 'NGM1155' && cardData?.meta_data
+                      ? //@ts-expect-error
+                        cardData?.meta_data[0]?.image
+                      : undefined
+                  }
+                  nft_name={
+                    nftType === 'NGM1155' && cardData?.meta_data
+                      ? //@ts-expect-error
+                        cardData.meta_data[0]?.name
+                      : undefined
+                  }
+                />
+              </motion.div>
+            ))
+          : ''}
+        {nfts?.length === 0 && (
+          <p className="text-white font-poppins p-4 text-center">
+            No Favourite NFTs
+          </p>
+        )}
+      </div>
+      <div className="flex justify-end p-4 pb-10">
+        <Pagination
+          totalPages={totalPages}
+          paginate={paginate}
+          currentPage={currentPage}
+        />
+      </div>
+    </>
+  )
+}
+
+export default UserFavAssets

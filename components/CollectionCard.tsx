@@ -22,8 +22,12 @@ const CollectionCard: FC<CollectionCardProps> = ({
 
   return (
     <div
-      className="w-[352px] h-[430px]  relative flex justify-center cursor-pointer 
-    hover:-translate-y-8 transition-all"
+      className={`${
+        router?.asPath == '/profile'
+          ? 'h-[350px] w-[330px]'
+          : 'w-[320px] h-[390px]'
+      }  relative flex justify-center cursor-pointer 
+    hover:-translate-y-8 transition-all`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => router.push(`/collections/${contract_address}`)}
@@ -87,7 +91,13 @@ const CollectionCard: FC<CollectionCardProps> = ({
            : 'border-white bg-collectionCard'
        }`}
       >
-        <p className="text-white font-medium font-poppins text-lg lg:text-[29px] capitalize">
+        <p
+          className={`text-white font-medium font-poppins  ${
+            router?.asPath == '/profile'
+              ? 'text-base lg:text-[20px]'
+              : 'text-lg lg:text-[29px]'
+          } capitalize`}
+        >
           {collection_name}
         </p>
       </div>
