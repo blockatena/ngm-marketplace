@@ -18,4 +18,5 @@ export const QUERIES = {
   getAuctionNFTs: 'getAuctionNFTs',
   getFavorite: 'getFavorite',
   getFavNFT1155: 'getFavNFT1155',
+  getIsUserExist:'getIsUserExist'
 }

@@ -34,7 +34,7 @@ const FavourteCollections: FC<{
   )
 
 
-  console.log(data)
+  // console.log(data?.data?.data)
   useEffect(() => {
     setCollections(data?.data?.data)
     setTotalPages(1)

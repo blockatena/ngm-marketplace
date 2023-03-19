@@ -43,7 +43,7 @@ const UserFavAssets: FC<{ address: string | undefined }> = ({ address }) => {
       }
     )
 
-    console.log(data?.data?.data?.nfts)
+    // console.log(data?.data?.data)
 
   useEffect(() => {
     setCurrentPage(1)
@@ -65,12 +65,12 @@ const UserFavAssets: FC<{ address: string | undefined }> = ({ address }) => {
 
   // for 1155 check data
   useEffect(() => {
-    if (nftType !== 'NGM1155' && data?.data?.data?.nfts) {
-      setNfts(data.data?.data?.nfts)
+    if (nftType !== 'NGM1155' && data?.data?.data) {
+      setNfts(data.data?.data)
       // setCurrentPage(data.data.currentPage)
       setTotalPages(1)
-    } else if (nftType === 'NGM1155' && nfts1155?.data?.data?.nfts) {
-      setNfts(nfts1155.data?.data?.nfts)
+    } else if (nftType === 'NGM1155' && nfts1155?.data?.data) {
+      setNfts(nfts1155.data?.data)
       // setCurrentPage(Number(nfts1155.data.current_page))
       // setTotalPages(Number(nfts1155.data.total_pages))
     }

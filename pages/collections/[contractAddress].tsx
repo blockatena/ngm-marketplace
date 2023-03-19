@@ -25,6 +25,7 @@ import {
   getCollectionDetails,
   getCollectionNfts,
   getCollectionType,
+  getIsUserExist,
   handleFavourite,
 } from '../../react-query/queries'
 import { handleAnimationDelay } from '../../utils'
@@ -263,10 +264,16 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
   }")`
 
   const [isLiked, setIsLiked] = useState(false)
+  const [userExist, setUserExist] = useState(false)
 
-  // useEffect(()=> {
+  const { data, isSuccess} = useQuery(
+    [QUERIES.getIsUserExist, wallet_address],
+    () => getIsUserExist(wallet_address)
+  )
 
-  // },[isLiked, contract_address, wallet_address, handleFav])
+  useEffect(()=> {
+    wallet_address && isSuccess && setUserExist(data?.data)
+  },[data, wallet_address, isSuccess])
 
     const {
       mutate: checkIfFav,
@@ -361,22 +368,26 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
             </p>
           </div>
         </div>
-        {checkIfFavSuccess && <div className="flex justify-end items-end gap-2 ">
-          <Image
-            src={isLiked ? '/images/icons/liked.svg' : '/images/icons/like.svg'}
-            alt="like"
-            width="20px"
-            height="18px"
-            onClick={() => handleLike()}
-            className="cursor-pointer"
-          />
-          <Image
-            src="/images/icons/share.svg"
-            alt="share"
-            width="20px"
-            height="18px"
-          />
-        </div>}
+        {checkIfFavSuccess && userExist && (
+          <div className="flex justify-end items-end gap-2 ">
+            <Image
+              src={
+                isLiked ? '/images/icons/liked.svg' : '/images/icons/like.svg'
+              }
+              alt="like"
+              width="20px"
+              height="18px"
+              onClick={() => handleLike()}
+              className="cursor-pointer"
+            />
+            <Image
+              src="/images/icons/share.svg"
+              alt="share"
+              width="20px"
+              height="18px"
+            />
+          </div>
+        )}
       </div>
     </motion.section>
   )

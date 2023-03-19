@@ -32,9 +32,10 @@ import { addresses } from '../../contracts/addresses'
 import { RPC } from '../../contracts/rpc'
 import ImageViewModal from '../modals/ImageViewModal'
 import Image from 'next/image'
-import { checkIfFavorite, handleFavourite } from '../../react-query/queries'
-import { useMutation } from 'react-query'
+import { checkIfFavorite, getIsUserExist, handleFavourite } from '../../react-query/queries'
+import { useMutation, useQuery } from 'react-query'
 import { CheckIfFavoriteType } from '../../interfaces'
+import { QUERIES } from '../../react-query/constants'
 // product Overview for single nft page
 const ProductOverviewSection: FC<{
   nft: AvatarType
@@ -317,6 +318,17 @@ const ProductOverviewSection: FC<{
     router.push(profile)
   }
 
+    const [userExist, setUserExist] = useState(false)
+
+    const { data, isSuccess } = useQuery(
+      [QUERIES.getIsUserExist, address],
+      () => getIsUserExist(address)
+    )
+
+    useEffect(() => {
+      address && isSuccess && setUserExist(data?.data)
+    }, [data, address, isSuccess])
+
   const {
     mutate: checkIfFav,
     data: checkIfFavData,
@@ -327,6 +339,7 @@ const ProductOverviewSection: FC<{
     checkIfFavSuccess && setIsLiked(checkIfFavData?.data?.isFavourite?true:false)
   }, [checkIfFavData, checkIfFavSuccess])
 
+
   useEffect(() => {
     let body: CheckIfFavoriteType = {
       contract_address: nft?.contract_address,
@@ -335,10 +348,9 @@ const ProductOverviewSection: FC<{
       favourite_kind: 'NFTS',
       wallet_address: address,
     }
-    nft?.contract_address && nft?.token_id && address && checkIfFav(body)
+    nft && address && checkIfFav(body)
   }, [checkIfFav, address, nft, nftType])
       
-console.log(isLiked)
   // Favourite
 
         const { mutate: handleFav } = useMutation(handleFavourite)
@@ -380,20 +392,22 @@ console.log(isLiked)
             </p>
             <p className="text-white text-2xl lg:text-[49px] font-josefin">
               {nft?.meta_data?.name}{' '}
-              {checkIfFavSuccess && <span>
-                <Image
-                  src={
-                    isLiked
-                      ? '/images/icons/liked.svg'
-                      : '/images/icons/like.svg'
-                  }
-                  alt="like"
-                  width="30px"
-                  height="28px"
-                  onClick={() => handleLike()}
-                  className="cursor-pointer justify-end"
-                />
-              </span>}
+              {checkIfFavSuccess && (
+                <span>
+                  <Image
+                    src={
+                      isLiked
+                        ? '/images/icons/liked.svg'
+                        : '/images/icons/like.svg'
+                    }
+                    alt="like"
+                    width="30px"
+                    height="28px"
+                    onClick={() => handleLike()}
+                    className="cursor-pointer justify-end"
+                  />
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -425,20 +439,22 @@ console.log(isLiked)
 
           <p className="text-white text-2xl lg:text-[49px] font-josefin leading-[55px]">
             {nft?.meta_data?.name}{' '}
-            {checkIfFavSuccess && <span>
-              <Image
-                src={
-                  isLiked
-                    ? '/images/icons/liked.svg'
-                    : '/images/icons/like.svg'
-                }
-                alt="like"
-                width="30px"
-                height="28px"
-                onClick={() => handleLike()}
-                className="cursor-pointer justify-end"
-              />
-            </span>}
+            {checkIfFavSuccess && userExist && (
+              <span>
+                <Image
+                  src={
+                    isLiked
+                      ? '/images/icons/liked.svg'
+                      : '/images/icons/like.svg'
+                  }
+                  alt="like"
+                  width="30px"
+                  height="28px"
+                  onClick={() => handleLike()}
+                  className="cursor-pointer justify-end"
+                />
+              </span>
+            )}
           </p>
         </div>
 

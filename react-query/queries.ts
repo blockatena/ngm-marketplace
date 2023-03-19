@@ -266,3 +266,8 @@ export const getFavNFT1155 = (
     `/users/favourites/${favourite_kind}/${wallet_address}/${nftType}`
   )
 }
+
+
+export const getIsUserExist = (wallet_address:any) => {
+  return axiosInstance.get(`/users/isuser_registered/${wallet_address}`)
+}

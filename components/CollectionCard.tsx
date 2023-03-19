@@ -24,7 +24,7 @@ const CollectionCard: FC<CollectionCardProps> = ({
     <div
       className={`${
         router?.asPath == '/profile'
-          ? 'h-[350px] w-[330px]'
+          ? 'h-[300px] w-[280px]'
           : 'w-[320px] h-[390px]'
       }  relative flex justify-center cursor-pointer 
     hover:-translate-y-8 transition-all`}
@@ -44,6 +44,7 @@ const CollectionCard: FC<CollectionCardProps> = ({
             src={imageuri[2]}
             alt="collection_img"
             layout="fill"
+            objectFit='cover'
           />
         ) : (
           <Image src={placeholderImg} alt="collection_img" layout="fill" />
