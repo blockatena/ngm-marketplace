@@ -101,7 +101,7 @@ const Detector: FC = () => {
     // console.log(isConnected)
     // console.log(currentChainId)
     if (!isConnected) return
-    console.log(currentChainId)
+    // console.log(currentChainId)
     if (targetNetworkId.includes(currentChainId)) {
       if (
         currentChainId === CHAINID ||

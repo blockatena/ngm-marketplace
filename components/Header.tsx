@@ -41,7 +41,7 @@ const ConnectButton: FC = () => {
 
   return (
     <div className="relative flex items-center gap-2">
-      {(isMounted && isConnected) ||
+      {(isMounted && isConnected) &&
         (router.asPath !== '/' && (
           <motion.div
             variants={fromRightAnimation}
@@ -54,7 +54,7 @@ const ConnectButton: FC = () => {
             }}
           >
             <CgProfile
-              className="text-[#B10DAD] hover:text-[#14A4BD] text-lg lg:text-3xl cursor-pointer"
+              className="text-[#B10DAD] hover:text-[#14A4BD] text-lg lg:text-5xl cursor-pointer"
               onClick={handleProfile}
             />
           </motion.div>
@@ -204,8 +204,8 @@ const Logo: FC = () => {
       <Image
         src="/images/icons/logo.svg"
         alt="nftzone_logo"
-        width={clientWidth > 768 ? '188px' : '100px'}
-        height={clientWidth > 768 ? '64px' : '46px'}
+        width={clientWidth > 768 ? '133px' : '64px'}
+        height={clientWidth > 768 ? '69px' : '32px'}
         className="cursor-pointer"
         onClick={() => router.push('/')}
       />

@@ -21,7 +21,7 @@ const LiveAuction: FC = () => {
       [QUERIES.getAuctionNFTs],
       () => getAuctionNFTs(),
       {
-        enabled: !!nfts,
+        // enabled: !!nfts,
         refetchIntervalInBackground: true,
       }
     )

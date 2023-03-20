@@ -6,7 +6,9 @@ import {
 import type {
   Accept1155Offer,
   Cancel1155Offer,
+  CheckIfFavoriteType,
   CollectionNftsBodyType,
+  FavouritePostType,
   Make1155Offer,
   Nft1155SaleBodyType,
   NftAcceptOfferBodyType,
@@ -241,4 +243,31 @@ export const getPopularNFTs = () => {
 }
 export const getAuctionNFTs = () => {
   return axiosInstance.get(`/nft/get-popular-nfts/auction`)
+}
+
+export const handleFavourite = (data: FavouritePostType) => {
+  return axiosInstance.post('/users/handle-favourite', data)
+}
+
+export const checkIfFavorite = (data: CheckIfFavoriteType) => {
+  return axiosInstance.post('/users/is_user_favourite', data)
+}
+
+export const getFavorite = (favourite_kind:any, wallet_address:any, nftType?:any) => {
+  return axiosInstance.get(`/users/favourites/${favourite_kind}/${wallet_address}/${nftType}`)
+}
+
+export const getFavNFT1155 = (
+  favourite_kind: any,
+  wallet_address: any,
+  nftType?: any
+) => {
+  return axiosInstance.get(
+    `/users/favourites/${favourite_kind}/${wallet_address}/${nftType}`
+  )
+}
+
+
+export const getIsUserExist = (wallet_address:any) => {
+  return axiosInstance.get(`/users/isuser_registered/${wallet_address}`)
 }

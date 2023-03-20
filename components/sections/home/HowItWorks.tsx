@@ -69,6 +69,9 @@ const BottomRow: FC = () => (
             <button
               className="w-[14.625rem] h-[3rem] md:w-[17.625rem] md:h-[3.5rem] text-white font-poppins font-medium text-sm md:text-[1.25rem] bg-[#8D5DF1] 
             flex justify-center items-center gap-2 rounded hover:scale-105 transition-transform"
+              onClick={() =>
+                window.open('https://gamestoweb3.readme.io/', '_block')
+              }
             >
               <span>View API Docs</span>
               <span>
@@ -78,6 +81,12 @@ const BottomRow: FC = () => (
             <button
               className="w-[14.625rem] h-[3rem] md:w-[17.625rem] md:h-[3.5rem] text-black font-poppins font-medium text-sm md:text-[1.25rem] bg-[#27DFB3] 
             flex justify-center items-center gap-2 rounded hover:scale-105 transition-transform"
+              onClick={() =>
+                window.open(
+                  'https://docs.google.com/forms/d/e/1FAIpQLSdR99eqS5rkauecBWhiGzvHnn2Yhkx0jvGSF4hiHsMdx0IIog/viewform?usp=sf_link',
+                  '_block'
+                )
+              }
             >
               <span>Generate API Key</span>
               <span>

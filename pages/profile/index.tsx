@@ -44,11 +44,14 @@ import {
   fromRightAnimation,
   opacityAnimation,
 } from '../../utils/animations'
+import FavourteCollections from '../../components/UserFavCollections'
+import UserFavAssets from '../../components/UserFavAssets'
 // import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 
 type RouteNameType =
   | 'overview'
   | 'my collections'
+  | 'favourites'
   // | 'messages'
   // | 'my collection'
   // | 'wallet'
@@ -190,6 +193,51 @@ const CollectionTab: FC<{
   )
 }
 
+// User Collections Tabs function
+const FavourteCollection: FC<{
+  setIsDrawerOpen: Dispatch<SetStateAction<boolean>>
+  address: string | undefined
+}> = ({ setIsDrawerOpen, address }) => {
+
+  const [currentTab, setCurrentTab] = useState<'collections' | 'assets'>('collections')
+  // collection_name,
+  // contract_address,
+  // __v,
+  // _id,
+  // imageuri,
+  return (
+    <>
+      <div className="text-white font-poppins text-[20px] pl-[25%] p-6">
+        <span
+          className="border-b-2 border-custom_yellow cursor-pointer transition-all"
+          style={currentTab !== 'collections' ? { border: 'none' } : {}}
+          onClick={() => setCurrentTab('collections')}
+        >
+          Collections
+        </span>{' '}
+        <span className="text-gray-500">|</span>{' '}
+        <span
+          className="border-b-2 border-custom_yellow cursor-pointer transition-all"
+          style={currentTab !== 'assets' ? { border: 'none' } : {}}
+          onClick={() => setCurrentTab('assets')}
+        >
+          Assets
+        </span>
+      </div>
+      <div
+        onClick={() => setIsDrawerOpen(true)}
+        className="text-white p-4 lg:hidden"
+      >
+        <FaHamburger className=" text-lg hover:text-custom_yellow text-[#E5E5E5]" />
+      </div>
+      {currentTab == 'collections' ? (
+        <FavourteCollections address={address} />
+      ) : (
+        <UserFavAssets address={address} />
+      )}
+    </>
+  )
+}
 // User's Profile Page 
 const ProfilePage: NextPage = () => {
   const queryClient = useQueryClient()
@@ -366,10 +414,12 @@ const ProfilePage: NextPage = () => {
     ? [
         { name: 'overview', route: '/', icon: categoryIcon },
         { name: 'my collections', route: '/', icon: collectionIcon },
+        { name: 'favourites', route: '/', icon: collectionIcon },
         { name: 'settings', route: '/', icon: settingsIcon },
       ]
     : [
         { name: 'overview', route: '/', icon: categoryIcon },
+        { name: 'favourites', route: '/', icon: collectionIcon },
         { name: 'settings', route: '/', icon: settingsIcon },
       ]
   return (
@@ -524,6 +574,12 @@ const ProfilePage: NextPage = () => {
 
             {HasCollections && currentRoute === 'my collections' && (
               <CollectionTab
+                setIsDrawerOpen={setIsDrawerOpen}
+                address={address ? String(address) : undefined}
+              />
+            )}
+            {currentRoute === 'favourites' && (
+              <FavourteCollection
                 setIsDrawerOpen={setIsDrawerOpen}
                 address={address ? String(address) : undefined}
               />

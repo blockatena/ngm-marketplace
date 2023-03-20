@@ -9,6 +9,7 @@ import {
   AuctionType,
   AvatarType,
   BidType,
+  FavouritePostType,
   NftContractType,
   NftType,
   OfferType,
@@ -30,7 +31,11 @@ import ViewOwnersModal from '../modals/ViewOwnersModal'
 import { addresses } from '../../contracts/addresses'
 import { RPC } from '../../contracts/rpc'
 import ImageViewModal from '../modals/ImageViewModal'
-
+import Image from 'next/image'
+import { checkIfFavorite, getIsUserExist, handleFavourite } from '../../react-query/queries'
+import { useMutation, useQuery } from 'react-query'
+import { CheckIfFavoriteType } from '../../interfaces'
+import { QUERIES } from '../../react-query/constants'
 // product Overview for single nft page
 const ProductOverviewSection: FC<{
   nft: AvatarType
@@ -68,6 +73,7 @@ const ProductOverviewSection: FC<{
   const [isCancelSaleModalOpen, setIsCancelSaleModalOpen] = useState(false)
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
   const [isViewOwnersModalOpen, setIsViewOwnersModalOpen] = useState(false)
+  const [isLiked, setIsLiked] = useState(false)
   const { address } = useAccount()
   const isMounted = useIsMounted()
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
@@ -311,6 +317,59 @@ const ProductOverviewSection: FC<{
     let profile = owner === address ? `/profile` : `/profile/${owner}`
     router.push(profile)
   }
+
+    const [userExist, setUserExist] = useState(false)
+
+    const { data, isSuccess } = useQuery(
+      [QUERIES.getIsUserExist, address],
+      () => getIsUserExist(address)
+    )
+
+    useEffect(() => {
+      address && isSuccess && setUserExist(data?.data)
+    }, [data, address, isSuccess])
+
+  const {
+    mutate: checkIfFav,
+    data: checkIfFavData,
+    isSuccess: checkIfFavSuccess,
+  } = useMutation(checkIfFavorite)
+
+  useEffect(() => {
+    checkIfFavSuccess && setIsLiked(checkIfFavData?.data?.isFavourite?true:false)
+  }, [checkIfFavData, checkIfFavSuccess])
+
+
+  useEffect(() => {
+    let body: CheckIfFavoriteType = {
+      contract_address: nft?.contract_address,
+      token_id: parseInt(nft?.token_id),
+      nft_type: nftType == 'NGM1155' ? 'NGM1155' : 'NGM721',
+      favourite_kind: 'NFTS',
+      wallet_address: address,
+    }
+    nft && address && checkIfFav(body)
+  }, [checkIfFav, address, nft, nftType])
+      
+  // Favourite
+
+        const { mutate: handleFav } = useMutation(handleFavourite)
+      const handleLike = async () => {
+        await setIsLiked(!isLiked)
+        let data: FavouritePostType = {
+          contract_address: nft?.contract_address,
+          token_id: parseInt(nft?.token_id),
+          nft_type: nftType == 'NGM1155' ? 'NGM1155' : 'NGM721',
+          favourite_kind: 'NFTS',
+          wallet_address: address,
+          action: isLiked ? 'REMOVE' : 'ADD',
+        }
+        nft?.contract_address && address && handleFav(data)
+      }
+
+
+
+
   return (
     <section className="flex flex-col xl:flex-row gap-4 lg:gap-4 2xl:gap-32 xl:justify-between p-0">
       <motion.div
@@ -332,7 +391,23 @@ const ProductOverviewSection: FC<{
               {contractDetails?.collection_name}
             </p>
             <p className="text-white text-2xl lg:text-[49px] font-josefin">
-              {nft?.meta_data?.name}
+              {nft?.meta_data?.name}{' '}
+              {checkIfFavSuccess && (
+                <span>
+                  <Image
+                    src={
+                      isLiked
+                        ? '/images/icons/liked.svg'
+                        : '/images/icons/like.svg'
+                    }
+                    alt="like"
+                    width="30px"
+                    height="28px"
+                    onClick={() => handleLike()}
+                    className="cursor-pointer justify-end"
+                  />
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -363,7 +438,23 @@ const ProductOverviewSection: FC<{
           </div>
 
           <p className="text-white text-2xl lg:text-[49px] font-josefin leading-[55px]">
-            {nft?.meta_data?.name}
+            {nft?.meta_data?.name}{' '}
+            {checkIfFavSuccess && userExist && (
+              <span>
+                <Image
+                  src={
+                    isLiked
+                      ? '/images/icons/liked.svg'
+                      : '/images/icons/like.svg'
+                  }
+                  alt="like"
+                  width="30px"
+                  height="28px"
+                  onClick={() => handleLike()}
+                  className="cursor-pointer justify-end"
+                />
+              </span>
+            )}
           </p>
         </div>
 

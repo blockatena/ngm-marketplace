@@ -135,7 +135,7 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
         <FaHamburger className=" text-lg hover:text-custom_yellow text-[#E5E5E5]" />
       </div>
       <div className="pb-20 md:px-4 bg-[#1F2021] rounded-lg w-full  max-w-full mx-auto px-6 py-9 lg:h-[928px] scrollbar-thin scrollbar-thumb-[#5A5B61] scrollbar-thumb-rounded-lg scrollbar-track-[#1F2021] overflow-y-scroll">
-        {!user && (
+        {!user?.email && (
           <div>
             <button
               onClick={() => handleLogin()}
@@ -147,12 +147,12 @@ const UserSettings: FC<{ user: UserType | null }> = ({ user }) => {
             </button>
           </div>
         )}
-        {user && (
+        {user?.email && (
           <h1 className="font-poppins text-white lg:text-3xl font-medium mb-4 text-center">
             Account Details
           </h1>
         )}
-        {user &&
+        {user?.email &&
           userInfo.map(({ name, value }, index) => (
             <motion.div
               key={index}
