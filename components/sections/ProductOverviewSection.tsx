@@ -84,6 +84,7 @@ const ProductOverviewSection: FC<{
   const [accountBalance, setAccountBalance] = useState('')
   const [chainID, setChainID] = useState('')
   const [imageView, setImageView] = useState({ isOpen: false, img: '' })
+  const [like, setLikes] = useState(0)
 
   // const meta_data_url = nft?.nft.meta_data_url || ''
 
@@ -327,7 +328,8 @@ const ProductOverviewSection: FC<{
 
     useEffect(() => {
       address && isSuccess && setUserExist(data?.data)
-    }, [data, address, isSuccess])
+      setLikes(nft?.nft_popularity?.likes>0?nft?.nft_popularity?.likes:0)
+    }, [data, address, isSuccess, nft])
 
   const {
     mutate: checkIfFav,
@@ -356,6 +358,7 @@ const ProductOverviewSection: FC<{
         const { mutate: handleFav } = useMutation(handleFavourite)
       const handleLike = async () => {
         await setIsLiked(!isLiked)
+        await setLikes((prev: number) => (!isLiked ? prev + 1 :prev==0?0: prev - 1))
         let data: FavouritePostType = {
           contract_address: nft?.contract_address,
           token_id: parseInt(nft?.token_id),
@@ -392,22 +395,6 @@ const ProductOverviewSection: FC<{
             </p>
             <p className="text-white text-2xl lg:text-[49px] font-josefin">
               {nft?.meta_data?.name}{' '}
-              {checkIfFavSuccess && (
-                <span>
-                  <Image
-                    src={
-                      isLiked
-                        ? '/images/icons/liked.svg'
-                        : '/images/icons/like.svg'
-                    }
-                    alt="like"
-                    width="30px"
-                    height="28px"
-                    onClick={() => handleLike()}
-                    className="cursor-pointer justify-end"
-                  />
-                </span>
-              )}
             </p>
           </div>
         </div>
@@ -439,22 +426,6 @@ const ProductOverviewSection: FC<{
 
           <p className="text-white text-2xl lg:text-[49px] font-josefin leading-[55px]">
             {nft?.meta_data?.name}{' '}
-            {checkIfFavSuccess && userExist && (
-              <span>
-                <Image
-                  src={
-                    isLiked
-                      ? '/images/icons/liked.svg'
-                      : '/images/icons/like.svg'
-                  }
-                  alt="like"
-                  width="30px"
-                  height="28px"
-                  onClick={() => handleLike()}
-                  className="cursor-pointer justify-end"
-                />
-              </span>
-            )}
           </p>
         </div>
 
@@ -542,8 +513,40 @@ const ProductOverviewSection: FC<{
               )}
             </div>
           </div>
+          <div className="h-10 p-2 lg:p-4 mt-2">
+            <div className="flex gap-2">
+              {checkIfFavSuccess && userExist && (
+                <Image
+                  src={
+                    isLiked
+                      ? '/images/icons/liked.svg'
+                      : '/images/icons/like.svg'
+                  }
+                  alt="like"
+                  width="20px"
+                  height="18px"
+                  onClick={() => handleLike()}
+                  className="cursor-pointer justify-end"
+                />
+              )}
+              <p className="text-white text-xl">{`${like ? like : 0} Likes`}</p>
+            </div>
+          </div>
           {displayTime && (
-            <div className="grid place-items-center">
+            <div className="relative hidden sm:grid place-items-center">
+              <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
+                {D < 10 && <>0</>}
+                {D} : {H < 10 && <>0</>}
+                {H} : {M < 10 && <>0</>}
+                {M} : {S < 10 && <>0</>}
+                {S}
+              </div>
+            </div>
+          )}
+        </div>
+        <div>
+          {displayTime && (
+            <div className="justify-start sm:hidden grid place-items-center">
               <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
                 {D < 10 && <>0</>}
                 {D} : {H < 10 && <>0</>}

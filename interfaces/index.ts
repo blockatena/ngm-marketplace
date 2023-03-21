@@ -139,6 +139,7 @@ export type AvatarType = {
     external_uri: string
     attributes: { name: string; value: string }[]
   }
+  nft_popularity:any
 }
 
 export type NftContractType = {
