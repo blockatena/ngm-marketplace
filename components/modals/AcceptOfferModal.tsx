@@ -222,7 +222,7 @@ const AcceptOfferModal: FC<{
         <h2 className="text-white font-poppins text-[20px] lg:text-[30px] text-center my-4">
           {!isChainCorrect
             ? 'Wrong network detected'
-            : 'Are you sure you want to accpet this offer?'}
+            : 'Are you sure you want to accept this offer?'}
         </h2>
         {isOfferLoading || isOffer1155Loading && (
           <div className="py-4 grid place-items-center">

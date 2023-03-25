@@ -60,7 +60,7 @@ const CardStack: FC = () => {
               Current Bid
             </p>
             <p className="text-[.55rem] lg:text-base font-bold flex items-center">
-              <FaEthereum /> 0.25NXT
+              <FaEthereum /> 0.25
             </p>
           </div>
           <div className="flex items-center">

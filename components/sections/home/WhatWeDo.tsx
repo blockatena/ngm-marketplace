@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
 import { IoChevronForwardSharp } from 'react-icons/io5'
+import { FaEthereum } from 'react-icons/fa'
 import {
   fromBottomAnimation,
   fromLeftAnimation,
@@ -128,7 +129,10 @@ const NftCard: FC<{ name: string; pgb: string; img: string }> = ({
           {name}
         </p>
         <p className="absolute bottom-[1rem] left-8 flex items-center gap-1">
-          <span className="text-[.4163rem]">pgb </span> <span>{pgb}</span>
+          <span className="text-[1rem]">
+            <FaEthereum />
+          </span>{' '}
+          <span>{pgb}</span>
         </p>
       </div>
     </div>

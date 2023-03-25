@@ -49,7 +49,9 @@ interface HeroSectionProps {
   owners: any
   description: string
   floor: any
-  wallet_address:any
+  wallet_address: any
+  like:any
+  setLikes:(_value:any) => void
 }
 
 const placeholderLogo = '/images/collections/collection_avatar.png'
@@ -257,7 +259,9 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
   totalsupply,
   createdAt,
   wallet_address,
-  contract_address
+  contract_address,
+  like,
+  setLikes
 }) => {
   let banner = `url("${
     bannerimage ? bannerimage : '/images/collections/collection_hero.png'
@@ -266,40 +270,43 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
   const [isLiked, setIsLiked] = useState(false)
   const [userExist, setUserExist] = useState(false)
 
-  const { data, isSuccess} = useQuery(
+
+  const { data, isSuccess } = useQuery(
     [QUERIES.getIsUserExist, wallet_address],
     () => getIsUserExist(wallet_address)
   )
 
-  useEffect(()=> {
+  useEffect(() => {
     wallet_address && isSuccess && setUserExist(data?.data)
-  },[data, wallet_address, isSuccess])
+    setLikes(like>0?like:0)
+  }, [data, wallet_address, isSuccess,like, setLikes])
 
-    const {
-      mutate: checkIfFav,
-      data: checkIfFavData,
-      isSuccess: checkIfFavSuccess,
-    } = useMutation(checkIfFavorite)
+  const {
+    mutate: checkIfFav,
+    data: checkIfFavData,
+    isSuccess: checkIfFavSuccess,
+  } = useMutation(checkIfFavorite)
 
-    const { mutate: handleFav } =
-      useMutation(handleFavourite)
+  const { mutate: handleFav } = useMutation(handleFavourite)
 
-    useEffect(() => {
-      checkIfFavSuccess && setIsLiked(checkIfFavData?.data?.isFavourite)
-    }, [checkIfFavData, checkIfFavSuccess])
+  useEffect(() => {
+    checkIfFavSuccess && setIsLiked(checkIfFavData?.data?.isFavourite)
+  }, [checkIfFavData, checkIfFavSuccess])
 
-    useEffect(() => {
-      let body: CheckIfFavoriteType = {
-        contract_address,
-        favourite_kind: 'COLLECTIONS',
-        wallet_address,
-      }
-      contract_address !== 'undefined' && wallet_address && checkIfFav(body)
-    }, [checkIfFav, wallet_address, contract_address])
-
+  useEffect(() => {
+    let body: CheckIfFavoriteType = {
+      contract_address,
+      favourite_kind: 'COLLECTIONS',
+      wallet_address,
+    }
+    contract_address !== 'undefined' && wallet_address && checkIfFav(body)
+  }, [checkIfFav, wallet_address, contract_address])
 
   const handleLike = async () => {
     await setIsLiked(!isLiked)
+    await setLikes((prev: number) =>
+      !isLiked ? prev + 1 : prev == 0 ? 0 : prev - 1
+    )
     let data: FavouritePostType = {
       contract_address,
       wallet_address,
@@ -368,26 +375,30 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
             </p>
           </div>
         </div>
-        {checkIfFavSuccess && userExist && (
-          <div className="flex justify-end items-end gap-2 ">
-            <Image
-              src={
-                isLiked ? '/images/icons/liked.svg' : '/images/icons/like.svg'
-              }
-              alt="like"
-              width="20px"
-              height="18px"
-              onClick={() => handleLike()}
-              className="cursor-pointer"
-            />
-            <Image
-              src="/images/icons/share.svg"
-              alt="share"
-              width="20px"
-              height="18px"
-            />
-          </div>
-        )}
+
+        <div className="flex justify-end items-end gap-2 ">
+          {/* <p className="text-white text-2xl">{`${like ? like : 0} Likes`}</p> */}
+          {checkIfFavSuccess && userExist && (
+            <>
+              <Image
+                src={
+                  isLiked ? '/images/icons/liked.svg' : '/images/icons/like.svg'
+                }
+                alt="like"
+                width="30px"
+                height="27px"
+                onClick={() => handleLike()}
+                className="cursor-pointer"
+              />
+              <Image
+                src="/images/icons/share.svg"
+                alt="share"
+                width="30px"
+                height="27px"
+              />
+            </>
+          )}
+        </div>
       </div>
     </motion.section>
   )
@@ -401,6 +412,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
   floor,
   owners,
   description,
+  like
 }) => {
   return (
     <motion.section
@@ -449,6 +461,14 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
           </p>
           <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
             Owners
+          </p>
+        </div>
+        <div className="grid place-items-center">
+          <p className="font-oxygen text-white lg:text-[19px] font-light">
+            {like && like>0?like:0}
+          </p>
+          <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
+            Likes
           </p>
         </div>
       </div>
@@ -590,6 +610,7 @@ const CollectionPage: NextPage = () => {
   const [sort_by, setSortBy] = useState<any>('NA')
   const [listed_in, setListedIn] = useState<any>('NA')
   const [search, setSearch] = useState('NA')
+  const [like, setLikes] = useState(0)
   const contractAddress = String(router?.query?.contractAddress)
 
   // Api to get NFTs of the collection
@@ -647,6 +668,7 @@ const CollectionPage: NextPage = () => {
   let totalNfts = collectionDetails?.data?.nfts?.total_nfts
   let totalsupply = totalNfts ? totalNfts : collectionDetails?.data.nfts?.length
   let createddate = collectionDetails?.data?.collection?.createdAt
+  let likes = collectionDetails?.data?.collection?.collection_popularity?.likes
   createddate = createddate?.substring(0, 10)
   let bannerurl = '/images/collections/static.jpg'
   let description = collectionDetails?.data?.collection?.description
@@ -655,7 +677,9 @@ const CollectionPage: NextPage = () => {
       ? collectionDetails?.data?.collection?.imageuri[0]
       : undefined
 
-
+useEffect(() => {
+  collectionDetails && setLikes(likes)
+}, [collectionDetails, likes])
       // The function handleSearch is call in Collection Search Section
   const handleSearch = (value: any) => {
     if (value) {
@@ -730,6 +754,8 @@ const CollectionPage: NextPage = () => {
             bestOffer={bestOffer}
             floor={floor}
             wallet_address={address}
+            like={like}
+            setLikes={setLikes}
           />
         ) : (
           ''
@@ -752,6 +778,8 @@ const CollectionPage: NextPage = () => {
             bestOffer={bestOffer}
             floor={floor}
             wallet_address={address}
+            like={like}
+            setLikes={setLikes}
           />
         ) : (
           ''

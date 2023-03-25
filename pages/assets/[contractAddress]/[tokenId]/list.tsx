@@ -69,6 +69,7 @@ const initalNftState: AvatarType = {
     external_uri: '',
     attributes: [{ name: '', value: '' }],
   },
+  nft_popularity:0
 }
 
 
