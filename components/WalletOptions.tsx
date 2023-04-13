@@ -19,6 +19,7 @@ interface CardProps {
   setMessage: Dispatch<SetStateAction<string>>
 }
 
+// wallet options : Metamask
 const walletOptions: WalletOptionType[] = [
   {
     img: '/images/icons/metamask.png',
@@ -28,11 +29,12 @@ const walletOptions: WalletOptionType[] = [
   },
 ]
 
+// Card container of wallet
 const Card: FC<CardProps> = ({ connector, setMessage }) => {
   const { connect, isLoading } = useConnect()
   const { name } = connector
   const wallet = walletOptions.find((option) => option.title === name)
-  console.log(connector)
+  // console.log(connector)
   const handleClick = () => {
     if (name === 'MetaMask' && !window.ethereum) {
       setMessage('Please Install MetaMask')
@@ -43,7 +45,7 @@ const Card: FC<CardProps> = ({ connector, setMessage }) => {
 
   return (
     <motion.div
-      className={`shadow-inner shadow-gray-400 overflow-ellipsis cursor-pointer h-75 p-2 w-full bg-dark_mild  md:w-52 lg:w-96 rounded-lg`}
+      className={`shadow-inner shadow-gray-400 overflow-ellipsis cursor-pointer h-75 p-2 w-96 bg-dark_mild  lg:w-96 rounded-lg`}
       onClick={handleClick}
       whileHover={{ scale: 1.1 }}
     >
@@ -68,7 +70,7 @@ const Card: FC<CardProps> = ({ connector, setMessage }) => {
         {wallet?.content}
       </p>
       <button
-        className="btn-primary w-[200px] h-[40px] lg:w-[365px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]
+        className="btn-primary w-[370px] h-[40px]  lg:w-[365px] lg:h-[57px] rounded-lg font-poppins lg:text-[25px]
             grid place-items-center"
         // onClick={() => setIsSuccessModalOpen(true)}
         onClick={() => handleClick()}
@@ -80,6 +82,8 @@ const Card: FC<CardProps> = ({ connector, setMessage }) => {
   )
 }
 
+
+// wallet Options : handle wallet connect
 const WalletOptions: FC = () => {
   const { connectors, error } = useConnect()
   const [message, setMessage] = useState('')
@@ -103,7 +107,7 @@ const WalletOptions: FC = () => {
           </motion.p>
         )}
       </AnimatePresence>
-      <div className="flex flex-col flex-wrap pb-28 gap-4 md:justify-start md:flex-row lg:justify-center">
+      <div className="flex flex-wrap pb-28 gap-4 justify-center flex-row">
         {connectors?.map((connector, index) => (
           <motion.div
             key={index}

@@ -29,12 +29,14 @@ import editIcon from '../../public/images/icons/edit.svg'
 // import messageIcon from '../../public/images/icons/Message.svg'
 import settingsIcon from '../../public/images/icons/Setting.svg'
 // import walletIcon from '../../public/images/icons/Wallet.svg'
+import UserCollections from '../../components/UserCollections'
+import collectionIcon from '../../public/images/icons/collection.svg'
 import { QUERIES } from '../../react-query/constants'
 import {
   getUser,
+  getUserCollections,
   updateUser,
   uploadProfileImg,
-  getUserCollections,
 } from '../../react-query/queries'
 import { shortenString } from '../../utils'
 import {
@@ -42,13 +44,14 @@ import {
   fromRightAnimation,
   opacityAnimation,
 } from '../../utils/animations'
-import UserCollections from '../../components/UserCollections'
-import collectionIcon from '../../public/images/icons/collection.svg'
+import FavourteCollections from '../../components/UserFavCollections'
+import UserFavAssets from '../../components/UserFavAssets'
 // import heroIcon from '../../public/images/hero/product_page_hero_icon.png'
 
 type RouteNameType =
   | 'overview'
   | 'my collections'
+  | 'favourites'
   // | 'messages'
   // | 'my collection'
   // | 'wallet'
@@ -58,7 +61,7 @@ type RouteNameType =
 type RouteType = { name: RouteNameType; route: string; icon: any }
 
 
-
+// NavRoute: handle single routes with names , all routes receive from main page / drawer
 const NavRoute: FC<{
   icon: string
   name: RouteNameType
@@ -85,13 +88,15 @@ const NavRoute: FC<{
   )
 }
 
+
+// handle Routes for mobile, tab devices and send to NavRoute
 const Drawer: FC<{
   isOpen: boolean
   setIsOpen: Dispatch<SetStateAction<boolean>>
   setCurrentRoute: Dispatch<SetStateAction<RouteNameType>>
   currentRoute: RouteNameType
-  routes:RouteType[]
-}> = ({ setIsOpen, setCurrentRoute, currentRoute ,routes}) => {
+  routes: RouteType[]
+}> = ({ setIsOpen, setCurrentRoute, currentRoute, routes }) => {
   const handleClick = () => {
     setIsOpen(false)
   }
@@ -119,6 +124,8 @@ const Drawer: FC<{
   )
 }
 
+
+// User Assets and Activity tab Function 
 const AssetsActivityTabs: FC<{
   setIsDrawerOpen: Dispatch<SetStateAction<boolean>>
 }> = ({ setIsDrawerOpen }) => {
@@ -159,6 +166,8 @@ const AssetsActivityTabs: FC<{
   )
 }
 
+
+// User Collections Tabs function
 const CollectionTab: FC<{
   setIsDrawerOpen: Dispatch<SetStateAction<boolean>>
   address: string | undefined
@@ -183,6 +192,53 @@ const CollectionTab: FC<{
     </>
   )
 }
+
+// User Collections Tabs function
+const FavourteCollection: FC<{
+  setIsDrawerOpen: Dispatch<SetStateAction<boolean>>
+  address: string | undefined
+}> = ({ setIsDrawerOpen, address }) => {
+
+  const [currentTab, setCurrentTab] = useState<'collections' | 'assets'>('collections')
+  // collection_name,
+  // contract_address,
+  // __v,
+  // _id,
+  // imageuri,
+  return (
+    <>
+      <div className="text-white font-poppins text-[20px] pl-[25%] p-6">
+        <span
+          className="border-b-2 border-custom_yellow cursor-pointer transition-all"
+          style={currentTab !== 'collections' ? { border: 'none' } : {}}
+          onClick={() => setCurrentTab('collections')}
+        >
+          Collections
+        </span>{' '}
+        <span className="text-gray-500">|</span>{' '}
+        <span
+          className="border-b-2 border-custom_yellow cursor-pointer transition-all"
+          style={currentTab !== 'assets' ? { border: 'none' } : {}}
+          onClick={() => setCurrentTab('assets')}
+        >
+          Assets
+        </span>
+      </div>
+      <div
+        onClick={() => setIsDrawerOpen(true)}
+        className="text-white p-4 lg:hidden"
+      >
+        <FaHamburger className=" text-lg hover:text-custom_yellow text-[#E5E5E5]" />
+      </div>
+      {currentTab == 'collections' ? (
+        <FavourteCollections address={address} />
+      ) : (
+        <UserFavAssets address={address} />
+      )}
+    </>
+  )
+}
+// User's Profile Page 
 const ProfilePage: NextPage = () => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
@@ -201,7 +257,9 @@ const ProfilePage: NextPage = () => {
   const [HasCollections, setHasCollections] = useState(false)
 
   type UploadOptionType = 'banner' | 'profile'
-  const connectedaAddress:any = address
+  const connectedaAddress: any = address
+  
+  // Api Call to Get User's Collections 
   const collections = useQuery(
     [QUERIES.getUserCollections, connectedaAddress],
     () => getUserCollections(connectedaAddress, 1, 1),
@@ -219,6 +277,7 @@ const ProfilePage: NextPage = () => {
     }
   }, [collections])
 
+  // Api Call to get User's Data
   const { data: userData } = useQuery(
     [QUERIES.getUser, address],
     () => getUser(String(address)),
@@ -227,6 +286,7 @@ const ProfilePage: NextPage = () => {
     }
   )
 
+  // Api Call to Post User's ProfileImage 
   const {
     mutate: uploadImage,
     isSuccess: isUploadSuccess,
@@ -237,6 +297,7 @@ const ProfilePage: NextPage = () => {
     },
   })
 
+  // Api Post call to update username
   const {
     mutate: usernameMutation,
     isLoading: isUserMutationLoading,
@@ -247,11 +308,14 @@ const ProfilePage: NextPage = () => {
     },
   })
 
+  // handle Username input
   const handleUsernameMutation = () => {
     if (!username || !address) return
     usernameMutation({ username, wallet_address: String(address) })
   }
 
+
+  // Choose File to upload Banner or Profile Picture
   const handleChooseFile = (type: 'bgImg' | 'profilePic') => {
     if (!user) {
       toast.dark('Sign in to edit profile', {
@@ -269,14 +333,17 @@ const ProfilePage: NextPage = () => {
     }
   }
 
+  // File Validation, check if the uploaded Image is with correct suffix and size
   const handleFileValidation = (files: FileList): boolean => {
     if (!files) return false
     const fileName = files[0]?.name
     const fileSize = files[0]?.size / 1024 / 1024 //file size in MBs
     // const allowedFileTypesRegex = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png)$/i;
-    const allowedFileTypesRegex = /(\.jpg|\.jpeg)$/i
 
-    if (!allowedFileTypesRegex.exec(fileName)) {
+
+    const allowedFileTypesRegex = /(\.jpg|\.jpeg)$/i  // Manage Allowed suffixes
+
+    if (!allowedFileTypesRegex.exec(fileName)) { 
       toast.dark('Please upload a jpg image', {
         type: 'error',
         hideProgressBar: true,
@@ -284,7 +351,7 @@ const ProfilePage: NextPage = () => {
       return false
     }
 
-    if (fileSize > 1.5) {
+    if (fileSize > 1.5) {  // Maximum Allowed Size of upload image in MB
       toast.dark('File must be under 1.5MB', {
         type: 'error',
         hideProgressBar: true,
@@ -295,6 +362,8 @@ const ProfilePage: NextPage = () => {
     return true
   }
 
+
+  // Handle upload Banner and PFP
   const handleUpload = useCallback(() => {
     if ((!bgFiles && !profilePicFiles) || !address) return
     let uploadType: UploadOptionType = 'banner'
@@ -321,7 +390,9 @@ const ProfilePage: NextPage = () => {
   }, [isUploadSuccess])
 
   useEffect(() => {
-    if (userData && typeof userData?.data !== 'string') setUser(userData?.data?.success?userData?.data?.success:'')
+    // if (userData && typeof userData?.data !== 'string') setUser(userData?.data?userData?.data:'')
+
+    if (userData?.data?.createdAt) setUser(userData?.data)
     else setUser(null)
   }, [userData])
 
@@ -338,16 +409,19 @@ const ProfilePage: NextPage = () => {
     setIsUsernameUpdate(false)
   }, [isUserMutationSuccess])
 
-const routes: RouteType[] = HasCollections
-  ? [
-      { name: 'overview', route: '/', icon: categoryIcon },
-      { name: 'my collections', route: '/', icon: collectionIcon },
-      { name: 'settings', route: '/', icon: settingsIcon },
-    ]
-  : [
-      { name: 'overview', route: '/', icon: categoryIcon },
-      { name: 'settings', route: '/', icon: settingsIcon },
-    ]
+  // Manage Routes
+  const routes: RouteType[] = HasCollections
+    ? [
+        { name: 'overview', route: '/', icon: categoryIcon },
+        { name: 'my collections', route: '/', icon: collectionIcon },
+        { name: 'favourites', route: '/', icon: collectionIcon },
+        { name: 'settings', route: '/', icon: settingsIcon },
+      ]
+    : [
+        { name: 'overview', route: '/', icon: categoryIcon },
+        { name: 'favourites', route: '/', icon: collectionIcon },
+        { name: 'settings', route: '/', icon: settingsIcon },
+      ]
   return (
     <main className="p-4 pt-6 pb-0 lg:px-8 relative -bottom-8">
       <div
@@ -500,6 +574,12 @@ const routes: RouteType[] = HasCollections
 
             {HasCollections && currentRoute === 'my collections' && (
               <CollectionTab
+                setIsDrawerOpen={setIsDrawerOpen}
+                address={address ? String(address) : undefined}
+              />
+            )}
+            {currentRoute === 'favourites' && (
+              <FavourteCollection
                 setIsDrawerOpen={setIsDrawerOpen}
                 address={address ? String(address) : undefined}
               />

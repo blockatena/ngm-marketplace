@@ -6,6 +6,8 @@ import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 
+
+// Account Create Confirmation Modal
 const AccountConfirmationModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -19,6 +21,7 @@ const AccountConfirmationModal: FC<{
 }> = ({ setIsOpen, user: { email, username }, createUser, isLoading }) => {
   const { address } = useAccount()
 
+  // handle confirmation click
   const handleClick = () => {
     createUser(email, String(address), username)
   }

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { FC } from 'react'
 import { opacityAnimation } from '../utils/animations'
 
+//Page Headings
 const PageHeading: FC<{ name: string }> = ({ name }) => {
   return (
     <motion.div

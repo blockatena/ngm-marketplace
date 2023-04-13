@@ -24,23 +24,6 @@ interface GalleryCardProps extends CollectionCardType {
   // behindImgUrl: any
 }
 
-// const galleryData: GalleryCardProps[] = [
-//   {
-//     title: 'Apex Legends',
-//     behindImgUrl: behind_1,
-//     imgUrl: img_1,
-//   },
-//   {
-//     title: 'Free Fire',
-//     behindImgUrl: behind_1,
-//     imgUrl: img_2,
-//   },
-//   {
-//     title: 'PUBG',
-//     behindImgUrl: behind_1,
-//     imgUrl: img_3,
-//   },
-// ]
 
 const cardVariants = {
   initial: {
@@ -295,7 +278,7 @@ const GalleryAndNewsSection: React.FC = () => {
   const { width } = useWindowDimensions()
 
   const { data } = useQuery([QUERIES.getCollections, CURRENT_PAGE], () =>
-    getCollections(CURRENT_PAGE)
+    getCollections(CURRENT_PAGE, 12, 'NA', 'NA', 'NA')
   )
 
   let maxNum = newsData.length - 1
@@ -311,7 +294,7 @@ const GalleryAndNewsSection: React.FC = () => {
   }
 
   useEffect(() => {
-    if (data?.data?.collections.length) {
+    if (data?.data?.collections?.length) {
       setCollections(data.data.collections)
     }
   }, [data?.data])

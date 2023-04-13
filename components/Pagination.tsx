@@ -1,16 +1,13 @@
 import { FC, Fragment, useEffect, useState } from 'react'
 
 interface PaginationProps {
-  // itemsPerPage: number
-  // totalItems: number
   paginate: (_pageNumber: number) => void
   currentPage: number
   totalPages: number
 }
 
+// handle Paginations for activities , nfts, collections 
 const Pagination: FC<PaginationProps> = ({
-  // itemsPerPage,
-  // totalItems,
   paginate,
   currentPage,
   totalPages,
@@ -19,9 +16,6 @@ const Pagination: FC<PaginationProps> = ({
 
   useEffect(() => {
     let pages: number[] = []
-    // for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
-    //   pages.push(i)
-    // }
     for (let i = 1; i <= totalPages; i++) {
       pages.push(i)
     }

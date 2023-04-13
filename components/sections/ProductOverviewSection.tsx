@@ -9,8 +9,11 @@ import {
   AuctionType,
   AvatarType,
   BidType,
+  FavouritePostType,
   NftContractType,
+  NftType,
   OfferType,
+  Sale1155Type,
   SaleType,
   UserType,
 } from '../../interfaces'
@@ -23,11 +26,17 @@ import CancelOfferModal from '../modals/CancelOfferModal'
 import CancelSaleModal from '../modals/CancelSaleModal'
 import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
+import ViewOwnersModal from '../modals/ViewOwnersModal'
 // import ownerImg from '../../public/images/others/owner.png'
-
-const NGM20Address = process.env.NEXT_PUBLIC_NGM20_ADDRESS || ''
-// const CHAINID = process.env.NEXT_PUBLIC_CHAIN_ID || ''
-
+import { addresses } from '../../contracts/addresses'
+import { RPC } from '../../contracts/rpc'
+import ImageViewModal from '../modals/ImageViewModal'
+import Image from 'next/image'
+import { checkIfFavorite, getIsUserExist, handleFavourite } from '../../react-query/queries'
+import { useMutation, useQuery } from 'react-query'
+import { CheckIfFavoriteType } from '../../interfaces'
+import { QUERIES } from '../../react-query/constants'
+// product Overview for single nft page
 const ProductOverviewSection: FC<{
   nft: AvatarType
   contractDetails: NftContractType | undefined
@@ -38,6 +47,10 @@ const ProductOverviewSection: FC<{
   offers: OfferType[] | undefined
   setActiveTabIndex: () => void
   owner: UserType | undefined
+  nftType?: NftType
+  owners?: any[]
+  sales?: Sale1155Type[] | undefined
+  tokensOwned: number | null
 }> = ({
   nft,
   contractDetails,
@@ -47,6 +60,10 @@ const ProductOverviewSection: FC<{
   offers,
   setActiveTabIndex,
   owner: tokenOwner,
+  nftType,
+  owners,
+  sales,
+  tokensOwned,
 }) => {
   const router = useRouter()
   const [isBidModalOpen, setIsBidModalOpen] = useState(false)
@@ -55,6 +72,8 @@ const ProductOverviewSection: FC<{
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
   const [isCancelSaleModalOpen, setIsCancelSaleModalOpen] = useState(false)
   const [isCancelOfferModalOpen, setIsCancelOfferModalOpen] = useState(false)
+  const [isViewOwnersModalOpen, setIsViewOwnersModalOpen] = useState(false)
+  const [isLiked, setIsLiked] = useState(false)
   const { address } = useAccount()
   const isMounted = useIsMounted()
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
@@ -63,35 +82,108 @@ const ProductOverviewSection: FC<{
   const [M, setM] = useState(0)
   const [S, setS] = useState(0)
   const [accountBalance, setAccountBalance] = useState('')
-    const [chainID, setChainID] = useState('')
+  const [chainID, setChainID] = useState('')
+  const [imageView, setImageView] = useState({ isOpen: false, img: '' })
+  const [like, setLikes] = useState(0)
+
   // const meta_data_url = nft?.nft.meta_data_url || ''
 
+  // check user sales for ERC1155
+  const userSales = () => {
+    if (nftType !== 'NGM1155') return false
+    const fi = sales?.find((a) => {
+      if (nftType === 'NGM1155') {
+        return a.token_owner === address && a.status == 'started'
+      } else return false
+    })
+    return fi
+  }
+  const DeployType =
+    chainID == '80001' || chainID == '5'
+      ? 'DEV'
+      : chainID == '137' || chainID == '1'
+      ? 'PROD'
+      : ''
+  const devTokens = addresses.ERC20_CONTRACT.DEV
+  const prodTokens = addresses.ERC20_CONTRACT.PROD
+
+  const NGM20Address =
+    DeployType == 'DEV' && chainID == '80001'
+      ? devTokens.MUMBAI
+      : DeployType == 'DEV' && chainID == '5'
+      ? devTokens.GOERLI
+      : DeployType == 'PROD' && chainID == '137'
+      ? prodTokens.POLYGON
+      : DeployType == 'PROD' && chainID == '1'
+      ? prodTokens.ETHEREUM
+      : ''
+
+// condition for cancallable 
   const isCancellable =
     isMounted &&
     nft?.token_owner &&
     nft.token_owner === address &&
     nft?.is_in_auction
 
+    //check if sale cancellable
   const isSaleCancellable =
-    isMounted &&
-    nft?.token_owner &&
-    nft.token_owner === address &&
-    nft?.is_in_sale
+    nftType === 'NGM1155'
+      ? isMounted &&
+        // nft?.token_owner &&
+        (nft?.token_owner === address ||
+          owners?.some((owner) => owner.token_owner === address)) &&
+        nft?.is_in_sale &&
+        userSales()
+      : isMounted &&
+        // nft?.token_owner &&
+        nft?.token_owner === address &&
+        nft?.is_in_sale
+
   // const isBidCancellable = isUserIsBidder && nft?.is_in_auction
 
+  // filter Sales if any sales by the current user
+  const filterSales = () => {
+    const fi = sales?.find((a) => {
+      return a.token_owner !== address
+    })
+    if (fi) {
+      return true
+    } else return false
+  }
+  const isSecondBtn =
+    nftType === 'NGM1155' &&
+    sales &&
+    owners?.some((owner) => owner.token_owner === address) &&
+    filterSales()
   const isShowable =
     (nft?.token_owner !== DEAD_ADDRESS && nft?.is_in_sale) ||
     nft?.is_in_auction ||
-    nft?.token_owner === address
+    nft?.token_owner === address ||
+    owners?.some((owner) => owner.token_owner === address)
 
+  const isSellable =
+    isMounted &&
+    ((nft?.token_owner && nft.token_owner === address) ||
+      owners?.some((owner) => owner.token_owner === address))
+
+  // get user balance
   const getBalance = async (address: `0x${string}` | undefined) => {
-    if (!address) return
+    if (!address || !NGM20Address) return
+    ;(await address) && NGM20Address
     const ethereum = (window as any).ethereum
     const accounts = await ethereum.request({
       method: 'eth_requestAccounts',
     })
     const provider = new ethers.providers.JsonRpcProvider(
-      process.env.NEXT_PUBLIC_PROVIDER ? process.env.NEXT_PUBLIC_PROVIDER : ''
+      chainID == '80001'
+        ? RPC.mumbai
+        : chainID == '5'
+        ? RPC.goerli
+        : chainID == '137'
+        ? RPC.polygon
+        : chainID == '1'
+        ? RPC.ethereum
+        : ''
     )
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
@@ -101,17 +193,21 @@ const ProductOverviewSection: FC<{
     balanceInEth = parseFloat(balanceInEth).toFixed(2)
     setAccountBalance(balanceInEth)
   }
-
-  useEffect(()=> {
+  useEffect(() => {
     setChainID(contractDetails?.chain?.id)
-  },[contractDetails])
+  }, [contractDetails])
   const filters = () => {
     const fi = offers?.find((a) => {
-      return a.offer_person_address === address && a.offer_status == 'started'
+      if (nftType === 'NGM1155') {
+        return a.offer_person_address === address && a.status == 'started'
+      } else {
+        return a.offer_person_address === address && a.offer_status == 'started'
+      }
     })
     return fi
   }
-
+  // for ERC1155 , cancel button
+  const isSecondCancellable = isSecondBtn && filters()
   const filterAuction = () => {
     const fi = bids?.find((a) => {
       return a.bidder_address === address && a.status == 'started'
@@ -123,8 +219,9 @@ const ProductOverviewSection: FC<{
     if (!accountBalance) {
       getBalance(address)
     }
-  }, [address, accountBalance])
+  })
 
+  //  Check fs User Placed Bid
   const isUserPlacedBid = () => {
     const usersbid: any = bids?.filter((e) => {
       return e.bidder_address === address
@@ -139,30 +236,30 @@ const ProductOverviewSection: FC<{
     if (nft?.is_in_auction) {
       window.setTimeout(isUserPlacedBid, 5000)
     } else {
-      // refetch
+      //
     }
   })
 
+  // handle cancel button
   const isCancelBtn = () => {
     if (filters() || filterAuction()) return true
     return false
   }
   let displayTime = nft?.is_in_auction || nft?.is_in_sale
   const handleClick = (event: string) => {
-    // if (isMounted && nft?.token_owner === address && nft?.is_in_auction) {
-    //   toast('You have already listed this NFT!', {
-    //     hideProgressBar: true,
-    //     autoClose: 3000,
-    //     type: 'error',
-    //     position: 'top-right',
-    //     theme: 'dark',
-    //   })
-    //   return
-    // }
-    // if (isBidCancellable) {
-    //   setIsCancelBidModalOpen(true)
-    //   return
-    // }
+    // secondOk - event : for Second Btn is Available for offer { ERC1155 }
+
+    // secondCancel - event : for second btn is active for cancal { ERC1155 }
+
+    // cancel - event : for second button is actice for cancel
+
+    if (isSecondBtn && event === 'secondOk') {
+      return setIsOfferModalOpen(true)
+    }
+
+    if (isSecondBtn && event === 'secondCancel') {
+      return setIsCancelOfferModalOpen(true)
+    }
     if (isCancellable) {
       setIsCancelModalOpen(true)
       return
@@ -171,7 +268,7 @@ const ProductOverviewSection: FC<{
       setIsCancelSaleModalOpen(true)
       return
     }
-    if (isMounted && nft?.token_owner === address) {
+    if (isSellable) {
       router.push(`${router.asPath}/list`)
       return
     }
@@ -215,10 +312,66 @@ const ProductOverviewSection: FC<{
   }
   // const explorer =
   //   CHAINID === '80001' ? 'mumbai.polygonscan.com' : 'polygonscan.com'
+
+  // On click address
   const onClickAddress = (owner: string) => {
-      let profile = owner === address ? `/profile` : `/profile/${owner}`
-      router.push(profile)
+    let profile = owner === address ? `/profile` : `/profile/${owner}`
+    router.push(profile)
   }
+
+    const [userExist, setUserExist] = useState(false)
+
+    const { data, isSuccess } = useQuery(
+      [QUERIES.getIsUserExist, address],
+      () => getIsUserExist(address)
+    )
+
+    useEffect(() => {
+      address && isSuccess && setUserExist(data?.data)
+      setLikes(nft?.nft_popularity?.likes>0?nft?.nft_popularity?.likes:0)
+    }, [data, address, isSuccess, nft])
+
+  const {
+    mutate: checkIfFav,
+    data: checkIfFavData,
+    isSuccess: checkIfFavSuccess,
+  } = useMutation(checkIfFavorite)
+
+  useEffect(() => {
+    checkIfFavSuccess && setIsLiked(checkIfFavData?.data?.isFavourite?true:false)
+  }, [checkIfFavData, checkIfFavSuccess])
+
+
+  useEffect(() => {
+    let body: CheckIfFavoriteType = {
+      contract_address: nft?.contract_address,
+      token_id: parseInt(nft?.token_id),
+      nft_type: nftType == 'NGM1155' ? 'NGM1155' : 'NGM721',
+      favourite_kind: 'NFTS',
+      wallet_address: address,
+    }
+    nft && address && checkIfFav(body)
+  }, [checkIfFav, address, nft, nftType])
+      
+  // Favourite
+
+        const { mutate: handleFav } = useMutation(handleFavourite)
+      const handleLike = async () => {
+        await setIsLiked(!isLiked)
+        await setLikes((prev: number) => (!isLiked ? prev + 1 :prev==0?0: prev - 1))
+        let data: FavouritePostType = {
+          contract_address: nft?.contract_address,
+          token_id: parseInt(nft?.token_id),
+          nft_type: nftType == 'NGM1155' ? 'NGM1155' : 'NGM721',
+          favourite_kind: 'NFTS',
+          wallet_address: address,
+          action: isLiked ? 'REMOVE' : 'ADD',
+        }
+        nft?.contract_address && address && handleFav(data)
+      }
+
+
+
 
   return (
     <section className="flex flex-col xl:flex-row gap-4 lg:gap-4 2xl:gap-32 xl:justify-between p-0">
@@ -234,14 +387,14 @@ const ProductOverviewSection: FC<{
           delay: 0.6,
         }}
       >
-        <AvatarCard variant="lg" noCta {...nft} />
+        <AvatarCard variant="lg" noCta {...nft} setImageView={setImageView} />
         <div className="lg:hidden grid place-items-center pl-4">
           <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 ">
             <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
               {contractDetails?.collection_name}
             </p>
             <p className="text-white text-2xl lg:text-[49px] font-josefin">
-              {nft?.meta_data?.name}
+              {nft?.meta_data?.name}{' '}
             </p>
           </div>
         </div>
@@ -259,11 +412,20 @@ const ProductOverviewSection: FC<{
         }}
       >
         <div className=" capitalize border-l-[4px] border-custom_yellow pl-2 hidden lg:block">
-          <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
-            {contractDetails?.collection_name}
-          </p>
+          <div className="flex justify-between">
+            <p className="text-custom_yellow lg:text-[30px] font-play mb-2">
+              {contractDetails?.collection_name}
+            </p>
+            {tokensOwned && (
+              <p className="text-white">
+                You Own:{' '}
+                <span className="text-custom_yellow">{tokensOwned}</span>
+              </p>
+            )}
+          </div>
+
           <p className="text-white text-2xl lg:text-[49px] font-josefin leading-[55px]">
-            {nft?.meta_data?.name}
+            {nft?.meta_data?.name}{' '}
           </p>
         </div>
 
@@ -306,7 +468,19 @@ const ProductOverviewSection: FC<{
             <div className="font-poppins">
               {nft?.token_owner !== DEAD_ADDRESS && (
                 <>
-                  <p className="text-gray-600 text-sm lg:text-base">Owner</p>
+                  {nftType === 'NGM721PSI' && (
+                    <p className="text-gray-600 text-sm lg:text-base">Owner</p>
+                  )}
+                  {nftType === 'NGM1155' && (
+                    <p className="text-gray-600 text-sm lg:text-base">
+                      <span
+                        onClick={() => setIsViewOwnersModalOpen(true)}
+                        className="cursor-pointer hover:text-custom_yellow"
+                      >
+                        {`${owners?.length} Owner(s)`}
+                      </span>
+                    </p>
+                  )}
                   <p className="font-medium text-white text-sm lg:text-base">
                     {/* SalvadorDali */}
                     <a
@@ -339,8 +513,40 @@ const ProductOverviewSection: FC<{
               )}
             </div>
           </div>
+          <div className="h-10 p-2 lg:p-4 mt-2">
+            <div className="flex gap-2">
+              {checkIfFavSuccess && userExist && (
+                <Image
+                  src={
+                    isLiked
+                      ? '/images/icons/liked.svg'
+                      : '/images/icons/like.svg'
+                  }
+                  alt="like"
+                  width="20px"
+                  height="18px"
+                  onClick={() => handleLike()}
+                  className="cursor-pointer justify-end"
+                />
+              )}
+              <p className="text-white text-xl">{`${like ? like : 0} Likes`}</p>
+            </div>
+          </div>
           {displayTime && (
-            <div className="grid place-items-center">
+            <div className="relative hidden sm:grid place-items-center">
+              <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
+                {D < 10 && <>0</>}
+                {D} : {H < 10 && <>0</>}
+                {H} : {M < 10 && <>0</>}
+                {M} : {S < 10 && <>0</>}
+                {S}
+              </div>
+            </div>
+          )}
+        </div>
+        <div>
+          {displayTime && (
+            <div className="justify-start sm:hidden grid place-items-center">
               <div className="px-2 lg:px-6 py-2 bg-[#262729] text-[13px] lg:text-[20px] text-white rounded-lg">
                 {D < 10 && <>0</>}
                 {D} : {H < 10 && <>0</>}
@@ -368,7 +574,7 @@ const ProductOverviewSection: FC<{
                 ? 'Cancel Auction'
                 : isSaleCancellable
                 ? 'Cancel Sale'
-                : isMounted && nft?.token_owner && nft.token_owner === address
+                : isSellable
                 ? 'Sell'
                 : filters()
                 ? 'Update Offer'
@@ -381,17 +587,25 @@ const ProductOverviewSection: FC<{
                 : ''}
             </button>
           )}
-          {isCancelBtn() && (
+          {(isCancelBtn() || isSecondBtn) && (
             <>
               <button
                 className="w-full lg:min-w-[327px] btn-secondary rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
-                onClick={() => handleClick('cancel')}
+                onClick={() =>
+                  isSecondCancellable
+                    ? handleClick('secondCancel')
+                    : isSecondBtn
+                    ? handleClick('secondOk')
+                    : handleClick('cancel')
+                }
               >
                 {filters()
                   ? 'Cancel Offer'
                   : filterAuction()
                   ? 'Cancel Bid'
-                  : ''}
+                  : isSecondBtn
+                  ? 'Make Offer'
+                  : 'Cancel Offer'}
               </button>
             </>
           )}
@@ -406,6 +620,7 @@ const ProductOverviewSection: FC<{
             nft={nft}
             accountBalance={accountBalance}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -427,6 +642,7 @@ const ProductOverviewSection: FC<{
             nft={nft}
             accountBalance={accountBalance}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -449,6 +665,7 @@ const ProductOverviewSection: FC<{
             setIsOpen={setIsCancelSaleModalOpen}
             nft={nft}
             chainID={chainID}
+            nftType={nftType}
           />
         )}
       </AnimatePresence>
@@ -462,6 +679,25 @@ const ProductOverviewSection: FC<{
             address={address}
             caller={address}
             chainID={chainID}
+            nftType={nftType}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isViewOwnersModalOpen && (
+          <ViewOwnersModal
+            isOpen={isViewOwnersModalOpen}
+            setIsOpen={setIsViewOwnersModalOpen}
+            owners={owners}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {imageView.isOpen && (
+          <ImageViewModal
+            isOpen={imageView.isOpen}
+            setIsOpen={setImageView}
+            img={imageView.img}
           />
         )}
       </AnimatePresence>

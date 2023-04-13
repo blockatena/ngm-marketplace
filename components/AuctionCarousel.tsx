@@ -34,6 +34,7 @@ interface CarouselItemProps extends CollectionCardType {
   currentIndex: number
 }
 
+// Custom Button
 const CustomButton: FC<CustomButtonProps> = ({ children, ...props }) => (
   <button
     className="bg-transparent hover:bg-[#3A3A3B] cursor-pointer  p-1 rounded-sm font-inter text-sm 
@@ -44,6 +45,7 @@ const CustomButton: FC<CustomButtonProps> = ({ children, ...props }) => (
   </button>
 )
 
+// carouseItems
 const CarouselItem: FC<CarouselItemProps> = ({
   currentCardWidth,
   currentIndex,
@@ -79,7 +81,7 @@ const CarouselItem: FC<CarouselItemProps> = ({
 }
 
 const AuctionCarousel: FC = () => {
-  const { data } = useQuery(QUERIES.getCollections, () => getCollections(1))
+  const { data } = useQuery(QUERIES.getCollections, () => getCollections(1,12,"NA","NA","NA"))
   const { width } = useWindowDimensions()
   const [currentIndex, setCurrentIndex] = useState(0)
 

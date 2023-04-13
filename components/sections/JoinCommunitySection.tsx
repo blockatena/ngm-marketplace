@@ -10,6 +10,7 @@ import {
 import useIsMounted from '../../utils/hooks/useIsMounted'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 
+// Join Community section
 const JoinCommunitySection: React.FC = () => {
   const discordOnClick = () => {
     console.log('JOIN DISCORD')

@@ -1,10 +1,11 @@
 import { useRouter } from 'next/router'
-import { FC, useEffect, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { AvatarType } from '../interfaces'
 import useIsMounted from '../utils/hooks/useIsMounted'
 // import useWindowDimensions from '../utils/hooks/useWindowDimensions'
 
+// BaseURL of API
 const BaseURL = process.env.NEXT_PUBLIC_API_URL || ''
 interface AvatarCardProps extends AvatarType {
   // name: string
@@ -16,6 +17,14 @@ interface AvatarCardProps extends AvatarType {
   // is_in_auction?: boolean
   // is_in_sale?: boolean
   noCta?: boolean
+  img_url?: string
+  nft_name?: string
+  setImageView?: Dispatch<
+    SetStateAction<{
+      isOpen: boolean
+      img: string
+    }>
+  >
   // meta_data_url: string
   // token_id: any
   // token_owner: string
@@ -33,6 +42,8 @@ interface AvatarCardProps extends AvatarType {
 // }
 
 // const placeholderImg = '/images/collections/placeholder.jpg'
+
+// End Timer
 const TimerSection: FC<{
   days: number
   hours: number
@@ -69,6 +80,7 @@ const TimerSection: FC<{
   )
 }
 
+// Avatar Card : All nfts
 const AvatarCard: FC<AvatarCardProps> = ({
   variant = 'sm',
   noCta,
@@ -78,6 +90,9 @@ const AvatarCard: FC<AvatarCardProps> = ({
   is_in_auction,
   meta_data,
   token_owner,
+  img_url,
+  nft_name,
+  setImageView,
 }) => {
   const router = useRouter()
   const [isSelected, setIsSelected] = useState(false)
@@ -118,16 +133,19 @@ const AvatarCard: FC<AvatarCardProps> = ({
   // }, [meta_data_url])
 
   // console.log(nftinfo.name)
+
+  // check if nft in auction : and get info
   const ifInauction = () => {
-    if (!auctionAmount && !inputTime) {
+    if (is_in_auction && !auctionAmount && !inputTime) {
       let url = `${BaseURL}/nft/get-nft/${contract_address}/${token_id}`
       if (is_in_auction) {
         fetch(url)
           .then((response) => response.json())
           .then((data) => {
-            // console.log(data)
-            setAuctionTime(data?.auction?.end_date)
-            setAuctionAmount(data?.auction?.min_price)
+            if (data?.auction) {
+              setAuctionTime(data?.auction?.end_date)
+              setAuctionAmount(data?.auction?.min_price)
+            }
           })
       }
     }
@@ -136,11 +154,13 @@ const AvatarCard: FC<AvatarCardProps> = ({
     ifInauction()
   })
 
+  // shadow on select card
   useEffect(() => {
     if (isSelected) setShadow('avatar-shadow')
     else setShadow('')
   }, [isSelected])
 
+  // card size as per device width
   useEffect(() => {
     if (variant === 'sm') {
       setCardProperties((prev) => ({
@@ -162,6 +182,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
     }
   }, [variant])
 
+  // on View button click
   const handleClick = () => {
     // if (is_in_auction) {
     //   return
@@ -169,6 +190,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
     router.push(`/assets/${contract_address}/${token_id}`)
   }
 
+  // timer will be called only if nft in auction
   if (is_in_auction === true) {
     setInterval(() => {
       if (Date.parse(inputTime) > Date.now()) {
@@ -194,13 +216,26 @@ const AvatarCard: FC<AvatarCardProps> = ({
     //
   }
 
+  // NFT Image , if not placeholder 
+  const img = meta_data?.image
+    ? meta_data?.image
+    : img_url
+    ? img_url
+    : '/images/others/avatar_bg.png'
+
+    // full view NFT
+  const handleFullView = () => {
+    setIsSelected((prev) => !prev)
+    setImageView && setImageView({ isOpen: true, img })
+  }
+
   let bottomStyle = 'avatar-btn-right'
   if (isMounted && !is_in_auction) {
     bottomStyle = 'rounded-l-lg'
   }
 
   return (
-    <div onClick={() => setIsSelected((prev) => !prev)}>
+    <div onClick={handleFullView}>
       <div
         className={`${shadow} relative w-min mt-16 hover:avatar-shadow cursor-pointer
     before:absolute before:-right-2 before:-top-2 before:w-[82px] before:h-[88px] before:bg-custom_yellow before:rounded-xl 
@@ -258,12 +293,17 @@ const AvatarCard: FC<AvatarCardProps> = ({
           <div
             className="avatar-card-clip rounded-b-lg rounded-tr-lg bg-dark_mild bg-scroll bg-cover
            absolute top-3 bottom-3 left-3 right-3"
+            // style={{
+            //   backgroundImage: `url(${
+            //     meta_data?.image
+            //       ? meta_data?.image
+            //       : img_url
+            //       ? img_url
+            //       : '/images/others/avatar_bg.png'
+            //   })`,
+            // }}
             style={{
-              backgroundImage: `url(${
-                meta_data?.image
-                  ? meta_data?.image
-                  : '/images/others/avatar_bg.png'
-              })`,
+              backgroundImage: `url(${img})`,
             }}
           ></div>
         </div>
@@ -275,7 +315,7 @@ const AvatarCard: FC<AvatarCardProps> = ({
                   is_in_auction ? 'w-1/2' : ''
                 }`}
               >
-                {meta_data?.name ? meta_data?.name : ''}
+                {meta_data?.name ? meta_data?.name : nft_name ? nft_name : ''}
               </div>
               <div className={`${is_in_auction ? 'w-1/2' : 'w-0'}`}>
                 {is_in_auction && (

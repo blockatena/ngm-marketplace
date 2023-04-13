@@ -1,6 +1,7 @@
 import { FC, ReactNode, useState } from 'react'
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa'
 
+// Nav Accordion
 const NavAccordion: FC<{ children?: ReactNode; heading: string }> = ({
   children,
   heading,

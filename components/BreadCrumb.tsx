@@ -8,6 +8,8 @@ interface BreadCrumbProps {
   crumbs: CrumbType[]
 }
 
+// BreadCrumb
+
 const BreadCrumb: FC<BreadCrumbProps> = ({ crumbs }) => {
   const router = useRouter()
   return (

@@ -6,10 +6,12 @@ import { AiOutlineDisconnect } from 'react-icons/ai'
 import { CgProfile } from 'react-icons/cg'
 import { useAccount, useDisconnect } from 'wagmi'
 import { fromLeftAnimation, fromRightAnimation } from '../utils/animations'
-import { CONTAINER_PADDING } from '../utils/constants'
 import useIsMounted from '../utils/hooks/useIsMounted'
 import useWindowDimensions from '../utils/hooks/useWindowDimensions'
+import { INNER_BOX_STYLE, OUTER_BOX_STYLE } from './SectionContainer'
 
+
+// Connect wallet button
 const ConnectButton: FC = () => {
   const router = useRouter()
   const { address, isConnected } = useAccount()
@@ -39,47 +41,52 @@ const ConnectButton: FC = () => {
 
   return (
     <div className="relative flex items-center gap-2">
-      {isMounted && isConnected && (
-        <motion.div
+      {(isMounted && isConnected) &&
+        (router.asPath !== '/' && (
+          <motion.div
+            variants={fromRightAnimation}
+            initial="initial"
+            animate="final"
+            transition={{
+              ease: 'easeIn',
+              duration: 0.2,
+              delay: 1,
+            }}
+          >
+            <CgProfile
+              className="text-[#B10DAD] hover:text-[#14A4BD] text-lg lg:text-5xl cursor-pointer"
+              onClick={handleProfile}
+            />
+          </motion.div>
+        ))}
+      {router.asPath !== '/' && (
+        <motion.button
+          //   className="btn-primary cut-corners w-[120px] md:w-[158px] lg:w-[173px] h-[29px] md:h-[33px] lg:h-[39px]
+          // text-xs md:text-sm lg:text-base disabled:bg-gray-500"
+          className="bg-gradient-to-r from-[#501B95] to-[#B10DAD] px-4 py-[.625rem] text-white capitalize font-poppins rounded-full 
+        text-sm lg:text-[17px] font-bold lg:leading-[26px] h-12 hover:from-[#14A4BD] hover:to-[#7ABD96] transition-all"
+          onClick={handleClick}
           variants={fromRightAnimation}
           initial="initial"
           animate="final"
           transition={{
             ease: 'easeIn',
             duration: 0.2,
-            delay: 1,
+            delay: 1.4,
           }}
+          // disabled={isMounted && isConnected}
         >
-          <CgProfile
-            className="text-custom_yellow text-lg lg:text-3xl cursor-pointer"
-            onClick={handleProfile}
-          />
-        </motion.div>
+          {!isMounted
+            ? null
+            : !isConnected && router.asPath === '/'
+            ? 'join our community'
+            : !isConnected
+            ? 'Connect Wallet'
+            : `Connected ${address?.substring(0, 4)}...${address?.substring(
+                address.length - 2
+              )}`}
+        </motion.button>
       )}
-      <motion.button
-        className="btn-primary cut-corners w-[120px] md:w-[158px] lg:w-[173px] h-[29px] md:h-[33px] lg:h-[39px] 
-      text-xs md:text-sm lg:text-base disabled:bg-gray-500"
-        onClick={handleClick}
-        variants={fromRightAnimation}
-        initial="initial"
-        animate="final"
-        transition={{
-          ease: 'easeIn',
-          duration: 0.2,
-          delay: 1.4,
-        }}
-        // disabled={isMounted && isConnected}
-      >
-        {!isMounted
-          ? null
-          : !isConnected && router.asPath === '/'
-          ? 'Join Community'
-          : !isConnected
-          ? 'Connect Wallet'
-          : `Connected ${address?.substring(0, 4)}...${address?.substring(
-              address.length - 2
-            )}`}
-      </motion.button>
       {isOpen && (
         <div
           className="absolute z-50 right-0 left-0 -bottom-[3rem] bg-gradient-to-b from-custom-yellow to-custom-orange
@@ -172,6 +179,8 @@ const ConnectButton: FC = () => {
 //   )
 // }
 
+
+// Logo
 const Logo: FC = () => {
   const router = useRouter()
   const { width } = useWindowDimensions()
@@ -195,8 +204,8 @@ const Logo: FC = () => {
       <Image
         src="/images/icons/logo.svg"
         alt="nftzone_logo"
-        width={clientWidth > 768 ? '188px' : '100px'}
-        height={clientWidth > 768 ? '64px' : '46px'}
+        width={clientWidth > 768 ? '133px' : '64px'}
+        height={clientWidth > 768 ? '69px' : '32px'}
         className="cursor-pointer"
         onClick={() => router.push('/')}
       />
@@ -204,20 +213,29 @@ const Logo: FC = () => {
   )
 }
 
+//Header for all pages
 const Header: FC = () => {
+  const { asPath } = useRouter()
+  const isHome = asPath === '/'
+
   return (
-    <header className="relative">
+    <header className="relative z-20">
       <div
-        className={`${CONTAINER_PADDING} bg-transparent absolute left-0 right-0`}
+        className={`pt-6 ${
+          !isHome && 'lg:px-16'
+        } bg-transparent backdrop-blur-lg absolute left-0 right-0`}
       >
-        <div className="grid grid-cols-12 gap-1">
-          <div className="col-span-3 md:col-span-6">
-            <Logo />
-          </div>
-          {/* <div className="col-span-9 md:col-span-6 flex justify-end gap-2 md:gap-6 lg:gap-16"> */}
-          <div className="col-span-9 md:col-span-6 flex justify-end items-center gap-2 md:gap-3 lg:gap-4">
-            {/* {router.asPath !== '/' && <Search />} */}
-            {/* <motion.div
+        <div className={`${isHome && OUTER_BOX_STYLE}`}>
+          <div className={`${isHome && INNER_BOX_STYLE}`}>
+            <div className={`${isHome && 'border-b'} border-white pb-4`}>
+              <div className="grid grid-cols-12 gap-1">
+                <div className="col-span-3 md:col-span-6">
+                  <Logo />
+                </div>
+                {/* <div className="col-span-9 md:col-span-6 flex justify-end gap-2 md:gap-6 lg:gap-16"> */}
+                <div className="col-span-9 md:col-span-6 flex justify-end items-center gap-2 md:gap-3 lg:gap-4 pr-4">
+                  {/* {router.asPath !== '/' && <Search />} */}
+                  {/* <motion.div
               variants={fromTopAnimation}
               initial="initial"
               animate="final"
@@ -234,7 +252,10 @@ const Header: FC = () => {
               />
             </motion.div> */}
 
-            <ConnectButton />
+                  <ConnectButton />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

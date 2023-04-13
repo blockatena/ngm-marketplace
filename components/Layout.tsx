@@ -25,10 +25,17 @@ const CurrentFooter = () => {
   return <Footer />
 }
 
+// Layout for website : imp
 const Layout: FC<LayoutProps> = ({ children }) => {
+  const router = useRouter()
+  const isHome = router.asPath === '/'
   return (
     <div className="flex justify-center bg-gradient-to-r from-dark_mild to-dark_heavy">
-      <div className=" w-full max-w-[1920px] bg-fixed bg-cover bg-market">
+      <div
+        className={` w-full ${
+          !isHome && 'max-w-[1920px]'
+        } bg-fixed bg-cover bg-market`}
+      >
         <Detector />
         <Header />
         <Buffer />

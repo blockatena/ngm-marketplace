@@ -19,7 +19,9 @@ const cardVariants = {
     opacity: 1,
   }),
 }
+// card
 
+// card : How it works
 const Card: React.FC<CardProps> = ({ children, index }) => {
   return (
     <motion.div
@@ -37,6 +39,8 @@ const Card: React.FC<CardProps> = ({ children, index }) => {
   )
 }
 
+
+// How it work section for home page
 const HowItWorksSection: React.FC = () => {
   return (
     <section className="w-full md:px-5 lg:px-10 xl:px-14 min-h-[50vh] 2xl:min-h-full flex flex-col lg:flex-row items-center lg:justify-between space-y-10 lg:space-y-0 xl:mx-auto pt-14">

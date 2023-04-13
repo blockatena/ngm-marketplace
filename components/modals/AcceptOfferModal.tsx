@@ -3,13 +3,15 @@ import { Dispatch, FC, SetStateAction, useEffect,useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { QUERIES } from '../../react-query/constants'
-import { acceptOffer } from '../../react-query/queries'
+import { acceptOffer, accept1155Offer } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 import { useAccount } from 'wagmi'
 import { ethers } from 'ethers'
 import { useNetwork, useSwitchNetwork } from 'wagmi'
+
+// Accept Offer Modal : from Single NFT page
 const AcceptOfferModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
@@ -20,6 +22,7 @@ const AcceptOfferModal: FC<{
   token_owner: string
   setActiveTabIndex: () => void
   chainID: any
+  nftType:any
 }> = ({
   setIsOpen,
   contract_address,
@@ -27,17 +30,39 @@ const AcceptOfferModal: FC<{
   offer_address,
   setActiveTabIndex,
   chainID,
+  nftType
 }) => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
-  const { mutate, isSuccess, data, isLoading } = useMutation(acceptOffer, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(QUERIES.getSingleNft)
-    },
-  })
+  const [quantity, setQuantity] = useState(0)
+
+
+  //Api call to accept offer ERC721 
+    const {
+      mutate: AcceptOffer,
+      data: acceptOfferData,
+      isLoading: isOfferLoading,
+      isSuccess: isOfferSuccess,
+    } = useMutation(acceptOffer, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(QUERIES.getSingleNft)
+      },
+    })
+
+    // Api call to accept offer ERC1155
+    const {
+      mutate: Accept1155Offer,
+      data: accept1155OfferData,
+      isLoading: isOffer1155Loading,
+      isSuccess: is1155OfferSuccess,
+    } = useMutation(accept1155Offer, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(QUERIES.getSingleNft)
+      },
+    })
   useEffect(() => {
     if (!chainID) return
     if (chain?.id === parseInt(chainID)) {
@@ -49,15 +74,26 @@ const AcceptOfferModal: FC<{
     }
   }, [chain, chainID])
 
+  // Switch Network
   const onSwitchNetwork = async () => {
     await switchNetwork?.(parseInt(chainID))
   }
+
+  // Handle Click
   const handleClick = async () => {
     const data = {
       contract_address: contract_address,
       token_id: token_id,
       offer_person_address: offer_address,
       token_owner: address ? address : '',
+      sign: '',
+    }
+    const data1155 = {
+      contract_address: contract_address,
+      token_id: parseInt(token_id),
+      offer_person_address: offer_address,
+      token_owner: address ? address : '',
+      number_of_tokens:quantity,
       sign: '',
     }
     const ethereum = (window as any).ethereum
@@ -67,12 +103,22 @@ const AcceptOfferModal: FC<{
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
-    let rawMsg = `{
+    let rawMsg721 = `{
       "contract_address":"${contract_address}",
       "token_id":"${token_id}",
       "offer_person_address":"${offer_address}",
       "token_owner":"${address ? address : ''}"
   }`
+
+  let rawMsg1155 = `{
+      "contract_address":"${contract_address}",
+      "token_id":"${token_id}",
+      "offer_person_address":"${offer_address}",
+      "token_owner":"${address ? address : ''}",
+      "number_of_tokens":"${quantity}"
+  }`
+  let rawMsg = nftType === 'NGM1155'?rawMsg1155:rawMsg721
+
     let hashMessage = await ethers.utils.hashMessage(rawMsg)
     // console.log(hashMessage)
     await signer
@@ -81,28 +127,36 @@ const AcceptOfferModal: FC<{
       )
       .then(async (sign) => {
         // console.log(sign)
-        data['sign'] = sign
+        if(nftType==='NGM1155'){
+          data1155['sign'] = sign
+        } else {
+          data['sign'] = sign
+        }
       })
       .catch((e) => {
         console.log(e.message)
         setIsOpen(false)
         return
       })
-    if (data['sign']) {
-      mutate(data)
+    if (data['sign'] || data1155['sign']) {
+      if(nftType==='NGM1155') {
+        Accept1155Offer(data1155)
+      } else {
+        AcceptOffer(data)
+      }
     } else return
   }
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isOfferSuccess) {
       toast(
-        data?.data?.message
-          ? data?.data?.message
+        acceptOfferData?.data?.message
+          ? acceptOfferData?.data?.message
           : 'Offer Accepted Successfully',
         {
           hideProgressBar: true,
           autoClose: 3000,
-          type: data?.data?.message ? 'error' : 'success',
+          type: acceptOfferData?.data?.message ? 'error' : 'success',
           position: 'top-right',
           theme: 'dark',
         }
@@ -110,8 +164,38 @@ const AcceptOfferModal: FC<{
       setActiveTabIndex()
       setIsOpen(false)
     }
-  }, [isSuccess, data?.data?.message, setIsOpen, setActiveTabIndex])
+    if (is1155OfferSuccess) {
+      toast(
+        accept1155OfferData?.data?.message
+          ? accept1155OfferData?.data?.message
+          : 'Offer Accepted Successfully',
+        {
+          hideProgressBar: true,
+          autoClose: 3000,
+          type: accept1155OfferData?.data?.message ? 'error' : 'success',
+          position: 'top-right',
+          theme: 'dark',
+        }
+      )
+      setActiveTabIndex()
+      setIsOpen(false)
+    }
+  }, [
+    isOfferSuccess,
+    acceptOfferData?.data?.message,
+    is1155OfferSuccess,
+    accept1155OfferData?.data?.message,
+    setIsOpen,
+    setActiveTabIndex,
+  ])
 
+    const handleQuantity = (value: number) => {
+      if (value > 0) {
+        setQuantity(value)
+      } else {
+        setQuantity(0)
+      }
+    }
   return (
     <ModalBase>
       <motion.div
@@ -130,7 +214,7 @@ const AcceptOfferModal: FC<{
           <span
             className="cursor-pointer"
             role="buton"
-            onClick={() => !isLoading && setIsOpen(false)}
+            onClick={() => setIsOpen(false)}
           >
             x
           </span>
@@ -138,29 +222,46 @@ const AcceptOfferModal: FC<{
         <h2 className="text-white font-poppins text-[20px] lg:text-[30px] text-center my-4">
           {!isChainCorrect
             ? 'Wrong network detected'
-            : 'Are you sure you want to accpet this offer?'}
+            : 'Are you sure you want to accept this offer?'}
         </h2>
-        {isLoading && (
+        {isOfferLoading || isOffer1155Loading && (
           <div className="py-4 grid place-items-center">
             <Spinner />
           </div>
         )}
 
         <div className="mt-8">
+          {nftType === 'NGM1155' && (
+            <>
+              <div className="font-poppins lg:text-[20px] flex justify-between mb-2 mt-3">
+                <label htmlFor="quantity" className="text-white">
+                  Quantity
+                </label>
+              </div>
+              <div className="h-[47px] relative rounded-lg">
+                <input
+                  onChange={(e) => handleQuantity(Number(e.target.value))}
+                  type="number"
+                  id="quantity"
+                  className="outline-none w-full h-full bg-[#585858] px-[5%] text-white rounded-lg"
+                />
+              </div>
+            </>
+          )}
           <div className="flex flex-col md:flex-row justify-between gap-2 lg:gap-4 lg:pt-10">
             {isChainCorrect && (
               <>
                 <button
                   className="btn-secondary w-full md:w-1/2 h-[42px] md:h-16 text-sm lg:text-[21px]"
                   onClick={() => setIsOpen(false)}
-                  disabled={isLoading}
+                  disabled={isOfferLoading || isOffer1155Loading}
                 >
                   No
                 </button>
                 <button
                   className="w-full btn-primary md:w-1/2 rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
                   onClick={handleClick}
-                  disabled={isLoading}
+                  disabled={isOfferLoading || isOffer1155Loading}
                 >
                   Yes
                 </button>
@@ -170,7 +271,7 @@ const AcceptOfferModal: FC<{
               <button
                 className="w-full btn-primary md:w-full rounded-lg h-[42px] md:h-16 text-[18px] lg:text-[27px] font-poppins"
                 onClick={onSwitchNetwork}
-                disabled={isLoading}
+                disabled={isOfferLoading || isOffer1155Loading}
               >
                 Switch Network
               </button>

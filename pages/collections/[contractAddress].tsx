@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { NextPage } from 'next'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, FC, KeyboardEvent, SetStateAction, useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import AvatarCard from '../../components/AvatarCard'
 import BreadCrumb from '../../components/BreadCrumb'
@@ -10,17 +10,30 @@ import Drawer from '../../components/Drawer'
 import NavAccordion from '../../components/NavAccordion'
 import PageHeading from '../../components/PageHeading'
 import Pagination from '../../components/Pagination'
-import type { AvatarType, CollectionNftsBodyType } from '../../interfaces'
+import withProtection from '../../components/withProtection'
+import type {
+  AvatarType,
+  CheckIfFavoriteType,
+  CollectionNftsBodyType,
+  FavouritePostType,
+  NftType,
+} from '../../interfaces'
 import { CrumbType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
 import {
+  checkIfFavorite,
   getCollectionDetails,
   getCollectionNfts,
+  getCollectionType,
+  getIsUserExist,
+  handleFavourite,
 } from '../../react-query/queries'
 import { handleAnimationDelay } from '../../utils'
 import { fromLeftAnimation, opacityAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
-import withProtection from '../../components/withProtection'
+import { useAccount } from 'wagmi'
+
+// Interface each of Collection Data
 interface HeroSectionProps {
   name: string
   img: any
@@ -36,19 +49,88 @@ interface HeroSectionProps {
   owners: any
   description: string
   floor: any
+  wallet_address: any
+  like:any
+  setLikes:(_value:any) => void
 }
 
 const placeholderLogo = '/images/collections/collection_avatar.png'
+
+// Side NavBar :  Filters tab includes sort by and nft state
+
 const SideNav: FC<{
   setIsOpen?: Dispatch<SetStateAction<boolean>>
-  handleFilter: (_isInAuction: boolean) => void
-}> = ({ setIsOpen, handleFilter }) => {
-  // eslint-disable-next-line no-unused-vars
-  const [currency, setCurrency] = useState('')
-  // eslint-disable-next-line no-unused-vars
+  handleSort: (_value: any) => void
+  handleListed: (_value: any) => void
+  sort_by: string
+  listed_in: string
+}> = ({ setIsOpen, handleListed, handleSort, sort_by, listed_in }) => {
+
+  // the function handle the sideNavbar , isOpen
   const handleClick = () => {
     setIsOpen && setIsOpen(false)
   }
+
+  // Handle Filters and Sort Options, The Function is check _value parameter pass from filters, nft state buttons
+  const handleBtn = (_value: any) => {
+    if (_value == 'NA' || _value == 'AUCTION' || _value == 'SALE') {
+      handleListed(_value)
+    }
+    if (
+      _value == 'NEWTOOLD' ||
+      _value == 'OLDTONEW' ||
+      _value == 'ATOZ' ||
+      _value == 'ZTOA'
+    ) {
+      handleSort(_value)
+    }
+    handleClick()
+  }
+
+  // Handle Color of Selected Sorted Option ( NEWEST, OLDEST, A-Z, Z-A )
+  const handleSortedBtn = () => {
+    if (!sort_by || sort_by == 'NA') return
+    let arr = ['NEWTOOLD', 'OLDTONEW', 'ATOZ', 'ZTOA']
+
+    const element = document.getElementById(sort_by)
+    if (element) {
+      element.style.color = '#FFDE00'
+      element.style.fontSize = '20px'
+    }
+    let filtered = arr.filter((a) => a !== sort_by)
+    filtered.forEach((a) => {
+      const element = document.getElementById(a)
+      if (element) {
+        element.style.color = 'white'
+        element.style.fontSize = '16px'
+      }
+    })
+  }
+
+  // Handle Color of Selected NFT State Option ( ALL, IN AUCTION, IN SALE )
+  const handleListedBtn = () => {
+    if (!listed_in) return
+    let arr = ['AUCTION', 'SALE', 'NA']
+
+    const element = document.getElementById(listed_in)
+    if (element) {
+      element.style.color = '#FFDE00'
+      element.style.fontSize = '20px'
+    }
+    let filtered = arr.filter((a) => a !== listed_in)
+    filtered.forEach((a) => {
+      const element = document.getElementById(a)
+      if (element) {
+        element.style.color = 'white'
+        element.style.fontSize = '16px'
+      }
+    })
+  }
+
+  useEffect(() => {
+    handleSortedBtn()
+    handleListedBtn()
+  })
 
   return (
     <div className="bg-[#1A1D1F] h-[1068px] md:max-w-[244px]">
@@ -63,30 +145,50 @@ const SideNav: FC<{
           <hr className="opacity-10 " />
         </div>
       </h3>
-      <NavAccordion heading="NFT State">
-        {/* <div className="font-oxygen">
-          <input
-            type="checkbox"
-            id="buy_checkbox"
-            className="mr-4 cursor-pointer accent-custom_yellow"
-          />
-          <label htmlFor="buy_checkbox" className="text-xs md:text-[15px]">
-            Buy now
-          </label>
-        </div> */}
-        <div className="font-oxygen">
-          <input
-            type="checkbox"
-            id="auction_checkbox"
-            className="mr-4 cursor-pointer accent-custom_yellow"
-            onChange={(e) => handleFilter(e.target.checked)}
-          />
-          <label htmlFor="auction_checkbox" className="text-xs md:text-[15px]">
-            On auction
-          </label>
-        </div>
+      <NavAccordion heading="Sorted by">
+        <button
+          id="NEWTOOLD"
+          className="w-fit"
+          onClick={() => handleBtn('NEWTOOLD')}
+        >
+          Newest
+        </button>
+        <button
+          id="OLDTONEW"
+          className="w-fit"
+          onClick={() => handleBtn('OLDTONEW')}
+        >
+          Oldest
+        </button>
+        <button id="ATOZ" className="w-fit" onClick={() => handleBtn('ATOZ')}>
+          A - Z
+        </button>
+        <button id="ZTOA" className="w-fit" onClick={() => handleBtn('ZTOA')}>
+          Z - A
+        </button>
       </NavAccordion>
-      <NavAccordion heading="Price">
+      <NavAccordion heading="NFT State">
+        <button id="NA" className="w-fit" onClick={() => handleBtn('NA')}>
+          All
+        </button>
+        <button
+          id="AUCTION"
+          className="w-fit"
+          onClick={() => handleBtn('AUCTION')}
+        >
+          NFTs In Auction
+        </button>
+        <button id="SALE" className="w-fit" onClick={() => handleBtn('SALE')}>
+          NFTs In Sale
+        </button>
+      </NavAccordion>
+
+      {
+        // if wants to add new features, you can use <NavAccordion> Content </NavAccordion>
+      }
+
+
+      {/* <NavAccordion heading="Price">
         <p className="text-white font-oxygen">
           <span className="mr-4">ETH</span>{' '}
           <input
@@ -110,7 +212,7 @@ const SideNav: FC<{
         >
           Apply
         </button>
-      </NavAccordion>
+      </NavAccordion> */}
       {/* <NavAccordion heading="Currency"> */}
       {/* <button className="w-fit" onClick={handleClick}>
           Recently Added
@@ -149,16 +251,71 @@ const SideNav: FC<{
   )
 }
 
+// Collection Hero Section : It contains Name, Image, Banner, Total Supply , create date of collection
 const CollectionHeroSection: FC<HeroSectionProps> = ({
   name,
   img,
   bannerimage,
   totalsupply,
   createdAt,
+  wallet_address,
+  contract_address,
+  like,
+  setLikes
 }) => {
   let banner = `url("${
     bannerimage ? bannerimage : '/images/collections/collection_hero.png'
   }")`
+
+  const [isLiked, setIsLiked] = useState(false)
+  const [userExist, setUserExist] = useState(false)
+
+
+  const { data, isSuccess } = useQuery(
+    [QUERIES.getIsUserExist, wallet_address],
+    () => getIsUserExist(wallet_address)
+  )
+
+  useEffect(() => {
+    wallet_address && isSuccess && setUserExist(data?.data)
+    setLikes(like>0?like:0)
+  }, [data, wallet_address, isSuccess,like, setLikes])
+
+  const {
+    mutate: checkIfFav,
+    data: checkIfFavData,
+    isSuccess: checkIfFavSuccess,
+  } = useMutation(checkIfFavorite)
+
+  const { mutate: handleFav } = useMutation(handleFavourite)
+
+  useEffect(() => {
+    checkIfFavSuccess && setIsLiked(checkIfFavData?.data?.isFavourite)
+  }, [checkIfFavData, checkIfFavSuccess])
+
+  useEffect(() => {
+    let body: CheckIfFavoriteType = {
+      contract_address,
+      favourite_kind: 'COLLECTIONS',
+      wallet_address,
+    }
+    contract_address !== 'undefined' && wallet_address && checkIfFav(body)
+  }, [checkIfFav, wallet_address, contract_address])
+
+  const handleLike = async () => {
+    await setIsLiked(!isLiked)
+    await setLikes((prev: number) =>
+      !isLiked ? prev + 1 : prev == 0 ? 0 : prev - 1
+    )
+    let data: FavouritePostType = {
+      contract_address,
+      wallet_address,
+      favourite_kind: 'COLLECTIONS',
+      action: isLiked ? 'REMOVE' : 'ADD',
+    }
+    contract_address && wallet_address && handleFav(data)
+  }
+
   return (
     <motion.section
       className="w-full h-[279px] bg-cover p-2 flex justify-between items-end lg:px-4 lg:py-2"
@@ -218,31 +375,44 @@ const CollectionHeroSection: FC<HeroSectionProps> = ({
             </p>
           </div>
         </div>
-        <div className="flex justify-end items-end gap-2">
-          <Image
-            src="/images/icons/like.svg"
-            alt="like"
-            width="20px"
-            height="18px"
-          />
-          <Image
-            src="/images/icons/share.svg"
-            alt="share"
-            width="20px"
-            height="18px"
-          />
+
+        <div className="flex justify-end items-end gap-2 ">
+          {/* <p className="text-white text-2xl">{`${like ? like : 0} Likes`}</p> */}
+          {checkIfFavSuccess && userExist && (
+            <>
+              <Image
+                src={
+                  isLiked ? '/images/icons/liked.svg' : '/images/icons/like.svg'
+                }
+                alt="like"
+                width="30px"
+                height="27px"
+                onClick={() => handleLike()}
+                className="cursor-pointer"
+              />
+              <Image
+                src="/images/icons/share.svg"
+                alt="share"
+                width="30px"
+                height="27px"
+              />
+            </>
+          )}
         </div>
       </div>
     </motion.section>
   )
 }
 
+
+// Collection Info Section : It contains totalvolume, bestOffer, floor, owners, description of the collection
 const CollectionInfoSection: FC<HeroSectionProps> = ({
   totalvolume,
   bestOffer,
   floor,
   owners,
   description,
+  like
 }) => {
   return (
     <motion.section
@@ -293,19 +463,62 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
             Owners
           </p>
         </div>
+        <div className="grid place-items-center">
+          <p className="font-oxygen text-white lg:text-[19px] font-light">
+            {like && like>0?like:0}
+          </p>
+          <p className="text-[#AFAFAF] font-oxygen text-xs lg:text-[15px] font-light">
+            Likes
+          </p>
+        </div>
       </div>
     </motion.section>
   )
 }
 
-const CollectionSearchSection: FC<{ handleFilter: (_value: any) => void }> = ({
-  handleFilter,
+// Collection Search Section: It contins Search Box where user can search nfts from the collection,
+const CollectionSearchSection: FC<{ handleSearch: (_value: any) => void }> = ({
+  handleSearch,
 }) => {
   const { width: clientWidth } = useWindowDimensions()
   const [width, setWidth] = useState(1)
+  const [_search, setSearchvalue] = useState<any>()
+  const [inputText,setInputText] = useState('')
 
+
+  //The Function read input value, and Set in '_search' variable
+  const handleSearchBtn = (_value:string) => {
+    if(_value) {
+      setSearchvalue(_value)
+      setInputText(_value)
+    } else {
+      setSearchvalue("NA")
+      setInputText('')
+    }
+  }
+
+  // Search Button: When user click on Search Button , The function call api
+  const Searchbtn = () => {
+    if(_search) {
+      handleSearch(_search)
+    }
+  }
+
+  // The function alternative to above function, The function execute when user click "ENTER KEY"
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      Searchbtn()
+    }
+  }
+
+  // The function Execute when click on 'X' (Clear) Button, It Clear the input box and call api without search input
+  const clearBtn = () => {
+    setSearchvalue("NA")
+    setInputText('')
+    handleSearch('NA')
+  }
   useEffect(() => {
-    setWidth(clientWidth)
+    setWidth(clientWidth) // It check user's device width and save it in width variable
   }, [clientWidth])
 
   return (
@@ -343,34 +556,47 @@ const CollectionSearchSection: FC<{ handleFilter: (_value: any) => void }> = ({
           </span>
           <input
             type="text"
+            id="search_input"
+            value={inputText}
+            onChange={(e) => handleSearchBtn(e.target.value)}
             placeholder="Search by name"
+            onKeyDown={(e) => handleKeyDown(e)}
             className="w-full h-full px-7 lg:pl-12 rounded-lg caret-custom_yellow placeholder:text-[#888888] font-light text-white 
         focus:border focus:border-custom_yellow focus:outline-none bg-[#101011] border border-[#6A6363]"
           />
-          {/* <span className="absolute right-3 top-2 w-fit z-20 text-[#898989] font-light text-sm cursor-pointer md:top-3">
-          X
-        </span> */}
+          {_search && _search != 'NA' && (
+            <span
+              className="absolute right-3 top-2 w-fit z-20 cursor-pointer text-primary font-bold lg:top-4"
+              onClick={() => clearBtn()}
+            >
+              <Image
+                src="/images/icons/close.svg"
+                alt="search"
+                width="25px"
+                height="15px"
+              />
+            </span>
+          )}
         </div>
       </div>
       <div className="grid col-span-4 md:col-span-2">
-        <select
-          id="expiration"
-          className="w-full max-w-[175px] lg:h-[51px] cursor-pointer bg-[#151515] outline-none rounded-lg
-          font-inter text-white text-center text-xs lg:text-base border border-[#6A6363]"
-          onChange={(e) => handleFilter(e.target.value)}
+        <button
+          className="btn-primary w-[110px] h-[35px] lg:w-[200px] lg:h-[50px] rounded-lg font-poppins lg:text-[25px]
+            grid place-items-center"
+          onClick={() => Searchbtn()}
         >
-          <option value={1}>Recently Created</option>
-          <option value={2}>Old to New</option>
-        </select>
+          <>{'Search'}</>
+        </button>
       </div>
     </motion.section>
   )
 }
 
+// Default Value : The Number of NFTs Per Page (can be changable)
 const ITEMS_PER_PAGE = 12
-const ALPHABETICAL_ORDER = 'AtoZ'
-const ORDER = 'NewToOld'
 
+
+// Collection Page : Main Component Page
 const CollectionPage: NextPage = () => {
   const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
@@ -378,62 +604,71 @@ const CollectionPage: NextPage = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const { width } = useWindowDimensions()
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
-
-  const [collectionData, setCollectionData] = useState<HeroSectionProps[]>()
-  const [avatars, setAvatars] = useState<AvatarType[]>([])
-  // const [collection, setCollection] = useState<CollectionCardTypes[]>([])
-  // const [filteredData, setFiltered] = useState<CollectionCardTypes[]>([])
-  const [dataUnsorted, setDataUnsorted] = useState<AvatarType[]>([])
-
+  const {address} = useAccount()
+  const [collectionData, setCollectionData] = useState<HeroSectionProps[]>() // collection info
+  const [avatars, setAvatars] = useState<AvatarType[]>([]) //All NFTs on same page
+  const [sort_by, setSortBy] = useState<any>('NA')
+  const [listed_in, setListedIn] = useState<any>('NA')
+  const [search, setSearch] = useState('NA')
+  const [like, setLikes] = useState(0)
   const contractAddress = String(router?.query?.contractAddress)
 
+  // Api to get NFTs of the collection
   const { mutate, data, isSuccess } = useMutation(getCollectionNfts)
 
-  const { data: collectionDetails } = useQuery(
-    QUERIES.getCollectionDetails,
-    () => getCollectionDetails(contractAddress),
-    { enabled: !!contractAddress && contractAddress !== 'undefined' }
+  // Api to get Contract Type
+  const { data: contractType } = useQuery(
+    [QUERIES.getCollectionType, contractAddress],
+    () => getCollectionType(contractAddress),
+    { enabled: !!contractAddress }
   )
 
+  // NFT Type : Set Contract Type in nftType Varible
+  const nftType: NftType | undefined = contractType?.data?.type
+
+  // Get Collection Info
+  const { data: collectionDetails } = useQuery(
+    QUERIES.getCollectionDetails,
+    () => getCollectionDetails(contractAddress), // Set collection info in collectionData variable
+    {
+      enabled:
+        !!contractAddress && contractAddress !== 'undefined' && !!nftType,
+    }
+  )
+
+  // check user selected filters and call api to get nfts data
   useEffect(() => {
     let body: CollectionNftsBodyType = {
-      contract_address: contractAddress,
+      address: contractAddress,
+      address_type: 'COLLECTION',
       page_number: currentPage,
       items_per_page: ITEMS_PER_PAGE,
-      alphabetical_order: ALPHABETICAL_ORDER,
-      order: ORDER,
+      sort_by: sort_by,
+      listed_in: listed_in,
+      search,
+      nftType,
     }
-    contractAddress !== 'undefined' && mutate(body)
-  }, [mutate, contractAddress, currentPage])
+    contractAddress !== 'undefined' && nftType && mutate(body)
+  }, [
+    mutate,
+    contractAddress,
+    currentPage,
+    nftType,
+    listed_in,
+    sort_by,
+    search,
+  ])
 
-  // const { data, refetch, isSuccess } = useQuery(
-  //   QUERIES.getCollectionNFTs,
-  //   () => getCollectionNFTs(router?.query?.contractAddress),
-  //   {
-  //     refetchOnWindowFocus: true,
-  //   }
-  // )
-
-  // useEffect(() => {
-  //   if (data?.data.nfts.length) {
-  //     let unsortedData = data?.data.nfts
-  //     const newArr = [...unsortedData]
-  //     const newArr2 = [...unsortedData]
-  //     const newArr3 = [...unsortedData]
-  //     setDataUnsorted(unsortedData)
-  //     // const is_On_Auction = isOnAuction(unsortedData)
-  //     // setDataOnAuction(is_On_Auction?is_On_Auction:[])
-  //     setDataRecent(newArr3.reverse())
-  //   }
-  // }, [data?.data])
-
+  // Here some variables are defined as follows
   let collectionName = collectionDetails?.data?.collection?.collection_name
   let floor = collectionDetails?.data.floor_price
   let bestOffer = collectionDetails?.data.best_offer
   let totalvolume = collectionDetails?.data.collection?.trade_volume
   let owners = collectionDetails?.data.owners
-  let totalsupply = collectionDetails?.data.nfts.length
+  let totalNfts = collectionDetails?.data?.nfts?.total_nfts
+  let totalsupply = totalNfts ? totalNfts : collectionDetails?.data.nfts?.length
   let createddate = collectionDetails?.data?.collection?.createdAt
+  let likes = collectionDetails?.data?.collection?.collection_popularity?.likes
   createddate = createddate?.substring(0, 10)
   let bannerurl = '/images/collections/static.jpg'
   let description = collectionDetails?.data?.collection?.description
@@ -442,114 +677,53 @@ const CollectionPage: NextPage = () => {
       ? collectionDetails?.data?.collection?.imageuri[0]
       : undefined
 
-  // console.log(data?.data)
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-
-  // useEffect(() => {
-  //   if (router?.query?.contractAddress === undefined) {
-  //     window.setTimeout(refetch, 1500)
-  //   } else {
-  //     // refetch
-  //   }
-  // }, [router.query.contractAddress, refetch])
-
-  // const Avatar = data?.data.nfts
-
-  const handleFilter = (isInAuction: boolean) => {
-    if (isInAuction) {
-      let filteredAvatars = dataUnsorted.filter(
-        (data) => data.is_in_auction === true
-      )
-      setAvatars(filteredAvatars)
-      return
-    }
-    setAvatars(dataUnsorted)
-  }
-
-  // const oldtoNew = () => {
-  //   if (dataUnsorted.length > 0) {
-  //     const sortedBydate = dataUnsorted.sort(function (a: any, b: any) {
-  //       // console.log(new Date(a.createdAt).getTime())
-  //       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  //         ? -1
-  //         : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  //         ? 1
-  //         : 0
-  //     })
-
-  //     setAvatars(sortedBydate)
-  //     return
-  //   }
-  // }
-
-  // const recently = () => {
-  //   if (dataUnsorted.length > 0) {
-  //     const sortedBydate = dataUnsorted.sort(function (a, b) {
-  //       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  //         ? 1
-  //         : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  //         ? -1
-  //         : 0
-  //     })
-  //     setAvatars(sortedBydate)
-  //     return
-  //   }
-  // }
-
-  const handleFilters = (value: any) => {
-    // console.log('value is ',value)
-
-    if (value === '1') {
-      const sortedBydate = dataUnsorted.sort(function (a, b) {
-        return new Date(b.createdAt).getTime() / 1000 -
-          new Date(a.createdAt).getTime() / 1000
-          ? 1
-          : new Date(a.createdAt).getTime() / 1000 -
-            new Date(b.createdAt).getTime() / 1000
-          ? -1
-          : 0
-      })
-      setAvatars(sortedBydate)
-
-      return
-    }
-
-    if (value === '2') {
-      const sortedBydate = dataUnsorted.sort(function (a: any, b: any) {
-        // console.log(new Date(a.createdAt).getTime())
-        return new Date(b.createdAt).getTime() / 1000 -
-          new Date(a.createdAt).getTime() / 1000
-          ? -1
-          : new Date(a.createdAt).getTime() / 1000 -
-            new Date(b.createdAt).getTime() / 1000
-          ? 1
-          : 0
-      })
-
-      setAvatars(sortedBydate)
-      return
+useEffect(() => {
+  collectionDetails && setLikes(likes)
+}, [collectionDetails, likes])
+      // The function handleSearch is call in Collection Search Section
+  const handleSearch = (value: any) => {
+    if (value) {
+      setSearch(value)
     }
   }
 
-  // console.log(avatars)
 
-  // useEffect(() => {
-  //   setAvatars(data?.data.nfts)
-  //   setDataUnsorted(data?.data.nfts)
-  //   setCollectionData(data?.data)
-  // }, [data?.data.nfts, data?.data])
+
+  // HandleSort & handleListed functions are call in SideNav section
+  const handleSort = async (_value: any) => {
+    if (_value) {
+      await setSortBy(_value)
+      return
+    }
+    setSortBy('NA')
+  }
+
+  const handleListed = async (_value: any) => {
+    // console.log(_value)
+    if (_value) {
+      await setListedIn(_value)
+      return
+    }
+    setSortBy('NA')
+  }
 
   useEffect(() => {
-    if (data?.data?.nfts) {
+    if (nftType === 'NGM1155' && data?.data?.get_nfts) {
+      setAvatars(data.data.get_nfts.nfts)
+      // setDataUnsorted(data?.data.get_nfts.nfts)
+      setCollectionData(data?.data.get_nfts)
+      setCurrentPage(data.data.get_nfts.currentPage)
+      setTotalPages(data.data.get_nfts.total_pages)
+    } else if (data?.data?.nfts) {
       setAvatars(data.data.nfts)
-      setDataUnsorted(data?.data.nfts)
+      // setDataUnsorted(data?.data.nfts)
       setCollectionData(data?.data)
       setCurrentPage(data.data.currentPage)
       setTotalPages(data.data.total_pages)
     }
-  }, [data?.data])
+  }, [data?.data, nftType])
 
+  // This crumData is showing on top left below header, it's shortcult way to visit the respected page
   const crumbData: CrumbType[] = [
     { name: 'home', route: '/' },
     { name: 'collections', route: '/collections' },
@@ -568,7 +742,7 @@ const CollectionPage: NextPage = () => {
             name={collectionName}
             img={imageurl}
             bannerimage={bannerurl}
-            contract_address={''}
+            contract_address={contractAddress}
             contract_type={''}
             owners={owners}
             totalsupply={totalsupply}
@@ -579,6 +753,9 @@ const CollectionPage: NextPage = () => {
             totalvolume={totalvolume}
             bestOffer={bestOffer}
             floor={floor}
+            wallet_address={address}
+            like={like}
+            setLikes={setLikes}
           />
         ) : (
           ''
@@ -600,12 +777,15 @@ const CollectionPage: NextPage = () => {
             totalvolume={totalvolume}
             bestOffer={bestOffer}
             floor={floor}
+            wallet_address={address}
+            like={like}
+            setLikes={setLikes}
           />
         ) : (
           ''
         )}
         {/* <CollectionInfoSection /> */}
-        <CollectionSearchSection handleFilter={handleFilters} />
+        <CollectionSearchSection handleSearch={handleSearch} />
       </div>
       <div className="mt-8 md:mt-20 lg:pr-20">
         <div className="grid grid-cols-12 md:gap-4">
@@ -621,7 +801,13 @@ const CollectionPage: NextPage = () => {
                 duration: 0.4,
               }}
             >
-              <SideNav handleFilter={handleFilter} />
+              <SideNav
+                // handleSearch={handleSearch}
+                handleSort={handleSort}
+                handleListed={handleListed}
+                sort_by={sort_by}
+                listed_in={listed_in}
+              />
             </motion.div>
           </div>
           <div className="col-span-12 md:col-span-9">
@@ -688,7 +874,10 @@ const CollectionPage: NextPage = () => {
             <Drawer setIsOpen={setIsDrawerOpen}>
               <SideNav
                 setIsOpen={setIsDrawerOpen}
-                handleFilter={handleFilter}
+                handleSort={handleSort}
+                handleListed={handleListed}
+                sort_by={sort_by}
+                listed_in={listed_in}
               />
             </Drawer>
           </motion.div>

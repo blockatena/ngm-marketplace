@@ -1,8 +1,10 @@
 import { ethers } from 'ethers'
 import { FC, useEffect, useState } from 'react'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
-const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
-const CHAINID2: string = process.env.NEXT_PUBLIC_CHAIN_ID2 || ''
+import useIsMounted from '../utils/hooks/useIsMounted'
+import { useRouter } from 'next/router'
+
+//detect current network and show warning according to that
 const Detector: FC = () => {
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
@@ -14,8 +16,22 @@ const Detector: FC = () => {
   const [url, setUrl] = useState('')
   const { isConnected } = useAccount()
   const [currentChainId, setCurrentChainId] = useState('')
-  const targetNetworkId = ['80001', '137', '1', '5']
+  const [forceHide, setForceHide] = useState(false)
+  const targetNetworkId = ['80001', '137', '1', '5', '3141', '314','20']
+  const [route,setRoute] = useState('')
+  const isMounted = useIsMounted()
+  const router = useRouter()
+  useEffect(()=> {
+    const route = window.location.href.split('/')[2]
+    setRoute(route)
+  },[route])
+  // const route = window.location.href.split('/')[2]
+  const CHAINID: string = route=='gamestoweb3.com'?'137':'80001'
+  const CHAINID2: string = route=='gamestoweb3.com'?'1':'5'
+  const CHAINID3: string = route=='gamestoweb3.com'?'314':'20' || '3141'
 
+
+//switch network function
   const onSwitchNetwork = async () => {
     const ethereum = (window as any).ethereum
     if (isConnected) {
@@ -25,7 +41,8 @@ const Detector: FC = () => {
       const { chainId } = await provider.getNetwork()
       let chain = parseInt(CHAINID)
       let chain2 = parseInt(CHAINID2)
-      if (chainId !== chain && chainId !== chain2) {
+      let chain3 = parseInt(CHAINID3)
+      if (chainId !== chain && chainId !== chain2 && chainId !== chain3) {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: ethers.utils.hexValue(chain) }], // chainId must be in hexadecimal numbers
@@ -35,43 +52,62 @@ const Detector: FC = () => {
   }
 
   useEffect(() => {
-    if (chain?.id === parseInt(CHAINID)) {
+    if (chain?.id === parseInt(CHAINID) || (forceHide && isMounted)) {
       setShowAlert('false')
       return
     }
-  }, [chain])
+  }, [chain, CHAINID, forceHide, isMounted])
 
+//detect network function
   const detectNetwork = () => {
     if (showAlert !== '') {
       window.ethereum.on('networkChanged', function (networkId: any) {
+        setForceHide(false)
         setCurrentChainId(networkId)
         return networkId
       })
-    }
+    } 
+    if(showAlert == '') {
     let currentChainId = window?.ethereum?.networkVersion
     setCurrentChainId(currentChainId)
     return currentChainId
+    }
   }
 
-  async function listenNetwork() {
+  //listen network change event from wallet
+  const listenNetwork = () => {
     if (isConnected) {
-      window.ethereum.on('networkChanged', function (networkId: any) {
+      window.ethereum.on('networkChanged',  async function (networkId: any) {
         // console.log(networkId)
+        
         if (targetNetworkId.includes(networkId)) {
-          setShowAlert('false')
+          setCurrentChainId(networkId)
+          if(!forceHide) {
+            setShowAlert('false')
+          }
+
+          
         } else {
-          setShowAlert('true')
+          setCurrentChainId('_')
+          setShowAlert('false')
+          
         }
       })
     }
   }
 
+  // Handle Warning Alert
   const handleAlert = async () => {
     // console.log(isConnected)
     // console.log(currentChainId)
     if (!isConnected) return
+    // console.log(currentChainId)
     if (targetNetworkId.includes(currentChainId)) {
-      if (currentChainId === CHAINID || currentChainId === CHAINID2) {
+      if (
+        currentChainId === CHAINID ||
+        currentChainId === CHAINID2 ||
+        currentChainId === CHAINID3
+      ) {
         // console.log('On Correct Network')
         setShowAlert('false')
         return
@@ -89,19 +125,24 @@ const Detector: FC = () => {
         setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
         setMsg3('or Visit to')
         setMsg4(CHAINID === '80001' ? 'Mainnet' : 'Testnet')
-        setShowAlert('true')
+        if (!forceHide && isMounted) {
+          setShowAlert('true')
+        }
         return
       }
-    } else {
+    } else if (currentChainId !=='') {
       setMsg1(`Wrong Network Detected, Switch Network to `)
       setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
       setMsg3('')
       setMsg4('')
-      setShowAlert('true')
+      if (!forceHide && isMounted) {
+        setShowAlert('true')
+      }
       return
     }
   }
 
+  // handle on click visit to another network
   const clickC = () => {
     window.open(url, '_blank')
   }
@@ -114,7 +155,7 @@ const Detector: FC = () => {
 
   return (
     <>
-      {showAlert === 'true' ? (
+      {showAlert === 'true' && router.asPath !== '/' ? (
         <div
           className={`text-black text-sm text-center px-6 py-1 border-0 rounded relative mb-4 bg-yellow-400`}
         >
@@ -137,7 +178,7 @@ const Detector: FC = () => {
           </span>
           <button
             className="absolute bg-transparent text-2xl font-semibold leading-none right-0 top-0 mt-0.5 mr-6 outline-none focus:outline-none"
-            onClick={() => setShowAlert('false')}
+            onClick={() => setForceHide(true)}
           >
             <span>×</span>
           </button>

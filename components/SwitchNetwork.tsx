@@ -1,11 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
-import { Dispatch, FC, SetStateAction, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useState,useEffect } from 'react'
 import { Connector, useConnect } from 'wagmi'
 import { fromLeftAnimation, fromRightAnimation } from '../utils/animations'
 import { ethers } from 'ethers'
 import Spinner from './Spinner'
-const CHAINID: string = process.env.NEXT_PUBLIC_CHAIN_ID || ''
 
 type WalletOptionType = {
   img: string
@@ -23,6 +22,8 @@ interface CardProps {
   switchSet: () => void
 }
 
+
+// to switch Network : from /wallet-connect route
 const switchNetworks: WalletOptionType[] = [
   {
     img: '/images/icons/metamask.png',
@@ -32,11 +33,20 @@ const switchNetworks: WalletOptionType[] = [
   },
 ]
 
+// Card : of  metamask
 const Card: FC<CardProps> = ({ connector, setMessage, switchSet }) => {
   //   const { connect, isLoading, pendingConnector } = useConnect()
   const { name } = connector
   const wallet = switchNetworks.find((option) => option.title === name)
   const [loading, setLoading] = useState(false)
+  const [route, setRoute] = useState('')
+  useEffect(() => {
+    const route = window.location.href.split('/')[2]
+    console.log(route)
+    setRoute(route)
+  }, [route])
+  const CHAINID: string = route == 'gamestoweb3.com' ? '137' : '80001'
+  // const CHAINID2: string = route == 'gamestoweb3.com' ? '1' : '5'
   const handleClick = async () => {
     if (name === 'MetaMask' && !window.ethereum) {
       setMessage('Please Install MetaMask')
@@ -97,6 +107,7 @@ const Card: FC<CardProps> = ({ connector, setMessage, switchSet }) => {
   )
 }
 
+// Switch networks  handle if not correct network while connect wallet
 const SwitchNetworks: FC<{ switchSet: () => void }> = ({ switchSet }) => {
   const { connectors, error } = useConnect()
   const [message, setMessage] = useState('')

@@ -1,31 +1,50 @@
+import { ethers } from 'ethers'
 import { motion } from 'framer-motion'
-import { Dispatch, FC, SetStateAction, useEffect,useState } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
-import { AvatarType } from '../../interfaces'
+import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
+import { AvatarType, NftType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
-import { cancelSale } from '../../react-query/queries'
+import { cancel1155Sale, cancelSale } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
-import { ethers } from 'ethers'
-import { useNetwork, useSwitchNetwork } from 'wagmi'
+
+// cancel sale modal
 const CancelSaleModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
   isOpen: boolean
   nft: AvatarType
   setActiveTabIndex: () => void
-  chainID:any
-}> = ({ setIsOpen, nft, setActiveTabIndex, chainID }) => {
+  chainID: any
+  nftType?: NftType
+}> = ({ setIsOpen, nft, setActiveTabIndex, chainID, nftType }) => {
   const queryClient = useQueryClient()
   const { chain } = useNetwork()
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
+
+  // APi call to cancel Sale for ERC721
   const { mutate, isSuccess, data, isLoading } = useMutation(cancelSale, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
   })
+  const { address } = useAccount()
+
+  // APi call to cancel sale ERC1155
+  const {
+    mutate: mutate1155,
+    isSuccess: is1155Success,
+    // data: data1155,
+    // isLoading: is1155Loading,
+  } = useMutation(cancel1155Sale, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(QUERIES.getSingleNft)
+    },
+  })
+
   useEffect(() => {
     if (!chainID) return
     if (chain?.id === parseInt(chainID)) {
@@ -37,15 +56,25 @@ const CancelSaleModal: FC<{
     }
   }, [chain, chainID])
 
+  // switch network if not correct network detected
   const onSwitchNetwork = async () => {
     await switchNetwork?.(parseInt(chainID))
   }
+  // handle click
   const handleClick = async () => {
     const data = {
       contract_address: nft?.contract_address,
       token_id: nft?.token_id,
       sign: '',
     }
+
+    let data1155 = {
+      contract_address: nft?.contract_address,
+      token_id: nft?.token_id,
+      token_owner: String(address),
+      sign:''
+    }
+
     const ethereum = (window as any).ethereum
     const accounts = await ethereum.request({
       method: 'eth_requestAccounts',
@@ -53,7 +82,11 @@ const CancelSaleModal: FC<{
     const provider = new ethers.providers.Web3Provider(ethereum, 'any')
     const walletAddress = accounts[0] // first account in MetaMask
     const signer = provider.getSigner(walletAddress)
-    let rawMsg = `{
+    let rawMsg = nftType==='NGM1155'?`{
+      "contract_address":"${nft?.contract_address}",
+      "token_id":"${nft?.token_id}",
+      "token_owner":"${address}"
+  }`:`{
       "contract_address":"${nft?.contract_address}",
       "token_id":"${nft?.token_id}"
   }`
@@ -63,20 +96,26 @@ const CancelSaleModal: FC<{
       .signMessage(`Signing to Cancel Sale\n${rawMsg}\n Hash: \n${hashMessage}`)
       .then(async (sign) => {
         // console.log(sign)
-        data['sign'] = sign
+        if(nftType==='NGM1155'){
+          data1155['sign'] = sign
+        } else {
+          data['sign'] = sign
+      }
       })
       .catch((e) => {
         console.log(e.message)
         setIsOpen(false)
         return
       })
-    if (data['sign']) {
-      mutate(data)
+    if (data['sign'] || data1155['sign']) {
+      nftType === 'NGM721PSI' && mutate(data)
+      nftType === 'NGM1155' && mutate1155(data1155)
     } else return
   }
 
+  // handle toast oon response
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess || is1155Success) {
       let msg = data?.data?.message
         ? data?.data?.message
         : 'Sale Cancelled Successfully'
@@ -90,7 +129,13 @@ const CancelSaleModal: FC<{
       })
       setIsOpen(false)
     }
-  }, [isSuccess, data?.data?.message, setIsOpen, setActiveTabIndex])
+  }, [
+    isSuccess,
+    data?.data?.message,
+    setIsOpen,
+    setActiveTabIndex,
+    is1155Success,
+  ])
 
   return (
     <ModalBase>
@@ -110,7 +155,7 @@ const CancelSaleModal: FC<{
           <span
             className="cursor-pointer"
             role="buton"
-            onClick={() => !isLoading && setIsOpen(false)}
+            onClick={() => setIsOpen(false)}
           >
             x
           </span>

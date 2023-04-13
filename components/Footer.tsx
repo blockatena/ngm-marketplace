@@ -20,6 +20,8 @@ const IconButton: React.FC<IconButtonProps> = ({ children, link }) => {
     </a>
   )
 }
+
+// website Footer ,
 const Footer: FC = () => {
   return (
     <footer className="bg-footer p-4 pt-6 lg:px-16 bg-cover relative z-30">
