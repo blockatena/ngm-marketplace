@@ -14,7 +14,6 @@ import { fromTopAnimation } from '../../utils/animations'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
 
-
 // Place Bid Modal
 const PlaceBidModal: FC<{
   setIsOpen: Dispatch<SetStateAction<boolean>>
@@ -34,7 +33,7 @@ const PlaceBidModal: FC<{
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
 
-  //  Api Call to Place a Bid 
+  //  Api Call to Place a Bid
   const { mutate, data, isLoading, isSuccess } = useMutation(placeBid, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
@@ -99,7 +98,7 @@ const PlaceBidModal: FC<{
     await switchNetwork?.(parseInt(chainID))
   }
 
-// function On place a bid
+  // function On place a bid
   const onBid = async () => {
     if (nft?.token_owner === address) {
       toast.dark('You own this NFT!', {
@@ -122,7 +121,7 @@ const PlaceBidModal: FC<{
     // const minimumBid = 0 // need to get data from api
     const bal = await wethcontract.balanceOf(walletAddress)
     let balanceInEth: any = ethers.utils.formatEther(bal)
-    balanceInEth = parseFloat(balanceInEth).toFixed(2)
+    balanceInEth = parseFloat(balanceInEth).toFixed(7)
     setAccountBalance(balanceInEth)
     const inputAmt: any = await ethers.utils.parseUnits(
       bidAmount.toString(),

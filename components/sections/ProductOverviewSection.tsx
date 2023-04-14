@@ -28,14 +28,14 @@ import MakeOfferModal from '../modals/MakeOfferModal'
 import PlaceBidModal from '../modals/PlaceBidModal'
 import ViewOwnersModal from '../modals/ViewOwnersModal'
 // import ownerImg from '../../public/images/others/owner.png'
+import Image from 'next/image'
+import { useMutation, useQuery } from 'react-query'
 import { addresses } from '../../contracts/addresses'
 import { RPC } from '../../contracts/rpc'
-import ImageViewModal from '../modals/ImageViewModal'
-import Image from 'next/image'
-import { checkIfFavorite, getIsUserExist, handleFavourite } from '../../react-query/queries'
-import { useMutation, useQuery } from 'react-query'
 import { CheckIfFavoriteType } from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
+import { checkIfFavorite, getIsUserExist, handleFavourite } from '../../react-query/queries'
+import ImageViewModal from '../modals/ImageViewModal'
 // product Overview for single nft page
 const ProductOverviewSection: FC<{
   nft: AvatarType
@@ -190,7 +190,7 @@ const ProductOverviewSection: FC<{
     const wethcontract = new ethers.Contract(NGM20Address, NGM20ABI, signer)
     const balance = await wethcontract.balanceOf(address)
     let balanceInEth: any = ethers.utils.formatEther(balance)
-    balanceInEth = parseFloat(balanceInEth).toFixed(2)
+    balanceInEth = parseFloat(balanceInEth).toFixed(7)
     setAccountBalance(balanceInEth)
   }
   useEffect(() => {
