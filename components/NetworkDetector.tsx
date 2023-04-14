@@ -128,7 +128,7 @@ const Detector: FC = () => {
         }
         return
       }
-    } else if (currentChainId !=='') {
+    } else if (currentChainId !== '' && !targetNetworkId.includes(currentChainId)) {
       setMsg1(`Wrong Network Detected, Switch Network to `)
       setMsg2(CHAINID === '80001' ? 'Testnet' : 'Mainnet')
       setMsg3('')
