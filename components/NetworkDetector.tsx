@@ -3,7 +3,6 @@ import { FC, useEffect, useState } from 'react'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
 import useIsMounted from '../utils/hooks/useIsMounted'
 import { useRouter } from 'next/router'
-
 //detect current network and show warning according to that
 const Detector: FC = () => {
   const { chain } = useNetwork()
@@ -26,10 +25,9 @@ const Detector: FC = () => {
     setRoute(route)
   },[route])
   // const route = window.location.href.split('/')[2]
-  const CHAINID: string = route=='gamestoweb3.com'?'137':'80001'
-  const CHAINID2: string = route=='gamestoweb3.com'?'1':'5'
-  const CHAINID3: string = route=='gamestoweb3.com'?'314':'20' || '3141'
-
+  const CHAINID: string = route=='www.gamestoweb3.com'?'137':'80001'
+  const CHAINID2: string = route=='www.gamestoweb3.com'?'1':'5'
+  const CHAINID3: string = route=='www.gamestoweb3.com'?'314':'20' || '3141'
 
 //switch network function
   const onSwitchNetwork = async () => {
