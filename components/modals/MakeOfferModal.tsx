@@ -6,16 +6,19 @@ import { AiOutlineClose } from 'react-icons/ai'
 import { useMutation, useQueryClient } from 'react-query'
 import { toast } from 'react-toastify'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
+import { addresses } from '../../contracts/addresses'
 import { NGM20ABI } from '../../contracts/nftabi'
-import type { AvatarType, NftOfferBodyType, Make1155Offer } from '../../interfaces'
+import type {
+  AvatarType,
+  Make1155Offer,
+  NftOfferBodyType,
+} from '../../interfaces'
 import { QUERIES } from '../../react-query/constants'
-import { makeOffer, make1155Offer } from '../../react-query/queries'
+import { make1155Offer, makeOffer } from '../../react-query/queries'
 import { fromTopAnimation } from '../../utils/animations'
 import useWindowDimensions from '../../utils/hooks/useWindowDimensions'
 import ModalBase from '../ModalBase'
 import Spinner from '../Spinner'
-import { addresses } from '../../contracts/addresses'
-
 
 // Make Offer Modal
 const MakeOfferModal: FC<{
@@ -24,8 +27,8 @@ const MakeOfferModal: FC<{
   nft: AvatarType
   accountBalance: any
   chainID: any
-  nftType:any
-}> = ({ setIsOpen, nft, accountBalance, chainID,nftType }) => {
+  nftType: any
+}> = ({ setIsOpen, nft, accountBalance, chainID, nftType }) => {
   const queryClient = useQueryClient()
   const { width } = useWindowDimensions()
   const { address } = useAccount()
@@ -38,67 +41,72 @@ const MakeOfferModal: FC<{
   const { switchNetwork } = useSwitchNetwork()
   const [isChainCorrect, setIsChainCorrect] = useState(true)
 
-
   // handle deployment type
-    const DeployType =
-      chainID == '80001' || chainID == '5' || chainID == '3141'
-        ? 'DEV'
-        : chainID == '137' || chainID == '1' || chainID == '314'
-        ? 'PROD'
-        : ''
-    const devMarkets = addresses.MARKETPLACE_CONTRACT.DEV
-    const prodMarkets = addresses.MARKETPLACE_CONTRACT.PROD
+  const DeployType =
+    chainID == '80001' || chainID == '5' || chainID == '3141'
+      ? 'DEV'
+      : chainID == '137' || chainID == '1' || chainID == '314'
+      ? 'PROD'
+      : ''
+  const devMarkets = addresses.MARKETPLACE_CONTRACT.DEV
+  const prodMarkets = addresses.MARKETPLACE_CONTRACT.PROD
 
-    const NGMMarketAddress =
-      DeployType == 'DEV' && chainID == '80001'
-        ? devMarkets.MUMBAI
-        : DeployType == 'DEV' && chainID == '5'
-        ? devMarkets.GOERLI
-        : DeployType == 'DEV' && chainID == '3141'
-        ? devMarkets.HYPERSPACE
-        : DeployType == 'PROD' && chainID == '137'
-        ? prodMarkets.POLYGON
-        : DeployType == 'PROD' && chainID == '1'
-        ? prodMarkets.ETHEREUM
-        : DeployType == 'PROD' && chainID == '314'
-        ? prodMarkets.FILECOIN
-        : ''
-        
-      const devTokens = addresses.ERC20_CONTRACT.DEV
-      const prodTokens = addresses.ERC20_CONTRACT.PROD
+  const NGMMarketAddress =
+    DeployType == 'DEV' && chainID == '80001'
+      ? devMarkets.MUMBAI
+      : DeployType == 'DEV' && chainID == '5'
+      ? devMarkets.GOERLI
+      : DeployType == 'DEV' && chainID == '3141'
+      ? devMarkets.HYPERSPACE
+      : DeployType == 'PROD' && chainID == '137'
+      ? prodMarkets.POLYGON
+      : DeployType == 'PROD' && chainID == '1'
+      ? prodMarkets.ETHEREUM
+      : DeployType == 'PROD' && chainID == '314'
+      ? prodMarkets.FILECOIN
+      : ''
 
-      const NGM20Address =
-        DeployType == 'DEV' && chainID == '80001'
-          ? devTokens.MUMBAI
-          : DeployType == 'DEV' && chainID == '5'
-          ? devTokens.GOERLI
-          : DeployType == 'DEV' && chainID == '3141'
-          ? devTokens.HYPERSPACE
-          : DeployType == 'PROD' && chainID == '137'
-          ? prodTokens.POLYGON
-          : DeployType == 'PROD' && chainID == '1'
-          ? prodTokens.ETHEREUM
-          : DeployType == 'PROD' && chainID == '314'
-          ? prodTokens.FILECOIN
-          : ''
+  const devTokens = addresses.ERC20_CONTRACT.DEV
+  const prodTokens = addresses.ERC20_CONTRACT.PROD
+
+  const NGM20Address =
+    DeployType == 'DEV' && chainID == '80001'
+      ? devTokens.MUMBAI
+      : DeployType == 'DEV' && chainID == '5'
+      ? devTokens.GOERLI
+      : DeployType == 'DEV' && chainID == '3141'
+      ? devTokens.HYPERSPACE
+      : DeployType == 'PROD' && chainID == '137'
+      ? prodTokens.POLYGON
+      : DeployType == 'PROD' && chainID == '1'
+      ? prodTokens.ETHEREUM
+      : DeployType == 'PROD' && chainID == '314'
+      ? prodTokens.FILECOIN
+      : ''
 
   // APi call to make offer ERC721
-  const { mutate: MakeOffer, data:makeOfferData, isLoading:isOfferLoading, isSuccess: isOfferSuccess } =
-    useMutation(makeOffer, {
+  const {
+    mutate: MakeOffer,
+    data: makeOfferData,
+    isLoading: isOfferLoading,
+    isSuccess: isOfferSuccess,
+  } = useMutation(makeOffer, {
     onSuccess: () => {
       queryClient.invalidateQueries(QUERIES.getSingleNft)
     },
   })
 
   // APi call to make offer ERC1155
-  const { mutate: Make1155Offer,data:make1155OfferData, isLoading:isOffer1155Loading, isSuccess: is1155OfferSuccess } = useMutation(
-    make1155Offer,
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(QUERIES.getSingleNft)
-      },
-    }
-  )
+  const {
+    mutate: Make1155Offer,
+    data: make1155OfferData,
+    isLoading: isOffer1155Loading,
+    isSuccess: is1155OfferSuccess,
+  } = useMutation(make1155Offer, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(QUERIES.getSingleNft)
+    },
+  })
   useEffect(() => {
     if (!chainID) return
     if (chain?.id === parseInt(chainID)) {
@@ -115,7 +123,7 @@ const MakeOfferModal: FC<{
     await switchNetwork?.(parseInt(chainID))
   }
 
-// Make offer 
+  // Make offer
   const onMakeOffer = async () => {
     if (nft?.token_owner === address) {
       toast.dark('You own this NFT!', {
@@ -139,7 +147,7 @@ const MakeOfferModal: FC<{
     const bal = await wethcontract.balanceOf(walletAddress)
     // console.log(bal.toString())
     let balanceInEth: any = ethers.utils.formatEther(bal)
-    balanceInEth = parseFloat(balanceInEth).toFixed(2)
+    balanceInEth = parseFloat(balanceInEth).toFixed(7)
     setAccountBalance(balanceInEth)
     const inputAmt: any = await ethers.utils.parseUnits(
       bidAmount.toString(),
@@ -161,7 +169,7 @@ const MakeOfferModal: FC<{
       per_unit_price: bidAmount,
       sign: '',
     }
-    
+
     let raw721Msg = `{
       "offer_price":"${bidAmount}",
       "offer_person_address":"${address ? address : ''}",
@@ -176,7 +184,7 @@ const MakeOfferModal: FC<{
       "per_unit_price": "${bidAmount}",
     }`
 
-    let rawMsg = nftType === 'NGM1155'? raw1155Msg:raw721Msg
+    let rawMsg = nftType === 'NGM1155' ? raw1155Msg : raw721Msg
     if (parseInt(inputAmt.toString()) > parseInt(bal.toString())) {
       toast.dark(`Your offer is greater than your wallet balance`, {
         type: 'error',
@@ -207,10 +215,10 @@ const MakeOfferModal: FC<{
           )
           .then(async (sign) => {
             // console.log(sign)
-            if(nftType==='NGM1155'){
+            if (nftType === 'NGM1155') {
               OfferData1155['sign'] = sign
             } else {
-            offerData['sign'] = sign
+              offerData['sign'] = sign
             }
           })
           .catch((e) => {
@@ -221,7 +229,7 @@ const MakeOfferModal: FC<{
         if (offerData['sign']) {
           MakeOffer(offerData)
           setLoading(false)
-        } else if(OfferData1155['sign']) {
+        } else if (OfferData1155['sign']) {
           Make1155Offer(OfferData1155)
           setLoading(false)
         } else return setLoading(false)
@@ -256,10 +264,10 @@ const MakeOfferModal: FC<{
               if (offerData['sign']) {
                 MakeOffer(offerData)
                 setLoading(false)
-              } else if(OfferData1155['sign']) {
+              } else if (OfferData1155['sign']) {
                 Make1155Offer(OfferData1155)
-                setLoading(false) } 
-                else return setLoading(false)
+                setLoading(false)
+              } else return setLoading(false)
             })
           })
           .catch(() => {
@@ -359,7 +367,9 @@ const MakeOfferModal: FC<{
             <label htmlFor="offer_amount" className="text-white">
               Offer Amount
             </label>
-            <span className="text-[#AEA8A8]">{`Balance : ${updateBalance !==''?updateBalance:accountBalance} WETH `}</span>
+            <span className="text-[#AEA8A8]">{`Balance : ${
+              updateBalance !== '' ? updateBalance : accountBalance
+            } WETH `}</span>
           </div>
           <div className="h-[47px] relative rounded-lg">
             <input
