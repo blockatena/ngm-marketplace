@@ -414,6 +414,7 @@ const CollectionInfoSection: FC<HeroSectionProps> = ({
   description,
   like
 }) => {
+  totalvolume = parseFloat(totalvolume)?.toFixed(5)
   return (
     <motion.section
       variants={opacityAnimation}
