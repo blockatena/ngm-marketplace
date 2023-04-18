@@ -1,4 +1,4 @@
-<img alt="GamesToWeb3" src="https://nftstorage.link/ipfs/bafybeidcl5kng4mg7cdjyal7v25hj6zjcclo2a3nsfktr7p7qzvwynwn4a/gamestoweb3git.png"><img>
+<img alt="GamesToWeb3" src="https://bafybeidqhjscsqkjuchztg3oy6kox3lgfsggyghfb5iln4n3bt66fp5n3y.ipfs.nftstorage.link/Group.png"><img>
 
 # Games To Web3
 
