@@ -19,8 +19,10 @@ import type {
   NftOfferBodyType,
   NftSaleBodyType,
   NftType,
+  ApiKeyReq,
 } from '../interfaces'
 
+const apiKey = process.env.NEXT_PUBLIC_API_ADMIN || ''
 const axiosFileInstance = createAxiosInstance('form-data')
 
 export const getCollections = (
@@ -270,4 +272,12 @@ export const getFavNFT1155 = (
 
 export const getIsUserExist = (wallet_address:any) => {
   return axiosInstance.get(`/users/isuser_registered/${wallet_address}`)
+}
+
+export const createApiKey = (data: ApiKeyReq) => {
+  return axiosInstance.post('/subscription/create-api-key', data, {headers:{'SECRET':apiKey}})
+}
+
+export const sendApiKey = (data: ApiKeyReq) => {
+  return axiosInstance.post('/subscription/send-api-key', data)
 }

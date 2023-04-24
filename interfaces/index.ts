@@ -399,3 +399,8 @@ export type CheckIfFavoriteType = {
   favourite_kind: 'COLLECTIONS' | 'NFTS'
   wallet_address: any
 }
+
+export type ApiKeyReq = {
+  wallet_address: any,
+  email:string
+}
