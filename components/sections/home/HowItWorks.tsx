@@ -1,9 +1,10 @@
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
-import { FC, ReactElement } from 'react'
+import { FC, ReactElement, useState, useEffect } from 'react'
 import { IoChevronForwardSharp } from 'react-icons/io5'
 import { fromBottomAnimation } from '../../../utils/animations'
 import SectionContainer from '../../SectionContainer'
+import ApiKeyRequestModal from '../../modals/ApiKeyRequest'
 
 // what we do cards data
 const cardData = [
@@ -49,7 +50,9 @@ const WhyItem: FC<{ text: string }> = ({ text }) => {
   )
 }
 // Bottom row
-const BottomRow: FC = () => (
+const BottomRow: FC<{ setIsApiModalOpen: () => void }> = ({
+  setIsApiModalOpen,
+}) => (
   <div className=" bg-[#040404] py-16 lg:py-24 lg:px-8 2xl:px-10">
     <div
       // style={{ backgroundImage: "url('/images/others/why_us_bg.png')" }}
@@ -81,12 +84,7 @@ const BottomRow: FC = () => (
             <button
               className="w-[14.625rem] h-[3rem] md:w-[17.625rem] md:h-[3.5rem] text-black font-poppins font-medium text-sm md:text-[1.25rem] bg-[#27DFB3] 
             flex justify-center items-center gap-2 rounded hover:scale-105 transition-transform"
-              onClick={() =>
-                window.open(
-                  'https://docs.google.com/forms/d/e/1FAIpQLSdR99eqS5rkauecBWhiGzvHnn2Yhkx0jvGSF4hiHsMdx0IIog/viewform?usp=sf_link',
-                  '_block'
-                )
-              }
+              onClick={() => setIsApiModalOpen()}
             >
               <span>Generate API Key</span>
               <span>
@@ -154,7 +152,22 @@ const BottomRow: FC = () => (
 // How it works
 function HowItWorks(): ReactElement {
   const renderCards = cardData.map((card, i) => <Card key={i} {...card} />)
+  const [isApiModalOpen, setIsApiModalOpen] = useState(false)
+  const [route, setRoute] = useState('')
+  useEffect(() => {
+    const route = window.location.href.split('/')[2]
+    setRoute(route)
+  }, [route])
 
+  const openApiModal = () => {
+    if (route == 'www.gamestoweb3.com') {
+      window.open(
+        'https://docs.google.com/forms/d/e/1FAIpQLSdR99eqS5rkauecBWhiGzvHnn2Yhkx0jvGSF4hiHsMdx0IIog/viewform?usp=sf_link',
+        '_block'
+      )
+    } else setIsApiModalOpen(!isApiModalOpen)
+  }
+  
   return (
     <section className="bg-[#0A0A0A]">
       {/* <div className="bg-gradient-to-br from-[#4C068B] via-[#0A0A0A] to-[#0A0A0A]"> */}
@@ -228,7 +241,15 @@ function HowItWorks(): ReactElement {
           </div>
         </SectionContainer>
       </div>
-      <BottomRow />
+      <BottomRow setIsApiModalOpen={openApiModal} />
+      <AnimatePresence>
+        {isApiModalOpen && (
+          <ApiKeyRequestModal
+            isOpen={isApiModalOpen}
+            setIsOpen={setIsApiModalOpen}
+          />
+        )}
+      </AnimatePresence>
     </section>
   )
 }
