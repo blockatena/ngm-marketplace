@@ -134,7 +134,7 @@ const Detector: FC = () => {
       setMsg3('')
       setMsg4('')
       if (!forceHide && isMounted) {
-        setShowAlert('true')
+        // setShowAlert('true')
       }
       return
     }
