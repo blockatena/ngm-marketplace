@@ -72,12 +72,17 @@ const initalNftState: AvatarType = {
   nft_popularity:0
 }
 
-
+type ListType = {
+  start_date: string,
+  end_date: string,
+  min_price: any,
+  quantity: number,
+}
 // List Asset Page 
 const ListAssetPage: NextPage = () => {
   const { asPath } = useRouter()
   const { date, time } = useCurrentDateTime()
-  const initialFormState = {
+  const initialFormState: ListType = {
     start_date: `${date}T${time}`,
     end_date: '',
     min_price: 0,
@@ -253,6 +258,8 @@ const ListAssetPage: NextPage = () => {
       NGMMarketAddress
     )
 
+    const tokenUri = await nftcontract.tokenURI(nft?.token_id)
+    console.log(tokenUri)
     // End date , input 
     let startPrt = formData?.end_date.split('-')
     let n1 = startPrt[0].slice(0, 4)
@@ -473,6 +480,7 @@ const ListAssetPage: NextPage = () => {
       setIsSuccessModalOpen(true)
   }, [isSuccess, isSaleSuccess, is1155SaleSuccess])
 
+  console.log(parseFloat(formData.min_price))
   return (
     <main className="min-h-screen p-2 pt-6 lg:px-16 mb-6">
       <div className="px-2 md:px-4 lg:px-0">
@@ -573,26 +581,39 @@ const ListAssetPage: NextPage = () => {
               </div>
             </motion.div>
 
-            {type === 'auction' && (
-              <motion.div
-                className="mt-8"
-                variants={opacityAnimation}
-                initial="initial"
-                whileInView="final"
-                viewport={{ once: true }}
-                transition={{
-                  ease: 'easeInOut',
-                  duration: 1,
-                  delay: 0.4,
-                }}
-              >
-                <h5
+            <motion.div
+              className="mt-8"
+              variants={opacityAnimation}
+              initial="initial"
+              whileInView="final"
+              viewport={{ once: true }}
+              transition={{
+                ease: 'easeInOut',
+                duration: 1,
+                delay: 0.4,
+              }}
+            >
+              <p className="text-[#F6F6F6]">
+                <span>
+                  <Image
+                    src="/images/icons/info.ico"
+                    alt="icon"
+                    width="12px"
+                    height="12px"
+                    className="text-[#F6F6F6]"
+                  />
+                </span>{' '}
+                {type === 'auction'
+                  ? 'The item is listed for auction and will sell to the highest bidder.'
+                  : 'The item is listed at the price you set.'}{' '}
+              </p>
+              {/* <h5
                   className="text-[#F6F6F6] lg:text-[31px] font-medium font-poppins lg:leading-[24px]
             mb-6"
                 >
                   Method
-                </h5>
-                <div
+                </h5> */}
+              {/* <div
                   className="w-full h-[59px] rounded-lg bg-[#4D4D49] text-white font-poppins 
             lg:text-[26px] flex items-center gap-6 lg:gap-10 px-4"
                 >
@@ -604,10 +625,10 @@ const ListAssetPage: NextPage = () => {
                       height="24px"
                     />
                   </p>
-                  <p>Set has highest Bidder </p>
-                </div>
-              </motion.div>
-            )}
+                  <p>Sell to highest Bidder </p>
+                </div> */}
+            </motion.div>
+
             <motion.div
               className="mt-10 "
               variants={opacityAnimation}
@@ -651,9 +672,9 @@ const ListAssetPage: NextPage = () => {
                   onChange={handleUserInput}
                 />
               </div>
-              <p className="font-poppins lg:text-[21px] text-white text-end mt-2">
+              {/* <p className="font-poppins lg:text-[21px] text-white text-end mt-2">
                 0.0001 ETH{' '}
-              </p>
+              </p> */}
             </motion.div>
 
             {nftType === 'NGM1155' && (
@@ -676,7 +697,8 @@ const ListAssetPage: NextPage = () => {
                   Quantity{' '}
                   {userTokenNumber?.data?.number_of_tokens && (
                     <span className="text-xs">
-                      (You own {userTokenNumber?.data?.number_of_tokens?.tokens} tokens)
+                      (You own {userTokenNumber?.data?.number_of_tokens?.tokens}{' '}
+                      tokens)
                     </span>
                   )}
                 </h5>
@@ -755,12 +777,12 @@ const ListAssetPage: NextPage = () => {
                 delay: 0.4,
               }}
             >
-              <select
+              {/* <select
                 className="bg-[#969696] font-poppins text-black w-[299px] h-[59px] text-center
             rounded-lg"
               >
                 <option>More Options</option>
-              </select>
+              </select> */}
             </motion.div>
 
             <motion.div
@@ -776,8 +798,16 @@ const ListAssetPage: NextPage = () => {
               }}
             >
               <p className="text-[31px] font-semibold">Fees</p>
-              <p className="text-[21px]">0.0001 WETH </p>
-              <p className="text-[21px]">0.0001 WETH </p>
+              <p className="text-[21px]">Fees +0.0001 WETH </p>
+              <p className="text-[21px]">
+                Total{' '}
+                <span>
+                  {!Number.isNaN(parseFloat(formData.min_price))
+                    ? parseFloat(formData.min_price) + 0.0001
+                    : 0.0001}
+                </span>{' '}
+                WETH{' '}
+              </p>
             </motion.div>
 
             <motion.div
